@@ -1,0 +1,37 @@
+[submodule "multyr-strategies/lib/forge-std"]
+	path = multyr-strategies/lib/forge-std
+	url = https://github.com/foundry-rs/forge-std
+	branch = v1.11.0
+[submodule "multyr-strategies/lib/openzeppelin-contracts"]
+	path = multyr-strategies/lib/openzeppelin-contracts
+	url = https://github.com/OpenZeppelin/openzeppelin-contracts
+	branch = v4.9.5
+[submodule "multyr-strategies/lib/openzeppelin-contracts-upgradeable"]
+	path = multyr-strategies/lib/openzeppelin-contracts-upgradeable
+	url = https://github.com/OpenZeppelin/openzeppelin-contracts-upgradeable
+	branch = v4.9.3
+[submodule "multyr-strategies/lib/chainlink-brownie-contracts"]
+	path = multyr-strategies/lib/chainlink-brownie-contracts
+	url = https://github.com/smartcontractkit/chainlink-brownie-contracts
+# multyr-core + multyr-periphery: local symlinks during monorepo phase;
+# UPLOAD-STRATEGIES-PUB will replace with github submodules post UPLOAD-CORE/PERIPHERY
+# [submodule "multyr-strategies/lib/multyr-core"] (post UPLOAD-CORE)
+# [submodule "multyr-strategies/lib/multyr-periphery"] (post UPLOAD-PERIPHERY)
+[submodule "lib/forge-std"]
+	path = lib/forge-std
+	url = https://github.com/foundry-rs/forge-std
+[submodule "lib/openzeppelin-contracts"]
+	path = lib/openzeppelin-contracts
+	url = https://github.com/OpenZeppelin/openzeppelin-contracts
+[submodule "lib/openzeppelin-contracts-upgradeable"]
+	path = lib/openzeppelin-contracts-upgradeable
+	url = https://github.com/OpenZeppelin/openzeppelin-contracts-upgradeable
+[submodule "lib/multyr-core"]
+	path = lib/multyr-core
+	url = https://github.com/Multyr/multyr-core
+[submodule "lib/multyr-periphery"]
+	path = lib/multyr-periphery
+	url = https://github.com/Multyr/multyr-periphery
+[submodule "lib/chainlink-brownie-contracts"]
+	path = lib/chainlink-brownie-contracts
+	url = https://github.com/smartcontractkit/chainlink-brownie-contracts

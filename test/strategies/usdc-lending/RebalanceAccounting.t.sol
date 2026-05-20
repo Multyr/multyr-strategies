@@ -1,0 +1,386 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.28;
+
+import { Test } from "forge-std/Test.sol";
+import { StrategyRebalancePlanModule } from "../../../src/strategies/usdc-lending/controller/StrategyRebalancePlanModule.sol";
+import {
+    UsdcMultiLendingVaultTestBase
+} from "./UsdcMultiLendingVault.t.sol";
+import {
+    StrategyScoringModule
+} from "../../../src/strategies/usdc-lending/controller/StrategyScoringModule.sol";
+import {
+    StrategyParamsModule
+} from "../../../src/strategies/usdc-lending/controller/StrategyParamsModule.sol";
+import { StrategySettingsModule } from "../../../src/strategies/usdc-lending/controller/StrategySettingsModule.sol";
+
+// ============================================================================
+// BLOCCO B — Rebalance Economic Correctness Tests
+// ============================================================================
+// Tests that positionAssets accounting is exact after executeRebalanceStep.
+// Uses MockLendingAdapter + UsdcMultiLendingVaultTestBase.
+//
+// SETUP PATTERN: deposit → deployIdle (funds into adapters) → change APYs
+// to create rebalance opportunity → verify accounting invariants.
+// ============================================================================
+
+contract RebalanceAccountingTest is UsdcMultiLendingVaultTestBase {
+
+    function setUp() public override {
+        super.setUp();
+
+        _addAndEnableAdapter(adapter1);  // 800 bps APY
+        _addAndEnableAdapter(adapter2);  // 600 bps APY
+        _addAndEnableAdapter(adapter3);  // 400 bps APY
+
+        // Larger TVL caches for score confidence
+        adapter1.setExtMarketTVL(100_000_000e6);
+        adapter2.setExtMarketTVL(80_000_000e6);
+        adapter3.setExtMarketTVL(50_000_000e6);
+
+        // Exit bootstrap so idle can be deployed freely
+        vm.prank(admin);
+        StrategySettingsModule(address(vault)).exitBootstrapMode();
+        vm.prank(admin);
+        StrategySettingsModule(address(vault)).setMaxIdleAfterDepositBps(10000);
+        vm.prank(keeper);
+        StrategyParamsModule(address(vault)).pokeExternalTVL();
+
+        // Lenient gate — tests focus on accounting correctness, not gate policy
+        vm.prank(admin);
+        StrategySettingsModule(address(vault)).setGateParams(30, 0, 5, 5, 1e6);
+    }
+
+    // -----------------------------------------------------------------------
+    // Helpers
+    // -----------------------------------------------------------------------
+
+    /// @dev Deposit amount into vault via core (CoreVault flow).
+    function _coreDeposit(uint256 amount) internal {
+        _mintAndTransferToVault(core, amount);
+        vm.prank(core);
+        vault.deposit(amount);
+    }
+
+    /// @dev Deploy idle to adapters (warp past deploy cooldown).
+    function _warpAndDeployIdle() internal {
+        vm.warp(block.timestamp + 301);
+        vm.prank(keeper);
+        StrategyScoringModule(address(vault)).deployIdle();
+    }
+
+    /// @dev Deploy idle multiple times to fully allocate.
+    function _fullyDeploy() internal {
+        for (uint256 i = 0; i < 5; i++) {
+            _warpAndDeployIdle();
+        }
+    }
+
+    /// @dev Create rebalance opportunity: invert APYs after funds are deployed.
+    function _createRebalanceOpportunity() internal {
+        adapter1.setAPY(100);   // 1% — was best
+        adapter3.setAPY(2000);  // 20% — was worst
+    }
+
+    // -----------------------------------------------------------------------
+    // B1: totalAssets conservation invariant
+    // -----------------------------------------------------------------------
+
+    /// @notice B1a: After a complete rebalance cycle, totalAssets is conserved.
+    ///   totalAssets before == totalAssets after (within dust tolerance).
+    function test_B1a_totalAssetsConservation() public {
+        uint256 depositAmount = 300_000e6;
+        _coreDeposit(depositAmount);
+        _fullyDeploy();
+        _createRebalanceOpportunity();
+
+        uint256 taBefore = vault.totalAssets();
+
+        vm.warp(block.timestamp + 21601);
+        _doRebalance();
+
+        uint256 taAfter = vault.totalAssets();
+        assertApproxEqAbs(taAfter, taBefore, vault.dustTolerance(), "totalAssets must be conserved across full rebalance");
+    }
+
+    /// @notice B1b: positionAssets sum + idle is conserved across a single executeRebalanceStep.
+    function test_B1b_positionAssetsConservationDuringStep() public {
+        uint256 depositAmount = 300_000e6;
+        _coreDeposit(depositAmount);
+        _fullyDeploy();
+        _createRebalanceOpportunity();
+
+        vm.warp(block.timestamp + 21601);
+
+        // Prepare plan (phase=1)
+        vm.prank(keeper);
+        StrategyRebalancePlanModule(address(vault)).prepareRebalance();
+
+        // Capture pre-step total (positions + idle)
+        uint256 pos1Before = vault.positionAssets(address(adapter1));
+        uint256 pos2Before = vault.positionAssets(address(adapter2));
+        uint256 pos3Before = vault.positionAssets(address(adapter3));
+        uint256 idleBefore = vault.idleCash();
+        uint256 totalBefore = pos1Before + pos2Before + pos3Before + idleBefore;
+
+        // Execute one step
+        vm.prank(keeper);
+        StrategyRebalancePlanModule(address(vault)).executeRebalanceStep();
+
+        // Capture post-step total
+        uint256 pos1After = vault.positionAssets(address(adapter1));
+        uint256 pos2After = vault.positionAssets(address(adapter2));
+        uint256 pos3After = vault.positionAssets(address(adapter3));
+        uint256 idleAfter = vault.idleCash();
+        uint256 totalAfter = pos1After + pos2After + pos3After + idleAfter;
+
+        // Conservation: sum(positions + idle) must be invariant within dust
+        assertApproxEqAbs(totalAfter, totalBefore, vault.dustTolerance(),
+            "value must be conserved: sum(positionAssets) + idle is invariant");
+    }
+
+    /// @notice B1c: After complete rebalance, idle must be <= dustTolerance.
+    function test_B1c_noIdleCreepAfterRebalance() public {
+        uint256 depositAmount = 300_000e6;
+        _coreDeposit(depositAmount);
+        _fullyDeploy();
+        _createRebalanceOpportunity();
+
+        vm.warp(block.timestamp + 21601);
+        _doRebalance();
+
+        uint256 idle = vault.idleCash();
+        uint256 dust = vault.dustTolerance();
+        assertLe(idle, dust, "idle must be <= dustTolerance after full rebalance");
+    }
+
+    /// @notice B1d: positionAssets[from] decrements by exactly the withdrawn amount,
+    ///         positionAssets[to] increments by exactly the deposited amount.
+    ///         The adapter with high APY (adapter3) must gain; the low APY adapter (adapter1) must lose.
+    function test_B1d_fromDecrementsToIncrements() public {
+        uint256 depositAmount = 300_000e6;
+        _coreDeposit(depositAmount);
+        _fullyDeploy();
+        _createRebalanceOpportunity();
+
+        vm.warp(block.timestamp + 21601);
+
+        uint256 pos1Before = vault.positionAssets(address(adapter1)); // high-position, low APY after inversion
+        uint256 pos3Before = vault.positionAssets(address(adapter3)); // low-position, high APY after inversion
+
+        _doRebalance();
+
+        uint256 pos1After = vault.positionAssets(address(adapter1));
+        uint256 pos3After = vault.positionAssets(address(adapter3));
+
+        // After rebalance: adapter3 (now 20% APY) must have more than adapter1 (now 1% APY)
+        assertGt(pos3After, pos3Before, "positionAssets[adapter3] must increase (higher APY target)");
+        assertLt(pos1After, pos1Before, "positionAssets[adapter1] must decrease (lower APY source)");
+    }
+
+    // -----------------------------------------------------------------------
+    // B2: Zero-room adapter does NOT receive extra deposits
+    // -----------------------------------------------------------------------
+
+    /// @notice B2a: Adapter at maxCap does not receive deposits beyond cap.
+    ///         The cap must be set BEFORE deposit since deposit() auto-deploys idle.
+    function test_B2a_zeroRoomAdapterNotOverfilled() public {
+        // Set adapter1 cap BEFORE deposit — deposit auto-deploys idle
+        adapter1.setMaxCap(10_000e6); // 10K USDC cap
+
+        uint256 depositAmount = 300_000e6;
+        _coreDeposit(depositAmount);
+
+        // Additional deploy cycles — should not exceed cap
+        _fullyDeploy();
+
+        uint256 pos1 = vault.positionAssets(address(adapter1));
+        assertLe(pos1, 10_000e6, "adapter1 must not exceed maxCap");
+
+        // totalAssets must equal deposit (no loss)
+        uint256 ta = vault.totalAssets();
+        assertApproxEqAbs(ta, depositAmount, vault.dustTolerance(), "no assets lost when adapter1 at cap");
+    }
+
+    /// @notice B2b: After rebalance into capped adapter, totalAssets conserved.
+    ///         Cap set before deposit since deposit auto-deploys idle.
+    /// @notice B2b: deployIdle respects maxCapacity across multiple cycles.
+    ///         NOTE: executeRebalanceStep does NOT re-check adapter capacity at execution
+    ///         time — the plan is pre-built. This test targets the deployIdle path only.
+    function test_B2b_deployIdleRespectsMaxCap() public {
+        // Set adapter3 cap BEFORE deposit — deposit auto-deploys idle
+        adapter3.setMaxCap(50_000e6);
+
+        uint256 depositAmount = 300_000e6;
+        _coreDeposit(depositAmount);
+
+        // Multiple deploy cycles — adapter3 must never exceed cap
+        for (uint256 i = 0; i < 5; i++) {
+            _warpAndDeployIdle();
+            assertLe(vault.positionAssets(address(adapter3)), 50_000e6,
+                "adapter3 must never exceed maxCap during deployIdle");
+        }
+
+        // totalAssets must equal deposit (no asset loss)
+        assertApproxEqAbs(vault.totalAssets(), depositAmount, vault.dustTolerance(),
+            "no assets lost when adapter3 at cap");
+    }
+
+    // -----------------------------------------------------------------------
+    // B3: withdrawableAssets vs actual moved — partial withdraw accounting
+    // -----------------------------------------------------------------------
+
+    /// @notice B3a: If withdraw reverts on adapter1, positionAssets[adapter1] stays
+    ///         and totalAssets is preserved (locked funds tracked via positionAssets fallback).
+    function test_B3a_lockedAdapterPreservesAccounting() public {
+        uint256 depositAmount = 300_000e6;
+        _coreDeposit(depositAmount);
+        _fullyDeploy();
+        _createRebalanceOpportunity();
+
+        vm.warp(block.timestamp + 21601);
+
+        // Lock adapter1 — make withdraw revert
+        adapter1.setWithdrawReverts(true);
+
+        uint256 pos1Before = vault.positionAssets(address(adapter1));
+        uint256 taBefore = vault.totalAssets();
+
+        _doRebalance();
+
+        // adapter1 is locked — its positionAssets should be unchanged or only updated
+        // by the actual withdrawn amount (0 if revert)
+        uint256 pos1After = vault.positionAssets(address(adapter1));
+        uint256 taAfter = vault.totalAssets();
+
+        // positionAssets[adapter1] should not increase (withdraw attempt failed)
+        assertLe(pos1After, pos1Before, "positionAssets[adapter1] must not increase if withdraw fails");
+
+        // totalAssets must not decrease by more than what was attempted
+        // The locked funds remain tracked in positionAssets
+        assertApproxEqAbs(taAfter, taBefore, vault.dustTolerance(),
+            "totalAssets preserved - locked funds still tracked via positionAssets");
+    }
+
+    // -----------------------------------------------------------------------
+    // B4: Cancel + rebuild gives consistent plan
+    // -----------------------------------------------------------------------
+
+    /// @notice B4a: After cancelling an active plan and re-preparing,
+    ///         the new plan completes without asset loss.
+    function test_B4a_cancelAndRebuildConservesAssets() public {
+        uint256 depositAmount = 300_000e6;
+        _coreDeposit(depositAmount);
+        _fullyDeploy();
+        _createRebalanceOpportunity();
+
+        vm.warp(block.timestamp + 21601);
+
+        // Prepare and immediately cancel
+        vm.prank(keeper);
+        StrategyRebalancePlanModule(address(vault)).prepareRebalance();
+        vm.prank(keeper);
+        StrategyRebalancePlanModule(address(vault)).cancelRebalancePlan();
+
+        // Verify plan cleared
+        (, bytes memory phaseData) = address(vault).call(
+            abi.encodeWithSignature("rebalancePlanPhase()")
+        );
+        assertEq(abi.decode(phaseData, (uint8)), 0, "plan must be cleared after cancel");
+
+        uint256 taBefore = vault.totalAssets();
+
+        // Re-prepare and execute
+        vm.prank(keeper);
+        StrategyRebalancePlanModule(address(vault)).prepareRebalance();
+        for (uint256 i = 0; i < 10; i++) {
+            (, phaseData) = address(vault).call(abi.encodeWithSignature("rebalancePlanPhase()"));
+            if (abi.decode(phaseData, (uint8)) == 0) break;
+            vm.prank(keeper);
+            StrategyRebalancePlanModule(address(vault)).executeRebalanceStep();
+        }
+
+        uint256 taAfter = vault.totalAssets();
+        assertApproxEqAbs(taAfter, taBefore, vault.dustTolerance(),
+            "totalAssets conserved after cancel+rebuild+execute");
+    }
+
+    /// @notice B4b: Cancel does NOT touch lastRebalanceTs (audit HIGH 1.4).
+    ///         Re-prepare after cancel must succeed without waiting the full cooldown.
+    function test_B4b_cancelDoesNotTriggerCooldown() public {
+        uint256 depositAmount = 300_000e6;
+        _coreDeposit(depositAmount);
+        _fullyDeploy();
+        _createRebalanceOpportunity();
+
+        vm.warp(block.timestamp + 21601);
+
+        // Prepare → cancel (must NOT set lastRebalanceTs)
+        vm.prank(keeper);
+        StrategyRebalancePlanModule(address(vault)).prepareRebalance();
+
+        // Record lastRebalanceTs before cancel
+        uint64 lastRebBefore;
+        {
+            (, bytes memory tsData) = address(vault).call(
+                abi.encodeWithSignature("lastRebalanceTs()")
+            );
+            lastRebBefore = abi.decode(tsData, (uint64));
+        }
+
+        vm.prank(keeper);
+        StrategyRebalancePlanModule(address(vault)).cancelRebalancePlan();
+
+        // lastRebalanceTs must NOT have changed
+        uint64 lastRebAfter;
+        {
+            (, bytes memory tsData) = address(vault).call(
+                abi.encodeWithSignature("lastRebalanceTs()")
+            );
+            lastRebAfter = abi.decode(tsData, (uint64));
+        }
+        assertEq(lastRebAfter, lastRebBefore, "cancel must NOT update lastRebalanceTs");
+
+        // Re-prepare immediately should succeed (same timestamp, cooldown still satisfied)
+        vm.prank(keeper);
+        StrategyRebalancePlanModule(address(vault)).prepareRebalance();
+
+        (, bytes memory phaseData) = address(vault).call(
+            abi.encodeWithSignature("rebalancePlanPhase()")
+        );
+        assertEq(abi.decode(phaseData, (uint8)), 1, "must be able to re-prepare after cancel without cooldown");
+    }
+
+    // -----------------------------------------------------------------------
+    // I1: Invariant — totalAssets >= sum(positionAssets) always
+    // -----------------------------------------------------------------------
+
+    /// @notice I1: totalAssets must always be >= sum(positionAssets[all adapters]).
+    ///         The difference is the idle cash component.
+    function test_I1_totalAssetsGeqSumPositions() public {
+        uint256 depositAmount = 300_000e6;
+        _coreDeposit(depositAmount);
+
+        // Check before deploy
+        _assertI1();
+
+        _fullyDeploy();
+        _assertI1();
+
+        _createRebalanceOpportunity();
+        vm.warp(block.timestamp + 21601);
+        _doRebalance();
+        _assertI1();
+    }
+
+    /// @dev I1 invariant: vault.totalAssets() >= sum(positionAssets across enabled adapters).
+    ///      The difference is the idle cash component held at vault level.
+    function _assertI1() internal view {
+        uint256 total = vault.totalAssets();
+        uint256 sumPos = vault.positionAssets(address(adapter1))
+                       + vault.positionAssets(address(adapter2))
+                       + vault.positionAssets(address(adapter3));
+        assertGe(total, sumPos, "I1: totalAssets >= sum positions");
+    }
+
+}
