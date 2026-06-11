@@ -87,6 +87,11 @@ error PlanInvalidated();
 error TooManyAdapters();
 // === EIP-170 refactor (2026-04-22) — setter validation error (ParamsModule) ===
 error ParamOutOfRange();
+// === P0.7 — Safety Adapter Cap Tier (2026-06-11) — setter validation errors ===
+error AlreadySafetyFallback();
+error NotSafetyFallback();
+error InvalidFallbackCap();
+error AdapterNotEnabled();
 
 contract StrategyStorageLayout is AccessControl, Pausable, ReentrancyGuard {
     using SafeERC20 for IERC20Metadata;
@@ -372,6 +377,42 @@ contract StrategyStorageLayout is AccessControl, Pausable, ReentrancyGuard {
     uint16 public capDriftToleranceBps;
     // =======================================================================
 
+    // === P0.7 — Safety Adapter Cap Tier (2026-06-11) ========================
+    // Pierre architectural design. Audit ref: docs/SAFETY_ADAPTER_TIER.md
+    //
+    // This is a SECOND, governance-approved cap layer for adapters explicitly
+    // designated as liquidity-parking venues (e.g. Aave). NOT a cap bypass:
+    // the normal scoring path still uses the regular caps; only the safety
+    // overflow path and the mandate gate honour the fallback caps when an
+    // adapter is in the safety list.
+    //
+    // Backtest validation: iter-3b (10-iteration sweep) — TWR USD 5.62% vs
+    // Aave standalone 5.37% (+25 bps), Sharpe 0.729 vs Aave 0.33.
+    //
+    // Slot packing: uint16 + uint16 + uint32 = 64 bits in one slot.
+    uint16 public maxIdleBps;                       // 0 = disabled, max 2000
+    uint16 public targetSafetyMarginBps;            // 0 = disabled, max 2000
+    uint32 public mandateRedeployCooldownSeconds;   // 0 = disabled, max 30 days
+
+    /// @notice Ordered list of governance-approved safety venues (priority desc).
+    /// @dev Used by the safety overflow path and the cap drift mandate.
+    address[] public safetyFallbackAdapters;
+
+    /// @notice Per-adapter safety cap configuration.
+    /// @dev absCapBps == 0 means the adapter is NOT a safety fallback; this is
+    ///      the canonical "is safety adapter" predicate.
+    struct SafetyFallback {
+        uint16 absCapBps;   // 0 = adapter not safety; max 8000 (80%)
+        uint16 relCapBps;   // 0 = adapter not safety; max 10000 (100%)
+    }
+    mapping(address => SafetyFallback) public safetyFallback;
+
+    /// @notice Per-adapter timestamp of last rel-cap mandate trigger.
+    /// @dev Used by deploy-idle to skip non-safety adapters in cooldown.
+    ///      Stored separately from generic last-failure tracking for audit clarity.
+    mapping(address => uint64) public lastRelCapMandateTs;
+    // =======================================================================
+
     // ── Storage gap for future upgrades ─────────────────────────────────────
     // === P0.Q11+Q12A monitoring (2026-04-28) — performance snapshot tuple ===
     // FIX P0.Q11/Q12A: per-rebalance snapshot persisted in storage so off-chain
@@ -387,12 +428,18 @@ contract StrategyStorageLayout is AccessControl, Pausable, ReentrancyGuard {
     // Reduced from 8 to 7 after adding settingsModule_addr (REFACTOR-A, 2026-05-04).
     // Reduced from 9 to 8 after adding the snapshot tuple (one slot used).
     // Reduced from 10 to 9 (2026-04-24): capDriftToleranceBps for P0.4 mandate.
+    // Reduced from 6 to 2 (2026-06-11): P0.7 Safety Adapter Cap Tier consumed
+    //   4 slots:
+    //     - packed (maxIdleBps + targetSafetyMarginBps + mandateRedeployCooldownSeconds)
+    //     - safetyFallbackAdapters address[] head
+    //     - safetyFallback mapping head
+    //     - lastRelCapMandateTs mapping head
     // Earlier reductions (sprint 2026-04-22):
     //   - rebalancePlanModule_addr (1 slot, EIP-170 refactor)
     //   - packed uint16/uint32/uint32/uint8/uint8 block (1 slot)
     //   - isSeasoned mapping head (1 slot)
     //   - lastRiskScoreUpdateTs mapping head (1 slot)
-    uint256[6] private __gap;
+    uint256[2] private __gap;
 
     // ── Shared events ───────────────────────────────────────────────────────
 
@@ -515,6 +562,16 @@ contract StrategyStorageLayout is AccessControl, Pausable, ReentrancyGuard {
     event DegradedModeCleared(address indexed by, uint64 timestamp);
 
     event CapDriftMandate(address indexed adapter, uint256 currentBps, uint256 hardCeilingBps);
+
+    // === P0.7 — Safety Adapter Cap Tier events (2026-06-11) ===
+    event MaxIdleBpsUpdated(uint16 oldBps, uint16 newBps);
+    event TargetSafetyMarginUpdated(uint16 oldBps, uint16 newBps);
+    event MandateRedeployCooldownUpdated(uint32 oldSeconds, uint32 newSeconds);
+    event SafetyFallbackAdapterAdded(address indexed adapter, uint16 absCapBps, uint16 relCapBps);
+    event SafetyFallbackAdapterRemoved(address indexed adapter);
+    event SafetyFallbackCapsUpdated(address indexed adapter, uint16 oldAbs, uint16 newAbs, uint16 oldRel, uint16 newRel);
+    event SafetyOverflowDeployed(address indexed adapter, uint256 amount, uint256 idleBefore, uint256 idleAfter);
+    event RelCapMandateCooldownStarted(address indexed adapter, uint64 timestamp, uint32 cooldownSeconds);
 
     event AdapterSeasoned(address indexed adapter, uint256 positionAssets);
 
