@@ -105,35 +105,68 @@ A safety adapter that subsequently fails any of these criteria over its review
 window is recalled by the governance procedure in
 [GOVERNANCE_POLICY_TRACK.md](./GOVERNANCE_POLICY_TRACK.md) (GP-10).
 
-## 5. Default configuration
+## 5. Default Production Configuration (V9.2 — June 2026)
 
-The deployment script ships with the iter-3b setpoint:
+The deployment ships with the **dual-anchor** setpoint ratified after iter-4
+of the backtest sweep.
 
-```text
-capDriftToleranceBps          = 250        // 2.5%
-targetSafetyMarginBps         = 300        // 3%
-maxIdleBps                    = 500        // 5% TVL
-mandateRedeployCooldownSeconds = 259_200   // 3 days
-safetyFallbackAdapters        = [Aave v3]
-safetyFallback[Aave].absCapBps = 5000      // 50% strategy TVL
-safetyFallback[Aave].relCapBps = 5000      // 50% adapter extTVL
-```
+| Parameter                        | Value             | Rationale                                                                                    |
+|----------------------------------|-------------------|----------------------------------------------------------------------------------------------|
+| `safetyFallbackAdapters`         | [Aave V3, Compound V3] | Two deepest USDC venues on Arbitrum, both > $5B TVL across chains.                          |
+| `safetyFallback[Aave].absCapBps` | 5000 (50%)        | Established cap, validated through 882-day iter-3b backtest.                                  |
+| `safetyFallback[Aave].relCapBps` | 5000 (50%)        | Symmetric rel cap, consistent ceiling.                                                       |
+| `safetyFallback[Compound].absCapBps` | 4000 (40%)    | Conservative initial tier; eligible for elevation to 50% per GP-10 after 6 months operation. |
+| `safetyFallback[Compound].relCapBps` | 4000 (40%)    | Symmetric with abs cap.                                                                      |
+| `maxIdleBps`                     | 500 (5%)          | Threshold above which idle is routed through the overflow path.                              |
+| `targetSafetyMarginBps`          | 300 (3%)          | Buffer applied to cap-binding scoring targets — prevents the post-rebalance loop.            |
+| `mandateRedeployCooldownSeconds` | 259_200 (3 days)  | Per-adapter cooldown after mandate hit; safety adapters are exempt.                          |
+| `capDriftToleranceBps`           | 250 (2.5%)        | Mandate trigger band (unchanged from P0.4).                                                  |
 
-Backtest results at this setpoint (Realistic scenario, 2024-01-01 → 2026-05-31):
+### 5.1 Why Dual Anchor (Aave + Compound)
+
+In iter-4 of the backtest sweep, adding Compound V3 as a secondary safety
+adapter reduced idle drag from 8.28% (single Aave anchor) to ≈5.88% (dual
+anchor), improving gross TWR from 5.62% to **≈6.249%** (+62 bps gross). The two
+adapters share the safety-venue role with explicit priority ordering: Aave
+fills first to its 50% cap, then Compound to its 40% cap. Combined dual-anchor
+capacity of ~90% TVL is sufficient to absorb overflow even when 3-4
+opportunistic adapters are simultaneously in cooldown.
+
+Compound's initial cap is set conservatively at 40% (vs Aave's 50%) for two
+reasons:
+
+- Compound V3 has shorter Arbitrum production history than Aave V3.
+- Mandate frequency observed in backtest: Aave had 1 mandate hit in 882 days
+  (effectively zero), while Compound was historically part of the
+  opportunistic rotation. Elevation to 50/50 is gated on the GP-10 observation
+  criteria.
+
+### 5.2 Reference backtest numbers
+
+**iter-3b — single-anchor reference (882 days):**
 
 | Metric                        | Strategy | Aave standalone | Δ          |
 |------------------------------|---------:|----------------:|-----------:|
 | Annualized TWR (USD)         |    5.62% |           5.37% |  +25 bps   |
 | Sharpe ratio USD (SOFR rf)   |   +0.729 |          +0.33  |  +0.40     |
 | Max drawdown USD             |  -0.145% |         -0.153% |  +0.8 bps  |
-| Idle drag                    |    8.28% |        N/A      |     —      |
-| Adapter mandate recurrence p95 | 45.2 d  |        N/A      |     —      |
-| Rebalances (882 d)           |     356  |             0   |     —      |
+| Idle drag                    |    8.28% |             N/A |     —      |
+| Adapter mandate recurrence p95 | 45.2 d  |             N/A |     —      |
+| Rebalances                   |     356  |               0 |     —      |
 
-Strategy outperforms 5 of 6 single-market USDC lending adapters on
-risk-adjusted return (Aave +25 bps, Compound +13 bps, Fluid +188 bps,
-Euler v2 +341 bps, Morpho +383 bps). Dolomite outperforms standalone on
-nominal APY but is non-investable at scale ($1.75M median external TVL).
+iter-3b already outperforms 5 of 6 single-market adapters on risk-adjusted
+return. Dolomite outperforms standalone on nominal APY but is non-investable
+at scale ($1.75M median external TVL).
+
+**iter-4 — dual-anchor (pending production validation):**
+
+- Gross TWR USD: ≈6.249% (+62 bps over iter-3b single anchor)
+- Net TWR USD (5-year hypothetical hold, after 0.25% in/out + 6% perf fee): ≈5.83% (**+46 bps over Aave-net**)
+- Idle drag: ≈5.88% (−240 bps vs iter-3b)
+- Recurrence p95: maintained or improved vs iter-3b
+
+Final numbers will be substituted after the production validation backtest run
+using the deployed V9.2 setpoint. See `docs/strategy/USDC_LENDING_V92_ALLOCATOR_SPEC.md` for the allocator-facing summary.
 
 ## 6. Procedure to add or remove a safety adapter
 
