@@ -136,6 +136,21 @@ contract StrategyRebalanceGateModule is StrategyStorageLayout {
             if (fired) {
                 if (emitOnMandate) {
                     emit CapDriftMandate(hitAdapter, hitCurr, hardCeiling);
+                    // P0.7 (2026-06-11) — Per-adapter mandate cooldown.
+                    // ONLY for non-safety adapters: safety adapters are exempt
+                    // from cooldown by design (their mandate ceiling is the
+                    // fallback cap, not the normal cap; if they hit it, the
+                    // overflow path will naturally back off via the
+                    // fbCeiling - current check).
+                    if (safetyFallback[hitAdapter].absCapBps == 0) {
+                        uint32 cd = mandateRedeployCooldownSeconds;
+                        if (cd > 0) {
+                            lastRelCapMandateTs[hitAdapter] = uint64(block.timestamp);
+                            emit RelCapMandateCooldownStarted(
+                                hitAdapter, uint64(block.timestamp), cd
+                            );
+                        }
+                    }
                 }
                 // Mandate fired: accept plan unconditionally. netBenefitBps = 0
                 // because the economic justification is protection, not yield.
@@ -197,42 +212,69 @@ contract StrategyRebalanceGateModule is StrategyStorageLayout {
         uint256 hitCurrent,
         uint256 hardCeiling
     ) {
-        // Absolute ceiling = maxExp * (1e4 + capDriftToleranceBps) / 1e4
-        // No overflow risk: maxExp <= tvl (adapterMaxExposureBps <= 1e4
-        // enforced by setter), and tvl is in USDC 6-decimal units (orders of
-        // magnitude below uint256 max).
-        uint256 maxExp = (uint256(adapterMaxExposureBps) * tvl) / 1e4;
-        hardCeiling = (maxExp * (1e4 + uint256(capDriftToleranceBps))) / 1e4;
+        // P0.7 (iter-3b 2026-06-11) — Fallback-aware mandate.
+        //
+        // For safety-fallback adapters, the ceiling becomes the (governance-
+        // approved, elevated) fallback cap instead of the normal abs/rel cap.
+        // Without this, the safety overflow path would push e.g. Aave above
+        // 30% and the mandate would immediately yank it back — exactly the
+        // doomed-rotation loop diagnosed in iter-3 of the backtest sweep.
+        //
+        // Each adapter is now scored against its OWN ceiling tier:
+        //   - non-safety: absHard  = (adapterMaxExposureBps * tvl) × (1+tol)
+        //                 relHard  = (dynRel * extTVL)              × (1+tol)
+        //   - safety:     absHard  = (fbAbsCapBps     * tvl)        × (1+tol)
+        //                 relHard  = (fbRelCapBps     * extTVL)     × (1+tol)
+        //                 (rel uses fallback ONLY when fbRelCapBps > 0;
+        //                  otherwise falls back to the dynamic rel band.)
+        //
+        // The default-return hardCeiling (when no adapter fires) is the
+        // legacy NORMAL absolute hard ceiling — preserved for callers that
+        // read the field on the false-path (none today, but defensive).
+        uint16 normalAbsCapBps = adapterMaxExposureBps;
+        uint256 normalMaxExp   = (uint256(normalAbsCapBps) * tvl) / 1e4;
+        hardCeiling = (normalMaxExp * (1e4 + uint256(capDriftToleranceBps))) / 1e4;
 
         uint16 maxRelGov = maxRelativeExposureBps;
         uint16 tolBps    = capDriftToleranceBps;
-
         uint256 n = enabledAdapters.length;
+
         for (uint256 i = 0; i < n;) {
             address a = enabledAdapters[i];
             uint256 curr = positionAssets[a];
 
-            // (1) Absolute cap drift
-            if (curr > hardCeiling) {
-                return (true, a, curr, hardCeiling);
+            // === Resolve the per-adapter ceiling tier ===
+            SafetyFallback memory sf = safetyFallback[a];
+            bool isSafety = (sf.absCapBps != 0);
+
+            // (1) Absolute cap drift — fallback abs cap for safety adapters.
+            uint256 absCapBpsEff = isSafety ? uint256(sf.absCapBps) : uint256(normalAbsCapBps);
+            uint256 absMaxExp   = (absCapBpsEff * tvl) / 1e4;
+            uint256 absHard     = (absMaxExp * (1e4 + uint256(tolBps))) / 1e4;
+            if (curr > absHard) {
+                return (true, a, curr, absHard);
             }
 
-            // (2) Relative cap drift (P0.5 — 2026-04-25).
-            //   When the rel cap is binding (effRel > 0 and the resulting
-            //   relCap is smaller than the absolute cap), an adapter can be
-            //   below absHardCeiling yet above relHardCeiling. Without this
-            //   branch, the over-rel-cap state persists indefinitely.
+            // (2) Relative cap drift (P0.5).
+            // Safety adapter with explicit fbRelCapBps > 0 uses fallback rel.
+            // Safety adapter with fbRelCapBps == 0 falls back to dynamic rel
+            // (the "abs-only safety" mode — uncommon but supported).
             uint256 extTVL = cachedExternalTVL[a];
             if (extTVL > 0 && curr > 0) {
-                uint16 dynRel = _gateRelativeCapBps(extTVL);
-                uint16 effRel = (maxRelGov > 0 && maxRelGov < dynRel)
-                    ? maxRelGov : dynRel;
+                uint16 effRel;
+                if (isSafety && sf.relCapBps > 0) {
+                    effRel = sf.relCapBps;
+                } else {
+                    uint16 dynRel = _gateRelativeCapBps(extTVL);
+                    effRel = (maxRelGov > 0 && maxRelGov < dynRel)
+                        ? maxRelGov : dynRel;
+                }
                 if (effRel > 0) {
                     uint256 relCap = (uint256(effRel) * extTVL) / 1e4;
-                    uint256 relHardCeiling =
+                    uint256 relHard =
                         (relCap * (1e4 + uint256(tolBps))) / 1e4;
-                    if (curr > relHardCeiling) {
-                        return (true, a, curr, relHardCeiling);
+                    if (curr > relHard) {
+                        return (true, a, curr, relHard);
                     }
                 }
             }
