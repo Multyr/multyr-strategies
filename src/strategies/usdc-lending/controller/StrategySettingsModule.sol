@@ -22,7 +22,9 @@ import {
     Unauthorized, Frozen, InvalidAdapter, WeightsSumInvalid,
     MinAdaptersTooLow, RiskScoreTooHigh, DurationTooLong, BackfillTooLarge,
     BootstrapInactive, InvalidInput, ParamOutOfRange, ZeroAmount,
-    InsufficientBalance, ZeroAddress
+    InsufficientBalance, ZeroAddress,
+    // P0.7 — Safety Adapter Cap Tier setter errors.
+    AlreadySafetyFallback, NotSafetyFallback, InvalidFallbackCap, AdapterNotEnabled
 } from "./StrategyStorageLayout.sol";
 
 error InvalidQuarantineThreshold();
@@ -501,6 +503,130 @@ contract StrategySettingsModule is StrategyStorageLayout {
         if (!(_regime <= 2)) revert ParamOutOfRange(); // "invalid regime"
         currentRegime = _regime;
         emit RegimeChanged(_regime);
+    }
+
+    // ══════════════════════════════════════════════════════════════════════
+    //  P0.7 — SAFETY ADAPTER CAP TIER (2026-06-11)
+    //  Governance setters + helper view.
+    //  Ref: docs/SAFETY_ADAPTER_TIER.md, memory.md sessione 13.
+    // ══════════════════════════════════════════════════════════════════════
+
+    /// @notice Set the max-idle threshold above which the safety overflow path activates.
+    /// @param _bps bps of TVL. 0 disables overflow. Max 2000 (20%).
+    function setMaxIdleBps(uint16 _bps)
+        external
+        onlyRoleOrRevert(DEFAULT_ADMIN_ROLE)
+    {
+        if (_bps > 2000) revert ParamOutOfRange();
+        emit MaxIdleBpsUpdated(maxIdleBps, _bps);
+        maxIdleBps = _bps;
+    }
+
+    /// @notice Set the target safety margin applied when abs/rel cap binds in target_allocations.
+    /// @param _bps bps. 0 disables margin (legacy). Max 2000 (20%).
+    function setTargetSafetyMargin(uint16 _bps)
+        external
+        onlyRoleOrRevert(DEFAULT_ADMIN_ROLE)
+    {
+        if (_bps > 2000) revert ParamOutOfRange();
+        emit TargetSafetyMarginUpdated(targetSafetyMarginBps, _bps);
+        targetSafetyMarginBps = _bps;
+    }
+
+    /// @notice Set the per-adapter cooldown after a rel-cap mandate fires.
+    /// @param _seconds seconds. 0 disables cooldown. Max 30 days.
+    function setMandateRedeployCooldown(uint32 _seconds)
+        external
+        onlyRoleOrRevert(DEFAULT_ADMIN_ROLE)
+    {
+        if (_seconds > 30 days) revert ParamOutOfRange();
+        emit MandateRedeployCooldownUpdated(mandateRedeployCooldownSeconds, _seconds);
+        mandateRedeployCooldownSeconds = _seconds;
+    }
+
+    /// @notice Add an adapter to the ordered safety-fallback list with its dedicated caps.
+    /// @dev Reverts if adapter is already in the list. Requires absCapBps > 0 (the
+    ///      canonical "is safety adapter" predicate). relCapBps may be 0, which means
+    ///      "safety adapter without explicit rel cap override — use dynamic rel cap".
+    /// @param adapter Adapter address. Must be registered and currently enabled.
+    /// @param absCapBps Fallback absolute cap, 1..8000 (0.01%..80% of strategy TVL).
+    /// @param relCapBps Fallback relative cap, 0..10000 (0%..100% of adapter extTVL).
+    function addSafetyFallbackAdapter(
+        address adapter,
+        uint16 absCapBps,
+        uint16 relCapBps
+    ) external onlyRoleOrRevert(DEFAULT_ADMIN_ROLE) {
+        if (adapter == address(0)) revert ZeroAddress();
+        if (!isAdapter[adapter]) revert InvalidAdapter();
+        if (!enabled[adapter]) revert AdapterNotEnabled();
+        if (absCapBps == 0 || absCapBps > 8000) revert InvalidFallbackCap();
+        if (relCapBps > 10000) revert InvalidFallbackCap();
+        if (safetyFallback[adapter].absCapBps != 0) revert AlreadySafetyFallback();
+
+        safetyFallback[adapter] = SafetyFallback({
+            absCapBps: absCapBps,
+            relCapBps: relCapBps
+        });
+        safetyFallbackAdapters.push(adapter);
+        emit SafetyFallbackAdapterAdded(adapter, absCapBps, relCapBps);
+    }
+
+    /// @notice Update the fallback caps of an already-registered safety adapter.
+    /// @param adapter Adapter address. Must already be a safety fallback.
+    /// @param absCapBps New absolute fallback cap, 1..8000.
+    /// @param relCapBps New relative fallback cap, 0..10000.
+    function updateSafetyFallbackCaps(
+        address adapter,
+        uint16 absCapBps,
+        uint16 relCapBps
+    ) external onlyRoleOrRevert(DEFAULT_ADMIN_ROLE) {
+        SafetyFallback storage sf = safetyFallback[adapter];
+        if (sf.absCapBps == 0) revert NotSafetyFallback();
+        if (absCapBps == 0 || absCapBps > 8000) revert InvalidFallbackCap();
+        if (relCapBps > 10000) revert InvalidFallbackCap();
+
+        emit SafetyFallbackCapsUpdated(
+            adapter, sf.absCapBps, absCapBps, sf.relCapBps, relCapBps
+        );
+        sf.absCapBps = absCapBps;
+        sf.relCapBps = relCapBps;
+    }
+
+    /// @notice Remove an adapter from the safety-fallback list. Position is preserved
+    ///         on-chain — only the cap tier override is dropped, after which normal
+    ///         caps apply again.
+    function removeSafetyFallbackAdapter(address adapter)
+        external
+        onlyRoleOrRevert(DEFAULT_ADMIN_ROLE)
+    {
+        if (safetyFallback[adapter].absCapBps == 0) revert NotSafetyFallback();
+
+        // Compact-remove from array (swap-pop pattern).
+        uint256 len = safetyFallbackAdapters.length;
+        for (uint256 i = 0; i < len; i++) {
+            if (safetyFallbackAdapters[i] == adapter) {
+                if (i != len - 1) {
+                    safetyFallbackAdapters[i] = safetyFallbackAdapters[len - 1];
+                }
+                safetyFallbackAdapters.pop();
+                break;
+            }
+        }
+        delete safetyFallback[adapter];
+        emit SafetyFallbackAdapterRemoved(adapter);
+    }
+
+    /// @notice Canonical predicate: is this adapter currently a safety fallback?
+    /// @dev safetyFallback[a].absCapBps != 0 is the on-chain marker; relCapBps == 0
+    ///      is a valid configuration (rel cap defaults to dynamic).
+    function isSafetyFallbackAdapter(address adapter) public view returns (bool) {
+        return safetyFallback[adapter].absCapBps != 0;
+    }
+
+    /// @notice Length of the ordered safety-fallback list. Useful for off-chain
+    ///         iteration without manual storage probing.
+    function safetyFallbackAdaptersLength() external view returns (uint256) {
+        return safetyFallbackAdapters.length;
     }
 
     // ══════════════════════════════════════════════════════════════════════
