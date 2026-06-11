@@ -572,6 +572,10 @@ contract StrategyStorageLayout is AccessControl, Pausable, ReentrancyGuard {
     event SafetyFallbackCapsUpdated(address indexed adapter, uint16 oldAbs, uint16 newAbs, uint16 oldRel, uint16 newRel);
     event SafetyOverflowDeployed(address indexed adapter, uint256 amount, uint256 idleBefore, uint256 idleAfter);
     event RelCapMandateCooldownStarted(address indexed adapter, uint64 timestamp, uint32 cooldownSeconds);
+    /// @notice Emitted when a safety-fallback promotion clears an active mandate cooldown.
+    /// @dev Governance-trusted override — the promotion signal supersedes accumulated
+    ///      mandate state. Off-chain observability for the cooldown lifecycle.
+    event RelCapMandateCooldownCleared(address indexed adapter, address indexed clearedBy, uint64 priorTs);
 
     event AdapterSeasoned(address indexed adapter, uint256 positionAssets);
 

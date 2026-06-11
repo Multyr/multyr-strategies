@@ -563,6 +563,17 @@ contract StrategySettingsModule is StrategyStorageLayout {
         if (relCapBps > 10000) revert InvalidFallbackCap();
         if (safetyFallback[adapter].absCapBps != 0) revert AlreadySafetyFallback();
 
+        // P0.7 (post-audit H-03 fix 2026-06-12) — Clear any active mandate cooldown
+        // on promotion. Governance-trusted override: the promotion signal supersedes
+        // accumulated mandate state. Without this, a recently-mandated adapter would
+        // retain its dormant cooldown timestamp; if later demoted via
+        // removeSafetyFallbackAdapter, the cooldown would reactivate retroactively.
+        uint64 priorMandateTs = lastRelCapMandateTs[adapter];
+        if (priorMandateTs != 0) {
+            delete lastRelCapMandateTs[adapter];
+            emit RelCapMandateCooldownCleared(adapter, msg.sender, priorMandateTs);
+        }
+
         safetyFallback[adapter] = SafetyFallback({
             absCapBps: absCapBps,
             relCapBps: relCapBps
