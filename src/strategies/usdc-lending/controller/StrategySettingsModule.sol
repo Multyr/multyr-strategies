@@ -559,6 +559,11 @@ contract StrategySettingsModule is StrategyStorageLayout {
         if (adapter == address(0)) revert ZeroAddress();
         if (!isAdapter[adapter]) revert InvalidAdapter();
         if (!enabled[adapter]) revert AdapterNotEnabled();
+        // P0.7 (post-audit L-01 fix 2026-06-12) -- Quarantined adapters must not be
+        // promoted to safety. Quarantine is the protocol's circuit breaker for
+        // adapters with consecutive operational failures; bypassing it via safety
+        // promotion would defeat the failure-isolation purpose.
+        if (quarantined[adapter]) revert InvalidAdapter();
         if (absCapBps == 0 || absCapBps > 8000) revert InvalidFallbackCap();
         if (relCapBps > 10000) revert InvalidFallbackCap();
         if (safetyFallback[adapter].absCapBps != 0) revert AlreadySafetyFallback();
