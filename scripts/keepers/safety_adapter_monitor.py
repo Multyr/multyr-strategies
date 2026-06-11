@@ -48,10 +48,29 @@ from typing import Any
 # ─── Configuration ─────────────────────────────────────────────────────────
 
 DEFAULT_LOOKBACK_BLOCKS = 50_000          # ~1 week at Arbitrum block times
-ALERT_CAP_UTILISATION_BPS = 9_500          # 95% of fbCap
+ALERT_CAP_UTILISATION_BPS = 9_500          # 95% of fbCap (legacy single-anchor default)
 ALERT_MANDATE_RATE_PER_WEEK = 10
 ALERT_COOLDOWN_SATURATION_PCT = 0.50
 IDLE_DRAG_ALERT_OFFSET_BPS = 200            # alert if 24h avg > maxIdleBps + 200
+
+# === P0.7 V9.2 dual-anchor expectations ===================================
+# What the monitor expects to find on-chain after the production setpoint
+# is applied. Use these as the canonical reference; any deviation triggers
+# a CONFIG alert (separate from the runtime alerts above).
+SAFETY_ADAPTERS_EXPECTED = {
+    "aave_v3_usdc":     {"abs_cap_bps": 5000, "rel_cap_bps": 5000},
+    "compound_v3_usdc": {"abs_cap_bps": 4000, "rel_cap_bps": 4000},
+}
+
+# Per-adapter alert thresholds — tighter than the generic 9500 because the
+# dual-anchor topology distributes load, so any one adapter approaching its
+# fallback cap is a stronger early-warning signal.
+ALERT_THRESHOLDS = {
+    "aave_p95_max_bps":     4750,   # Aave p95 > 47.5% of TVL (5 bps below 50% cap)
+    "compound_p95_max_bps": 3750,   # Compound p95 > 37.5% of TVL (5 bps below 40% cap)
+    "idle_drag_max_pct":    8.0,    # vs expected ~5.88% in iter-4
+    "non_safety_mandate_weekly_max": 10,  # any non-safety > 10 mandate/week
+}
 
 
 # ─── Output schema ─────────────────────────────────────────────────────────
