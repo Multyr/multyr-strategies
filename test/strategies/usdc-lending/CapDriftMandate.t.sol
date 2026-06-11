@@ -996,6 +996,44 @@ contract CapDrift_D1f_SafetyAdapterCapTier is CapDriftBase {
         assertEq(relC, 0, "quarantined adapter must not become safety (relCap)");
     }
 
+    /// @notice (10) H-03 fix verification: promoting an adapter to safety
+    ///         clears any dormant rel-cap mandate cooldown and emits the
+    ///         observability event. Subsequent demotion does NOT reactivate
+    ///         the cooldown (the storage slot is permanently zeroed).
+    function test_D1f_10_promotion_clears_active_cooldown() public {
+        address adapter = address(adapterC); // non-safety, opportunistic
+
+        // Force a mandate cooldown timestamp on adapterC (simulating a prior
+        // mandate event that stamped lastRelCapMandateTs).
+        uint64 fakeTs = uint64(block.timestamp);
+        stdstore.target(address(vault)).sig("lastRelCapMandateTs(address)")
+            .with_key(adapter).checked_write(uint256(fakeTs));
+        assertEq(vault.lastRelCapMandateTs(adapter), fakeTs, "setup: cooldown timestamp set");
+
+        // Promote to safety. Must clear cooldown and emit the lifecycle event.
+        vm.prank(admin);
+        vm.expectEmit(true, true, false, true);
+        emit RelCapMandateCooldownCleared(adapter, admin, fakeTs);
+        StrategySettingsModule(address(vault)).addSafetyFallbackAdapter(
+            adapter, 4000, 4000
+        );
+
+        // Post-promotion: timestamp must be zeroed.
+        assertEq(
+            vault.lastRelCapMandateTs(adapter), 0,
+            "cooldown timestamp MUST be cleared on promotion"
+        );
+
+        // Demotion: cooldown must NOT reactivate retroactively. This is the
+        // crux of the H-03 attack vector that the fix removes.
+        vm.prank(admin);
+        StrategySettingsModule(address(vault)).removeSafetyFallbackAdapter(adapter);
+        assertEq(
+            vault.lastRelCapMandateTs(adapter), 0,
+            "post-demotion: cooldown MUST stay cleared (no retroactive reactivation)"
+        );
+    }
+
     // Re-declare the event so vm.expectEmit can match it. Must match the
     // signature in StrategyStorageLayout.sol bit-for-bit.
     event RelCapMandateCooldownCleared(address indexed adapter, address indexed clearedBy, uint64 priorTs);
