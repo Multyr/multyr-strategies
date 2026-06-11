@@ -170,6 +170,38 @@ using the deployed V9.2 setpoint. See `docs/strategy/USDC_LENDING_V92_ALLOCATOR_
 
 ## 6. Procedure to add or remove a safety adapter
 
+**Side effect — cooldown state (audit finding H-03, fixed 2026-06-12).**
+Calling `addSafetyFallbackAdapter` on an adapter that has an active rel-cap
+mandate cooldown will **CLEAR** that cooldown (`lastRelCapMandateTs[adapter] = 0`)
+and emit a `RelCapMandateCooldownCleared(adapter, msg.sender, priorTs)` event.
+
+This is intentional: governance promotion to safety status is a stronger trust
+signal than the prior mandate trigger. The event provides off-chain
+observability for the lifecycle.
+
+For audit clarity: if a Timelock-controlled governance wants to **preserve**
+the mandate cooldown semantic (e.g. during emergency demotion-then-repromotion
+of a still-suspect adapter), the explicit pattern is:
+
+1. `removeSafetyFallbackAdapter(adapter)` — explicit demotion.
+2. Wait `mandateRedeployCooldownSeconds` for natural expiry.
+3. `addSafetyFallbackAdapter(adapter, ...)` — promotion AFTER cooldown elapsed.
+
+This makes the cooldown lifecycle observable on-chain rather than implicit,
+because the demotion + repromotion sequence is two separate Timelock txns
+each emitting their own events.
+
+**Other input validation (`addSafetyFallbackAdapter` reverts):**
+- `ZeroAddress` if `adapter == address(0)`.
+- `InvalidAdapter` if `!isAdapter[adapter]` OR `quarantined[adapter]`
+  (audit finding L-01, fixed 2026-06-12 — quarantine is the protocol
+  circuit breaker and must NOT be bypassable via safety promotion).
+- `AdapterNotEnabled` if `!enabled[adapter]`.
+- `InvalidFallbackCap` if `absCapBps == 0`, `absCapBps > 8000`, or `relCapBps > 10000`.
+- `AlreadySafetyFallback` if `safetyFallback[adapter].absCapBps != 0`.
+
+
+
 Both directions are gated by `DEFAULT_ADMIN_ROLE` and go through the timelock
 configured at deployment. The atomic on-chain operations:
 
