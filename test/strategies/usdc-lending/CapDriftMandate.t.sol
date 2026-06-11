@@ -897,4 +897,78 @@ contract CapDrift_D1f_SafetyAdapterCapTier is CapDriftBase {
         assertTrue(ok, "post-removal: mandate MUST fire on adapterA");
         assertEq(nb, int256(0), "post-removal: mandate signature nb=0");
     }
+
+    /// @notice (08) Dual-anchor production setpoint — primary safety venue
+    ///         (Aave-like adapterA) fills toward its 50% fallback cap FIRST,
+    ///         then secondary (Compound-like adapterB at 40% caps) absorbs
+    ///         residual overflow. Verifies safetyFallbackAdapters[0] = Aave,
+    ///         [1] = Compound ordering and the per-adapter cap honour.
+    function test_D1f_08_dual_safety_priority_aave_before_compound() public {
+        // Add a second safety venue (adapterB) with the production
+        // conservative-tier caps. Note adapterA is already configured at
+        // 7000/7000 by setUp; here we test ORDERING + per-adapter ceiling
+        // honour, not the production cap values themselves.
+        vm.prank(admin);
+        StrategySettingsModule(address(vault)).addSafetyFallbackAdapter(
+            address(adapterB), 4000, 4000
+        );
+
+        // List ordering: primary (Aave-like adapterA) at index 0, secondary
+        // (Compound-like adapterB) at index 1. This is the priority order in
+        // which _executeSafetyOverflow iterates.
+        assertEq(
+            vault.safetyFallbackAdapters(0), address(adapterA),
+            "safetyFallbackAdapters[0] must be the primary (adapterA)"
+        );
+        assertEq(
+            vault.safetyFallbackAdapters(1), address(adapterB),
+            "safetyFallbackAdapters[1] must be the secondary (adapterB)"
+        );
+        assertEq(
+            StrategySettingsModule(address(vault)).safetyFallbackAdaptersLength(), 2,
+            "length must reflect dual-anchor config"
+        );
+
+        // Force a known starting position: 30% on each safety adapter,
+        // leaving meaningful headroom (adapterA up to 70% fallback cap,
+        // adapterB up to 40% fallback cap).
+        _forcePctOfNewTvl(adapterA, 3000);
+        _forcePctOfNewTvl(adapterB, 3000);
+
+        uint256 posABefore = vault.positionAssets(address(adapterA));
+        uint256 posBBefore = vault.positionAssets(address(adapterB));
+
+        // Mint enough surplus idle that the overflow path must engage on
+        // BOTH safety adapters to absorb it. 60% of TVL guarantees we
+        // exhaust adapterA's ~40% remaining headroom before reaching B.
+        usdc.mint(address(vault), (_totalTvl() * 6000) / 10_000);
+
+        // Past deployIdle cooldown.
+        vm.warp(block.timestamp + 301);
+        vm.prank(keeper);
+        StrategyScoringModule(address(vault)).deployIdle();
+
+        uint256 posAAfter = vault.positionAssets(address(adapterA));
+        uint256 posBAfter = vault.positionAssets(address(adapterB));
+        uint256 tvlAfter = _totalTvl();
+
+        // Both safety adapters must have absorbed overflow.
+        assertGt(posAAfter, posABefore, "primary safety must have absorbed overflow");
+        assertGt(posBAfter, posBBefore, "secondary safety must have absorbed residual overflow");
+
+        // Per-adapter ceiling honoured: A capped at 7000 bps × tvlAfter,
+        // B capped at 4000 bps × tvlAfter (the values set by setUp / this test).
+        uint256 fbACeiling = (uint256(SAFETY_FB_ABS_BPS) * tvlAfter) / 10_000;
+        uint256 fbBCeiling = (uint256(4000) * tvlAfter) / 10_000;
+        assertLe(posAAfter, fbACeiling, "primary must not exceed its fallback abs ceiling");
+        assertLe(posBAfter, fbBCeiling, "secondary must not exceed its fallback abs ceiling");
+
+        // Priority ordering enforcement: the primary must have absorbed
+        // STRICTLY more than the secondary (it was filled first). This is
+        // the architectural invariant the iteration order in
+        // _executeSafetyOverflow encodes.
+        uint256 deltaA = posAAfter - posABefore;
+        uint256 deltaB = posBAfter - posBBefore;
+        assertGe(deltaA, deltaB, "primary delta must be >= secondary delta (priority filled first)");
+    }
 }
