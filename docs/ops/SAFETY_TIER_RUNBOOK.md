@@ -6,6 +6,23 @@
 
 ## RB-01: Add a safety adapter
 
+### Initial deployment
+
+The V9.2 production launch ships with TWO safety adapters configured at deploy:
+
+- Aave V3 USDC: `50/50` caps (primary, `safetyFallbackAdapters[0]`)
+- Compound V3 USDC: `40/40` caps (secondary, `safetyFallbackAdapters[1]`)
+
+No post-deploy `addSafetyFallbackAdapter` calls are needed at launch — the
+setpoint is part of the deployment-team configuration sequence documented in
+[`script/README_PRODUCTION_SETPOINT.md`](../../script/README_PRODUCTION_SETPOINT.md).
+
+Future safety-adapter additions (e.g. Spark protocol if/when deployed on
+Arbitrum, or a hypothetical USDC-native venue) follow the **standard RB-01
+procedure** below.
+
+### Standard procedure (post-launch additions)
+
 **Prerequisite check** (manual, prior to proposal):
 
 - Adapter satisfies the eligibility criteria of
