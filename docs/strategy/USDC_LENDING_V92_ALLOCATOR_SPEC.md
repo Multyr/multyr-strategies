@@ -15,7 +15,15 @@ elevated cap for Aave v3 USDC, enabling the protocol to park overflow liquidity
 into the deepest, lowest-risk venue without weakening the per-adapter risk
 framework on the other six.
 
-**Backtest results — Realistic scenario, 2024-01-01 → 2026-05-31 (882 days):**
+## Performance — Backtest Validation
+
+> **Note**: numbers below reflect iter-3b backtest with single-anchor Aave
+> configuration. Production setpoint V9.2 uses **DUAL-anchor** (Aave +
+> Compound) which is expected to improve metrics significantly (gross TWR
+> ~6.249%, idle drag ~5.88%). Production validation backtest is pending —
+> this section will be updated upon completion.
+
+### iter-3b reference — single-anchor Aave, 2024-01-01 → 2026-05-31 (882 days)
 
 | Metric                          | Strategy   | Aave v3 standalone | Equal-weight*  |
 |--------------------------------|-----------:|-------------------:|---------------:|
@@ -31,6 +39,23 @@ framework on the other six.
 Strategy outperforms 5 of 6 individually-investable single-market adapters on
 risk-adjusted return. Dolomite USDC nominal APY 10.6% is higher, but its
 $1.75M median external TVL makes it non-investable at $1M+ scale.
+
+### iter-4 dual-anchor projection (pending production validation)
+
+| Metric                                | Expected value | Δ vs iter-3b   | Δ vs Aave net  |
+|--------------------------------------|---------------:|---------------:|---------------:|
+| Gross TWR USD                         |     **~6.249%** | +62 bps        | +88 bps        |
+| Net TWR USD (2.42y hold, 0.25% in/out + 6% perf) | ~5.72% | +50-55 bps | +35 bps       |
+| Net TWR USD (5-year hypothetical hold)| **~5.83%**     | +60 bps        | **+46 bps**    |
+| Idle drag                             |        ~5.88%  | −240 bps       | n/a            |
+| Recurrence p95 (days between same-adapter mandate) | ≥ 45 days | maintained | n/a       |
+
+Final numbers will be substituted after the production validation backtest
+run using the deployed V9.2 setpoint. The performance improvement comes
+primarily from idle-drag reduction: doubling the safety capacity from
+~50% TVL (Aave alone) to ~90% TVL (Aave 50% + Compound 40%) means the
+strategy can absorb a 70% surge of idle deposits without leaving capital
+unproductive in the vault contract.
 
 ## Architecture
 
