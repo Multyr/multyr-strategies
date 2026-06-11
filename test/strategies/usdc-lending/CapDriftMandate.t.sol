@@ -971,4 +971,32 @@ contract CapDrift_D1f_SafetyAdapterCapTier is CapDriftBase {
         uint256 deltaB = posBAfter - posBBefore;
         assertGe(deltaA, deltaB, "primary delta must be >= secondary delta (priority filled first)");
     }
+
+    /// @notice (09) L-01 fix verification: a quarantined adapter cannot be
+    ///         promoted to the safety tier. The setter must revert with
+    ///         InvalidAdapter, leaving the safety configuration untouched.
+    function test_D1f_09_quarantined_adapter_promotion_reverts() public {
+        // adapterC is non-safety in this harness. Force it into quarantine
+        // by writing the quarantined[adapter] mapping directly (mocking the
+        // adapter-failure path which would otherwise require N consecutive
+        // operational failures).
+        stdstore.target(address(vault)).sig("quarantined(address)")
+            .with_key(address(adapterC)).checked_write(true);
+        assertTrue(vault.quarantined(address(adapterC)), "setup: adapterC quarantined");
+
+        vm.prank(admin);
+        vm.expectRevert(); // InvalidAdapter — quarantined branch
+        StrategySettingsModule(address(vault)).addSafetyFallbackAdapter(
+            address(adapterC), 5000, 5000
+        );
+
+        // Confirm safety set was NOT mutated by the failed call.
+        (uint16 absC, uint16 relC) = vault.safetyFallback(address(adapterC));
+        assertEq(absC, 0, "quarantined adapter must not become safety (absCap)");
+        assertEq(relC, 0, "quarantined adapter must not become safety (relCap)");
+    }
+
+    // Re-declare the event so vm.expectEmit can match it. Must match the
+    // signature in StrategyStorageLayout.sol bit-for-bit.
+    event RelCapMandateCooldownCleared(address indexed adapter, address indexed clearedBy, uint64 priorTs);
 }
