@@ -457,6 +457,76 @@ contract StrategyScoringModule is StrategyStorageLayout {
                 emit AdapterSeasoned(a, positionAssets[a]);
             }
         }
+
+        // === SAFETY OVERFLOW (P0.7 — 2026-06-11) ===========================
+        // After the normal allocator plan completes, if idle still exceeds
+        // maxIdleBps × tvl, route the excess to the governance-approved
+        // safety adapters using their elevated fallback caps. This is the
+        // ONLY path that can push a safety adapter above its normal cap.
+        // No-op when maxIdleBps == 0 OR safetyFallbackAdapters is empty.
+        _executeSafetyOverflow();
+    }
+
+    /// @notice Route excess idle into ordered safety-fallback adapters.
+    /// @dev    Best-effort: each deposit goes through _safeAdapterDeposit
+    ///         (catches adapter failures, does not revert the deploy). The
+    ///         overflow respects fallbackAbsCap and fallbackRelCap PER ADAPTER
+    ///         — never the normal abs/rel cap, which would defeat the purpose.
+    ///         Skips safety adapters that are disabled, flagged, quarantined,
+    ///         or whose extTVL is below 500K (MICRO band). Safety adapters do
+    ///         NOT honour mandate cooldown because by construction they are
+    ///         exempt from the cooldown set.
+    function _executeSafetyOverflow() internal {
+        uint16 maxIdleBpsLocal = maxIdleBps;
+        if (maxIdleBpsLocal == 0) return;
+        uint256 nSafety = safetyFallbackAdapters.length;
+        if (nSafety == 0) return;
+
+        uint256 tvl = _tvl();
+        if (tvl < 1) return;
+        uint256 maxIdleAmt = (tvl * uint256(maxIdleBpsLocal)) / 1e4;
+        uint256 idleBalance = ASSET.balanceOf(address(this));
+        if (idleBalance <= maxIdleAmt) return;
+        uint256 remaining = idleBalance - maxIdleAmt;
+        uint256 _dust = dustTolerance;
+
+        for (uint256 i = 0; i < nSafety && remaining > _dust;) {
+            address a = safetyFallbackAdapters[i];
+            unchecked { ++i; }
+
+            // Eligibility gates — order chosen for cheapest-first short-circuit.
+            if (!enabled[a]) continue;
+            if (flagged[a]) continue;
+            if (quarantined[a]) continue;
+
+            // Pool depth gate — refuse to park into adapters below MICRO band
+            // (500K USDC extTVL), where a $1M deposit would distort the rate
+            // and breach the "safety venue must be deep" precondition.
+            uint256 extTVL = cachedExternalTVL[a];
+            if (extTVL < 500_000e6) continue;
+
+            // Fallback caps (governance-approved second tier).
+            SafetyFallback memory sf = safetyFallback[a];
+            if (sf.absCapBps == 0) continue; // belt-and-braces: not a safety adapter
+            uint256 fbCeiling = (uint256(sf.absCapBps) * tvl) / 1e4;
+            if (sf.relCapBps > 0) {
+                uint256 fbRelCeiling = (uint256(sf.relCapBps) * extTVL) / 1e4;
+                if (fbRelCeiling < fbCeiling) fbCeiling = fbRelCeiling;
+            }
+
+            uint256 current = positionAssets[a];
+            if (current >= fbCeiling) continue;
+            uint256 room = fbCeiling - current;
+            uint256 toDeposit = remaining < room ? remaining : room;
+            if (toDeposit < _dust) continue;
+
+            uint256 idleBefore = ASSET.balanceOf(address(this));
+            bool ok = _safeAdapterDeposit(a, toDeposit);
+            if (!ok) continue;
+            positionAssets[a] = current + toDeposit;
+            remaining -= toDeposit;
+            emit SafetyOverflowDeployed(a, toDeposit, idleBefore, ASSET.balanceOf(address(this)));
+        }
     }
 
     // Emits AdapterSkippedLowConfidence for enabled adapters excluded from the plan
