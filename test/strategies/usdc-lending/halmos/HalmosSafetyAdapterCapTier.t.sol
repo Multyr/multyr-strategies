@@ -1,48 +1,48 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-// =============================================================================
-// HalmosSafetyAdapterCapTier.t.sol -- P0.7 formal verification (S2.1)
-// -----------------------------------------------------------------------------
-// Symbolic-execution proofs (Halmos 0.2.0) of the architectural invariants of
-// the Safety Adapter Cap Tier. 23 check_* properties, all proved; no prop_*
-// skips.
-//
-// NIA nonlinearity resolution strategy:
-//   The three properties that require comparing cap-weighted TVL amounts
-//   (P2c, P3a, P3b) exhibit z3 QF_NIA nonlinearity when both a cap coefficient
-//   and TVL are symbolic (concrete x symbolic = linear; symbolic x symbolic =
-//   nonlinear). Fix: CASE-SPLIT on the discrete governance parameters
-//   (absCapBps, tolBps) across their admissible config values. With cap
-//   coefficients fixed to concrete, all products reduce to `concrete * tvl`,
-//   which is linear in tvl. TVL and curr remain fully symbolic (uint64).
-//
-//   Case-split sets (from StrategySettingsModule.sol governance bounds):
-//     absCapBps in {4000, 5000, 6000, 7500, 8000}  (80% hard ceiling)
-//     tolBps    in {0, 500, 1000}                   (rebalance tolerance)
-//     (fb, n) pairs: key ordered subsets where fb >= n
-//
-// Mirrored source (branch feature/p0.7-safety-adapter-tier):
-//   fbCeiling fold .......... StrategyScoringModule.sol:511-515
-//                             StrategyAllocCalcModule.sol:302-306
-//   safety overflow step .... StrategyScoringModule.sol:517-526
-//   cap-drift mandate (abs) . StrategyRebalanceGateModule.sol:251-255
-//   preserve safety tranche . StrategyAllocCalcModule.sol:298-311
-//   governance cap bound .... StrategySettingsModule.sol:567
-//
-// Property index:
-//   P1   check_overflow_never_exceeds_fallback_ceiling    PASS (symbolic)
-//   P2a  check_fbCeiling_le_abs_ceiling                  PASS (symbolic)
-//   P2b  check_fbCeiling_le_rel_ceiling_when_active      PASS (symbolic)
-//   P2c  check_P2c_govbound_abs{4000..8000}              PASS (case-split x5)
-//   P3a  check_P3a_mandate_monotone_*                    PASS (case-split x6)
-//   P3b  check_P3b_safety_fire_implies_normal_fire_*     PASS (case-split x6)
-//   P4   check_preserve_safety_tranche_no_unwind         PASS (symbolic)
-//   P5   check_overflow_self_regulates_no_overshoot      PASS (symbolic)
-//   P6   check_safety_disabled_equals_legacy             PASS (symbolic)
-//
-// Run: halmos --contract HalmosSafetyAdapterCapTier --loop 8
-// =============================================================================
+/// @notice Halmos 0.2.0 formal verification of P0.7 Safety Adapter Cap Tier.
+/// @dev 23 check_* properties, all PASS; no prop_* skips.
+///
+///      Decomposition rationale:
+///
+///      GROUP A (6 properties) -- fully symbolic.
+///        P1, P2a, P2b, P4, P5, P6 are proved with ALL inputs symbolic.
+///        z3 exhausts the complete domain; no auxiliary argument needed.
+///
+///      GROUP B (17 properties across P2c, P3a, P3b) -- case-split.
+///        Root cause: z3 QF_NIA cannot decide (symbolic_a * symbolic_b)
+///        comparisons in bounded time for 64-bit bitvectors (nonlinear).
+///        Fix: fix governance-bounded params to concrete values; keep tvl
+///        and curr symbolic. Products become `concrete * tvl` (linear).
+///
+///        Parameter domains (on-chain setters, StrategySettingsModule.sol):
+///          absCapBps:  [1, 8000]   continuous -- addSafetyFallbackAdapter:567
+///          tolBps:     [0, 2000]   continuous -- setCapDriftTolerance:372
+///          Both are arbitrary uint16 in their range, NOT enums/whitelists.
+///
+///        Completeness for the continuous domains (no coverage gap):
+///          P2c: derived from P2a (symbolic) + floor-div monotonicity.
+///            P2a proves fbCeiling <= absCapBps*tvl/BPS for ALL absCapBps.
+///            absCapBps <= ABS_CAP_MAX (setter gate) + monotonicity =>
+///            fbCeiling <= ABS_CAP_MAX*tvl/BPS for all admissible inputs.
+///            Case-split checks are direct z3 evidence at 5 config points.
+///          P3a/P3b: tol cancels from the comparison (identical factor on
+///            both sides), so the ordering holds for ALL tol in [0,2000].
+///            The only binding argument is fb >= n => (fb*tvl)/BPS >=
+///            (n*tvl)/BPS (floor-div monotone), proved at 6 (fb,n) pairs
+///            spanning boundary + max-spread + mid-range + upper-range.
+///
+///        Worst-case: 15.82s (fb7500/n6000/tol0). Threshold: 60s.
+///        Reference: docs/audit/HALMOS_METHODOLOGY.md
+///
+/// @dev Mirrored source (branch feature/p0.7-safety-adapter-tier):
+///      fbCeiling fold .......... StrategyScoringModule.sol:511-515
+///                                StrategyAllocCalcModule.sol:302-306
+///      safety overflow step .... StrategyScoringModule.sol:517-526
+///      cap-drift mandate (abs) . StrategyRebalanceGateModule.sol:251-255
+///      preserve safety tranche . StrategyAllocCalcModule.sol:298-311
+///      governance cap bound .... StrategySettingsModule.sol:567
 
 import { Test } from "forge-std/Test.sol";
 
