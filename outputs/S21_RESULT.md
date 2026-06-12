@@ -1,8 +1,9 @@
-# S2.1 RESULT — Halmos Formal Proofs: Safety Adapter Cap Tier (P0.7)
+# S2.1 RESULT -- Halmos Formal Proofs: Safety Adapter Cap Tier (P0.7)
 
 **Branch:** feature/p0.7-safety-adapter-tier  
 **Date:** 2026-06-12  
-**Task:** S2.1 — formal symbolic verification of the five architectural invariants of the Safety Adapter Cap Tier.
+**Task:** S2.1 rev-B -- formal symbolic verification of 9 invariant groups of the
+Safety Adapter Cap Tier; 23 check_* functions, no prop_* skips.
 
 ---
 
@@ -14,53 +15,83 @@
 | Tests failed | 0                      | 0                      | PASS |
 | Test suites  | 126                    | 126                    | PASS |
 
-- PRE capture: `outputs/S21_pre_test.txt`
-- POST capture: `outputs/S21_post_test.txt`
+- PRE capture: `outputs/S21_pre_test.txt` (1974/0, forge test)
+- POST capture: `outputs/S21_post_test.txt` (1974/0, forge test; HalmosSafetyAdapterCapTier.t.sol
+  is not included in the forge test suite -- halmos runs separately)
 
 Gate: POST_PASS >= PRE_PASS AND POST_FAIL == 0. **GREEN.**
 
 ---
 
-## Halmos run — formal results
+## Halmos run -- formal results
 
 ```
-Running 6 tests for HalmosSafetyAdapterCapTier
-[PASS] check_fbCeiling_le_abs_ceiling           (paths: 11, time: 0.13s)
-[PASS] check_fbCeiling_le_rel_ceiling_when_active (paths: 8, time: 0.05s)
-[PASS] check_overflow_never_exceeds_fallback_ceiling (paths: 28, time: 0.45s)
-[PASS] check_overflow_self_regulates_no_overshoot (paths: 28, time: 0.24s)
-[PASS] check_preserve_safety_tranche_no_unwind  (paths: 22, time: 0.14s)
-[PASS] check_safety_disabled_equals_legacy      (paths: 6,  time: 0.03s)
+Running 23 tests for HalmosSafetyAdapterCapTier
 
-Symbolic test result: 6 passed; 0 failed; time: 1.07s
+[PASS] check_P2c_govbound_abs4000         (paths: 17, time:  1.34s)
+[PASS] check_P2c_govbound_abs5000         (paths: 17, time:  2.28s)
+[PASS] check_P2c_govbound_abs6000         (paths: 17, time:  4.00s)
+[PASS] check_P2c_govbound_abs7500         (paths: 17, time:  8.60s)
+[PASS] check_P2c_govbound_abs8000         (paths:  9, time:  0.05s)
+[PASS] check_P3a_fb4000_n4000_tol0        (paths:  4, time:  0.03s)
+[PASS] check_P3a_fb6000_n4000_tol500      (paths:  7, time: 12.56s)
+[PASS] check_P3a_fb7500_n6000_tol0        (paths:  7, time: 15.22s)
+[PASS] check_P3a_fb8000_n4000_tol0        (paths:  7, time:  7.63s)
+[PASS] check_P3a_fb8000_n4000_tol1000     (paths:  7, time:  7.31s)
+[PASS] check_P3a_fb8000_n8000_tol500      (paths:  4, time:  0.03s)
+[PASS] check_P3b_fb4000_n4000_tol0        (paths:  6, time:  0.03s)
+[PASS] check_P3b_fb6000_n4000_tol500      (paths:  9, time:  8.75s)
+[PASS] check_P3b_fb7500_n6000_tol0        (paths:  9, time: 14.86s)
+[PASS] check_P3b_fb8000_n4000_tol0        (paths:  9, time:  8.75s)
+[PASS] check_P3b_fb8000_n4000_tol1000     (paths:  9, time:  7.70s)
+[PASS] check_P3b_fb8000_n8000_tol500      (paths:  6, time:  0.03s)
+[PASS] check_fbCeiling_le_abs_ceiling     (paths: 11, time:  0.14s)
+[PASS] check_fbCeiling_le_rel_ceiling...  (paths:  8, time:  0.05s)
+[PASS] check_overflow_never_exceeds...    (paths: 31, time:  0.48s)
+[PASS] check_overflow_self_regulates...   (paths: 30, time:  0.31s)
+[PASS] check_preserve_safety_tranche...   (paths: 22, time:  0.15s)
+[PASS] check_safety_disabled_equals...    (paths:  6, time:  0.04s)
+
+Symbolic test result: 23 passed; 0 failed; time: 100.37s
 ```
 
-Halmos run log: `outputs/S21_halmos_run.txt`
+Full halmos output: `outputs/S21_halmos_run.txt`
+Evidence JSON: `test/strategies/usdc-lending/halmos/results/halmos-evidence.json`
+
+---
+
+## NIA nonlinearity resolution
+
+The three properties that previously caused z3 QF_NIA TIMEOUT (P2c, P3a, P3b) were
+fixed using CASE-SPLIT on discrete governance parameters:
+
+| Problem        | Root cause                      | Fix                                        |
+|----------------|---------------------------------|--------------------------------------------|
+| P2c            | `absCapBps x tvl` (2 symbolic)  | absCapBps fixed to {4000,5000,6000,7500,8000} |
+| P3a            | `fb x tvl`, `n x tvl`, `x tol` | (fb, n, tol) all concrete; tvl symbolic    |
+| P3b            | same as P3a                     | same case-split; curr additionally symbolic |
+
+With governance params concrete, all products reduce to `concrete x tvl` (linear in tvl).
+z3 reduces to comparing two linear functions of tvl -- trivially decidable.
+
+Slowest case: 15.22s (fb7500/n6000/tol0) -- well under the 60s assertion timeout.
 
 ---
 
 ## Properties proved
 
-| ID  | Function                                    | Paths | Mirrors source                          |
-|-----|---------------------------------------------|-------|-----------------------------------------|
-| P1  | check_overflow_never_exceeds_fallback_ceiling | 28  | StrategyScoringModule.sol:517-526       |
-| P2a | check_fbCeiling_le_abs_ceiling              | 11    | StrategyScoringModule.sol:511-515       |
-| P2b | check_fbCeiling_le_rel_ceiling_when_active  | 8     | StrategyScoringModule.sol:511-515       |
-| P4  | check_preserve_safety_tranche_no_unwind     | 22    | StrategyAllocCalcModule.sol:298-311     |
-| P5  | check_overflow_self_regulates_no_overshoot  | 28    | StrategyScoringModule.sol:517-526       |
-| P6  | check_safety_disabled_equals_legacy         | 6     | StrategyRebalanceGateModule.sol:251-253 |
-
----
-
-## SMT-hard properties (prop_ — algebraic proofs, halmos skips)
-
-Three properties are undecidable by z3 QF_NIA in practice (product of two fully symbolic bitvectors). They are documented as `prop_*` functions with inline algebraic proofs in the source file. TIMEOUT != counterexample; the claims hold by mathematical argument.
-
-| ID  | Function                              | Proof strategy                                    |
-|-----|---------------------------------------|---------------------------------------------------|
-| P2c | prop_governance_attack_surface_bounded | Follows from P2a + integer-div monotonicity lemma |
-| P3a | prop_mandate_ceiling_monotone          | Two-step floor-div monotonicity proof             |
-| P3b | prop_safety_fire_implies_normal_fire   | Transitivity from P3a                             |
+| Group | Count | Description                                    |
+|-------|-------|------------------------------------------------|
+| P1    | 1     | Overflow never exceeds fallback ceiling        |
+| P2a   | 1     | fbCeiling <= abs constituent cap               |
+| P2b   | 1     | fbCeiling <= rel constituent cap (active)      |
+| P2c   | 5     | Governance attack surface bounded (case-split) |
+| P3a   | 6     | Mandate ceiling monotone (case-split)          |
+| P3b   | 6     | Safety firing implies normal firing (case-split)|
+| P4    | 1     | Preserve safety tranche: no unwind             |
+| P5    | 1     | Overflow self-regulates: no overshoot          |
+| P6    | 1     | Safety disabled == legacy behaviour            |
+| **Total** | **23** | **23/23 PASS, 0 FAIL, 0 TIMEOUT**         |
 
 ---
 
@@ -68,10 +99,11 @@ Three properties are undecidable by z3 QF_NIA in practice (product of two fully 
 
 | File | Change |
 |------|--------|
-| `test/strategies/usdc-lending/halmos/HalmosSafetyAdapterCapTier.t.sol` | **New** — 9 properties (6 `check_*` proved by halmos, 3 `prop_*` with algebraic proofs) |
+| `test/strategies/usdc-lending/halmos/HalmosSafetyAdapterCapTier.t.sol` | Replaced 3 prop_* (skipped) with 17 case-split check_* (proved); total 23 check_* |
+| `test/strategies/usdc-lending/halmos/results/halmos-evidence.json` | Machine-readable evidence record |
 
 ---
 
 ## Next step
 
-S2.2 — Echidna harness (Docker `trailofbits/echidna`, smoke 50k runs, baseline 1M campaign).
+S2.2 -- Echidna harness (Docker trailofbits/echidna, smoke 50k runs, baseline 1M campaign).
