@@ -1,0 +1,10 @@
+No files changed, compilation skipped
+
+Ran 4 tests for test/fork_pre/v92/V92_AdversarialScenarios.t.sol:V92_AdversarialScenarios
+[PASS] test_E2E_adapter_quarantine_during_overflow() (gas: 2235578)
+[PASS] test_E2E_failed_adapter_callback() (gas: 1853250)
+[PASS] test_E2E_governance_pause_mid_rebalance() (gas: 2186781)
+[PASS] test_E2E_oracle_deviation_USDC_depeg() (gas: 2161011)
+Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 128.91ms (13.38ms CPU time)
+
+Ran 1 test suite in 130.93ms (128.91ms CPU time): 4 tests passed, 0 failed, 0 skipped (4 total tests)
