@@ -1,0 +1,7 @@
+# CONFIG_HASH — Production Backtest Parameter Fingerprint
+# Generated: 2026-06-13T10:08:52Z
+
+SHA256(params.json)=602c4ebb7cdd644d2cd9de8cafbc989af81b65c1a0b50befbb5b02dbad7191d7
+ISO_TIMESTAMP=2026-06-13T10:08:52Z
+GIT_COMMIT=a49df169773f6dd3ef288bd8a4af0193bbbe8f09
+SCENARIO=realistic

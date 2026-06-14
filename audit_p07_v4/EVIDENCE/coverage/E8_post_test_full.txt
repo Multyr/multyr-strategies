@@ -1,0 +1,2668 @@
+No files changed, compilation skipped
+
+Ran 5 tests for test/strategies/usdc-lending/StorageLayoutP07.t.sol:StorageLayoutP07_Test
+[PASS] test_TC01a_maxIdleBps_slot_is_consistent() (gas: 90851)
+[PASS] test_TC01b_targetSafetyMarginBps_slot_is_consistent() (gas: 90852)
+[PASS] test_TC01c_mandateRedeployCooldownSeconds_slot_is_consistent() (gas: 89182)
+[PASS] test_TC01d_safetyFallback_mapping_writes_through_all_modules() (gas: 172560)
+[PASS] test_TC01e_storage_layout_documented_slot_assertion() (gas: 160476)
+Suite result: ok. 5 passed; 0 failed; 0 skipped; finished in 6.22ms (2.21ms CPU time)
+
+Ran 2 tests for test/strategies/usdc-lending/UsdcMultiLendingVault.t.sol:UsdcMultiLendingVault_ETH_Test
+[PASS] test_fallback_reverts() (gas: 69570)
+[PASS] test_receive_reverts() (gas: 17800)
+Suite result: ok. 2 passed; 0 failed; 0 skipped; finished in 3.78ms (177.10µs CPU time)
+
+Ran 5 tests for test/strategies/usdc-lending/CapDriftMandate.t.sol:CapDriftSetter_Test
+[PASS] test_default_is_zero_before_setter_call() (gas: 8754)
+[PASS] test_setter_accepts_boundary_values() (gas: 120418)
+[PASS] test_setter_emits_event_and_updates_slot() (gas: 89532)
+[PASS] test_setter_reverts_above_2000_bps() (gas: 63200)
+[PASS] test_setter_unauthorized_reverts() (gas: 60970)
+Suite result: ok. 5 passed; 0 failed; 0 skipped; finished in 7.10ms (1.28ms CPU time)
+
+Ran 63 tests for test/strategies/usdc-lending/adapters/FluidUsdcMultiMarketAdapter.t.sol:FluidUsdcMultiMarketAdapterTest
+[PASS] test_constructor_initializesSnapshot() (gas: 10471)
+[PASS] test_constructor_revertsOnAssetMismatch() (gas: 1001891)
+[PASS] test_constructor_revertsOnZeroAdmin() (gas: 68746)
+[PASS] test_constructor_revertsOnZeroAsset() (gas: 68875)
+[PASS] test_constructor_revertsOnZeroFToken() (gas: 68586)
+[PASS] test_constructor_revertsOnZeroVault() (gas: 68479)
+[PASS] test_constructor_setsCapacity() (gas: 1846925)
+[PASS] test_currentAPYBps_apyOverridePriority() (gas: 50176)
+[PASS] test_currentAPYBps_clampedToUint16Max() (gas: 28270)
+[PASS] test_currentAPYBps_computedFromPPSDelta() (gas: 28390)
+[PASS] test_currentAPYBps_zeroBeforeAccrual() (gas: 18408)
+[PASS] test_currentAPYBps_zeroIfPPSUnchanged() (gas: 21491)
+[PASS] test_deposit_emitsDeposited() (gas: 191851)
+[PASS] test_deposit_happyPath() (gas: 192928)
+[PASS] test_deposit_respectsCapacity() (gas: 1932974)
+[PASS] test_deposit_revertsOnNonVault() (gas: 92199)
+[PASS] test_deposit_revertsOnZeroAmount() (gas: 17918)
+[PASS] test_deposit_revokesApprovalAfter() (gas: 192434)
+[PASS] test_emergencyPullAllToVault_handlesRedeemFailure() (gas: 254416)
+[PASS] test_emergencyPullAllToVault_redeemsAndSweeps() (gas: 241288)
+[PASS] test_emergencyPullAllToVault_revertsOnNonVault() (gas: 16948)
+[PASS] test_externalMarketTVL_returnsTotalAssets() (gas: 36802)
+[PASS] test_externalMarketTVL_returnsZeroOnRevert() (gas: 35604)
+[PASS] test_fallback_reverts() (gas: 7722)
+[PASS] test_harvest_returnsZero_v1() (gas: 6113)
+[PASS] test_harvestableProfit_alwaysZero_v1() (gas: 6130)
+[PASS] test_idleAssetBalance_reflectsRawUSDC() (gas: 58321)
+[PASS] test_idleAssetBalance_zero_initially() (gas: 11917)
+[PASS] test_incentiveAPYBps_defaultZero() (gas: 8729)
+[PASS] test_incentiveAPYBps_reflectsSetter() (gas: 38439)
+[PASS] test_investedAssets_reflectsConvertToAssets() (gas: 192878)
+[PASS] test_investedAssets_reflectsPPSAccrual() (gas: 197359)
+[PASS] test_investedAssets_zero_initially() (gas: 12505)
+[PASS] test_isPushMode_false() (gas: 6717)
+[PASS] test_name() (gas: 9846)
+[PASS] test_pokeAPYSnapshots_emitsEvent() (gas: 40289)
+[PASS] test_pokeAPYSnapshots_revertsOnNonRole() (gas: 14336)
+[PASS] test_pokeAPYSnapshots_updatesState() (gas: 38887)
+[PASS] test_receiveETH_reverts() (gas: 18406)
+[PASS] test_setAPYOverrideBps_paramRoleOnly() (gas: 36847)
+[PASS] test_setAPYOverrideBps_revertsOnNonRole() (gas: 37127)
+[PASS] test_setAPYOverrideBps_revertsOnTooHigh() (gas: 15131)
+[PASS] test_setCapacity_paramRoleOnly() (gas: 38494)
+[PASS] test_setCapacity_revertsOnNonRole() (gas: 36493)
+[PASS] test_setIncentiveBps_paramRoleOnly() (gas: 38638)
+[PASS] test_setIncentiveBps_revertsOnNonRole() (gas: 36549)
+[PASS] test_setIncentiveBps_revertsOnTooHigh() (gas: 15279)
+[PASS] test_shareBalance_returnsFTokenBalance() (gas: 191873)
+[PASS] test_sweepIdleAssetToVault_happyPath() (gas: 73609)
+[PASS] test_sweepIdleAssetToVault_revertsOnNonVault() (gas: 67436)
+[PASS] test_sweepIdleAssetToVault_revertsOnZeroIdle() (gas: 22692)
+[PASS] test_totalAssets_sumOfIdleAndInvested() (gas: 194742)
+[PASS] test_underlying_isUSDC() (gas: 8794)
+[PASS] test_withdraw_alwaysSendsToVault() (gas: 244677)
+[PASS] test_withdraw_clampedByMaxWithdraw() (gas: 245125)
+[PASS] test_withdraw_emitsWithdrawn() (gas: 241423)
+[PASS] test_withdraw_handlesActualReceivedShortfall() (gas: 259302)
+[PASS] test_withdraw_happyPath() (gas: 240393)
+[PASS] test_withdraw_returnsZeroIfMaxWithdrawZero() (gas: 202716)
+[PASS] test_withdraw_revertsIfFTokenWithdrawReverts() (gas: 219227)
+[PASS] test_withdraw_revertsOnNonVault() (gas: 196304)
+[PASS] test_withdraw_revertsOnZeroAmount() (gas: 16839)
+[PASS] test_withdrawableAssets_returnsMaxWithdraw() (gas: 22771)
+Suite result: ok. 63 passed; 0 failed; 0 skipped; finished in 10.31ms (9.47ms CPU time)
+
+Ran 3 tests for test/strategies/usdc-lending/replay-defense/RAPatternRegression.t.sol:RA3_FirstDepositorInflationTest
+[PASS] test_RA3_directDonationDoesNotInflateTotalAssets() (gas: 92402)
+[PASS] test_RA3_donatedIdleCanBeRetrieved() (gas: 97660)
+[PASS] test_RA3_firstDepositorDonation_secondDepositorAccounting() (gas: 635484)
+Suite result: ok. 3 passed; 0 failed; 0 skipped; finished in 8.93ms (2.46ms CPU time)
+
+Ran 13 tests for test/strategies/usdc-lending/P07NegativePathsSettings.t.sol:P07NegativePathsSettings
+[PASS] test_addSafetyFallback_reverts_absCapBps_above_max() (gas: 71327)
+[PASS] test_addSafetyFallback_reverts_absCapBps_zero() (gas: 70952)
+[PASS] test_addSafetyFallback_reverts_already_registered() (gas: 171758)
+[PASS] test_addSafetyFallback_reverts_not_enabled() (gas: 71770)
+[PASS] test_addSafetyFallback_reverts_relCapBps_above_max() (gas: 70962)
+[PASS] test_addSafetyFallback_reverts_zero_address() (gas: 62445)
+[PASS] test_removeSafetyFallback_reverts_not_registered() (gas: 70201)
+[PASS] test_removeSafetyFallback_swapAndPop_nonLast() (gas: 341872)
+[PASS] test_setMandateRedeployCooldown_reverts_above_30days() (gas: 62199)
+[PASS] test_setMaxIdleBps_reverts_above_2000() (gas: 64440)
+[PASS] test_setTargetSafetyMargin_reverts_above_2000() (gas: 63890)
+[PASS] test_updateSafetyFallbackCaps_reverts_absCapBps_invalid() (gas: 171384)
+[PASS] test_updateSafetyFallbackCaps_reverts_not_registered() (gas: 66635)
+Suite result: ok. 13 passed; 0 failed; 0 skipped; finished in 10.77ms (4.66ms CPU time)
+
+Ran 1 test for test/strategies/usdc-lending/UsdcMultiLendingVault.t.sol:S21_GasEmaTest
+[PASS] test_emaWithdrawGas_seedsOnFirstWithdraw() (gas: 2594531)
+Suite result: ok. 1 passed; 0 failed; 0 skipped; finished in 9.76ms (4.45ms CPU time)
+
+Ran 7 tests for test/strategies/usdc-lending/AdapterApproveHygiene.t.sol:AdapterApproveHygieneTest
+[PASS] test_F1a_noResidualAllowanceAfterSuccess() (gas: 179431)
+[PASS] test_F1b_noResidualAllowanceAfterFailure() (gas: 160538)
+[PASS] test_F2a_zeroCapMarketIsSkipped() (gas: 81983)
+[PASS] test_F2b_zeroCapNoPokeAttempt() (gas: 71709)
+[PASS] test_F3a_failureNoPrincipalCorruption() (gas: 170408)
+[PASS] test_F3b_partialSuccessThenFailureCorrectAccounting() (gas: 274317)
+[PASS] test_I2_noResidualAllowancesAfterDepositWithdraw() (gas: 195925)
+Suite result: ok. 7 passed; 0 failed; 0 skipped; finished in 4.47ms (1.61ms CPU time)
+
+Ran 8 tests for test/strategies/usdc-lending/Parameter_Sensitivity.t.sol:Parameter_Sensitivity
+[PASS] test_sensitivity_apy_dominant_6000() (gas: 63666)
+[PASS] test_sensitivity_apy_heavy_5000() (gas: 63577)
+[PASS] test_sensitivity_balanced_conservative() (gas: 63797)
+[PASS] test_sensitivity_default_weights() (gas: 63732)
+[PASS] test_sensitivity_differentiated_risk() (gas: 62361)
+[PASS] test_sensitivity_equal_weight() (gas: 63622)
+[PASS] test_sensitivity_liq_heavy() (gas: 63468)
+[PASS] test_sensitivity_risk_heavy() (gas: 63397)
+Suite result: ok. 8 passed; 0 failed; 0 skipped; finished in 1.54ms (1.38ms CPU time)
+
+Ran 2 tests for test/strategies/usdc-lending/CapDriftMandate.t.sol:CapDrift_D1c_WithinTolerance
+[PASS] test_D1c_drift_within_tolerance_does_not_force_mandate() (gas: 506657)
+[PASS] test_D1c_mandate_disabled_when_tolerance_is_zero() (gas: 742567)
+Suite result: ok. 2 passed; 0 failed; 0 skipped; finished in 9.97ms (2.75ms CPU time)
+
+Ran 110 tests for test/strategies/usdc-lending/adapters/AaveV3USDCAdapter.t.sol:AaveV3USDCAdapterTest
+[PASS] test_constructor_revertsOnATokenAssetMismatch() (gas: 607179)
+[PASS] test_constructor_revertsOnZeroAToken() (gas: 116398)
+[PASS] test_constructor_revertsOnZeroAdmin() (gas: 117429)
+[PASS] test_constructor_revertsOnZeroAsset() (gas: 117608)
+[PASS] test_constructor_revertsOnZeroPool() (gas: 115455)
+[PASS] test_constructor_revertsOnZeroVault() (gas: 117206)
+[PASS] test_constructor_setsState() (gas: 25486)
+[PASS] test_currentAPYBps_allSourcesEmpty_ReturnsZero() (gas: 21890)
+[PASS] test_currentAPYBps_cacheAtStalenessBoundary() (gas: 102699)
+[PASS] test_currentAPYBps_cacheZeroRate_FallsToDirect() (gas: 90770)
+[PASS] test_currentAPYBps_cacheZeroTs_FallsToDirect() (gas: 90136)
+[PASS] test_currentAPYBps_clampedToUint16Max() (gas: 45834)
+[PASS] test_currentAPYBps_directReadReverts_ReturnsZero() (gas: 36927)
+[PASS] test_currentAPYBps_keeperCacheFresh() (gas: 99772)
+[PASS] test_currentAPYBps_keeperCacheStale_FallsToDirect() (gas: 110398)
+[PASS] test_currentAPYBps_overrideTakesPriority() (gas: 102467)
+[PASS] test_currentAPYBps_providerNewAbiUnsupported_FallsToDirect() (gas: 110989)
+[PASS] test_currentAPYBps_rayToBpsConversion() (gas: 50584)
+[PASS] test_deposit_emitsSupplied() (gas: 176258)
+[PASS] test_deposit_happyPath() (gas: 179902)
+[PASS] test_deposit_respectsMaxCap() (gas: 2825891)
+[PASS] test_deposit_revertsOnNonVault() (gas: 93325)
+[PASS] test_deposit_revertsOnZeroAmount() (gas: 18868)
+[PASS] test_deposit_revokesApprovalAfter() (gas: 177496)
+[PASS] test_emergencyPullAllToVault_revertsOnNonVault() (gas: 17192)
+[PASS] test_emergencyPullAllToVault_withdrawsAndSweeps() (gas: 225657)
+[PASS] test_externalMarketTVL_returnsATokenSupply() (gas: 178096)
+[PASS] test_externalMarketTVL_returnsZero_ifTotalSupplyReverts() (gas: 197346)
+[PASS] test_fallback_reverts() (gas: 8903)
+[PASS] test_harvest_zero() (gas: 17858)
+[PASS] test_harvestableProfit_zero() (gas: 9034)
+[PASS] test_idleAssetBalance_reflectsRawUSDC() (gas: 59445)
+[PASS] test_idleAssetBalance_zero_initially() (gas: 12689)
+[PASS] test_incentiveAPYBps_default() (gas: 12296)
+[PASS] test_incentiveAPYBps_setter() (gas: 23156)
+[PASS] test_investedAssets_reflectsATokenBalance() (gas: 176850)
+[PASS] test_isPushMode_false() (gas: 7665)
+[PASS] test_name() (gas: 10112)
+[PASS] test_receiveETH_reverts() (gas: 18868)
+[PASS] test_setAPYOverrideBps_adminOnly() (gas: 22734)
+[PASS] test_setIncentiveBps_adminOnly() (gas: 25198)
+[PASS] test_setMaxCap_adminOnly() (gas: 39906)
+[PASS] test_setMaxCap_revertsOnNonAdmin() (gas: 36692)
+[PASS] test_setMaxRateStalenessSec_aboveMax_reverts() (gas: 15369)
+[PASS] test_setMaxRateStalenessSec_atBoundary_OK() (gas: 25960)
+[PASS] test_setMaxRateStalenessSec_belowMin_reverts() (gas: 16069)
+[PASS] test_setMaxRateStalenessSec_emitsEvent() (gas: 23054)
+[PASS] test_setMaxRateStalenessSec_revertsOnNonAdmin() (gas: 37226)
+[PASS] test_setRateProvider_emitsEvent() (gas: 25194)
+[PASS] test_setRateProvider_revertsOnZero() (gas: 15220)
+[PASS] test_setRateProvider_setsState() (gas: 25115)
+[PASS] test_sweepIdleAssetToVault_happyPath() (gas: 72138)
+[PASS] test_sweepIdleAssetToVault_revertsOnNonVault() (gas: 68142)
+[PASS] test_sweepIdleAssetToVault_revertsOnZeroIdle() (gas: 23024)
+[PASS] test_totalAssets_sumOfIdleAndInvested() (gas: 179470)
+[PASS] test_underlying_isUSDC() (gas: 9762)
+[PASS] test_v44_defaultHaircut_7500() (gas: 8289)
+[PASS] test_v44_harvest_defersOnStaleOracle() (gas: 1115604)
+[PASS] test_v44_harvest_handlesClaimRevert() (gas: 1062968)
+[PASS] test_v44_harvest_handlesSwapRevertGracefully() (gas: 1146403)
+[PASS] test_v44_harvest_happyPath() (gas: 1200941)
+[PASS] test_v44_harvest_resetsApprovalAfterSwap() (gas: 1199958)
+[PASS] test_v44_harvest_revertsOnNonVault() (gas: 1037332)
+[PASS] test_v44_harvestableProfit_returnsExpected() (gas: 1099781)
+[PASS] test_v44_harvestableProfit_zeroIfCannotSwap() (gas: 1078851)
+[PASS] test_v44_harvestableProfit_zeroIfNotInit() (gas: 8924)
+[PASS] test_v44_incentiveAPYBps_appliesHaircutOnRealized() (gas: 23257)
+[PASS] test_v44_incentiveAPYBps_realizedTakesPriorityOverLegacy() (gas: 29372)
+[PASS] test_v44_initRewardConfig_happyPath() (gas: 1034207)
+[PASS] test_v44_initRewardConfig_idempotent() (gas: 1031164)
+[PASS] test_v44_initRewardConfig_nonAdmin_reverts() (gas: 934570)
+[PASS] test_v44_initRewardConfig_revertsOnDuplicate() (gas: 984139)
+[PASS] test_v44_initRewardConfig_revertsOnEmptyTokens() (gas: 620246)
+[PASS] test_v44_initRewardConfig_revertsOnZeroController() (gas: 644656)
+[PASS] test_v44_initRewardConfig_revertsOnZeroToken() (gas: 622927)
+[PASS] test_v44_pendingRewardBalance_reflects() (gas: 1072522)
+[PASS] test_v44_setHaircutBps_capCheck() (gas: 16915)
+[PASS] test_v46_addRewardToken_extendsList() (gas: 1352833)
+[PASS] test_v46_addRewardToken_nonAdmin_reverts() (gas: 1327932)
+[PASS] test_v46_addRewardToken_revertsOnDuplicate() (gas: 1027896)
+[PASS] test_v46_addRewardToken_revertsOnZero() (gas: 1029320)
+[PASS] test_v46_harvest_emptyWhitelistReturns0() (gas: 980457)
+[PASS] test_v46_harvest_multiToken_happyPath() (gas: 1595472)
+[PASS] test_v46_harvest_multiToken_oneClaimRevert_othersUnaffected() (gas: 1527374)
+[PASS] test_v46_harvest_multiToken_partialSwapDeferral() (gas: 1647194)
+[PASS] test_v46_harvest_revertsOnNonVault() (gas: 1036256)
+[PASS] test_v46_harvestableProfit_skipsTokensWithStaleOracle() (gas: 1517169)
+[PASS] test_v46_harvestableProfit_sumsAcrossTokens() (gas: 1453136)
+[PASS] test_v46_harvestableProfit_zeroIfHelperUnset() (gas: 1402333)
+[PASS] test_v46_pendingRewardBalance_zeroForNonWhitelisted() (gas: 1350926)
+[PASS] test_v46_removeRewardToken_nonAdmin_reverts() (gas: 1054713)
+[PASS] test_v46_removeRewardToken_revertsOnNotWhitelisted() (gas: 1306125)
+[PASS] test_v46_removeRewardToken_shrinks() (gas: 1322460)
+[PASS] test_v46_setIncentiveHaircutBps_nonAdmin_reverts() (gas: 36123)
+[PASS] test_v46_setIncentiveHaircutBps_revertsAbove10000() (gas: 15507)
+[PASS] test_v46_setIncentiveHaircutBps_updatesState() (gas: 22479)
+[PASS] test_v46_setRealizedRewardAPRBps_nonAdmin_reverts() (gas: 37634)
+[PASS] test_v46_setRealizedRewardAPRBps_updatesState() (gas: 22242)
+[PASS] test_v46_setSwapHelper_allowsZero_emergencyDisable() (gas: 1010362)
+[PASS] test_v46_setSwapHelper_emitsEvent() (gas: 1378187)
+[PASS] test_v46_setSwapHelper_nonAdmin_reverts() (gas: 1053557)
+[PASS] test_v46_setSwapHelper_updatesState() (gas: 1378333)
+[PASS] test_withdraw_alwaysSendsToVault() (gas: 205466)
+[PASS] test_withdraw_clampedByPoolLiquidity() (gas: 223531)
+[PASS] test_withdraw_emitsWithdrawn() (gas: 202974)
+[PASS] test_withdraw_happyPath() (gas: 201399)
+[PASS] test_withdraw_revertsOnNonVault() (gas: 181779)
+[PASS] test_withdraw_revertsOnZeroAmount() (gas: 16910)
+[PASS] test_withdrawableAssets_boundedByATokenBalance() (gas: 177905)
+[PASS] test_withdrawableAssets_boundedByPoolLiquidity() (gas: 201204)
+Suite result: ok. 110 passed; 0 failed; 0 skipped; finished in 18.35ms (17.40ms CPU time)
+
+Ran 2 tests for test/strategies/usdc-lending/CapDriftMandate.t.sol:CapDrift_D1a_NormalOperation
+[PASS] test_D1a_all_adapters_within_hard_ceiling_after_deposit() (gas: 60470)
+[PASS] test_D1a_mandate_does_not_fire_under_normal_conditions() (gas: 258883)
+Suite result: ok. 2 passed; 0 failed; 0 skipped; finished in 6.62ms (782.40µs CPU time)
+
+Ran 7 tests for test/strategies/usdc-lending/CTO_Corrections.t.sol:CTO_DynamicAdapterCount
+[PASS] test_10M_tvl_max_5_adapters() (gas: 1218232)
+[PASS] test_10k_tvl_max_2_adapters() (gas: 594897)
+[PASS] test_150k_tvl_max_3_adapters() (gas: 709845)
+[PASS] test_1M_tvl_max_4_adapters() (gas: 827889)
+[PASS] test_50k_tvl_max_2_adapters() (gas: 734318)
+[PASS] test_diversification_increases_with_tvl() (gas: 1372912)
+[PASS] test_no_fragmentation_at_low_tvl() (gas: 570106)
+Suite result: ok. 7 passed; 0 failed; 0 skipped; finished in 18.87ms (8.20ms CPU time)
+
+Ran 6 tests for test/strategies/usdc-lending/UsdcMultiLendingVault.t.sol:S21_ParamSettersTest
+[PASS] test_setDeployIdleCooldown_happyPath() (gas: 71804)
+[PASS] test_setDeployIdleCooldown_onlyParamRole() (gas: 64302)
+[PASS] test_setDeployIdleCooldown_tooHigh_reverts() (gas: 64142)
+[PASS] test_setDeployIdleCooldown_tooLow_reverts() (gas: 64006)
+[PASS] test_setMaxIdleBootstrapBps_onlyParamRole() (gas: 64346)
+[PASS] test_setMaxIdleBootstrapBps_updatesState() (gas: 76154)
+Suite result: ok. 6 passed; 0 failed; 0 skipped; finished in 4.65ms (992.80µs CPU time)
+
+Ran 66 tests for test/strategies/usdc-lending/adapters/FluidUsdcMultiMarketAdapter.t.sol:S21_FluidSetterTest
+[PASS] test_constructor_initializesSnapshot() (gas: 10471)
+[PASS] test_constructor_revertsOnAssetMismatch() (gas: 1001957)
+[PASS] test_constructor_revertsOnZeroAdmin() (gas: 68790)
+[PASS] test_constructor_revertsOnZeroAsset() (gas: 68941)
+[PASS] test_constructor_revertsOnZeroFToken() (gas: 68630)
+[PASS] test_constructor_revertsOnZeroVault() (gas: 68523)
+[PASS] test_constructor_setsCapacity() (gas: 1846969)
+[PASS] test_currentAPYBps_apyOverridePriority() (gas: 50220)
+[PASS] test_currentAPYBps_clampedToUint16Max() (gas: 28314)
+[PASS] test_currentAPYBps_computedFromPPSDelta() (gas: 28390)
+[PASS] test_currentAPYBps_zeroBeforeAccrual() (gas: 18452)
+[PASS] test_currentAPYBps_zeroIfPPSUnchanged() (gas: 21491)
+[PASS] test_deposit_emitsDeposited() (gas: 191886)
+[PASS] test_deposit_happyPath() (gas: 192928)
+[PASS] test_deposit_respectsCapacity() (gas: 1932974)
+[PASS] test_deposit_revertsOnNonVault() (gas: 92243)
+[PASS] test_deposit_revertsOnZeroAmount() (gas: 17962)
+[PASS] test_deposit_revokesApprovalAfter() (gas: 192434)
+[PASS] test_emergencyPullAllToVault_handlesRedeemFailure() (gas: 254433)
+[PASS] test_emergencyPullAllToVault_redeemsAndSweeps() (gas: 241288)
+[PASS] test_emergencyPullAllToVault_revertsOnNonVault() (gas: 16948)
+[PASS] test_externalMarketTVL_returnsTotalAssets() (gas: 36802)
+[PASS] test_externalMarketTVL_returnsZeroOnRevert() (gas: 35648)
+[PASS] test_fallback_reverts() (gas: 7766)
+[PASS] test_harvest_returnsZero_v1() (gas: 6113)
+[PASS] test_harvestableProfit_alwaysZero_v1() (gas: 6130)
+[PASS] test_idleAssetBalance_reflectsRawUSDC() (gas: 58387)
+[PASS] test_idleAssetBalance_zero_initially() (gas: 11917)
+[PASS] test_incentiveAPYBps_defaultZero() (gas: 8773)
+[PASS] test_incentiveAPYBps_reflectsSetter() (gas: 38483)
+[PASS] test_investedAssets_reflectsConvertToAssets() (gas: 192931)
+[PASS] test_investedAssets_reflectsPPSAccrual() (gas: 197412)
+[PASS] test_investedAssets_zero_initially() (gas: 12549)
+[PASS] test_isPushMode_false() (gas: 6761)
+[PASS] test_name() (gas: 9846)
+[PASS] test_pokeAPYSnapshots_emitsEvent() (gas: 40355)
+[PASS] test_pokeAPYSnapshots_revertsOnNonRole() (gas: 14336)
+[PASS] test_pokeAPYSnapshots_updatesState() (gas: 38887)
+[PASS] test_receiveETH_reverts() (gas: 18406)
+[PASS] test_setAPYOverrideBps_paramRoleOnly() (gas: 36847)
+[PASS] test_setAPYOverrideBps_revertsOnNonRole() (gas: 37171)
+[PASS] test_setAPYOverrideBps_revertsOnTooHigh() (gas: 15150)
+[PASS] test_setAPYOverrideBps_tooHigh_reverts() (gas: 15172)
+[PASS] test_setCapacity_onlyParamRole() (gas: 36515)
+[PASS] test_setCapacity_paramRoleOnly() (gas: 38538)
+[PASS] test_setCapacity_revertsOnNonRole() (gas: 36493)
+[PASS] test_setIncentiveBps_paramRoleOnly() (gas: 38704)
+[PASS] test_setIncentiveBps_revertsOnNonRole() (gas: 36593)
+[PASS] test_setIncentiveBps_revertsOnTooHigh() (gas: 15342)
+[PASS] test_setIncentiveBps_tooHigh_reverts() (gas: 15276)
+[PASS] test_shareBalance_returnsFTokenBalance() (gas: 191908)
+[PASS] test_sweepIdleAssetToVault_happyPath() (gas: 73609)
+[PASS] test_sweepIdleAssetToVault_revertsOnNonVault() (gas: 67436)
+[PASS] test_sweepIdleAssetToVault_revertsOnZeroIdle() (gas: 22692)
+[PASS] test_totalAssets_sumOfIdleAndInvested() (gas: 194795)
+[PASS] test_underlying_isUSDC() (gas: 8838)
+[PASS] test_withdraw_alwaysSendsToVault() (gas: 244677)
+[PASS] test_withdraw_clampedByMaxWithdraw() (gas: 245160)
+[PASS] test_withdraw_emitsWithdrawn() (gas: 241458)
+[PASS] test_withdraw_handlesActualReceivedShortfall() (gas: 259302)
+[PASS] test_withdraw_happyPath() (gas: 240393)
+[PASS] test_withdraw_returnsZeroIfMaxWithdrawZero() (gas: 202752)
+[PASS] test_withdraw_revertsIfFTokenWithdrawReverts() (gas: 219262)
+[PASS] test_withdraw_revertsOnNonVault() (gas: 196340)
+[PASS] test_withdraw_revertsOnZeroAmount() (gas: 16839)
+[PASS] test_withdrawableAssets_returnsMaxWithdraw() (gas: 22815)
+Suite result: ok. 66 passed; 0 failed; 0 skipped; finished in 6.50ms (5.74ms CPU time)
+
+Ran 20 tests for test/strategies/usdc-lending/RebalanceEngineV10.t.sol:RebalanceEngineV10_Test
+[PASS] test_bcrWithRealCostsBlocks() (gas: 324076)
+[PASS] test_bcrWithZeroCostsIsIneffective() (gas: 297787)
+[PASS] test_benefitCostRatioBlocks() (gas: 323696)
+[PASS] test_benefitCostRatioPasses() (gas: 267121)
+[PASS] test_coordinationParamsGovernance() (gas: 161225)
+[PASS] test_defaultParamsNoRegression() (gas: 202308)
+[PASS] test_emaGasRecordsAfterDeployIdle() (gas: 422137)
+[PASS] test_emaGasSmoothing() (gas: 581442)
+[PASS] test_entryDriftRequired() (gas: 252013)
+[PASS] test_fullRebalanceCycleWithGateModule() (gas: 448604)
+[PASS] test_gasEmaParamsGovernance() (gas: 142590)
+[PASS] test_gateFallsBackToFixed() (gas: 202493)
+[PASS] test_hysteresisParamsGovernance() (gas: 179996)
+[PASS] test_minMoveUsdFloor() (gas: 252194)
+[PASS] test_recentRebalancePenalty() (gas: 751235)
+[PASS] test_regimeChangesHorizon() (gas: 306290)
+[PASS] test_regimeConfidenceReducesBenefit() (gas: 361457)
+[PASS] test_regimeParamsGovernance() (gas: 174305)
+[PASS] test_regimeParamsNotAppliedForNonActiveRegime() (gas: 160762)
+[PASS] test_regimeSetterAccessControl() (gas: 142280)
+Suite result: ok. 20 passed; 0 failed; 0 skipped; finished in 17.86ms (13.47ms CPU time)
+
+Ran 2 tests for test/strategies/usdc-lending/CapDriftMandate.t.sol:CapDrift_D1b_ForcedOverCeiling
+[PASS] test_D1b_mandate_fires_when_adapter_exceeds_hard_ceiling() (gas: 719622)
+[PASS] test_D1b_plan_execution_brings_adapter_back_within_maxExp() (gas: 1503833)
+Suite result: ok. 2 passed; 0 failed; 0 skipped; finished in 10.99ms (5.27ms CPU time)
+
+Ran 6 tests for test/strategies/usdc-lending/UsdcMultiLendingVault.t.sol:UsdcMultiLendingVault_Emergency_Test
+[PASS] test_emergencyRecallAll_emits_event() (gas: 66667)
+[PASS] test_emergencyRecallAll_only_admin_or_core() (gas: 39616)
+[PASS] test_emergencyRecallAll_recalls_all_funds() (gas: 80732)
+[PASS] test_emergencyRecallAll_works_by_core() (gas: 70781)
+[PASS] test_emergencyRecallAll_works_with_disabled_adapters() (gas: 77406)
+[PASS] test_emergencyRecallAll_works_with_flagged_adapters() (gas: 148308)
+Suite result: ok. 6 passed; 0 failed; 0 skipped; finished in 9.83ms (699.50µs CPU time)
+
+Ran 3 tests for test/strategies/usdc-lending/replay-defense/RAPatternRegression.t.sol:RA5_ReentrancyGuardTest
+[PASS] test_RA5_nonCoreRoleDeposit_revertsPriorToReentrancy() (gas: 75244)
+[PASS] test_RA5_reentrancy_on_deposit_blocked() (gas: 411486)
+[PASS] test_RA5_reentrancy_on_withdraw_blocked() (gas: 454948)
+Suite result: ok. 3 passed; 0 failed; 0 skipped; finished in 8.45ms (1.05ms CPU time)
+
+Ran 3 tests for test/strategies/usdc-lending/CapDriftMandate.t.sol:CapDrift_D1d_RelCapDriftMandate
+[PASS] test_D1d_mandate_disabled_when_tolerance_is_zero() (gas: 502588)
+[PASS] test_D1d_mandate_fires_when_adapter_exceeds_rel_hard_ceiling() (gas: 477797)
+[PASS] test_D1d_plan_brings_adapter_back_within_rel_cap() (gas: 1269605)
+Suite result: ok. 3 passed; 0 failed; 0 skipped; finished in 18.04ms (12.83ms CPU time)
+
+Ran 78 tests for test/strategies/usdc-lending/adapters/CometUsdcMultiMarketAdapter.t.sol:S21_CometSetterTest
+[PASS] test_activeMarket_returns_current() (gas: 17256)
+[PASS] test_addMarket_extends_list() (gas: 65618)
+[PASS] test_addMarket_only_param_role() (gas: 16931)
+[PASS] test_addMarket_reverts_wrong_asset() (gas: 959728)
+[PASS] test_addMarket_reverts_zero() (gas: 15884)
+[PASS] test_capacity_exact_boundary() (gas: 220335)
+[PASS] test_capacity_revert_one_wei_over() (gas: 260876)
+[PASS] test_capacity_zero_means_infinite() (gas: 217803)
+[PASS] test_constructor_grants_roles() (gas: 16014)
+[PASS] test_constructor_loads_from_registry() (gas: 14971)
+[PASS] test_constructor_reverts_no_markets() (gas: 952166)
+[PASS] test_constructor_reverts_zero_admin() (gas: 1053851)
+[PASS] test_constructor_reverts_zero_usdc() (gas: 1054228)
+[PASS] test_constructor_reverts_zero_vault() (gas: 1055696)
+[PASS] test_constructor_sets_state() (gas: 16271)
+[PASS] test_currentAPYBps_clamped_to_uint16_max() (gas: 30229)
+[PASS] test_currentAPYBps_reads_from_active_market() (gas: 27758)
+[PASS] test_currentAPYBps_uses_active_market_after_deposit() (gas: 281072)
+[PASS] test_currentAPYBps_zero_when_rate_zero() (gas: 26561)
+[PASS] test_deposit_emits_event() (gas: 213548)
+[PASS] test_deposit_reverts_non_vault() (gas: 91567)
+[PASS] test_deposit_reverts_over_capacity() (gas: 118036)
+[PASS] test_deposit_reverts_zero() (gas: 19945)
+[PASS] test_deposit_revokes_approval_after() (gas: 211708)
+[PASS] test_deposit_routes_to_best_market() (gas: 329316)
+[PASS] test_deposit_skips_disabled_markets() (gas: 278983)
+[PASS] test_deposit_skips_flagged_markets() (gas: 280396)
+[PASS] test_effectiveAPYBps_single_market() (gas: 222718)
+[PASS] test_effectiveAPYBps_zero_when_no_assets() (gas: 22432)
+[PASS] test_externalMarketTVL_skips_disabled() (gas: 269566)
+[PASS] test_externalMarketTVL_uses_totalsBasic() (gas: 215007)
+[PASS] test_flagMarket_badIndex_reverts() (gas: 18832)
+[PASS] test_flagMarket_flags_unflag() (gas: 26441)
+[PASS] test_harvest_returns_zero() (gas: 15588)
+[PASS] test_harvestableProfit_returns_zero() (gas: 8668)
+[PASS] test_idleAssetBalance_reflects_raw_USDC() (gas: 58427)
+[PASS] test_idleAssetBalance_zero_initially() (gas: 12705)
+[PASS] test_incentiveAPYBps_realizedTakesPriority() (gas: 21886)
+[PASS] test_investedAssets_reflects_comet_balance() (gas: 211406)
+[PASS] test_isPushMode_false() (gas: 7425)
+[PASS] test_name_returns_correct() (gas: 11325)
+[PASS] test_positions_returns_assets_per_market() (gas: 214072)
+[PASS] test_setCapacity_onlyParam() (gas: 15836)
+[PASS] test_setCapacity_updates() (gas: 22003)
+[PASS] test_setCostsEstimates_updatesState() (gas: 46940)
+[PASS] test_setIncentiveBps_updates() (gas: 40163)
+[PASS] test_setOptimizeParams_updatesState() (gas: 24071)
+[PASS] test_setRiskScore_only_param_role() (gas: 14707)
+[PASS] test_setRiskScore_updates() (gas: 23136)
+[PASS] test_toggleMarket_enables_disables() (gas: 67367)
+[PASS] test_totalAssets_sum_idle_and_invested() (gas: 214461)
+[PASS] test_underlying_returns_usdc() (gas: 9880)
+[PASS] test_updateMarketAddress_updates() (gas: 34875)
+[PASS] test_v4d_defaultHaircut_7500() (gas: 10015)
+[PASS] test_v4d_harvest_defersOnStaleOracle() (gas: 967466)
+[PASS] test_v4d_harvest_handlesClaimRevert() (gas: 914871)
+[PASS] test_v4d_harvest_handlesSwapRevertGracefully() (gas: 976140)
+[PASS] test_v4d_harvest_happyPath() (gas: 1051292)
+[PASS] test_v4d_harvest_resetsApprovalAfterSwap() (gas: 1050715)
+[PASS] test_v4d_harvest_revertsOnNonVault() (gas: 889660)
+[PASS] test_v4d_harvestableProfit_returnsExpected() (gas: 950460)
+[PASS] test_v4d_harvestableProfit_zeroIfCannotSwap() (gas: 927682)
+[PASS] test_v4d_harvestableProfit_zeroIfNotInit() (gas: 10032)
+[PASS] test_v4d_incentiveAPYBps_appliesHaircutOnRealized() (gas: 22821)
+[PASS] test_v4d_pendingRewardBalance_reflects() (gas: 923701)
+[PASS] test_v4d_realizedTakesPriorityOverLegacy() (gas: 46419)
+[PASS] test_v4d_setHaircutBps_capCheck() (gas: 16027)
+[PASS] test_v4d_setRewardConfig_happyPath() (gas: 881855)
+[PASS] test_v4d_setRewardConfig_idempotent() (gas: 882015)
+[PASS] test_v4d_setRewardConfig_only_param_role() (gas: 15981)
+[PASS] test_v4d_setRewardConfig_revertsOnZero() (gas: 20234)
+[PASS] test_v4d_setSwapHelper_canDisableHarvest() (gas: 927241)
+[PASS] test_withdraw_caps_to_available() (gas: 259544)
+[PASS] test_withdraw_emits_event() (gas: 263258)
+[PASS] test_withdraw_from_multiple_markets() (gas: 514964)
+[PASS] test_withdraw_only_vault() (gas: 216278)
+[PASS] test_withdraw_sends_to_vault() (gas: 261590)
+[PASS] test_withdrawableAssets_bounded_by_market_cash() (gas: 235169)
+Suite result: ok. 78 passed; 0 failed; 0 skipped; finished in 15.30ms (12.99ms CPU time)
+
+Ran 4 tests for test/strategies/usdc-lending/UsdcMultiLendingVault.t.sol:S22_BackoffAndOverCapTest
+[PASS] test_backoff_emitsBackoffActiveWithDoubledCooldown() (gas: 1509683)
+[PASS] test_backoff_resetOnSuccessfulFinalize() (gas: 1798023)
+[PASS] test_overCapProtectionBenefit_addsWhenPositionOverCap() (gas: 673933)
+[PASS] test_overCapProtectionBenefit_zeroWhenPremiumZero() (gas: 1491029)
+Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 22.80ms (10.94ms CPU time)
+
+Ran 11 tests for test/strategies/usdc-lending/UsdcMultiLendingVault.t.sol:EmergencyCallersTest
+[PASS] test_callAdapterEmergencyPull_callsAdapter() (gas: 70730)
+[PASS] test_callAdapterEmergencyPull_onlyAdmin() (gas: 65362)
+[PASS] test_callAdapterEmergencyPull_revertsUnknownAdapter() (gas: 65324)
+[PASS] test_callAdapterEmergencySweep_callsAdapter() (gas: 70148)
+[PASS] test_callAdapterEmergencySweep_onlyAdmin() (gas: 64927)
+[PASS] test_callAdapterEmergencySweep_revertsUnknownAdapter() (gas: 65375)
+[PASS] test_emergencyTransferToCore_emitsEvent() (gas: 122143)
+[PASS] test_emergencyTransferToCore_onlyAdmin() (gas: 111286)
+[PASS] test_emergencyTransferToCore_revertsInsufficientBalance() (gas: 66541)
+[PASS] test_emergencyTransferToCore_revertsZeroAmount() (gas: 110825)
+[PASS] test_emergencyTransferToCore_transfersToCore() (gas: 143201)
+Suite result: ok. 11 passed; 0 failed; 0 skipped; finished in 6.00ms (1.59ms CPU time)
+
+Ran 5 tests for test/strategies/usdc-lending/CapacityConsistency.t.sol:CapacityConsistencyTest
+[PASS] test_G1a_deployIdleRespectsCapacityOnAllAdapters() (gas: 3223881)
+[PASS] test_G1b_identicalStateProducesSameAllocation() (gas: 1554140)
+[PASS] test_G1c_optimizeSimulationVsDeployIdleCoherence() (gas: 981768)
+[PASS] test_G1d_capacityDecreaseMidFlightBlocksAllocation() (gas: 1155259)
+[PASS] test_G1e_noExtraAllocationInAnyPath() (gas: 830762)
+Suite result: ok. 5 passed; 0 failed; 0 skipped; finished in 24.99ms (19.09ms CPU time)
+
+Ran 10 tests for test/strategies/usdc-lending/StrategyBootstrapper.t.sol:StrategyBootstrapperBootstrapTest
+[PASS] test_bootstrap_emitsAdapterRegistered() (gas: 724158)
+[PASS] test_bootstrap_emitsBootstrapped() (gas: 724278)
+[PASS] test_bootstrap_happyPath_multipleAdapters() (gas: 945283)
+[PASS] test_bootstrap_happyPath_singleAdapter() (gas: 725504)
+[PASS] test_bootstrap_renouncesBOOTSTRAP_ROLE() (gas: 736241)
+[PASS] test_bootstrap_revertsIfAlreadyBootstrapped() (gas: 724863)
+[PASS] test_bootstrap_revertsIfEmptyAdapters() (gas: 451485)
+[PASS] test_bootstrap_revertsIfNotDeployer() (gas: 453971)
+[PASS] test_bootstrap_revertsIfZeroAddressInArray() (gas: 734338)
+[PASS] test_bootstrap_setsUsedFlag() (gas: 722780)
+Suite result: ok. 10 passed; 0 failed; 0 skipped; finished in 23.65ms (19.53ms CPU time)
+
+Ran 10 tests for test/strategies/usdc-lending/CapDriftMandate.t.sol:CapDrift_D1f_SafetyAdapterCapTier
+[PASS] test_D1f_01_mandate_uses_fallback_cap_for_safety_adapter() (gas: 481820)
+[PASS] test_D1f_02_mandate_uses_normal_cap_for_normal_adapter() (gas: 460153)
+[PASS] test_D1f_03_overflow_routes_to_safety_adapter() (gas: 1126851)
+[PASS] test_D1f_04_safety_adapter_never_in_cooldown() (gas: 733850)
+[PASS] test_D1f_05_normal_adapter_cooldown_blocks_redeploy() (gas: 1596551)
+[PASS] test_D1f_06_valid_safety_tranche_preserved() (gas: 972299)
+[PASS] test_D1f_07_remove_safety_restores_normal_caps() (gas: 505519)
+[PASS] test_D1f_08_dual_safety_priority_aave_before_compound() (gas: 1301447)
+[PASS] test_D1f_09_quarantined_adapter_promotion_reverts() (gas: 232889)
+[PASS] test_D1f_10_promotion_clears_active_cooldown() (gas: 319553)
+Suite result: ok. 10 passed; 0 failed; 0 skipped; finished in 16.73ms (16.74ms CPU time)
+
+Ran 9 tests for test/strategies/usdc-lending/PositionAssetsSync.t.sol:PositionAssetsSync
+[PASS] test_deploy_idle_conditional_sync() (gas: 1252440)
+[PASS] test_drift_view_with_negative() (gas: 807665)
+[PASS] test_external_sync_param_role_only() (gas: 881646)
+[PASS] test_rebalance_always_syncs() (gas: 1742966)
+[PASS] test_rebalance_syncs_positions() (gas: 1537745)
+[PASS] test_sync_includes_disabled_with_funds() (gas: 796348)
+[PASS] test_sync_noop_below_dust() (gas: 823559)
+[PASS] test_sync_skips_3x_jump() (gas: 823337)
+[PASS] test_sync_skips_zero_on_nonzero() (gas: 822957)
+Suite result: ok. 9 passed; 0 failed; 0 skipped; finished in 19.85ms (15.44ms CPU time)
+
+Ran 5 tests for test/strategies/usdc-lending/UsdcMultiLendingVault.t.sol:UsdcMultiLendingVault_ExternalTVL_Test
+[PASS] test_pokeExternalTVL_acceptsDeltaWithinCap() (gas: 127688)
+[PASS] test_pokeExternalTVL_firstPokeAcceptsAnyValidValue() (gas: 1458211)
+[PASS] test_pokeExternalTVL_rejectsAbsoluteOverflow() (gas: 92885)
+[PASS] test_pokeExternalTVL_rejectsDeltaJump() (gas: 133251)
+[PASS] test_pokeExternalTVL_validValue_accepted() (gas: 93935)
+Suite result: ok. 5 passed; 0 failed; 0 skipped; finished in 4.90ms (1.28ms CPU time)
+
+Ran 3 tests for test/strategies/usdc-lending/replay-defense/RAPatternRegression.t.sol:RA8_SlippageOracleTest
+[PASS] test_RA8_apy_manipulation_bounded_by_snapshot() (gas: 535169)
+[PASS] test_RA8_oracle_inflatedTVL_clampedByJumpGuard() (gas: 149366)
+[PASS] test_RA8_oracle_zeroTVL_preventsAllocation() (gas: 451123)
+Suite result: ok. 3 passed; 0 failed; 0 skipped; finished in 4.61ms (1.29ms CPU time)
+
+Ran 3 tests for test/strategies/usdc-lending/adapters/DolomiteUsdcMultiMarketAdapter.t.sol:DolomiteAdapter_RefreshFromRegistry_Test
+[PASS] test_dolomite_refreshFromRegistry_accessControl_unauthorized() (gas: 36819)
+[PASS] test_dolomite_refreshFromRegistry_happyPath_addsNewMarket() (gas: 136071)
+[PASS] test_dolomite_refreshFromRegistry_noRegistry_reverts() (gas: 53669)
+Suite result: ok. 3 passed; 0 failed; 0 skipped; finished in 1.28ms (437.50µs CPU time)
+
+Ran 3 tests for test/strategies/usdc-lending/replay-defense/RAPatternRegression.t.sol:RA2_JITMEVTest
+[PASS] test_RA2_jit_deployIdleCooldownPreventsRapidExploit() (gas: 468955)
+[PASS] test_RA2_jit_noInstantYieldCapture() (gas: 333373)
+[PASS] test_RA2_jit_onlyCoreRoleCanDeposit() (gas: 75111)
+Suite result: ok. 3 passed; 0 failed; 0 skipped; finished in 5.24ms (1.38ms CPU time)
+
+Ran 4 tests for test/strategies/usdc-lending/StrategyBootstrapper.t.sol:StrategyBootstrapperConstructorTest
+[PASS] test_constructor_revertsOnZeroAddress() (gas: 36505)
+[PASS] test_constructor_setsDeployer() (gas: 410211)
+[PASS] test_constructor_setsStrategy() (gas: 410273)
+[PASS] test_constructor_usedIsFalse() (gas: 411800)
+Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 5.07ms (230.80µs CPU time)
+
+Ran 2 tests for test/strategies/usdc-lending/UsdcMultiLendingVault.t.sol:S21_PerformanceSnapshotTest
+[PASS] test_performanceSnapshot_emittedOnFinalize() (gas: 2575357)
+[PASS] test_performanceSnapshot_idlePctBps_zeroWhenAllDeployed() (gas: 2575073)
+Suite result: ok. 2 passed; 0 failed; 0 skipped; finished in 13.51ms (8.61ms CPU time)
+
+Ran 6 tests for test/strategies/usdc-lending/UsdcMultiLendingVault.t.sol:S21_CoordinationHooksTest
+[PASS] test_hasIdleCash_falseWithNoIdle() (gas: 15284)
+[PASS] test_hasIdleCash_trueAfterDeposit() (gas: 207416)
+[PASS] test_isInternallyRebalancing_falseAtRest() (gas: 9933)
+[PASS] test_lastInternalRebalanceTs_zeroBeforeRebalance() (gas: 8142)
+[PASS] test_liquidityReadinessBps_nonzeroWithFundedAdapter() (gas: 1698056)
+[PASS] test_liquidityReadinessBps_tenThousandWithNoAdapters() (gas: 8633)
+Suite result: ok. 6 passed; 0 failed; 0 skipped; finished in 7.13ms (3.65ms CPU time)
+
+Ran 32 tests for test/strategies/usdc-lending/adapters/DolomiteUsdcMultiMarketAdapter.t.sol:DolomiteAdapter_Test
+[PASS] test_addMarket_ERC4626_extends_list() (gas: 138601)
+[PASS] test_addMarket_PoolLike_extends_list() (gas: 456549)
+[PASS] test_addMarket_only_param_role() (gas: 38216)
+[PASS] test_capacity_zero_is_unlimited() (gas: 214545)
+[PASS] test_constructor_sets_state() (gas: 18532)
+[PASS] test_deposit_ERC4626_routes_to_market() (gas: 300436)
+[PASS] test_deposit_PoolLike_routes_to_market() (gas: 208042)
+[PASS] test_deposit_at_capacity_boundary() (gas: 217568)
+[PASS] test_deposit_leaves_no_idle_in_adapter() (gas: 208163)
+[PASS] test_deposit_reverts_on_non_vault() (gas: 91926)
+[PASS] test_deposit_reverts_on_zero() (gas: 18265)
+[PASS] test_deposit_reverts_over_capacity() (gas: 125003)
+[PASS] test_harvest_returns_zero() (gas: 10936)
+[PASS] test_harvestableProfit_returns_zero() (gas: 6345)
+[PASS] test_idleAssetBalance_reflects_raw_USDC() (gas: 57932)
+[PASS] test_idleAssetBalance_zero_initially() (gas: 12254)
+[PASS] test_isPushMode_false() (gas: 6842)
+[PASS] test_name_returns_correct() (gas: 10500)
+[PASS] test_positions_returns_per_market_assets() (gas: 279168)
+[PASS] test_setCapacity_updates() (gas: 21615)
+[PASS] test_toggleMarket_disables_target() (gas: 278200)
+[PASS] test_totalAssets_initially_zero() (gas: 28744)
+[PASS] test_underlying_returns_usdc() (gas: 9085)
+[PASS] test_withdraw_ERC4626_caps_to_market_cash() (gas: 373571)
+[PASS] test_withdraw_ERC4626_returns_assets_to_vault() (gas: 354149)
+[PASS] test_withdraw_PoolLike_caps_to_liquidity() (gas: 262078)
+[PASS] test_withdraw_PoolLike_returns_assets_to_vault() (gas: 259166)
+[PASS] test_withdraw_returns_zero_when_no_balance() (gas: 34910)
+[PASS] test_withdraw_reverts_on_non_vault() (gas: 211715)
+[PASS] test_withdraw_reverts_on_zero() (gas: 17129)
+[PASS] test_withdraw_spreads_across_multiple_markets() (gas: 533612)
+[PASS] test_withdraw_transfers_directly_to_vault() (gas: 261046)
+Suite result: ok. 32 passed; 0 failed; 0 skipped; finished in 6.04ms (4.91ms CPU time)
+
+Ran 5 tests for test/strategies/usdc-lending/replay-defense/RAPatternRegression.t.sol:RA9_StorageLayoutTest
+[PASS] test_RA9_adapters_array_slot_is_deterministic() (gas: 467113)
+[PASS] test_RA9_isAdapter_mapping_consistency() (gas: 472135)
+[PASS] test_RA9_moduleReplacement_preservesStorage() (gas: 874082)
+[PASS] test_RA9_positionAssets_slot_consistent_after_allocation() (gas: 752642)
+[PASS] test_RA9_reentrancyGuard_slot_correct_default() (gas: 5499)
+Suite result: ok. 5 passed; 0 failed; 0 skipped; finished in 7.64ms (3.72ms CPU time)
+
+Ran 5 tests for test/strategies/usdc-lending/RelCapStability.t.sol:RelCapStability
+[PASS] test_dynamic_relcap_scales_correctly() (gas: 1102318)
+[PASS] test_manual_relcap_override() (gas: 802680)
+[PASS] test_relcap_limits_small_market() (gas: 763261)
+[PASS] test_relcap_stable_across_cycles() (gas: 816477)
+[PASS] test_tighter_constraint_wins() (gas: 1015750)
+Suite result: ok. 5 passed; 0 failed; 0 skipped; finished in 15.15ms (10.23ms CPU time)
+
+Ran 6 tests for test/strategies/usdc-lending/EconomicSanity.t.sol:EconomicSanity
+[PASS] test_adapter_partial_failure_reallocates() (gas: 1496806)
+[PASS] test_capital_efficiency_minimal_idle() (gas: 757516)
+[PASS] test_equal_apy_equal_split() (gas: 779730)
+[PASS] test_higher_apy_gets_more_capital() (gas: 816999)
+[PASS] test_score_inversion_follows_apy_change() (gas: 1563513)
+[PASS] test_tvl_conservation() (gas: 775983)
+Suite result: ok. 6 passed; 0 failed; 0 skipped; finished in 23.19ms (17.27ms CPU time)
+
+Ran 5 tests for test/strategies/usdc-lending/StrategyBootstrapper.t.sol:StrategyBootstrapperViewTest
+[PASS] test_hasBootstrapRole_falseAfterBootstrap() (gas: 729158)
+[PASS] test_hasBootstrapRole_falseWithoutRoleGrant() (gas: 420980)
+[PASS] test_hasBootstrapRole_trueBeforeBootstrap() (gas: 454006)
+[PASS] test_isBootstrapped_falseBeforeBootstrap() (gas: 449869)
+[PASS] test_isBootstrapped_trueAfterBootstrap() (gas: 722849)
+Suite result: ok. 5 passed; 0 failed; 0 skipped; finished in 4.61ms (1.01ms CPU time)
+
+Ran 3 tests for test/strategies/usdc-lending/adapters/EulerAdapter.t.sol:EulerAdapterBehavior_Test
+[PASS] test_euler_max_4_vaults_constraint() (gas: 270329)
+[PASS] test_euler_multi_vault_allocation() (gas: 327903)
+[PASS] test_euler_rebalance_simulation() (gas: 211892)
+Suite result: ok. 3 passed; 0 failed; 0 skipped; finished in 671.90µs (302.50µs CPU time)
+
+Ran 3 tests for test/strategies/usdc-lending/RemediationSprint.t.sol:StaleDecay_RealTest
+[PASS] test_scoringStalenessStorageApplied() (gas: 74516)
+[PASS] test_setRiskScoreStampsTimestamp() (gas: 119263)
+[PASS] test_setScoringStalenessParamsValidates() (gas: 63359)
+Suite result: ok. 3 passed; 0 failed; 0 skipped; finished in 6.08ms (515.20µs CPU time)
+
+Ran 73 tests for test/strategies/usdc-lending/adapters/CometUsdcMultiMarketAdapter.t.sol:CometAdapter_Test
+[PASS] test_activeMarket_returns_current() (gas: 17168)
+[PASS] test_addMarket_extends_list() (gas: 65574)
+[PASS] test_addMarket_only_param_role() (gas: 16931)
+[PASS] test_addMarket_reverts_wrong_asset() (gas: 959684)
+[PASS] test_addMarket_reverts_zero() (gas: 15840)
+[PASS] test_capacity_exact_boundary() (gas: 220317)
+[PASS] test_capacity_revert_one_wei_over() (gas: 260806)
+[PASS] test_capacity_zero_means_infinite() (gas: 217785)
+[PASS] test_constructor_grants_roles() (gas: 15970)
+[PASS] test_constructor_loads_from_registry() (gas: 14927)
+[PASS] test_constructor_reverts_no_markets() (gas: 952056)
+[PASS] test_constructor_reverts_zero_admin() (gas: 1053851)
+[PASS] test_constructor_reverts_zero_usdc() (gas: 1054206)
+[PASS] test_constructor_reverts_zero_vault() (gas: 1055586)
+[PASS] test_constructor_sets_state() (gas: 16271)
+[PASS] test_currentAPYBps_clamped_to_uint16_max() (gas: 30185)
+[PASS] test_currentAPYBps_reads_from_active_market() (gas: 27714)
+[PASS] test_currentAPYBps_uses_active_market_after_deposit() (gas: 281037)
+[PASS] test_currentAPYBps_zero_when_rate_zero() (gas: 26451)
+[PASS] test_deposit_emits_event() (gas: 213460)
+[PASS] test_deposit_reverts_non_vault() (gas: 91567)
+[PASS] test_deposit_reverts_over_capacity() (gas: 118014)
+[PASS] test_deposit_reverts_zero() (gas: 19835)
+[PASS] test_deposit_revokes_approval_after() (gas: 211708)
+[PASS] test_deposit_routes_to_best_market() (gas: 329272)
+[PASS] test_deposit_skips_disabled_markets() (gas: 278983)
+[PASS] test_deposit_skips_flagged_markets() (gas: 280361)
+[PASS] test_effectiveAPYBps_single_market() (gas: 222665)
+[PASS] test_effectiveAPYBps_zero_when_no_assets() (gas: 22388)
+[PASS] test_externalMarketTVL_skips_disabled() (gas: 269478)
+[PASS] test_externalMarketTVL_uses_totalsBasic() (gas: 214972)
+[PASS] test_flagMarket_flags_unflag() (gas: 26397)
+[PASS] test_harvest_returns_zero() (gas: 15588)
+[PASS] test_harvestableProfit_returns_zero() (gas: 8668)
+[PASS] test_idleAssetBalance_reflects_raw_USDC() (gas: 58383)
+[PASS] test_idleAssetBalance_zero_initially() (gas: 12661)
+[PASS] test_investedAssets_reflects_comet_balance() (gas: 211388)
+[PASS] test_isPushMode_false() (gas: 7381)
+[PASS] test_name_returns_correct() (gas: 11237)
+[PASS] test_positions_returns_assets_per_market() (gas: 213984)
+[PASS] test_setCapacity_updates() (gas: 21959)
+[PASS] test_setIncentiveBps_updates() (gas: 40119)
+[PASS] test_setRiskScore_only_param_role() (gas: 14707)
+[PASS] test_setRiskScore_updates() (gas: 23114)
+[PASS] test_toggleMarket_enables_disables() (gas: 67367)
+[PASS] test_totalAssets_sum_idle_and_invested() (gas: 214373)
+[PASS] test_underlying_returns_usdc() (gas: 9814)
+[PASS] test_updateMarketAddress_updates() (gas: 34831)
+[PASS] test_v4d_defaultHaircut_7500() (gas: 9971)
+[PASS] test_v4d_harvest_defersOnStaleOracle() (gas: 967422)
+[PASS] test_v4d_harvest_handlesClaimRevert() (gas: 914849)
+[PASS] test_v4d_harvest_handlesSwapRevertGracefully() (gas: 976096)
+[PASS] test_v4d_harvest_happyPath() (gas: 1051248)
+[PASS] test_v4d_harvest_resetsApprovalAfterSwap() (gas: 1050649)
+[PASS] test_v4d_harvest_revertsOnNonVault() (gas: 889550)
+[PASS] test_v4d_harvestableProfit_returnsExpected() (gas: 950416)
+[PASS] test_v4d_harvestableProfit_zeroIfCannotSwap() (gas: 927638)
+[PASS] test_v4d_harvestableProfit_zeroIfNotInit() (gas: 9966)
+[PASS] test_v4d_incentiveAPYBps_appliesHaircutOnRealized() (gas: 22711)
+[PASS] test_v4d_pendingRewardBalance_reflects() (gas: 923701)
+[PASS] test_v4d_realizedTakesPriorityOverLegacy() (gas: 46353)
+[PASS] test_v4d_setHaircutBps_capCheck() (gas: 15961)
+[PASS] test_v4d_setRewardConfig_happyPath() (gas: 881833)
+[PASS] test_v4d_setRewardConfig_idempotent() (gas: 881905)
+[PASS] test_v4d_setRewardConfig_only_param_role() (gas: 15937)
+[PASS] test_v4d_setRewardConfig_revertsOnZero() (gas: 20190)
+[PASS] test_v4d_setSwapHelper_canDisableHarvest() (gas: 927131)
+[PASS] test_withdraw_caps_to_available() (gas: 259544)
+[PASS] test_withdraw_emits_event() (gas: 263240)
+[PASS] test_withdraw_from_multiple_markets() (gas: 514929)
+[PASS] test_withdraw_only_vault() (gas: 216190)
+[PASS] test_withdraw_sends_to_vault() (gas: 261572)
+[PASS] test_withdrawableAssets_bounded_by_market_cash() (gas: 235152)
+Suite result: ok. 73 passed; 0 failed; 0 skipped; finished in 14.22ms (12.78ms CPU time)
+
+Ran 5 tests for test/strategies/usdc-lending/UsdcMultiLendingVault.t.sol:S21_SyncAndBackoffTest
+[PASS] test_rebalancePlanConsecutiveFailures_incrementsAndResets() (gas: 2263460)
+[PASS] test_shouldSyncPositionAssets_falseWithinCooldown() (gas: 2655664)
+[PASS] test_shouldSyncPositionAssets_trueAfterCooldown() (gas: 1464455)
+[PASS] test_shouldSyncPositionAssets_trueInitially() (gas: 48947)
+[PASS] test_syncPositionAsset_skipsOnSuspiciousZero() (gas: 1723659)
+Suite result: ok. 5 passed; 0 failed; 0 skipped; finished in 13.24ms (10.17ms CPU time)
+
+Ran 2 tests for test/strategies/usdc-lending/RemediationSprint.t.sol:BootstrapCoherenceRevert_RealTest
+[PASS] test_constructorAcceptsBootstrapOn() (gas: 22776710)
+[PASS] test_constructorRevertsWithIncoherentBootstrap() (gas: 17725613)
+Suite result: ok. 2 passed; 0 failed; 0 skipped; finished in 3.20ms (2.02ms CPU time)
+
+Ran 10 tests for test/strategies/usdc-lending/TVL_Confidence.t.sol:TVL_Confidence
+[PASS] test_apy_dominates_over_tvl_confidence() (gas: 1391727)
+[PASS] test_euler_like_allocable_when_justified() (gas: 1943894)
+[PASS] test_large_tvl_higher_confidence() (gas: 1381142)
+[PASS] test_no_cache_defaults_to_zero_confidence() (gas: 1344110)
+[PASS] test_no_winner_takes_all_loop() (gas: 2289068)
+[PASS] test_poke_updates_cache() (gas: 501272)
+[PASS] test_relative_exposure_cap_enforced() (gas: 1378990)
+[PASS] test_setter_maxRelativeExposureBps() (gas: 103065)
+[PASS] test_small_tvl_penalized_not_starved() (gas: 1381607)
+[PASS] test_stale_tvl_falls_back_conservatively() (gas: 1361617)
+Suite result: ok. 10 passed; 0 failed; 0 skipped; finished in 19.52ms (16.06ms CPU time)
+
+Ran 6 tests for test/strategies/usdc-lending/UsdcMultiLendingVault.t.sol:S22_BootstrapperTest
+[PASS] test_bootstrapper_happyPath_registersAndRenounces() (gas: 32391433)
+[PASS] test_bootstrapper_hasBootstrapRole_trueBeforeBootstrap() (gas: 31070765)
+[PASS] test_bootstrapper_isBootstrapped_falseInitially() (gas: 31066453)
+[PASS] test_bootstrapper_revertsAlreadyBootstrapped() (gas: 32382255)
+[PASS] test_bootstrapper_revertsEmptyAdapters() (gas: 31067082)
+[PASS] test_bootstrapper_revertsNotDeployer() (gas: 31072144)
+Suite result: ok. 6 passed; 0 failed; 0 skipped; finished in 16.17ms (12.34ms CPU time)
+
+Ran 39 tests for test/strategies/usdc-lending/adapters/DolomiteUsdcMultiMarketAdapter.t.sol:S21_DolomiteSetterTest
+[PASS] test_addMarket_ERC4626_extends_list() (gas: 138755)
+[PASS] test_addMarket_PoolLike_extends_list() (gas: 456703)
+[PASS] test_addMarket_only_param_role() (gas: 38216)
+[PASS] test_capacity_zero_is_unlimited() (gas: 214598)
+[PASS] test_constructor_sets_state() (gas: 18532)
+[PASS] test_deposit_ERC4626_routes_to_market() (gas: 300507)
+[PASS] test_deposit_PoolLike_routes_to_market() (gas: 208095)
+[PASS] test_deposit_at_capacity_boundary() (gas: 217585)
+[PASS] test_deposit_leaves_no_idle_in_adapter() (gas: 208286)
+[PASS] test_deposit_reverts_on_non_vault() (gas: 92014)
+[PASS] test_deposit_reverts_on_zero() (gas: 18309)
+[PASS] test_deposit_reverts_over_capacity() (gas: 125025)
+[PASS] test_fallback_reverts() (gas: 8379)
+[PASS] test_flagMarket_badIndex_reverts() (gas: 18066)
+[PASS] test_harvest_returns_zero() (gas: 10936)
+[PASS] test_harvestableProfit_returns_zero() (gas: 6345)
+[PASS] test_idleAssetBalance_reflects_raw_USDC() (gas: 58020)
+[PASS] test_idleAssetBalance_zero_initially() (gas: 12298)
+[PASS] test_isPushMode_false() (gas: 6930)
+[PASS] test_name_returns_correct() (gas: 10628)
+[PASS] test_positions_returns_per_market_assets() (gas: 279203)
+[PASS] test_receiveETH_reverts() (gas: 18447)
+[PASS] test_setCapacity_onlyParamRole() (gas: 36968)
+[PASS] test_setCapacity_updates() (gas: 21637)
+[PASS] test_setCostsEstimates_updatesState() (gas: 51825)
+[PASS] test_setOptimizeParams_updatesState() (gas: 23490)
+[PASS] test_toggleMarket_badIndex_reverts() (gas: 16658)
+[PASS] test_toggleMarket_disables_target() (gas: 278200)
+[PASS] test_totalAssets_initially_zero() (gas: 28810)
+[PASS] test_underlying_returns_usdc() (gas: 9173)
+[PASS] test_withdraw_ERC4626_caps_to_market_cash() (gas: 373641)
+[PASS] test_withdraw_ERC4626_returns_assets_to_vault() (gas: 354220)
+[PASS] test_withdraw_PoolLike_caps_to_liquidity() (gas: 262148)
+[PASS] test_withdraw_PoolLike_returns_assets_to_vault() (gas: 259236)
+[PASS] test_withdraw_returns_zero_when_no_balance() (gas: 35064)
+[PASS] test_withdraw_reverts_on_non_vault() (gas: 211838)
+[PASS] test_withdraw_reverts_on_zero() (gas: 17151)
+[PASS] test_withdraw_spreads_across_multiple_markets() (gas: 533736)
+[PASS] test_withdraw_transfers_directly_to_vault() (gas: 261064)
+Suite result: ok. 39 passed; 0 failed; 0 skipped; finished in 7.73ms (6.44ms CPU time)
+
+Ran 10 tests for test/strategies/usdc-lending/LiquidityOverlay.t.sol:LiquidityOverlay
+[PASS] test_L_integration_high_liq_full_cap() (gas: 564513)
+[PASS] test_L_integration_low_liq_reduced_cap() (gas: 849022)
+[PASS] test_L_math_0_liq_6000() (gas: 859)
+[PASS] test_L_math_10000_liq_full() (gas: 257)
+[PASS] test_L_math_2499_liq_6000() (gas: 200)
+[PASS] test_L_math_2500_liq_7500() (gas: 609)
+[PASS] test_L_math_4999_liq_7500() (gas: 763)
+[PASS] test_L_math_5000_liq_9000() (gas: 543)
+[PASS] test_L_math_7999_liq_9000() (gas: 499)
+[PASS] test_L_math_8000_liq_full() (gas: 411)
+Suite result: ok. 10 passed; 0 failed; 0 skipped; finished in 7.04ms (3.05ms CPU time)
+
+Ran 3 tests for test/strategies/usdc-lending/RemediationSprint.t.sol:WithdrawalShortfall_RealTest
+[PASS] test_fullAmountNoEvent() (gas: 120710)
+[PASS] test_revertOnShortfallOverloadReverts() (gas: 98661)
+[PASS] test_shortfallEmitsEventAndPaysAvailable() (gas: 121158)
+Suite result: ok. 3 passed; 0 failed; 0 skipped; finished in 6.13ms (724.60µs CPU time)
+
+Ran 9 tests for test/strategies/usdc-lending/UsdcMultiLendingVault.t.sol:UsdcMultiLendingVault_Pausable_Test
+[PASS] test_emergencyRecallAll_works_when_paused() (gas: 1688302)
+[PASS] test_pause_blocks_deposit() (gas: 1477374)
+[PASS] test_pause_blocks_harvest() (gas: 51581)
+[PASS] test_pause_blocks_rebalance() (gas: 84611)
+[PASS] test_pause_blocks_withdraw() (gas: 50624)
+[PASS] test_pause_only_admin() (gas: 15814)
+[PASS] test_pause_sets_paused() (gas: 41155)
+[PASS] test_unpause_only_admin() (gas: 45550)
+[PASS] test_unpause_unsets_paused() (gas: 31634)
+Suite result: ok. 9 passed; 0 failed; 0 skipped; finished in 9.66ms (6.61ms CPU time)
+
+Ran 1 test for test/strategies/usdc-lending/RemediationSprint.t.sol:DriftDenominatorFix_RealTest
+[PASS] test_quarantinedAdapterDoesNotDiluteDrift() (gas: 295084)
+Suite result: ok. 1 passed; 0 failed; 0 skipped; finished in 6.13ms (684.80µs CPU time)
+
+Ran 15 tests for test/strategies/usdc-lending/UpkeepLiveness.t.sol:UpkeepLivenessTest
+[PASS] test_A1a_alwaysFailingStrategyAdvancesIndex() (gas: 174144)
+[PASS] test_A1b_harvestCooldownRevertsOnHarvest() (gas: 33464)
+[PASS] test_A2a_noActivePlanDoesNotEmitExecuteStep() (gas: 93750)
+[PASS] test_A2b_activePlanEmitsExecuteStepThenAdvances() (gas: 165477)
+[PASS] test_A2c_executeStepFailureAdvancesIndex() (gas: 108778)
+[PASS] test_A3a_harvestCooldownEnforced() (gas: 30292)
+[PASS] test_A3b_harvestCooldownExpires() (gas: 81846)
+[PASS] test_A3c_rebalanceCooldownEnforced() (gas: 31513)
+[PASS] test_A3d_legacyRebalanceCooldownEnforced() (gas: 31028)
+[PASS] test_A3e_rebalanceCooldownExpires() (gas: 87740)
+[PASS] test_A3f_deployIdleCooldownEnforced() (gas: 30540)
+[PASS] test_A3g_deployIdleCooldownExpires() (gas: 82128)
+[PASS] test_A3h_zeroCooldownNeverReverts() (gas: 78686)
+[PASS] test_A3i_zeroLastTsNeverTriggersRevert() (gas: 79169)
+[PASS] test_I3_rrIndexEventuallyProgressesAll() (gas: 336650)
+Suite result: ok. 15 passed; 0 failed; 0 skipped; finished in 6.29ms (5.52ms CPU time)
+
+Ran 8 tests for test/strategies/usdc-lending/UsdcMultiLendingVault.t.sol:UsdcMultiLendingVault_Views_Test
+[PASS] test_asset_returns_usdc() (gas: 6880)
+[PASS] test_canHarvest_returns_status() (gas: 64522)
+[PASS] test_canRebalance_returns_status() (gas: 245025)
+[PASS] test_hasIdleCash_returns_false_when_below_dust() (gas: 15130)
+[PASS] test_idleCash_returns_vault_balance() (gas: 17279)
+[PASS] test_positions_returns_all_adapters() (gas: 34962)
+[PASS] test_totalAssets_includes_adapters() (gas: 43759)
+[PASS] test_withdrawableAssets_returns_sum() (gas: 51468)
+Suite result: ok. 8 passed; 0 failed; 0 skipped; finished in 7.43ms (1.00ms CPU time)
+
+Ran 12 tests for test/strategies/usdc-lending/UsdcMultiLendingVault.t.sol:SetterRangeTest
+[PASS] test_setLiquidityStalenessSeconds_happyPath() (gas: 89309)
+[PASS] test_setLiquidityStalenessSeconds_onlyParamRole() (gas: 62032)
+[PASS] test_setLiquidityStalenessSeconds_tooHigh_reverts() (gas: 62334)
+[PASS] test_setLiquidityStalenessSeconds_tooLow_reverts() (gas: 61978)
+[PASS] test_setMaxRebalanceActionsPerTx_happyPath() (gas: 91656)
+[PASS] test_setMaxRebalanceActionsPerTx_onlyParamRole() (gas: 64131)
+[PASS] test_setMaxRebalanceActionsPerTx_tooHigh_reverts() (gas: 64403)
+[PASS] test_setMaxRebalanceActionsPerTx_zero_reverts() (gas: 64575)
+[PASS] test_setRebalancePlanMinDrift_happyPath() (gas: 88392)
+[PASS] test_setRebalancePlanMinDrift_onlyParamRole() (gas: 64206)
+[PASS] test_setRebalancePlanMinDrift_tooHigh_reverts() (gas: 64562)
+[PASS] test_setRebalancePlanMinDrift_tooLow_reverts() (gas: 64558)
+Suite result: ok. 12 passed; 0 failed; 0 skipped; finished in 5.09ms (2.34ms CPU time)
+
+Ran 3 tests for test/strategies/usdc-lending/GasLoopSafety.t.sol:GasLoopSafety
+[PASS] test_deploy_idle_gas_8_adapters() (gas: 1298113)
+[PASS] test_deploy_idle_gas_worst_case_failures() (gas: 1385307)
+[PASS] test_rebalance_gas_8_adapters() (gas: 3211868)
+Suite result: ok. 3 passed; 0 failed; 0 skipped; finished in 29.31ms (19.65ms CPU time)
+
+Ran 9 tests for test/strategies/usdc-lending/UsdcMultiLendingVault.t.sol:UsdcMultiLendingVault_Harvest_Test
+[PASS] test_harvest_auto_redeploys_idle() (gas: 326902)
+[PASS] test_harvest_collects_from_adapters() (gas: 332570)
+[PASS] test_harvest_emits_event() (gas: 323156)
+[PASS] test_harvest_only_keeper() (gas: 19627)
+[PASS] test_harvest_skips_disabled_adapters() (gas: 390419)
+[PASS] test_harvest_updates_lastHarvestTs() (gas: 114661)
+[PASS] test_harvest_with_receiver_only_core() (gas: 20935)
+[PASS] test_harvest_with_receiver_reverts_zero_address() (gas: 21265)
+[PASS] test_harvest_with_receiver_sends_to_receiver() (gas: 121915)
+Suite result: ok. 9 passed; 0 failed; 0 skipped; finished in 25.37ms (20.26ms CPU time)
+
+Ran 32 tests for test/strategies/usdc-lending/CtoHardeningFixes.t.sol:CtoHardeningFixes
+[PASS] test_adapterActivatedAt_NOT_set_on_addAdapter() (gas: 227265)
+[PASS] test_adapterActivatedAt_not_reset_on_reenable() (gas: 286696)
+[PASS] test_adapterActivatedAt_set_on_first_enable() (gas: 272922)
+[PASS] test_backfill_skips_adapter_with_position_above_dust() (gas: 1201228)
+[PASS] test_bootstrap_active_at_deploy() (gas: 13150)
+[PASS] test_bootstrap_auto_expires_after_duration() (gas: 14178)
+[PASS] test_bootstrap_full_exposure_for_new_adapters() (gas: 1151669)
+[PASS] test_bootstrap_idle_revert_above_soft_threshold() (gas: 686896)
+[PASS] test_bootstrap_small_deposit_when_large_idle_uses_tvl_base() (gas: 1318044)
+[PASS] test_degraded_views_allows_deposit_below_threshold() (gas: 1763663)
+[PASS] test_degraded_views_blocks_with_DegradedViews_error() (gas: 1205937)
+[PASS] test_degraded_views_emits_observed_above_100bps() (gas: 1763828)
+[PASS] test_degraded_views_ignores_quarantined_adapters() (gas: 1427831)
+[PASS] test_degraded_views_zero_positions_not_degraded() (gas: 1146354)
+[PASS] test_deployIdle_blocked_when_depositsDisabled() (gas: 568483)
+[PASS] test_deployIdle_deploys_idle_cash() (gas: 1293992)
+[PASS] test_deployIdle_only_keeper() (gas: 550588)
+[PASS] test_deployIdle_quarantined_adapter_excluded() (gas: 1435472)
+[PASS] test_deployIdle_respects_cooldown() (gas: 1390314)
+[PASS] test_deposit_allows_idle_within_percentage_bound() (gas: 1298692)
+[PASS] test_deposit_reverts_idle_above_percentage_bound() (gas: 1144273)
+[PASS] test_deposit_uses_dustTolerance_as_floor() (gas: 1335048)
+[PASS] test_exit_bootstrap_mode_force_off() (gas: 73540)
+[PASS] test_exit_bootstrap_mode_only_admin() (gas: 61029)
+[PASS] test_failure_decay_disabled_when_zero() (gas: 1311915)
+[PASS] test_failure_decay_resets_counter_after_timeout() (gas: 1274408)
+[PASS] test_failure_no_decay_within_window() (gas: 1278125)
+[PASS] test_isNew_AND_logic_seed_reached_in_time_means_mature() (gas: 1399913)
+[PASS] test_isNew_AND_logic_time_expired_seed_reached_means_mature() (gas: 1397637)
+[PASS] test_neverUsed_below_dust_stays_ramped() (gas: 976888)
+[PASS] test_toggleAdapter_emits_AdapterActivated_once() (gas: 289015)
+[PASS] test_view_failure_does_not_increment_counter() (gas: 1175993)
+Suite result: ok. 32 passed; 0 failed; 0 skipped; finished in 61.62ms (57.04ms CPU time)
+
+Ran 57 tests for test/strategies/usdc-lending/swap/RewardSwapHelper.t.sol:RewardSwapHelperTest
+[PASS] test_canSwap_falseForUnconfiguredToken() (gas: 15855)
+[PASS] test_canSwap_falseWhenDisabled() (gas: 30739)
+[PASS] test_canSwap_falseWhenNegativePrice() (gas: 34069)
+[PASS] test_canSwap_falseWhenStaleOracle() (gas: 31622)
+[PASS] test_canSwap_falseWhenZeroPrice() (gas: 29597)
+[PASS] test_canSwap_handlesFutureUpdatedAt() (gas: 34219)
+[PASS] test_canSwap_recoversAfterFeedRefresh() (gas: 42367)
+[PASS] test_canSwap_trueWhenHealthy() (gas: 28503)
+[PASS] test_constructor_camelotZeroAllowed() (gas: 1784920)
+[PASS] test_constructor_revertsOnZeroAdmin() (gas: 67949)
+[PASS] test_constructor_revertsOnZeroUniRouter() (gas: 67217)
+[PASS] test_constructor_revertsOnZeroUsdc() (gas: 66921)
+[PASS] test_constructor_setsImmutables() (gas: 14879)
+[PASS] test_disableReward_emitsEvent() (gas: 23782)
+[PASS] test_disableReward_revertsOnNonRole() (gas: 38409)
+[PASS] test_disableReward_setsEnabledFalse() (gas: 24125)
+[PASS] test_fallback_reverts() (gas: 7237)
+[PASS] test_isEnabled_falseForUnknownToken() (gas: 8455)
+[PASS] test_isEnabled_trueAfterConfig() (gas: 10898)
+[PASS] test_previewExpectedOut_correctMath() (gas: 25861)
+[PASS] test_previewExpectedOut_handlesPriceChange() (gas: 32766)
+[PASS] test_previewExpectedOut_returnsZeroOnDisabled() (gas: 30701)
+[PASS] test_previewExpectedOut_smallAmount() (gas: 26321)
+[PASS] test_receiveETH_reverts() (gas: 18145)
+[PASS] test_rescueERC20_admin_canRescueUnconfiguredToken() (gas: 478751)
+[PASS] test_rescueERC20_canRescueDisabledRewardToken() (gas: 80306)
+[PASS] test_rescueERC20_revertsOnEnabledRewardToken() (gas: 68165)
+[PASS] test_rescueERC20_revertsOnNonAdmin() (gas: 493243)
+[PASS] test_rescueERC20_revertsOnZeroReceiver() (gas: 473554)
+[PASS] test_setRewardConfig_acceptsAtCeiling() (gas: 39936)
+[PASS] test_setRewardConfig_acceptsAtFloor() (gas: 40221)
+[PASS] test_setRewardConfig_acceptsSlippageAtCap() (gas: 42610)
+[PASS] test_setRewardConfig_camelotPathOptional() (gas: 37434)
+[PASS] test_setRewardConfig_emitsEvent() (gas: 45089)
+[PASS] test_setRewardConfig_revertsOnEmptyUniPath() (gas: 22605)
+[PASS] test_setRewardConfig_revertsOnMaxAgeAboveCeiling() (gas: 24641)
+[PASS] test_setRewardConfig_revertsOnMaxAgeBelowFloor() (gas: 23898)
+[PASS] test_setRewardConfig_revertsOnNonRole() (gas: 46071)
+[PASS] test_setRewardConfig_revertsOnSlippageTooHigh() (gas: 24717)
+[PASS] test_setRewardConfig_revertsOnZeroFeed() (gas: 21506)
+[PASS] test_setRewardConfig_revertsOnZeroToken() (gas: 21886)
+[PASS] test_slippage_appliedToMinOut_500bps() (gas: 250829)
+[PASS] test_slippage_appliedToMinOut_zeroBps() (gas: 250350)
+[PASS] test_swapToUSDC_emitsSwappedEventCamelot() (gas: 258626)
+[PASS] test_swapToUSDC_emitsSwappedEventUni() (gas: 232470)
+[PASS] test_swapToUSDC_fallsBackToCamelot() (gas: 258600)
+[PASS] test_swapToUSDC_returnsZeroOnZeroAmountIn() (gas: 28762)
+[PASS] test_swapToUSDC_revertsIfBothDexesFail() (gas: 192494)
+[PASS] test_swapToUSDC_revertsIfCamelotPathDisabled_AndUniFails() (gas: 167828)
+[PASS] test_swapToUSDC_revertsOnDisabledToken() (gas: 114504)
+[PASS] test_swapToUSDC_revertsOnNegativeOraclePrice() (gas: 111213)
+[PASS] test_swapToUSDC_revertsOnStaleOracle() (gas: 107454)
+[PASS] test_swapToUSDC_revertsOnZeroOraclePrice() (gas: 110860)
+[PASS] test_swapToUSDC_revertsOnZeroReceiver() (gas: 100294)
+[PASS] test_swapToUSDC_uniRevertsOnSlippageTooHigh_BothFail() (gas: 213644)
+[PASS] test_swapToUSDC_uniSlippageBreach_camelotSucceeds() (gas: 274287)
+[PASS] test_swapToUSDC_uniswapHappyPath() (gas: 233375)
+Suite result: ok. 57 passed; 0 failed; 0 skipped; finished in 5.73ms (4.90ms CPU time)
+
+Ran 8 tests for test/strategies/usdc-lending/adapters/MultiAdapterBase.t.sol:GainsAdapter_Test
+[PASS] testFuzz_gains_depositInstantWithdraw(uint256,uint256) (runs: 256, μ: 160442, ~: 160360)
+[PASS] testFuzz_gains_epochWithdrawal(uint256) (runs: 256, μ: 192522, ~: 192546)
+[PASS] test_gains_claim_before_epoch_reverts() (gas: 160798)
+[PASS] test_gains_deposit() (gas: 132795)
+[PASS] test_gains_epoch_withdrawal_claim() (gas: 189758)
+[PASS] test_gains_epoch_withdrawal_request() (gas: 157541)
+[PASS] test_gains_instant_withdraw() (gas: 155403)
+[PASS] test_gains_yield_accrual() (gas: 135869)
+Suite result: ok. 8 passed; 0 failed; 0 skipped; finished in 64.86ms (64.28ms CPU time)
+
+Ran 1 test for test/strategies/usdc-lending/RemediationSprint.t.sol:IsSeasoned_RealTest
+[PASS] test_isSeasonedFlagSetAfterFirstSignificantDeposit() (gas: 711977)
+Suite result: ok. 1 passed; 0 failed; 0 skipped; finished in 5.17ms (1.01ms CPU time)
+
+Ran 2 tests for test/strategies/usdc-lending/adapters/MultiAdapterBase.t.sol:MultiAdapterComparison_Test
+[PASS] test_all_adapters_deposit() (gas: 438279)
+[PASS] test_all_adapters_yield_accrual() (gas: 269706)
+Suite result: ok. 2 passed; 0 failed; 0 skipped; finished in 627.30µs (246.70µs CPU time)
+
+Ran 5 tests for test/strategies/usdc-lending/KeeperFailure.t.sol:KeeperFailure
+[PASS] test_auto_quarantine_after_threshold() (gas: 1614549)
+[PASS] test_multiple_adapter_failures() (gas: 835794)
+[PASS] test_no_keeper_forever() (gas: 927582)
+[PASS] test_single_adapter_deposit_failure() (gas: 1280961)
+[PASS] test_withdraw_failure_during_rebalance() (gas: 1368726)
+Suite result: ok. 5 passed; 0 failed; 0 skipped; finished in 17.39ms (12.12ms CPU time)
+
+Ran 12 tests for test/strategies/usdc-lending/DelegatecallEquivalence.t.sol:DelegatecallEquivalence
+[PASS] test_confidence_affects_score_via_delegatecall() (gas: 279384)
+[PASS] test_deployIdle_works_via_fallback() (gas: 574165)
+[PASS] test_deposit_still_allocates_immediately() (gas: 436861)
+[PASS] test_direct_call_to_scoringModule_reverts() (gas: 15759)
+[PASS] test_direct_deployIdleToAdapters_reverts() (gas: 12503)
+[PASS] test_direct_deployIdle_to_scoringModule_reverts() (gas: 19364)
+[PASS] test_explainScore_callable_via_strategy_address() (gas: 111173)
+[PASS] test_explainScore_matches_internal_scoring_logic() (gas: 6984882)
+[PASS] test_full_lifecycle_no_regression() (gas: 1488183)
+[PASS] test_pokeExternalTVL_role_check_still_works_via_delegatecall() (gas: 178143)
+[PASS] test_pokeExternalTVL_via_strategy_fallback_updates_cache() (gas: 156949)
+[PASS] test_rebalance_works_via_fallback() (gas: 1356591)
+Suite result: ok. 12 passed; 0 failed; 0 skipped; finished in 20.26ms (11.99ms CPU time)
+
+Ran 14 tests for test/strategies/usdc-lending/MultiStepRebalance.t.sol:MultiStepRebalance
+[PASS] test_cancel_plan() (gas: 819169)
+[PASS] test_deployIdle_emits_IdleCapExhausted_on_retry() (gas: 674757)
+[PASS] test_deployIdle_no_retry_when_below_threshold() (gas: 492369)
+[PASS] test_deployIdle_retries_after_sync_when_idle_above_threshold() (gas: 696635)
+[PASS] test_deployIdle_retry_preserves_safety() (gas: 688536)
+[PASS] test_deployIdle_single_retry_only() (gas: 490434)
+[PASS] test_execute_processes_actions() (gas: 880221)
+[PASS] test_full_cycle_finalizes() (gas: 1245099)
+[PASS] test_no_double_prepare() (gas: 813588)
+[PASS] test_no_execute_without_plan() (gas: 52074)
+[PASS] test_plan_expiry() (gas: 823690)
+[PASS] test_plan_expiry_allows_rebuild() (gas: 983264)
+[PASS] test_plan_expiry_emits_explicit_event() (gas: 821926)
+[PASS] test_prepare_creates_plan() (gas: 796664)
+Suite result: ok. 14 passed; 0 failed; 0 skipped; finished in 27.02ms (19.84ms CPU time)
+
+Ran 9 tests for test/strategies/usdc-lending/DolomiteConfigCorrectness.t.sol:DolomiteConfigCorrectnessTest
+[PASS] test_E1a_invalidConfigReturnsZeroForPoolLike() (gas: 19041)
+[PASS] test_E1b_mutationInvalidatesConfig() (gas: 58786)
+[PASS] test_E2a_validatedConfigWorks() (gas: 90313)
+[PASS] test_E2b_validateRevertsOnBadConfig() (gas: 57056)
+[PASS] test_E3a_addMarketRejectsAmbiguous() (gas: 20555)
+[PASS] test_E3b_addMarketRejectsWrongDeclaredType() (gas: 20455)
+[PASS] test_E3c_addMarketRejectsPoolLikeDeclaredAsERC4626() (gas: 20250)
+[PASS] test_E3d_addMarketRejectsUnknownMarket() (gas: 70768)
+[PASS] test_E_configCycleInvariant() (gas: 90179)
+Suite result: ok. 9 passed; 0 failed; 0 skipped; finished in 1.12ms (497.80µs CPU time)
+
+Ran 9 tests for test/strategies/usdc-lending/UsdcMultiLendingVault.t.sol:UsdcMultiLendingVault_Withdraw_Test
+[PASS] test_withdraw_caps_to_available() (gas: 104424)
+[PASS] test_withdraw_full_amount() (gas: 93559)
+[PASS] test_withdraw_only_core() (gas: 18849)
+[PASS] test_withdraw_realizes_liquidity_from_adapters() (gas: 109946)
+[PASS] test_withdraw_redeploys_excess_idle() (gas: 101888)
+[PASS] test_withdraw_returns_withdrawn_amount() (gas: 96373)
+[PASS] test_withdraw_reverts_zero_amount() (gas: 20871)
+[PASS] test_withdraw_reverts_zero_receiver() (gas: 21289)
+[PASS] test_withdraw_sends_to_receiver() (gas: 98713)
+Suite result: ok. 9 passed; 0 failed; 0 skipped; finished in 7.84ms (1.07ms CPU time)
+
+Ran 10 tests for test/strategies/usdc-lending/UsdcMultiLendingVault.t.sol:UsdcMultiLendingVault_Rebalance_Test
+[PASS] test_rebalance_emits_event() (gas: 905857)
+[PASS] test_rebalance_enforces_cooldown() (gas: 927788)
+[PASS] test_rebalance_enforces_noCashInvariant() (gas: 914428)
+[PASS] test_rebalance_gate_allows_after_price_shock_production_params() (gas: 951307)
+[PASS] test_rebalance_gate_blocks_when_no_price_edge() (gas: 352071)
+[PASS] test_rebalance_moves_funds_based_on_scores() (gas: 912975)
+[PASS] test_rebalance_only_keeper() (gas: 47971)
+[PASS] test_rebalance_reverts_not_enough_adapters() (gas: 224192)
+[PASS] test_rebalance_succeeds_after_cooldown() (gas: 1095333)
+[PASS] test_rebalance_updates_lastRebalanceTs() (gas: 907649)
+Suite result: ok. 10 passed; 0 failed; 0 skipped; finished in 15.96ms (9.17ms CPU time)
+
+Ran 16 tests for test/strategies/usdc-lending/UsdcMultiLendingVault.t.sol:UsdcMultiLendingVault_AdapterRegistry_Test
+[PASS] test_addAdapter_emits_event() (gas: 222842)
+[PASS] test_addAdapter_only_admin() (gas: 20014)
+[PASS] test_addAdapter_registers_adapter() (gas: 225834)
+[PASS] test_addAdapter_reverts_asset_mismatch() (gas: 1113342)
+[PASS] test_addAdapter_reverts_duplicate() (gas: 224939)
+[PASS] test_addAdapter_reverts_not_whitelisted() (gas: 22229)
+[PASS] test_addAdapter_reverts_zero_address() (gas: 15168)
+[PASS] test_addAdapter_starts_disabled() (gas: 224487)
+[PASS] test_setAdapterDepositMode_sets_pull_mode() (gas: 503674)
+[PASS] test_setAdapterDepositMode_sets_push_mode() (gas: 523542)
+[PASS] test_setFlaggedAdapter_flags() (gas: 524671)
+[PASS] test_setFlaggedAdapter_unflags() (gas: 537489)
+[PASS] test_toggleAdapter_disables() (gas: 453964)
+[PASS] test_toggleAdapter_emits_event() (gas: 271998)
+[PASS] test_toggleAdapter_enables() (gas: 273699)
+[PASS] test_toggleAdapter_reverts_invalid() (gas: 19499)
+Suite result: ok. 16 passed; 0 failed; 0 skipped; finished in 13.38ms (10.04ms CPU time)
+
+Ran 3 tests for test/strategies/usdc-lending/RemediationSprint.t.sol:OverCapProtectionBenefit_RealTest
+[PASS] test_overCapPremiumEventEmittedOnSet() (gas: 74338)
+[PASS] test_overCapPremiumRangeCheck() (gas: 63926)
+[PASS] test_overCapPremiumUnlocksProtectiveDivest() (gas: 348266)
+Suite result: ok. 3 passed; 0 failed; 0 skipped; finished in 8.31ms (2.85ms CPU time)
+
+Ran 8 tests for test/strategies/usdc-lending/RiskOverlay.t.sol:RiskOverlay
+[PASS] test_R_integration_0_score_full_allocation() (gas: 564998)
+[PASS] test_R_integration_10000_score_half_cap() (gas: 746163)
+[PASS] test_R_integration_stale_score_no_penalty() (gas: 815767)
+[PASS] test_R_math_0_score_no_penalty() (gas: 292)
+[PASS] test_R_math_10000_score_5000() (gas: 577)
+[PASS] test_R_math_2000_score_9000() (gas: 299)
+[PASS] test_R_math_5000_score_7500() (gas: 497)
+[PASS] test_R_math_8000_score_6000() (gas: 585)
+Suite result: ok. 8 passed; 0 failed; 0 skipped; finished in 11.50ms (7.01ms CPU time)
+
+Ran 6 tests for test/strategies/usdc-lending/UsdcMultiLendingVault.t.sol:UsdcMultiLendingVault_AdapterWhitelist_Test
+[PASS] test_addAdapter_acceptsWhitelisted() (gas: 1238050)
+[PASS] test_addAdapter_rejectsNonWhitelisted() (gas: 1039006)
+[PASS] test_whitelistAdapter_canRevoke() (gas: 1121294)
+[PASS] test_whitelistAdapter_nonAdmin_reverts() (gas: 1084989)
+[PASS] test_whitelistAdapter_setsFlag() (gas: 1113328)
+[PASS] test_whitelistAdapter_zeroAddress_reverts() (gas: 63360)
+Suite result: ok. 6 passed; 0 failed; 0 skipped; finished in 3.73ms (1.00ms CPU time)
+
+Ran 5 tests for test/strategies/usdc-lending/IdleConvergence.t.sol:IdleConvergence
+[PASS] test_idle_convergence_partial_allocation() (gas: 1747530)
+[PASS] test_idle_convergence_with_cap_constraints() (gas: 994755)
+[PASS] test_idle_convergence_with_keeper_delay() (gas: 884462)
+[PASS] test_idle_decreases_monotonically_per_cycle() (gas: 837228)
+[PASS] test_idle_zero_within_3_cycles() (gas: 804653)
+Suite result: ok. 5 passed; 0 failed; 0 skipped; finished in 16.38ms (9.31ms CPU time)
+
+Ran 3 tests for test/strategies/usdc-lending/P07NegativePathsScoring.t.sol:P07NegativePathsScoring
+[PASS] test_overflow_skips_below_extTVL_minimum_500k() (gas: 1020743)
+[PASS] test_overflow_skips_quarantined_adapter() (gas: 817923)
+[PASS] test_overflow_skips_when_nSafety_zero() (gas: 828186)
+Suite result: ok. 3 passed; 0 failed; 0 skipped; finished in 7.18ms (3.42ms CPU time)
+
+Ran 20 tests for test/strategies/usdc-lending/UsdcMultiLendingVault.t.sol:UsdcMultiLendingVault_MutationKiller_Test
+[PASS] test_addAdapter_initializes_riskScore_to_zero() (gas: 1244553)
+[PASS] test_deposit_mode_detected_as_pull() (gas: 1701529)
+[PASS] test_harvest_accumulates_totalRealized() (gas: 583008)
+[PASS] test_harvest_initializes_realized_to_zero() (gas: 451631)
+[PASS] test_harvest_returns_correct_realized() (gas: 477032)
+[PASS] test_harvest_updates_lastHarvestTs_for_receiver_version() (gas: 446523)
+[PASS] test_maxExposure_limits_allocation() (gas: 416913)
+[PASS] test_newAdapterRampBps_is_set() (gas: 9301)
+[PASS] test_realizeLiquidity_accumulates_totalRealized() (gas: 442567)
+[PASS] test_realizeLiquidity_calculates_pro_rata() (gas: 462719)
+[PASS] test_rebalance_calculates_delta_correctly() (gas: 1192366)
+[PASS] test_rebalance_deposits_to_increasers() (gas: 1183000)
+[PASS] test_rebalance_with_flagged_adapter_reduces_position() (gas: 1242391)
+[PASS] test_scoring_normalization_affects_allocation() (gas: 430989)
+[PASS] test_setRebalanceParams_sets_newAdapterRampBps() (gas: 73353)
+[PASS] test_stabilityEMAPeriod_is_set() (gas: 9626)
+[PASS] test_wIncentive_affects_scoring() (gas: 89463)
+[PASS] test_wLiq_affects_scoring() (gas: 578607)
+[PASS] test_wStability_affects_scoring() (gas: 466556)
+[PASS] test_withdraw_leaves_dust_if_below_tolerance() (gas: 446943)
+Suite result: ok. 20 passed; 0 failed; 0 skipped; finished in 16.90ms (12.51ms CPU time)
+
+Ran 2 tests for test/strategies/usdc-lending/RemediationSprint.t.sol:PlanBackoff_RealTest
+[PASS] test_backoffThresholdRangeCheck() (gas: 63789)
+[PASS] test_backoffThresholdSet() (gas: 71542)
+Suite result: ok. 2 passed; 0 failed; 0 skipped; finished in 3.78ms (335.60µs CPU time)
+
+Ran 16 tests for test/strategies/usdc-lending/replay-defense/LendingReplayDefense.t.sol:LendingReplayDefenseTest
+[PASS] test_RA10_sequencerFeed_atGraceBoundary_stillFalse() (gas: 65904)
+[PASS] test_RA10_sequencerFeed_disabledByDefault_canSwapTrue() (gas: 30177)
+[PASS] test_RA10_sequencerFeed_down_canSwapFalse() (gas: 85647)
+[PASS] test_RA10_sequencerFeed_recentlyUp_inGrace_canSwapFalse() (gas: 66014)
+[PASS] test_RA10_sequencerFeed_revertOnRead_canSwapFalse() (gas: 77915)
+[PASS] test_RA10_sequencerFeed_up_outsideGrace_canSwapTrue() (gas: 71931)
+[PASS] test_RA10_setSequencerUptimeFeed_emitsEvent() (gas: 40712)
+[PASS] test_RA10_setSequencerUptimeFeed_revertsOnNonAdmin() (gas: 38444)
+[PASS] test_RA10_swapToUSDC_revertsIfSequencerDown() (gas: 167922)
+[PASS] test_RA10_swapToUSDC_revertsInGracePeriod() (gas: 148222)
+[PASS] test_RA1_sandwich_minOut_acceptsSwapWithin1pctSlippage() (gas: 213592)
+[PASS] test_RA1_sandwich_minOut_defendsAgainstSpotManipulation() (gas: 195584)
+[PASS] test_RA4_reentrancy_swapToUSDC_blocksReentry() (gas: 1034436)
+[PASS] test_RA6_rescue_blockedOnEnabledReward() (gas: 66614)
+[PASS] test_RA6_rescue_workableOnDisabledToken() (gas: 79838)
+[PASS] test_RA7_donation_to_helper_recoverable_via_rescue() (gas: 71579)
+Suite result: ok. 16 passed; 0 failed; 0 skipped; finished in 5.17ms (4.38ms CPU time)
+
+Ran 2 tests for test/strategies/usdc-lending/UsdcMultiLendingVault.t.sol:UsdcMultiLendingVault_Reentrancy_Test
+[PASS] test_deposit_blocks_reentrancy() (gas: 357915)
+[PASS] test_withdraw_blocks_reentrancy() (gas: 394407)
+Suite result: ok. 2 passed; 0 failed; 0 skipped; finished in 11.59ms (2.23ms CPU time)
+
+Ran 17 tests for test/strategies/usdc-lending/UsdcLendingStrategy_CoreVault_Integration.t.sol:UsdcLendingStrategy_CoreVault_Integration
+[PASS] test_Integration_AdapterDepositFailure() (gas: 264039)
+[PASS] test_Integration_BasicDepositFlow() (gas: 251863)
+[PASS] test_Integration_BasicWithdrawFlow() (gas: 267560)
+[PASS] test_Integration_ConcurrentUsers() (gas: 559806)
+[PASS] test_Integration_DepositForOtherUser() (gas: 247956)
+[PASS] test_Integration_FullLifecycle() (gas: 603126)
+[PASS] test_Integration_HighVolumeDeposits() (gas: 2793210)
+[PASS] test_Integration_MaximumDeposit() (gas: 273974)
+[PASS] test_Integration_MinimumDeposit() (gas: 239572)
+[PASS] test_Integration_MultipleUsersShareYield() (gas: 423248)
+[PASS] test_Integration_NoReentrancyOnDeposit() (gas: 239334)
+[PASS] test_Integration_PartialWithdrawWhenAdapterLimited() (gas: 264223)
+[PASS] test_Integration_SharePriceConsistency() (gas: 378352)
+[PASS] test_Integration_SharePriceIncreases() (gas: 274752)
+[PASS] test_Integration_ViewFunctionConsistency() (gas: 283211)
+[PASS] test_Integration_YieldAccrual() (gas: 249507)
+[PASS] test_Integration_ZeroDeposit() (gas: 42738)
+Suite result: ok. 17 passed; 0 failed; 0 skipped; finished in 24.19ms (19.55ms CPU time)
+
+Ran 11 tests for test/strategies/usdc-lending/UsdcMultiLendingVault.t.sol:UsdcMultiLendingVault_Constructor_Test
+[PASS] test_constructor_grants_admin_role() (gas: 12746)
+[PASS] test_constructor_grants_core_role() (gas: 12863)
+[PASS] test_constructor_no_privileged_deployer() (gas: 11092051)
+[PASS] test_constructor_reverts_invalid_asset() (gas: 3267061)
+[PASS] test_constructor_reverts_nonContractGateModule() (gas: 2965187)
+[PASS] test_constructor_reverts_zero_asset() (gas: 2962351)
+[PASS] test_constructor_reverts_zero_core() (gas: 2962240)
+[PASS] test_constructor_reverts_zero_router() (gas: 2959981)
+[PASS] test_constructor_reverts_zero_timelock() (gas: 2960251)
+[PASS] test_constructor_sets_immutables() (gas: 13323)
+[PASS] test_constructor_sets_parameters() (gas: 18162)
+Suite result: ok. 11 passed; 0 failed; 0 skipped; finished in 5.02ms (2.08ms CPU time)
+
+Ran 11 tests for test/strategies/usdc-lending/P07NegativePathsAllocCalc.t.sol:P07AllocCalc_RelCapBinding
+[PASS] test_D1f_01_mandate_uses_fallback_cap_for_safety_adapter() (gas: 481820)
+[PASS] test_D1f_02_mandate_uses_normal_cap_for_normal_adapter() (gas: 460153)
+[PASS] test_D1f_03_overflow_routes_to_safety_adapter() (gas: 1126873)
+[PASS] test_D1f_04_safety_adapter_never_in_cooldown() (gas: 733872)
+[PASS] test_D1f_05_normal_adapter_cooldown_blocks_redeploy() (gas: 1596573)
+[PASS] test_D1f_06_valid_safety_tranche_preserved() (gas: 972321)
+[PASS] test_D1f_07_remove_safety_restores_normal_caps() (gas: 505519)
+[PASS] test_D1f_08_dual_safety_priority_aave_before_compound() (gas: 1301469)
+[PASS] test_D1f_09_quarantined_adapter_promotion_reverts() (gas: 232907)
+[PASS] test_D1f_10_promotion_clears_active_cooldown() (gas: 319571)
+[PASS] test_safety_ceiling_uses_rel_when_relCeiling_lt_absCeiling() (gas: 801676)
+Suite result: ok. 11 passed; 0 failed; 0 skipped; finished in 44.19ms (38.27ms CPU time)
+
+Ran 61 tests for test/strategies/usdc-lending/Overlay_Parity.t.sol:Overlay_Parity
+[PASS] test_AUDIT_FINDING_13_T1_short_circuit_preserved_in_both_paths() (gas: 53129)
+[PASS] test_AUDIT_FINDING_13_external_reader_matches_engine_at_T3_high_risk() (gas: 110862)
+[PASS] test_parity_T1_short_circuit_no_overlays_applied() (gas: 49446)
+[PASS] test_parity_T1_with_ceiling_still_10000() (gas: 44128)
+[PASS] test_parity_T2_ceiling3000_risk0_fail0() (gas: 107173)
+[PASS] test_parity_T2_ceiling3000_risk5000_fail2_liq7000() (gas: 108846)
+[PASS] test_parity_T2_floor2000_risk8000_fail3_liq1000() (gas: 110279)
+[PASS] test_parity_T2_risk0_fail0_liq1000() (gas: 107512)
+[PASS] test_parity_T2_risk0_fail0_liq10000() (gas: 107393)
+[PASS] test_parity_T2_risk0_fail0_liq4000() (gas: 108326)
+[PASS] test_parity_T2_risk0_fail0_liq7000() (gas: 106814)
+[PASS] test_parity_T2_risk0_fail1_liq10000() (gas: 108483)
+[PASS] test_parity_T2_risk0_fail3_liq10000() (gas: 107229)
+[PASS] test_parity_T2_risk0_fail6_liq10000() (gas: 108219)
+[PASS] test_parity_T2_risk0_fail7_quarantine() (gas: 107364)
+[PASS] test_parity_T2_risk2000_fail0_liq10000() (gas: 111035)
+[PASS] test_parity_T2_risk2000_fail2_liq7000() (gas: 110996)
+[PASS] test_parity_T2_risk5000_fail0_liq10000() (gas: 109170)
+[PASS] test_parity_T2_risk5000_fail1_liq4000() (gas: 109780)
+[PASS] test_parity_T2_risk5000_fail3_liq4000() (gas: 110264)
+[PASS] test_parity_T2_risk8000_fail0_liq10000() (gas: 109451)
+[PASS] test_parity_T2_risk8000_fail6_liq1000() (gas: 110110)
+[PASS] test_parity_T2_risk8000_fail7_liq1000() (gas: 110619)
+[PASS] test_parity_T3_ceiling2500_risk0_fail0() (gas: 106605)
+[PASS] test_parity_T3_risk0_fail0_liq1000() (gas: 108000)
+[PASS] test_parity_T3_risk0_fail0_liq10000() (gas: 106455)
+[PASS] test_parity_T3_risk0_fail0_liq4000() (gas: 107362)
+[PASS] test_parity_T3_risk0_fail0_liq7000() (gas: 108072)
+[PASS] test_parity_T3_risk0_fail1_liq10000() (gas: 107695)
+[PASS] test_parity_T3_risk0_fail3_liq10000() (gas: 108069)
+[PASS] test_parity_T3_risk0_fail6_liq10000() (gas: 107541)
+[PASS] test_parity_T3_risk0_fail7_quarantine() (gas: 107852)
+[PASS] test_parity_T3_risk2000_fail0_liq10000() (gas: 109367)
+[PASS] test_parity_T3_risk2000_fail2_liq7000() (gas: 110670)
+[PASS] test_parity_T3_risk5000_fail0_liq10000() (gas: 110643)
+[PASS] test_parity_T3_risk5000_fail1_liq4000() (gas: 110334)
+[PASS] test_parity_T3_risk5000_fail2_liq4000() (gas: 110730)
+[PASS] test_parity_T3_risk5000_fail3_liq4000() (gas: 110906)
+[PASS] test_parity_T3_risk8000_fail0_liq10000() (gas: 109345)
+[PASS] test_parity_T3_risk8000_fail6_liq1000() (gas: 110972)
+[PASS] test_parity_T3_risk8000_fail7_liq1000() (gas: 109985)
+[PASS] test_parity_T4_risk0_fail0_liq1000() (gas: 108285)
+[PASS] test_parity_T4_risk0_fail0_liq10000() (gas: 108337)
+[PASS] test_parity_T4_risk0_fail0_liq4000() (gas: 106745)
+[PASS] test_parity_T4_risk0_fail0_liq7000() (gas: 107917)
+[PASS] test_parity_T4_risk0_fail1_liq10000() (gas: 107232)
+[PASS] test_parity_T4_risk0_fail3_liq10000() (gas: 107650)
+[PASS] test_parity_T4_risk2000_fail0_liq10000() (gas: 109520)
+[PASS] test_parity_T4_risk5000_fail0_liq10000() (gas: 110774)
+[PASS] test_parity_T4_risk5000_fail3_liq4000() (gas: 111037)
+[PASS] test_parity_T4_risk8000_fail6_liq1000() (gas: 110069)
+[PASS] test_parity_T5_risk0_fail0_liq1000() (gas: 107355)
+[PASS] test_parity_T5_risk0_fail0_liq10000() (gas: 106598)
+[PASS] test_parity_T5_risk0_fail0_liq4000() (gas: 107685)
+[PASS] test_parity_T5_risk0_fail0_liq7000() (gas: 106635)
+[PASS] test_parity_T5_risk0_fail1_liq10000() (gas: 107424)
+[PASS] test_parity_T5_risk0_fail3_liq10000() (gas: 108238)
+[PASS] test_parity_T5_risk2000_fail0_liq10000() (gas: 109844)
+[PASS] test_parity_T5_risk5000_fail0_liq10000() (gas: 109998)
+[PASS] test_parity_T5_risk5000_fail3_liq4000() (gas: 110525)
+[PASS] test_parity_T5_risk8000_fail6_liq1000() (gas: 111383)
+Suite result: ok. 61 passed; 0 failed; 0 skipped; finished in 17.89ms (10.42ms CPU time)
+
+Ran 26 tests for test/strategies/usdc-lending/LendingStrategyUpkeep.t.sol:LendingStrategyUpkeep_PokeAPY_Test
+[PASS] test_addPokeTarget_removePokeTarget() (gas: 57916)
+[PASS] test_addPokeTarget_reverts_duplicate() (gas: 15972)
+[PASS] test_checkUpkeep_harvest_takes_priority_within_cooldown() (gas: 260713)
+[PASS] test_checkUpkeep_no_poke_when_not_configured() (gas: 1915554)
+[PASS] test_checkUpkeep_pokeAPY_not_triggered_within_cooldown() (gas: 239482)
+[PASS] test_checkUpkeep_pokeAPY_priority_over_harvest_when_stale() (gas: 38807)
+[PASS] test_checkUpkeep_pokeAPY_when_cooldown_expired() (gas: 228428)
+[PASS] test_checkUpkeep_pokeAPY_when_never_poked() (gas: 11382)
+[PASS] test_doublePoke_snapshotDelta() (gas: 254139)
+[PASS] test_performUpkeep_pokeAPY_aave_revert_continues_to_poke() (gas: 287877)
+[PASS] test_performUpkeep_pokeAPY_no_rrIndex_advance() (gas: 227578)
+[PASS] test_performUpkeep_pokeAPY_pokes_all_targets() (gas: 231511)
+[PASS] test_performUpkeep_pokeAPY_pushes_aave_rate() (gas: 272028)
+[PASS] test_performUpkeep_pokeAPY_safe_idempotent_within_cooldown() (gas: 232098)
+[PASS] test_performUpkeep_pokeAPY_target_revert_continues() (gas: 234396)
+[PASS] test_performUpkeep_pokeAPY_updates_lastPokeTs() (gas: 229451)
+[PASS] test_pokeAPY_calls_pokeExternalTVL_on_multiple_strategies() (gas: 499623)
+[PASS] test_pokeAPY_calls_pokeExternalTVL_on_strategies() (gas: 227682)
+[PASS] test_pokeAPY_cooldown_also_blocks_tvl_poke() (gas: 229660)
+[PASS] test_pokeAPY_does_not_block_harvest_after_poke() (gas: 289372)
+[PASS] test_pokeAPY_tvl_failure_does_not_block() (gas: 229171)
+[PASS] test_removePokeTarget_reverts_not_found() (gas: 13352)
+[PASS] test_setAaveConfig_onlyOwner() (gas: 12120)
+[PASS] test_setAaveConfig_updates_values() (gas: 28149)
+[PASS] test_setPokeInterval_onlyOwner() (gas: 11350)
+[PASS] test_setPokeInterval_updates_and_emits() (gas: 15226)
+Suite result: ok. 26 passed; 0 failed; 0 skipped; finished in 4.32ms (3.68ms CPU time)
+
+Ran 10 tests for test/strategies/usdc-lending/RebalanceAccounting.t.sol:RebalanceAccountingTest
+[PASS] test_B1a_totalAssetsConservation() (gas: 1553371)
+[PASS] test_B1b_positionAssetsConservationDuringStep() (gas: 1267598)
+[PASS] test_B1c_noIdleCreepAfterRebalance() (gas: 1543463)
+[PASS] test_B1d_fromDecrementsToIncrements() (gas: 1556047)
+[PASS] test_B2a_zeroRoomAdapterNotOverfilled() (gas: 1869585)
+[PASS] test_B2b_deployIdleRespectsMaxCap() (gas: 1887892)
+[PASS] test_B3a_lockedAdapterPreservesAccounting() (gas: 1423768)
+[PASS] test_B4a_cancelAndRebuildConservesAssets() (gas: 1734151)
+[PASS] test_B4b_cancelDoesNotTriggerCooldown() (gas: 1358375)
+[PASS] test_I1_totalAssetsGeqSumPositions() (gas: 1600511)
+Suite result: ok. 10 passed; 0 failed; 0 skipped; finished in 45.99ms (37.96ms CPU time)
+
+Ran 8 tests for test/strategies/usdc-lending/Dynamic_Seed.t.sol:Dynamic_Seed
+[PASS] test_new_adapter_does_not_break_distribution() (gas: 2155932)
+[PASS] test_new_adapter_grows_past_seed() (gas: 2382433)
+[PASS] test_new_adapter_onboarding() (gas: 1943544)
+[PASS] test_seed_cap_not_exceeded() (gas: 1404797)
+[PASS] test_seed_floor_respected() (gas: 1361090)
+[PASS] test_seed_scales_with_tvl_high() (gas: 1352705)
+[PASS] test_seed_scales_with_tvl_low() (gas: 1352586)
+[PASS] test_seed_scales_with_tvl_mid() (gas: 1352625)
+Suite result: ok. 8 passed; 0 failed; 0 skipped; finished in 38.27ms (34.69ms CPU time)
+
+Ran 7 tests for test/strategies/usdc-lending/CTO_Corrections.t.sol:CTO_MicroCapAndEvents
+[PASS] test_confidence_zero_skipped() (gas: 2086639)
+[PASS] test_euler_allocates_at_higher_tvl() (gas: 2511223)
+[PASS] test_event_skipped_low_confidence() (gas: 2087219)
+[PASS] test_event_skipped_over_cap() (gas: 743132)
+[PASS] test_micro_cap_overrides_high_apy() (gas: 513310)
+[PASS] test_micro_market_strict_cap() (gas: 508515)
+[PASS] test_stale_cache_degrades_confidence() (gas: 615528)
+Suite result: ok. 7 passed; 0 failed; 0 skipped; finished in 62.08ms (9.64ms CPU time)
+
+Ran 13 tests for test/strategies/usdc-lending/UsdcMultiLendingVault.t.sol:UsdcMultiLendingVault_ParamSetters_Test
+[PASS] test_setDustTolerance_updates_value() (gas: 73806)
+[PASS] test_setGateParams_updates_values() (gas: 95317)
+[PASS] test_setHarvestParams_updates_values() (gas: 72168)
+[PASS] test_setRebalanceParams_reverts_maxAdapters_too_low() (gas: 63322)
+[PASS] test_setRebalanceParams_reverts_minAdapters_too_low() (gas: 63532)
+[PASS] test_setRebalanceParams_updates_values() (gas: 79740)
+[PASS] test_setRiskScore_reverts_invalid_adapter() (gas: 69355)
+[PASS] test_setRiskScore_reverts_score_too_high() (gas: 501893)
+[PASS] test_setRiskScore_updates_value() (gas: 548014)
+[PASS] test_setRiskWeights_emits_event() (gas: 72973)
+[PASS] test_setRiskWeights_only_param_role() (gas: 61513)
+[PASS] test_setRiskWeights_reverts_invalid_sum() (gas: 63427)
+[PASS] test_setRiskWeights_updates_values() (gas: 86348)
+Suite result: ok. 13 passed; 0 failed; 0 skipped; finished in 7.66ms (3.48ms CPU time)
+
+Ran 4 tests for test/strategies/usdc-lending/RemediationSprint.t.sol:SelectiveRecall_RealTest
+[PASS] test_selectiveRecallEmptyListReverts() (gas: 22206)
+[PASS] test_selectiveRecallOnlyDrainsTargets() (gas: 79006)
+[PASS] test_selectiveRecallUnauthorizedReverts() (gas: 21468)
+[PASS] test_selectiveRecallUnknownAdapterReverts() (gas: 24597)
+Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 5.75ms (355.80µs CPU time)
+
+Ran 6 tests for test/strategies/usdc-lending/adapters/MultiAdapterBase.t.sol:SiloAdapter_Test
+[PASS] testFuzz_silo_roundTrip(uint256) (runs: 256, μ: 155110, ~: 155136)
+[PASS] test_silo_core_supply() (gas: 114645)
+[PASS] test_silo_core_withdraw() (gas: 133309)
+[PASS] test_silo_erc4626_deposit() (gas: 132460)
+[PASS] test_silo_erc4626_withdraw() (gas: 156361)
+[PASS] test_silo_multi_market_allocation() (gas: 232203)
+Suite result: ok. 6 passed; 0 failed; 0 skipped; finished in 23.23ms (22.93ms CPU time)
+
+Ran 4 tests for test/strategies/usdc-lending/UsdcMultiLendingVault.t.sol:UsdcMultiLendingVault_DegradedViews_Test
+[PASS] test_deployIdle_revertsWhenDegraded() (gas: 79429)
+[PASS] test_harvest_revertsWhenDegraded() (gas: 62146)
+[PASS] test_harvest_worksWhenNotDegraded() (gas: 92686)
+[PASS] test_prepareRebalance_revertsWhenDegraded() (gas: 101449)
+Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 6.04ms (456.00µs CPU time)
+
+Ran 3 tests for test/strategies/usdc-lending/UsdcMultiLendingVault.t.sol:UsdcMultiLendingVault_NoCashInvariant_Test
+[PASS] test_deposit_enforces_noCash() (gas: 1696927)
+[PASS] test_harvest_enforces_noCash() (gas: 1833109)
+[PASS] test_rebalance_enforces_noCash() (gas: 2573248)
+Suite result: ok. 3 passed; 0 failed; 0 skipped; finished in 13.50ms (10.59ms CPU time)
+
+Ran 8 tests for test/strategies/usdc-lending/UsdcMultiLendingVault.t.sol:UsdcMultiLendingVault_ParamsFinalized_Test
+[PASS] test_finalizeParameters_blocks_setDustTolerance() (gas: 116523)
+[PASS] test_finalizeParameters_blocks_setGateParams() (gas: 116186)
+[PASS] test_finalizeParameters_blocks_setRiskWeights() (gas: 113193)
+[PASS] test_finalizeParameters_does_NOT_block_setHarvestParams() (gas: 119207)
+[PASS] test_finalizeParameters_does_NOT_block_setRebalanceParams() (gas: 122823)
+[PASS] test_finalizeParameters_emits_event() (gas: 85207)
+[PASS] test_finalizeParameters_only_param_role() (gas: 63831)
+[PASS] test_finalizeParameters_sets_flag() (gas: 88584)
+Suite result: ok. 8 passed; 0 failed; 0 skipped; finished in 5.38ms (1.63ms CPU time)
+
+Ran 79 tests for test/strategies/usdc-lending/adapters/VenusUsdcMultiMarketAdapter.t.sol:S21_VenusSetterTest
+[PASS] test_constructor_revertsOnBNB() (gas: 93495)
+[PASS] test_constructor_revertsOnMainnet() (gas: 93759)
+[PASS] test_constructor_revertsOnPolygon() (gas: 94353)
+[PASS] test_constructor_revertsOnVTokenAssetMismatch() (gas: 952035)
+[PASS] test_constructor_revertsOnZeroAdmin() (gas: 91710)
+[PASS] test_constructor_revertsOnZeroAsset() (gas: 91839)
+[PASS] test_constructor_revertsOnZeroVToken() (gas: 92166)
+[PASS] test_constructor_revertsOnZeroVault() (gas: 91619)
+[PASS] test_constructor_succeedsOnArbitrum() (gas: 2184612)
+[PASS] test_currentAPYBps_clampedToUint16Max() (gas: 35717)
+[PASS] test_currentAPYBps_computedFromSupplyRate() (gas: 37346)
+[PASS] test_currentAPYBps_zeroByDefault() (gas: 12933)
+[PASS] test_deposit_emitsSupplied() (gas: 179176)
+[PASS] test_deposit_happyPath() (gas: 180999)
+[PASS] test_deposit_respectsCapacity() (gas: 2264325)
+[PASS] test_deposit_revertsIfMintFails() (gas: 133296)
+[PASS] test_deposit_revertsOnNonVault() (gas: 92551)
+[PASS] test_deposit_revertsOnZeroAmount() (gas: 18358)
+[PASS] test_deposit_revokesApprovalAfter() (gas: 180556)
+[PASS] test_emergencyPullAllToVault_handlesRedeemFailure() (gas: 243156)
+[PASS] test_emergencyPullAllToVault_redeemsAndSweeps() (gas: 229823)
+[PASS] test_emergencyPullAllToVault_revertsOnNonVault() (gas: 16992)
+[PASS] test_externalMarketTVL_handlesRevertOnTotalBorrows() (gas: 42617)
+[PASS] test_externalMarketTVL_returnsZeroOnGetCashRevert() (gas: 35037)
+[PASS] test_externalMarketTVL_sumOfCashAndBorrows() (gas: 44500)
+[PASS] test_fallback_reverts() (gas: 8252)
+[PASS] test_harvest_returnsZero_v1() (gas: 16114)
+[PASS] test_harvestableProfit_alwaysZero_v1() (gas: 8438)
+[PASS] test_idleAssetBalance_reflectsRawUSDC() (gas: 58673)
+[PASS] test_idleAssetBalance_zero_initially() (gas: 12247)
+[PASS] test_incentiveAPYBps_alwaysZero_v1() (gas: 8580)
+[PASS] test_investedAssets_reflectsVTokenBalance() (gas: 179699)
+[PASS] test_investedAssets_zero_initially() (gas: 12681)
+[PASS] test_isPushMode_false() (gas: 7357)
+[PASS] test_maxCapacity_returnsCapacity() (gas: 39440)
+[PASS] test_name() (gas: 9959)
+[PASS] test_receiveETH_reverts() (gas: 18716)
+[PASS] test_setCapacity_onlyParamRole() (gas: 36845)
+[PASS] test_setCapacity_paramRoleOnly() (gas: 39000)
+[PASS] test_setCapacity_revertsOnNonParamRole() (gas: 37571)
+[PASS] test_setIncentiveHaircutBps_tooHigh_reverts() (gas: 15134)
+[PASS] test_setRealizedRewardAPRBps_updatesState() (gas: 22327)
+[PASS] test_sweepIdleAssetToVault_happyPath() (gas: 73857)
+[PASS] test_sweepIdleAssetToVault_revertsOnNonVault() (gas: 67656)
+[PASS] test_sweepIdleAssetToVault_revertsOnZeroIdle() (gas: 22758)
+[PASS] test_totalAssets_sumOfIdleAndInvested() (gas: 182955)
+[PASS] test_underlying_isUSDC() (gas: 9291)
+[PASS] test_v43_defaultHaircut_7500() (gas: 8469)
+[PASS] test_v43_harvest_defersIfStaleOracle() (gas: 900591)
+[PASS] test_v43_harvest_handlesClaimRevert() (gas: 846844)
+[PASS] test_v43_harvest_handlesSwapRevertGracefully() (gas: 905797)
+[PASS] test_v43_harvest_happyPath() (gas: 981436)
+[PASS] test_v43_harvest_resetsApprovalAfterSwap() (gas: 979463)
+[PASS] test_v43_harvest_revertsOnNonVault() (gas: 824674)
+[PASS] test_v43_harvestableProfit_returnsExpected() (gas: 883859)
+[PASS] test_v43_harvestableProfit_zeroIfCannotSwap() (gas: 863025)
+[PASS] test_v43_harvestableProfit_zeroIfNoBalance() (gas: 815673)
+[PASS] test_v43_harvestableProfit_zeroIfNotInit() (gas: 9824)
+[PASS] test_v43_incentiveAPYBps_appliesHaircut() (gas: 21395)
+[PASS] test_v43_incentiveAPYBps_haircutFull() (gas: 24312)
+[PASS] test_v43_incentiveAPYBps_haircutZero() (gas: 25229)
+[PASS] test_v43_initRewardConfig_happyPath() (gas: 815172)
+[PASS] test_v43_initRewardConfig_idempotentRevert() (gas: 816621)
+[PASS] test_v43_initRewardConfig_revertsOnNonRole() (gas: 783767)
+[PASS] test_v43_initRewardConfig_revertsOnZero() (gas: 468807)
+[PASS] test_v43_pendingRewardBalance_reflectsBalance() (gas: 859450)
+[PASS] test_v43_setIncentiveHaircutBps_capCheck() (gas: 14738)
+[PASS] test_v43_setRealizedRewardAPRBps_updates() (gas: 21935)
+[PASS] test_withdraw_alwaysSendsToVault() (gas: 230192)
+[PASS] test_withdraw_clampedByMaxOut() (gas: 227732)
+[PASS] test_withdraw_emitsWithdrawn() (gas: 227253)
+[PASS] test_withdraw_happyPath() (gas: 225907)
+[PASS] test_withdraw_revertsIfRedeemFails() (gas: 206901)
+[PASS] test_withdraw_revertsOnNoLiquidity() (gas: 189125)
+[PASS] test_withdraw_revertsOnNonVault() (gas: 184563)
+[PASS] test_withdraw_revertsOnZeroAmount() (gas: 16852)
+[PASS] test_withdrawableAssets_boundedByCash() (gas: 185170)
+[PASS] test_withdrawableAssets_boundedByInvested() (gas: 185202)
+[PASS] test_withdrawableAssets_cashLimited() (gas: 185448)
+Suite result: ok. 79 passed; 0 failed; 0 skipped; finished in 8.40ms (7.45ms CPU time)
+
+Ran 2 tests for test/strategies/usdc-lending/UsdcMultiLendingVault.fuzz.t.sol:UsdcMultiLendingVault_GateParams
+[PASS] test_RebalanceCooldown_blocks_back_to_back_calls() (gas: 1076662)
+[PASS] test_RebalanceCooldown_canRebalance_view_respects_window() (gas: 1167114)
+Suite result: ok. 2 passed; 0 failed; 0 skipped; finished in 9.15ms (4.66ms CPU time)
+
+Ran 62 tests for test/strategies/usdc-lending/adapters/MorphoAdapter.t.sol:S21_MorphoSetterTest
+[PASS] test_activeMarket_returns_current() (gas: 16831)
+[PASS] test_addMarket_emits_event() (gas: 60427)
+[PASS] test_addMarket_only_param_role() (gas: 18916)
+[PASS] test_addMarket_registers_market() (gas: 66298)
+[PASS] test_addMarket_reverts_wrong_asset() (gas: 621627)
+[PASS] test_addMarket_reverts_zero_address() (gas: 16715)
+[PASS] test_constructor_grants_roles() (gas: 16080)
+[PASS] test_constructor_reverts_zero_admin() (gas: 136152)
+[PASS] test_constructor_reverts_zero_usdc() (gas: 136419)
+[PASS] test_constructor_reverts_zero_vault() (gas: 137711)
+[PASS] test_constructor_sets_state() (gas: 16586)
+[PASS] test_currentAPYBps_returns_active_market_apy() (gas: 283587)
+[PASS] test_deposit_emits_event() (gas: 277944)
+[PASS] test_deposit_multiple_times() (gas: 363396)
+[PASS] test_deposit_only_vault() (gas: 93240)
+[PASS] test_deposit_protected_by_nonReentrant() (gas: 712)
+[PASS] test_deposit_reverts_over_capacity() (gas: 116828)
+[PASS] test_deposit_reverts_zero() (gas: 19759)
+[PASS] test_deposit_supplies_to_best_market() (gas: 279208)
+[PASS] test_flagMarket_badIndex_reverts() (gas: 18551)
+[PASS] test_flagMarket_emits_event() (gas: 25797)
+[PASS] test_flagMarket_flags_unflag() (gas: 24112)
+[PASS] test_harvest_returns_zero() (gas: 7811)
+[PASS] test_harvestableProfit_returns_zero() (gas: 6532)
+[PASS] test_incentiveAPYBps_returns_global() (gas: 36809)
+[PASS] test_markets_returns_all() (gas: 99433)
+[PASS] test_maxCapacity_returns_capacity() (gas: 8356)
+[PASS] test_name_returns_correct() (gas: 10950)
+[PASS] test_optimize_enforces_cooldown() (gas: 322455)
+[PASS] test_optimize_only_vault() (gas: 68593)
+[PASS] test_optimize_rebalances_markets() (gas: 370628)
+[PASS] test_p1l4_withdrawableAssets_fallback_executesCashCap() (gas: 310944)
+[PASS] test_p1l4_withdrawableAssets_fallback_unboundedByAssets() (gas: 287866)
+[PASS] test_positions_returns_assets_per_market() (gas: 328115)
+[PASS] test_receive_reverts() (gas: 17938)
+[PASS] test_setAPYOverrideBps_overrides() (gas: 38796)
+[PASS] test_setAPYOverrideBps_reverts_too_high() (gas: 15383)
+[PASS] test_setCapacity_emits_event() (gas: 22707)
+[PASS] test_setCapacity_onlyParam() (gas: 17902)
+[PASS] test_setCapacity_updates() (gas: 21979)
+[PASS] test_setCostsEstimates_updates() (gas: 33250)
+[PASS] test_setCostsEstimates_updatesState() (gas: 30070)
+[PASS] test_setIncentiveBpsGlobal_tooHigh_reverts() (gas: 15161)
+[PASS] test_setOptimizeParams_updates() (gas: 25560)
+[PASS] test_setOptimizeParams_updatesState() (gas: 23835)
+[PASS] test_setParamRole_grants() (gas: 41464)
+[PASS] test_setParamRole_revokes() (gas: 20007)
+[PASS] test_setRiskScore_reverts_too_high() (gas: 18308)
+[PASS] test_setRiskScore_updates() (gas: 23112)
+[PASS] test_toggleMarket_emits_event() (gas: 24565)
+[PASS] test_toggleMarket_enables_disables() (gas: 24837)
+[PASS] test_toggleMarket_reverts_bad_index() (gas: 16898)
+[PASS] test_totalAssets_sums_all_markets() (gas: 318124)
+[PASS] test_underlying_returns_usdc() (gas: 9663)
+[PASS] test_updateMarketAddress_updates() (gas: 32418)
+[PASS] test_withdraw_caps_to_available() (gas: 311865)
+[PASS] test_withdraw_emits_event() (gas: 317885)
+[PASS] test_withdraw_from_multiple_markets() (gas: 377173)
+[PASS] test_withdraw_only_vault() (gas: 280539)
+[PASS] test_withdraw_sends_to_vault() (gas: 316288)
+[PASS] test_withdrawableAssets_returns_available() (gas: 279929)
+[PASS] test_yield_accrual_increases_totalAssets() (gas: 286620)
+Suite result: ok. 62 passed; 0 failed; 0 skipped; finished in 7.63ms (6.44ms CPU time)
+
+Ran 75 tests for test/strategies/usdc-lending/adapters/VenusUsdcMultiMarketAdapter.t.sol:VenusUsdcMultiMarketAdapterTest
+[PASS] test_constructor_revertsOnBNB() (gas: 93495)
+[PASS] test_constructor_revertsOnMainnet() (gas: 93715)
+[PASS] test_constructor_revertsOnPolygon() (gas: 94287)
+[PASS] test_constructor_revertsOnVTokenAssetMismatch() (gas: 952035)
+[PASS] test_constructor_revertsOnZeroAdmin() (gas: 91644)
+[PASS] test_constructor_revertsOnZeroAsset() (gas: 91773)
+[PASS] test_constructor_revertsOnZeroVToken() (gas: 92100)
+[PASS] test_constructor_revertsOnZeroVault() (gas: 91553)
+[PASS] test_constructor_succeedsOnArbitrum() (gas: 2184568)
+[PASS] test_currentAPYBps_clampedToUint16Max() (gas: 35651)
+[PASS] test_currentAPYBps_computedFromSupplyRate() (gas: 37346)
+[PASS] test_currentAPYBps_zeroByDefault() (gas: 12867)
+[PASS] test_deposit_emitsSupplied() (gas: 179176)
+[PASS] test_deposit_happyPath() (gas: 180999)
+[PASS] test_deposit_respectsCapacity() (gas: 2264325)
+[PASS] test_deposit_revertsIfMintFails() (gas: 133243)
+[PASS] test_deposit_revertsOnNonVault() (gas: 92485)
+[PASS] test_deposit_revertsOnZeroAmount() (gas: 18314)
+[PASS] test_deposit_revokesApprovalAfter() (gas: 180556)
+[PASS] test_emergencyPullAllToVault_handlesRedeemFailure() (gas: 243121)
+[PASS] test_emergencyPullAllToVault_redeemsAndSweeps() (gas: 229823)
+[PASS] test_emergencyPullAllToVault_revertsOnNonVault() (gas: 16992)
+[PASS] test_externalMarketTVL_handlesRevertOnTotalBorrows() (gas: 42617)
+[PASS] test_externalMarketTVL_returnsZeroOnGetCashRevert() (gas: 35037)
+[PASS] test_externalMarketTVL_sumOfCashAndBorrows() (gas: 44500)
+[PASS] test_fallback_reverts() (gas: 8186)
+[PASS] test_harvest_returnsZero_v1() (gas: 16114)
+[PASS] test_harvestableProfit_alwaysZero_v1() (gas: 8438)
+[PASS] test_idleAssetBalance_reflectsRawUSDC() (gas: 58607)
+[PASS] test_idleAssetBalance_zero_initially() (gas: 12247)
+[PASS] test_incentiveAPYBps_alwaysZero_v1() (gas: 8580)
+[PASS] test_investedAssets_reflectsVTokenBalance() (gas: 179699)
+[PASS] test_investedAssets_zero_initially() (gas: 12615)
+[PASS] test_isPushMode_false() (gas: 7291)
+[PASS] test_maxCapacity_returnsCapacity() (gas: 39374)
+[PASS] test_name() (gas: 9959)
+[PASS] test_receiveETH_reverts() (gas: 18716)
+[PASS] test_setCapacity_paramRoleOnly() (gas: 38934)
+[PASS] test_setCapacity_revertsOnNonParamRole() (gas: 37505)
+[PASS] test_sweepIdleAssetToVault_happyPath() (gas: 73857)
+[PASS] test_sweepIdleAssetToVault_revertsOnNonVault() (gas: 67656)
+[PASS] test_sweepIdleAssetToVault_revertsOnZeroIdle() (gas: 22758)
+[PASS] test_totalAssets_sumOfIdleAndInvested() (gas: 182902)
+[PASS] test_underlying_isUSDC() (gas: 9247)
+[PASS] test_v43_defaultHaircut_7500() (gas: 8469)
+[PASS] test_v43_harvest_defersIfStaleOracle() (gas: 900525)
+[PASS] test_v43_harvest_handlesClaimRevert() (gas: 846844)
+[PASS] test_v43_harvest_handlesSwapRevertGracefully() (gas: 905797)
+[PASS] test_v43_harvest_happyPath() (gas: 981392)
+[PASS] test_v43_harvest_resetsApprovalAfterSwap() (gas: 979463)
+[PASS] test_v43_harvest_revertsOnNonVault() (gas: 824608)
+[PASS] test_v43_harvestableProfit_returnsExpected() (gas: 883859)
+[PASS] test_v43_harvestableProfit_zeroIfCannotSwap() (gas: 862959)
+[PASS] test_v43_harvestableProfit_zeroIfNoBalance() (gas: 815673)
+[PASS] test_v43_harvestableProfit_zeroIfNotInit() (gas: 9758)
+[PASS] test_v43_incentiveAPYBps_appliesHaircut() (gas: 21395)
+[PASS] test_v43_incentiveAPYBps_haircutFull() (gas: 24312)
+[PASS] test_v43_incentiveAPYBps_haircutZero() (gas: 25163)
+[PASS] test_v43_initRewardConfig_happyPath() (gas: 815172)
+[PASS] test_v43_initRewardConfig_idempotentRevert() (gas: 816555)
+[PASS] test_v43_initRewardConfig_revertsOnNonRole() (gas: 783723)
+[PASS] test_v43_initRewardConfig_revertsOnZero() (gas: 468807)
+[PASS] test_v43_pendingRewardBalance_reflectsBalance() (gas: 859406)
+[PASS] test_v43_setIncentiveHaircutBps_capCheck() (gas: 14746)
+[PASS] test_v43_setRealizedRewardAPRBps_updates() (gas: 21870)
+[PASS] test_withdraw_alwaysSendsToVault() (gas: 230192)
+[PASS] test_withdraw_clampedByMaxOut() (gas: 227732)
+[PASS] test_withdraw_emitsWithdrawn() (gas: 227218)
+[PASS] test_withdraw_happyPath() (gas: 225907)
+[PASS] test_withdraw_revertsIfRedeemFails() (gas: 206901)
+[PASS] test_withdraw_revertsOnNoLiquidity() (gas: 189090)
+[PASS] test_withdraw_revertsOnNonVault() (gas: 184510)
+[PASS] test_withdraw_revertsOnZeroAmount() (gas: 16852)
+[PASS] test_withdrawableAssets_boundedByCash() (gas: 185135)
+[PASS] test_withdrawableAssets_boundedByInvested() (gas: 185167)
+Suite result: ok. 75 passed; 0 failed; 0 skipped; finished in 7.82ms (6.90ms CPU time)
+
+Ran 62 tests for test/strategies/usdc-lending/adapters/MorphoAdapter.t.sol:S22_MorphoGapTest
+[PASS] test_activeMarket_returns_current() (gas: 16831)
+[PASS] test_addMarket_emits_event() (gas: 60405)
+[PASS] test_addMarket_only_param_role() (gas: 18916)
+[PASS] test_addMarket_registers_market() (gas: 66276)
+[PASS] test_addMarket_reverts_wrong_asset() (gas: 621671)
+[PASS] test_addMarket_reverts_zero_address() (gas: 16715)
+[PASS] test_constructor_grants_roles() (gas: 16124)
+[PASS] test_constructor_reverts_zero_admin() (gas: 136152)
+[PASS] test_constructor_reverts_zero_usdc() (gas: 136441)
+[PASS] test_constructor_reverts_zero_vault() (gas: 137711)
+[PASS] test_constructor_sets_state() (gas: 16586)
+[PASS] test_currentAPYBps_returns_active_market_apy() (gas: 283622)
+[PASS] test_deposit_emits_event() (gas: 277944)
+[PASS] test_deposit_multiple_times() (gas: 363396)
+[PASS] test_deposit_only_vault() (gas: 93240)
+[PASS] test_deposit_protected_by_nonReentrant() (gas: 756)
+[PASS] test_deposit_reverts_over_capacity() (gas: 116828)
+[PASS] test_deposit_reverts_zero() (gas: 19759)
+[PASS] test_deposit_supplies_to_best_market() (gas: 279191)
+[PASS] test_flagMarket_emits_event() (gas: 25841)
+[PASS] test_flagMarket_flags_unflag() (gas: 24178)
+[PASS] test_harvest_returns_zero() (gas: 7811)
+[PASS] test_harvestableProfit_returns_zero() (gas: 6532)
+[PASS] test_incentiveAPYBps_returns_global() (gas: 36831)
+[PASS] test_investedAssetsLive_returnsZeroWhenNoPosition() (gas: 16584)
+[PASS] test_markets_returns_all() (gas: 99455)
+[PASS] test_maxCapacity_returns_capacity() (gas: 8356)
+[PASS] test_name_returns_correct() (gas: 10950)
+[PASS] test_optimize_enforces_cooldown() (gas: 322521)
+[PASS] test_optimize_only_vault() (gas: 68593)
+[PASS] test_optimize_rebalances_markets() (gas: 370672)
+[PASS] test_p1l4_withdrawableAssets_fallback_executesCashCap() (gas: 310988)
+[PASS] test_p1l4_withdrawableAssets_fallback_unboundedByAssets() (gas: 287866)
+[PASS] test_positions_returns_assets_per_market() (gas: 328115)
+[PASS] test_receive_reverts() (gas: 17938)
+[PASS] test_refreshNavCache_callableByVault() (gas: 26795)
+[PASS] test_setAPYOverrideBps_overrides() (gas: 38840)
+[PASS] test_setAPYOverrideBps_reverts_too_high() (gas: 15383)
+[PASS] test_setCapacity_emits_event() (gas: 22773)
+[PASS] test_setCapacity_updates() (gas: 22023)
+[PASS] test_setCostsEstimates_updates() (gas: 33250)
+[PASS] test_setMarketFailureDecaySeconds_updatesState() (gas: 21507)
+[PASS] test_setOptimizeParams_updates() (gas: 25604)
+[PASS] test_setParamRole_grants() (gas: 41530)
+[PASS] test_setParamRole_revokes() (gas: 20051)
+[PASS] test_setRiskScore_reverts_too_high() (gas: 18286)
+[PASS] test_setRiskScore_updates() (gas: 23134)
+[PASS] test_toggleMarket_emits_event() (gas: 24609)
+[PASS] test_toggleMarket_enables_disables() (gas: 24837)
+[PASS] test_toggleMarket_reverts_bad_index() (gas: 16942)
+[PASS] test_totalAssets_sums_all_markets() (gas: 318102)
+[PASS] test_underlying_returns_usdc() (gas: 9707)
+[PASS] test_unflagMarket_badIndex_reverts() (gas: 17257)
+[PASS] test_unflagMarket_emitsFlaggedFalse() (gas: 31755)
+[PASS] test_updateMarketAddress_updates() (gas: 32462)
+[PASS] test_withdraw_caps_to_available() (gas: 311865)
+[PASS] test_withdraw_emits_event() (gas: 317903)
+[PASS] test_withdraw_from_multiple_markets() (gas: 377217)
+[PASS] test_withdraw_only_vault() (gas: 280521)
+[PASS] test_withdraw_sends_to_vault() (gas: 316288)
+[PASS] test_withdrawableAssets_returns_available() (gas: 279929)
+[PASS] test_yield_accrual_increases_totalAssets() (gas: 286655)
+Suite result: ok. 62 passed; 0 failed; 0 skipped; finished in 7.21ms (5.79ms CPU time)
+
+Ran 5 tests for test/strategies/usdc-lending/MultiCycleStability.t.sol:MultiCycleStabilityTest
+[PASS] test_C1_noStuckCapital() (gas: 818370)
+[PASS] test_C1_thirtyC_economicConsistency() (gas: 2013067)
+[PASS] test_C2_navSharePriceNonDecreasing() (gas: 1118196)
+[PASS] test_C3a_idleAlwaysDeployedAfterCycle() (gas: 4262159)
+[PASS] test_C3b_idleDeployedAfterRebalance() (gas: 1503289)
+Suite result: ok. 5 passed; 0 failed; 0 skipped; finished in 34.44ms (29.88ms CPU time)
+
+Ran 8 tests for test/strategies/usdc-lending/UsdcMultiLendingVault.t.sol:UsdcMultiLendingVault_Deposit_Test
+[PASS] test_deposit_deploys_to_adapters() (gas: 1696778)
+[PASS] test_deposit_enforces_noCashInvariant() (gas: 112090)
+[PASS] test_deposit_only_core() (gas: 1468793)
+[PASS] test_deposit_pulls_from_core() (gas: 1692345)
+[PASS] test_deposit_respects_adapter_maxCapacity() (gas: 1727564)
+[PASS] test_deposit_respects_newAdapterRamp() (gas: 1761704)
+[PASS] test_deposit_reverts_zero_amount() (gas: 1405445)
+[PASS] test_deposit_updates_totalAssets() (gas: 1697981)
+Suite result: ok. 8 passed; 0 failed; 0 skipped; finished in 35.23ms (29.21ms CPU time)
+
+Ran 4 tests for test/strategies/usdc-lending/adapters/MultiAdapterBase.t.sol:CometAdapter_Test
+[PASS] testFuzz_comet_supplyWithdraw(uint256,uint256) (runs: 256, μ: 135937, ~: 135883)
+[PASS] test_comet_supply() (gas: 114883)
+[PASS] test_comet_withdraw() (gas: 133364)
+[PASS] test_comet_yield_accrual() (gas: 116688)
+Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 19.29ms (19.11ms CPU time)
+
+Ran 9 tests for test/strategies/usdc-lending/adapters/EulerAdapter.t.sol:EulerAdapter_Test
+[PASS] testFuzz_euler_deposit_withdraw(uint256,uint256) (runs: 256, μ: 157977, ~: 158104)
+[PASS] testFuzz_euler_roundTrip(uint256) (runs: 256, μ: 137336, ~: 137359)
+[PASS] testFuzz_euler_yield_accrual(uint256,uint256) (runs: 256, μ: 138489, ~: 138570)
+[PASS] test_euler_vault_convert_functions() (gas: 129540)
+[PASS] test_euler_vault_deposit_push_mode() (gas: 129545)
+[PASS] test_euler_vault_deposit_reverts_no_push() (gas: 16710)
+[PASS] test_euler_vault_max_withdraw() (gas: 130114)
+[PASS] test_euler_vault_withdraw() (gas: 153631)
+[PASS] test_euler_vault_yield_accrual() (gas: 134030)
+Suite result: ok. 9 passed; 0 failed; 0 skipped; finished in 91.73ms (91.38ms CPU time)
+
+Ran 3 tests for test/strategies/usdc-lending/adapters/MorphoAdapter.t.sol:MorphoAdapter_RefreshFromRegistry_Test
+[PASS] test_refreshFromRegistry_accessControl_unauthorized() (gas: 16760)
+[PASS] test_refreshFromRegistry_emptyRegistryClears() (gas: 36811)
+[PASS] test_refreshFromRegistry_happyPath_addsNewMarket() (gas: 106283)
+Suite result: ok. 3 passed; 0 failed; 0 skipped; finished in 941.60µs (203.00µs CPU time)
+
+Ran 3 tests for test/strategies/usdc-lending/adapters/EulerUsdcMultiMarketAdapter.t.sol:EulerAdapter_RefreshFromRegistry_Test
+[PASS] test_euler_refreshFromRegistry_accessControl_unauthorized() (gas: 14297)
+[PASS] test_euler_refreshFromRegistry_happyPath_addsNewVault() (gas: 95889)
+[PASS] test_euler_refreshFromRegistry_noRegistry_reverts() (gas: 3936191)
+Suite result: ok. 3 passed; 0 failed; 0 skipped; finished in 1.23ms (425.40µs CPU time)
+
+Ran 38 tests for test/strategies/usdc-lending/adapters/EulerUsdcMultiMarketAdapter.t.sol:EulerAdapter_Test
+[PASS] test_capacity_zero_is_unlimited() (gas: 233448)
+[PASS] test_constructor_grants_admin_roles() (gas: 14584)
+[PASS] test_constructor_loads_markets() (gas: 21370)
+[PASS] test_constructor_reverts_duplicate_market() (gas: 191420)
+[PASS] test_constructor_reverts_no_markets() (gas: 197300)
+[PASS] test_constructor_reverts_zero_market() (gas: 192102)
+[PASS] test_constructor_reverts_zero_usdc() (gas: 118785)
+[PASS] test_constructor_reverts_zero_vault() (gas: 119496)
+[PASS] test_deposit_at_capacity_boundary() (gas: 256062)
+[PASS] test_deposit_pushes_to_market() (gas: 227043)
+[PASS] test_deposit_reverts_non_vault() (gas: 71976)
+[PASS] test_deposit_reverts_on_zero() (gas: 17946)
+[PASS] test_deposit_reverts_over_capacity() (gas: 110713)
+[PASS] test_externalMarketTVL_sums_across_markets() (gas: 227650)
+[PASS] test_harvestableProfit_after_yield() (gas: 235308)
+[PASS] test_harvestableProfit_zero_initially() (gas: 21390)
+[PASS] test_idleAssetBalance_reflects_raw_USDC() (gas: 57601)
+[PASS] test_idleAssetBalance_zero_after_deposit() (gas: 226734)
+[PASS] test_idleAssetBalance_zero_initially() (gas: 12011)
+[PASS] test_incentiveAPYBps_returns_zero() (gas: 6767)
+[PASS] test_investedAssets_after_deposit() (gas: 233302)
+[PASS] test_isPushMode_true() (gas: 6981)
+[PASS] test_name_returns_correct() (gas: 10383)
+[PASS] test_setCapacity_only_param_role() (gas: 15158)
+[PASS] test_setCapacity_updates() (gas: 33205)
+[PASS] test_setRiskScore_only_param_role() (gas: 14424)
+[PASS] test_setRiskScore_updates() (gas: 17424)
+[PASS] test_sweepIdleAssetToVault_only_vault() (gas: 67398)
+[PASS] test_sweepIdleAssetToVault_transfers_idle() (gas: 73469)
+[PASS] test_toggleMarket_only_param_role() (gas: 14064)
+[PASS] test_totalAssets_initially_zero() (gas: 21788)
+[PASS] test_underlying_returns_usdc() (gas: 8820)
+[PASS] test_withdraw_caps_to_market_liquidity() (gas: 305671)
+[PASS] test_withdraw_returns_assets_to_vault() (gas: 283792)
+[PASS] test_withdraw_reverts_non_vault() (gas: 231050)
+[PASS] test_withdraw_reverts_on_zero() (gas: 17151)
+[PASS] test_withdraw_reverts_receiver_not_vault() (gas: 231521)
+[PASS] test_withdraw_skips_market_that_reverts() (gas: 262368)
+Suite result: ok. 38 passed; 0 failed; 0 skipped; finished in 5.03ms (4.08ms CPU time)
+
+Ran 4 tests for test/strategies/usdc-lending/adapters/MultiAdapterBase.t.sol:DolomiteAdapter_Test
+[PASS] testFuzz_dolomite_roundTrip(uint256) (runs: 256, μ: 136034, ~: 136057)
+[PASS] test_dolomite_erc4626_deposit() (gas: 132081)
+[PASS] test_dolomite_multi_type_markets() (gas: 211400)
+[PASS] test_dolomite_pool_supply() (gas: 114776)
+Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 23.34ms (22.99ms CPU time)
+
+Ran 57 tests for test/strategies/usdc-lending/adapters/MorphoAdapter.t.sol:MorphoAdapter_Test
+[PASS] test_activeMarket_returns_current() (gas: 16743)
+[PASS] test_addMarket_emits_event() (gas: 60317)
+[PASS] test_addMarket_only_param_role() (gas: 18916)
+[PASS] test_addMarket_registers_market() (gas: 66188)
+[PASS] test_addMarket_reverts_wrong_asset() (gas: 621605)
+[PASS] test_addMarket_reverts_zero_address() (gas: 16605)
+[PASS] test_constructor_grants_roles() (gas: 16058)
+[PASS] test_constructor_reverts_zero_admin() (gas: 136152)
+[PASS] test_constructor_reverts_zero_usdc() (gas: 136397)
+[PASS] test_constructor_reverts_zero_vault() (gas: 137601)
+[PASS] test_constructor_sets_state() (gas: 16586)
+[PASS] test_currentAPYBps_returns_active_market_apy() (gas: 283569)
+[PASS] test_deposit_emits_event() (gas: 277856)
+[PASS] test_deposit_multiple_times() (gas: 363396)
+[PASS] test_deposit_only_vault() (gas: 93130)
+[PASS] test_deposit_protected_by_nonReentrant() (gas: 690)
+[PASS] test_deposit_reverts_over_capacity() (gas: 116806)
+[PASS] test_deposit_reverts_zero() (gas: 19649)
+[PASS] test_deposit_supplies_to_best_market() (gas: 279120)
+[PASS] test_flagMarket_emits_event() (gas: 25775)
+[PASS] test_flagMarket_flags_unflag() (gas: 24090)
+[PASS] test_harvest_returns_zero() (gas: 7811)
+[PASS] test_harvestableProfit_returns_zero() (gas: 6532)
+[PASS] test_incentiveAPYBps_returns_global() (gas: 36787)
+[PASS] test_markets_returns_all() (gas: 99433)
+[PASS] test_maxCapacity_returns_capacity() (gas: 8334)
+[PASS] test_name_returns_correct() (gas: 10862)
+[PASS] test_optimize_enforces_cooldown() (gas: 322433)
+[PASS] test_optimize_only_vault() (gas: 68483)
+[PASS] test_optimize_rebalances_markets() (gas: 370606)
+[PASS] test_p1l4_withdrawableAssets_fallback_executesCashCap() (gas: 310922)
+[PASS] test_p1l4_withdrawableAssets_fallback_unboundedByAssets() (gas: 287778)
+[PASS] test_positions_returns_assets_per_market() (gas: 328005)
+[PASS] test_receive_reverts() (gas: 17938)
+[PASS] test_setAPYOverrideBps_overrides() (gas: 38774)
+[PASS] test_setAPYOverrideBps_reverts_too_high() (gas: 15383)
+[PASS] test_setCapacity_emits_event() (gas: 22685)
+[PASS] test_setCapacity_updates() (gas: 21957)
+[PASS] test_setCostsEstimates_updates() (gas: 33140)
+[PASS] test_setOptimizeParams_updates() (gas: 25507)
+[PASS] test_setParamRole_grants() (gas: 41442)
+[PASS] test_setParamRole_revokes() (gas: 19963)
+[PASS] test_setRiskScore_reverts_too_high() (gas: 18198)
+[PASS] test_setRiskScore_updates() (gas: 23090)
+[PASS] test_toggleMarket_emits_event() (gas: 24543)
+[PASS] test_toggleMarket_enables_disables() (gas: 24837)
+[PASS] test_toggleMarket_reverts_bad_index() (gas: 16882)
+[PASS] test_totalAssets_sums_all_markets() (gas: 318014)
+[PASS] test_underlying_returns_usdc() (gas: 9619)
+[PASS] test_updateMarketAddress_updates() (gas: 32396)
+[PASS] test_withdraw_caps_to_available() (gas: 311865)
+[PASS] test_withdraw_emits_event() (gas: 317868)
+[PASS] test_withdraw_from_multiple_markets() (gas: 377151)
+[PASS] test_withdraw_only_vault() (gas: 280451)
+[PASS] test_withdraw_sends_to_vault() (gas: 316271)
+[PASS] test_withdrawableAssets_returns_available() (gas: 279841)
+[PASS] test_yield_accrual_increases_totalAssets() (gas: 286602)
+Suite result: ok. 57 passed; 0 failed; 0 skipped; finished in 6.53ms (5.43ms CPU time)
+
+Ran 45 tests for test/strategies/usdc-lending/adapters/EulerUsdcMultiMarketAdapter.t.sol:S22_EulerGapTest
+[PASS] test_capacity_zero_is_unlimited() (gas: 233558)
+[PASS] test_constructor_grants_admin_roles() (gas: 14584)
+[PASS] test_constructor_loads_markets() (gas: 21370)
+[PASS] test_constructor_reverts_duplicate_market() (gas: 191420)
+[PASS] test_constructor_reverts_no_markets() (gas: 197432)
+[PASS] test_constructor_reverts_zero_market() (gas: 192256)
+[PASS] test_constructor_reverts_zero_usdc() (gas: 118807)
+[PASS] test_constructor_reverts_zero_vault() (gas: 119650)
+[PASS] test_deposit_at_capacity_boundary() (gas: 256084)
+[PASS] test_deposit_pushes_to_market() (gas: 227131)
+[PASS] test_deposit_reverts_non_vault() (gas: 71976)
+[PASS] test_deposit_reverts_on_zero() (gas: 18034)
+[PASS] test_deposit_reverts_over_capacity() (gas: 110713)
+[PASS] test_externalMarketTVL_sums_across_markets() (gas: 227773)
+[PASS] test_fallback_reverts() (gas: 7862)
+[PASS] test_harvestableProfit_after_yield() (gas: 235414)
+[PASS] test_harvestableProfit_zero_initially() (gas: 21500)
+[PASS] test_idleAssetBalance_reflects_raw_USDC() (gas: 57711)
+[PASS] test_idleAssetBalance_zero_after_deposit() (gas: 226840)
+[PASS] test_idleAssetBalance_zero_initially() (gas: 12099)
+[PASS] test_incentiveAPYBps_returns_zero() (gas: 6921)
+[PASS] test_investedAssets_after_deposit() (gas: 233434)
+[PASS] test_isPushMode_true() (gas: 7137)
+[PASS] test_name_returns_correct() (gas: 10493)
+[PASS] test_receiveETH_reverts() (gas: 18502)
+[PASS] test_setCapacity_only_param_role() (gas: 15268)
+[PASS] test_setCapacity_updates() (gas: 33249)
+[PASS] test_setMinMarketCapacity_onlyParamRole() (gas: 36310)
+[PASS] test_setMinMarketCapacity_updatesState() (gas: 14976)
+[PASS] test_setParamRole_grantsParamRole() (gas: 36279)
+[PASS] test_setParamRole_onlyAdmin() (gas: 37197)
+[PASS] test_setParamRole_revertsOnZeroAddress() (gas: 12138)
+[PASS] test_setRiskScore_only_param_role() (gas: 14424)
+[PASS] test_setRiskScore_updates() (gas: 17446)
+[PASS] test_sweepIdleAssetToVault_only_vault() (gas: 67420)
+[PASS] test_sweepIdleAssetToVault_transfers_idle() (gas: 73623)
+[PASS] test_toggleMarket_only_param_role() (gas: 14064)
+[PASS] test_totalAssets_initially_zero() (gas: 21898)
+[PASS] test_underlying_returns_usdc() (gas: 8930)
+[PASS] test_withdraw_caps_to_market_liquidity() (gas: 305776)
+[PASS] test_withdraw_returns_assets_to_vault() (gas: 283845)
+[PASS] test_withdraw_reverts_non_vault() (gas: 231160)
+[PASS] test_withdraw_reverts_on_zero() (gas: 17195)
+[PASS] test_withdraw_reverts_receiver_not_vault() (gas: 231675)
+[PASS] test_withdraw_skips_market_that_reverts() (gas: 262478)
+Suite result: ok. 45 passed; 0 failed; 0 skipped; finished in 4.55ms (3.75ms CPU time)
+
+Ran 44 tests for test/strategies/usdc-lending/adapters/EulerUsdcMultiMarketAdapter.t.sol:S21_EulerSetterTest
+[PASS] test_activeMarket_returnsVaultAfterDeposit() (gas: 224423)
+[PASS] test_activeMarket_returnsZeroWithNoDeposit() (gas: 17202)
+[PASS] test_capacity_zero_is_unlimited() (gas: 233536)
+[PASS] test_constructor_grants_admin_roles() (gas: 14584)
+[PASS] test_constructor_loads_markets() (gas: 21370)
+[PASS] test_constructor_reverts_duplicate_market() (gas: 191464)
+[PASS] test_constructor_reverts_no_markets() (gas: 197432)
+[PASS] test_constructor_reverts_zero_market() (gas: 192234)
+[PASS] test_constructor_reverts_zero_usdc() (gas: 118829)
+[PASS] test_constructor_reverts_zero_vault() (gas: 119628)
+[PASS] test_deposit_at_capacity_boundary() (gas: 256106)
+[PASS] test_deposit_pushes_to_market() (gas: 227113)
+[PASS] test_deposit_reverts_non_vault() (gas: 71976)
+[PASS] test_deposit_reverts_on_zero() (gas: 18012)
+[PASS] test_deposit_reverts_over_capacity() (gas: 110757)
+[PASS] test_externalMarketTVL_sums_across_markets() (gas: 227756)
+[PASS] test_harvestableProfit_after_yield() (gas: 235414)
+[PASS] test_harvestableProfit_zero_initially() (gas: 21500)
+[PASS] test_idleAssetBalance_reflects_raw_USDC() (gas: 57711)
+[PASS] test_idleAssetBalance_zero_after_deposit() (gas: 226840)
+[PASS] test_idleAssetBalance_zero_initially() (gas: 12077)
+[PASS] test_incentiveAPYBps_returns_zero() (gas: 6934)
+[PASS] test_investedAssets_after_deposit() (gas: 233434)
+[PASS] test_isPushMode_true() (gas: 7113)
+[PASS] test_name_returns_correct() (gas: 10493)
+[PASS] test_setCapacity_onlyParamRole() (gas: 14670)
+[PASS] test_setCapacity_only_param_role() (gas: 15268)
+[PASS] test_setCapacity_updates() (gas: 33249)
+[PASS] test_setCostsEstimates_updatesState() (gas: 40798)
+[PASS] test_setOptimizeParams_updatesState() (gas: 19626)
+[PASS] test_setRiskScore_only_param_role() (gas: 14424)
+[PASS] test_setRiskScore_updates() (gas: 17468)
+[PASS] test_sweepIdleAssetToVault_only_vault() (gas: 67442)
+[PASS] test_sweepIdleAssetToVault_transfers_idle() (gas: 73601)
+[PASS] test_toggleMarket_badIndex_reverts() (gas: 14127)
+[PASS] test_toggleMarket_only_param_role() (gas: 14064)
+[PASS] test_totalAssets_initially_zero() (gas: 21876)
+[PASS] test_underlying_returns_usdc() (gas: 8963)
+[PASS] test_withdraw_caps_to_market_liquidity() (gas: 305776)
+[PASS] test_withdraw_returns_assets_to_vault() (gas: 283845)
+[PASS] test_withdraw_reverts_non_vault() (gas: 231160)
+[PASS] test_withdraw_reverts_on_zero() (gas: 17195)
+[PASS] test_withdraw_reverts_receiver_not_vault() (gas: 231653)
+[PASS] test_withdraw_skips_market_that_reverts() (gas: 262456)
+Suite result: ok. 44 passed; 0 failed; 0 skipped; finished in 8.84ms (7.79ms CPU time)
+
+Ran 10 tests for test/strategies/usdc-lending/FailureOverlay.t.sol:FailureOverlay
+[PASS] test_F_integration_0_failures_full_allocation() (gas: 562056)
+[PASS] test_F_integration_3_failures_reduced_cap() (gas: 1124933)
+[PASS] test_F_integration_7_failures_no_allocation() (gas: 1870880)
+[PASS] test_F_integration_decay_resets_count() (gas: 961981)
+[PASS] test_F_math_0_failures_no_penalty() (gas: 13009)
+[PASS] test_F_math_1_failure_8500() (gas: 662)
+[PASS] test_F_math_3_failures_5500() (gas: 178)
+[PASS] test_F_math_6_failures_1000() (gas: 706)
+[PASS] test_F_math_7_failures_zero() (gas: 406)
+[PASS] test_F_math_overflow_no_underflow() (gas: 660)
+Suite result: ok. 10 passed; 0 failed; 0 skipped; finished in 19.02ms (14.72ms CPU time)
+
+Ran 24 tests for test/strategies/usdc-lending/LendingStrategyUpkeep.t.sol:LendingStrategyUpkeep_Test
+[PASS] testFuzz_addRemoveStrategies(uint8,uint8) (runs: 256, μ: 1041606, ~: 938802)
+[PASS] testFuzz_upkeepCycles(uint8,uint8) (runs: 256, μ: 820519, ~: 688627)
+[PASS] test_addStrategy_multiple() (gas: 113479)
+[PASS] test_addStrategy_only_owner() (gas: 16324)
+[PASS] test_addStrategy_registers() (gas: 63024)
+[PASS] test_addStrategy_reverts_zero() (gas: 13923)
+[PASS] test_checkUpkeep_detects_harvest() (gas: 111386)
+[PASS] test_checkUpkeep_detects_rebalance() (gas: 136100)
+[PASS] test_checkUpkeep_harvest_priority_over_rebalance() (gas: 156409)
+[PASS] test_checkUpkeep_returns_false_no_action_needed() (gas: 75181)
+[PASS] test_checkUpkeep_returns_false_no_strategies() (gas: 8793)
+[PASS] test_checkUpkeep_round_robin() (gas: 184499)
+[PASS] test_checkUpkeep_skips_disabled_strategies() (gas: 187084)
+[PASS] test_multiple_strategies_fair_distribution() (gas: 342485)
+[PASS] test_performUpkeep_advances_rrIndex() (gas: 166707)
+[PASS] test_performUpkeep_executes_harvest() (gas: 137164)
+[PASS] test_performUpkeep_executes_rebalance() (gas: 161964)
+[PASS] test_performUpkeep_reverts_bad_index() (gas: 11843)
+[PASS] test_performUpkeep_reverts_disabled_strategy() (gas: 115670)
+[PASS] test_removeStrategy_only_owner() (gas: 64909)
+[PASS] test_removeStrategy_removes() (gas: 72270)
+[PASS] test_rrIndex_wraps_around() (gas: 254304)
+[PASS] test_toggleStrategy_disables() (gas: 63622)
+[PASS] test_toggleStrategy_enables() (gas: 65531)
+Suite result: ok. 24 passed; 0 failed; 0 skipped; finished in 120.55ms (122.17ms CPU time)
+
+Ran 3 tests for test/strategies/usdc-lending/adapters/MorphoAdapter.t.sol:MorphoAdapter_Fuzz_Test
+[PASS] testFuzz_deposit_anyAmount(uint256) (runs: 256, μ: 278525, ~: 278554)
+[PASS] testFuzz_roundTrip(uint256) (runs: 256, μ: 315230, ~: 315252)
+[PASS] testFuzz_withdraw_anyAmount(uint256,uint256) (runs: 256, μ: 317411, ~: 317384)
+Suite result: ok. 3 passed; 0 failed; 0 skipped; finished in 234.90ms (234.21ms CPU time)
+
+Ran 17 tests for test/strategies/usdc-lending/Allocation_Consistency.t.sol:Allocation_Consistency
+[PASS] test_deploy_rebalance_converges_in_two_cycles() (gas: 1700665)
+[PASS] test_explainability_matches_allocation_decision() (gas: 8271)
+[PASS] test_highest_score_but_over_cap_is_skipped() (gas: 1390754)
+[PASS] test_inv_idle_if_no_eligible() (gas: 832523)
+[PASS] test_inv_no_adapter_over_maxExposure() (gas: 1657280)
+[PASS] test_inv_no_churn_under_driftTolerance() (gas: 1381659)
+[PASS] test_inv_over_cap_gets_zero_new_funds() (gas: 1425659)
+[PASS] test_inv_sum_allocations_coherent_with_tvl() (gas: 1638110)
+[PASS] test_repeated_cycles_do_not_break_caps() (gas: 1801285)
+[PASS] test_repeated_cycles_do_not_starve_eligible_adapter() (gas: 2215178)
+[PASS] test_target_allocations_T1_singleAdapter_topScore() (gas: 1616955)
+[PASS] test_target_allocations_T2_dualAdapter_scoreWeighted() (gas: 1748991)
+[PASS] test_target_allocations_T3_tripleAdapter_scoreWeighted() (gas: 1879822)
+[PASS] test_target_allocations_clamped_by_maxExposure() (gas: 1217322)
+[PASS] test_target_allocations_handle_all_over_cap() (gas: 1297965)
+[PASS] test_target_allocations_handle_disabled_adapters() (gas: 1568322)
+[PASS] test_target_allocations_sum_to_expected_total() (gas: 1638333)
+Suite result: ok. 17 passed; 0 failed; 0 skipped; finished in 285.33ms (39.51ms CPU time)
+
+Ran 1 test for test/strategies/usdc-lending/fork/V92_SafetyTierE2E.t.sol:V92_SafetyTierE2E
+[PASS] test_V92_SafetyTier_full_lifecycle() (gas: 5024631)
+Suite result: ok. 1 passed; 0 failed; 0 skipped; finished in 256.64ms (20.65ms CPU time)
+
+Ran 5 tests for test/strategies/usdc-lending/UsdcMultiLendingVault.fuzz.t.sol:UsdcMultiLendingVault_Fuzz_AccessControl
+[PASS] testFuzz_deposit_onlyCore(address) (runs: 256, μ: 95615, ~: 95615)
+[PASS] testFuzz_harvest_onlyKeeper(address) (runs: 256, μ: 20121, ~: 20121)
+[PASS] testFuzz_pause_onlyAdmin(address) (runs: 256, μ: 16462, ~: 16462)
+[PASS] testFuzz_rebalance_onlyKeeper(address) (runs: 256, μ: 48282, ~: 48282)
+[PASS] testFuzz_withdraw_onlyCore(address) (runs: 256, μ: 404047, ~: 404047)
+Suite result: ok. 5 passed; 0 failed; 0 skipped; finished in 350.23ms (345.44ms CPU time)
+
+Ran 23 tests for test/strategies/usdc-lending/Scoring_Model.t.sol:Scoring_Model
+[PASS] test_driftTolerance_prevents_churn() (gas: 1374227)
+[PASS] test_flagged_adapter_blocks_new_allocation() (gas: 1268495)
+[PASS] test_incentive_decays_over_halflife() (gas: 23604)
+[PASS] test_liquidity_score_boundary_above_dustTolerance() (gas: 1359335)
+[PASS] test_liquidity_score_boundary_below_dustTolerance() (gas: 1217228)
+[PASS] test_liquidity_score_does_not_hide_real_small_position() (gas: 1359492)
+[PASS] test_liquidity_score_treats_init_dust_as_empty_adapter() (gas: 1216590)
+[PASS] test_liquidity_shock_does_not_quarantine_unfairly() (gas: 777557)
+[PASS] test_liquidity_shock_reduces_allocation() (gas: 1564624)
+[PASS] test_p0l1a_default_wIncentive_is_zero() (gas: 128973)
+[PASS] test_p0l1a_zero_incentive_no_score_inflation() (gas: 1368778)
+[PASS] test_rank_excludes_disabled_adapter() (gas: 1174202)
+[PASS] test_rank_excludes_quarantined_adapter() (gas: 1243271)
+[PASS] test_rank_handles_zero_assets_adapter_correctly() (gas: 1345315)
+[PASS] test_rank_prefers_higher_apy_when_other_inputs_equal() (gas: 1935868)
+[PASS] test_rank_prefers_more_liquid_adapter_when_apy_close() (gas: 1554503)
+[PASS] test_ranking_stable_when_apy_close() (gas: 1353444)
+[PASS] test_score_decreases_with_higher_risk() (gas: 1332972)
+[PASS] test_score_increases_with_higher_apy() (gas: 1213303)
+[PASS] test_score_respects_incentive_component() (gas: 1335137)
+[PASS] test_score_respects_liquidity_penalty() (gas: 1537727)
+[PASS] test_score_respects_stability_component() (gas: 1212753)
+[PASS] test_score_stability_under_apy_fluctuation() (gas: 1421482)
+Suite result: ok. 23 passed; 0 failed; 0 skipped; finished in 54.63ms (49.33ms CPU time)
+
+Ran 16 tests for test/strategies/usdc-lending/StabilityEMA.t.sol:StabilityEMA_Test
+[PASS] test_coordinationHooks_adapterCount() (gas: 11477)
+[PASS] test_coordinationHooks_defaults() (gas: 43477)
+[PASS] test_debug_pokeLiquidity_reaches_ema_update() (gas: 252601)
+[PASS] test_lens_explainAllocation_non_zero() (gas: 2432753)
+[PASS] test_lens_explainScore_matches_strategy_state() (gas: 2505781)
+[PASS] test_lens_explainStability_matches_strategy() (gas: 2062370)
+[PASS] test_pokeLiquidityBatch_updates_stability_for_all_adapters() (gas: 298184)
+[PASS] test_stabilityEma_decreases_with_volatile_apy() (gas: 466530)
+[PASS] test_stabilityEma_governance_params() (gas: 261950)
+[PASS] test_stabilityEma_increases_with_stable_apy() (gas: 470463)
+[PASS] test_stabilityEma_initializes_on_first_poke() (gas: 301818)
+[PASS] test_stabilityEma_period_zero_reverts() (gas: 63068)
+[PASS] test_stabilityEma_respects_apy_floor() (gas: 236147)
+[PASS] test_stabilityEma_skips_when_updated_too_soon() (gas: 239896)
+[PASS] test_stabilityEma_smoothing_not_brutal() (gas: 278759)
+[PASS] test_stability_ema_penalizes_volatile_adapter() (gas: 766195)
+Suite result: ok. 16 passed; 0 failed; 0 skipped; finished in 13.35ms (8.02ms CPU time)
+
+Ran 2 tests for test/strategies/usdc-lending/UsdcMultiLendingVault.fuzz.t.sol:UsdcMultiLendingVault_Fuzz_Harvest
+[PASS] testFuzz_harvest_amounts(uint256,uint256,uint256) (runs: 256, μ: 310591, ~: 357801)
+[PASS] testFuzz_harvest_withReceiver(uint256,address) (runs: 256, μ: 125284, ~: 125298)
+Suite result: ok. 2 passed; 0 failed; 0 skipped; finished in 198.92ms (193.54ms CPU time)
+
+Ran 6 tests for test/strategies/usdc-lending/UsdcMultiLendingVault.fuzz.t.sol:UsdcMultiLendingVault_Fuzz_Parameters
+[PASS] testFuzz_setDustTolerance(uint256) (runs: 256, μ: 77003, ~: 77145)
+[PASS] testFuzz_setGateParams(uint16,uint16,uint16,uint16,uint256) (runs: 256, μ: 108584, ~: 108806)
+[PASS] testFuzz_setRebalanceParams(uint16,uint16,uint16,uint32,uint16,uint16,uint16) (runs: 256, μ: 85565, ~: 85498)
+[PASS] testFuzz_setRiskScore(uint16) (runs: 256, μ: 118993, ~: 120560)
+[PASS] testFuzz_setRiskWeights_invalidSum(uint16,uint16,uint16,uint16,uint16) (runs: 256, μ: 64652, ~: 64631)
+[PASS] testFuzz_setRiskWeights_validSum(uint16,uint16,uint16,uint16,uint16) (runs: 256, μ: 92496, ~: 92455)
+Suite result: ok. 6 passed; 0 failed; 0 skipped; finished in 374.33ms (369.78ms CPU time)
+
+Ran 40 tests for test/strategies/usdc-lending/Scoring_Model.t.sol:LensInternalsTest
+[PASS] test_AUDIT_FINDING_8_T1_ignores_global_ceiling() (gas: 1250146)
+[PASS] test_S2_extTVLPanic_noFire_below30pctDrop() (gas: 591715)
+[PASS] test_S2_extTVLPanic_snapshotCapturedAfterWindow() (gas: 581805)
+[PASS] test_S2_extTVLPanic_triggerFires_on30pctDrop() (gas: 592575)
+[PASS] test_driftTolerance_prevents_churn() (gas: 1374530)
+[PASS] test_flagged_adapter_blocks_new_allocation() (gas: 1268644)
+[PASS] test_incentive_decays_over_halflife() (gas: 23802)
+[PASS] test_lensInternals_computeNormScores_equalAPY_equalScores() (gas: 1554237)
+[PASS] test_lensInternals_computeNormScores_higherAPY_higherScore() (gas: 1060442)
+[PASS] test_lensInternals_effectiveMinNewAdapterSeed_largeTVL_newAdapter() (gas: 1479481)
+[PASS] test_lensInternals_effectiveMinNewAdapterSeed_smallTVL_newAdapter() (gas: 1478481)
+[PASS] test_lensInternals_effectiveRelativeCapBps_belowMinTier() (gas: 584466)
+[PASS] test_lensInternals_effectiveRelativeCapBps_tier300K() (gas: 585445)
+[PASS] test_lensInternals_effectiveRelativeCapBps_tier75M() (gas: 585782)
+[PASS] test_lensInternals_evaluateAdapter_capacityClipsHeadroom() (gas: 627866)
+[PASS] test_lensInternals_evaluateAdapter_flaggedSkipped() (gas: 634073)
+[PASS] test_lensInternals_evaluateAdapter_overMaxCapSkipped() (gas: 581976)
+[PASS] test_lensInternals_sortDescending_correctOrder() (gas: 1549600)
+[PASS] test_lensInternals_sortDescending_noAdapters_emptyResult() (gas: 55639)
+[PASS] test_lensInternals_sortDescending_singleAdapter_noRevert() (gas: 580917)
+[PASS] test_liquidity_score_boundary_above_dustTolerance() (gas: 1359528)
+[PASS] test_liquidity_score_boundary_below_dustTolerance() (gas: 1217487)
+[PASS] test_liquidity_score_does_not_hide_real_small_position() (gas: 1359729)
+[PASS] test_liquidity_score_treats_init_dust_as_empty_adapter() (gas: 1216607)
+[PASS] test_liquidity_shock_does_not_quarantine_unfairly() (gas: 777845)
+[PASS] test_liquidity_shock_reduces_allocation() (gas: 1564812)
+[PASS] test_p0l1a_default_wIncentive_is_zero() (gas: 129066)
+[PASS] test_p0l1a_zero_incentive_no_score_inflation() (gas: 1368993)
+[PASS] test_rank_excludes_disabled_adapter() (gas: 1174395)
+[PASS] test_rank_excludes_quarantined_adapter() (gas: 1243640)
+[PASS] test_rank_handles_zero_assets_adapter_correctly() (gas: 1345574)
+[PASS] test_rank_prefers_higher_apy_when_other_inputs_equal() (gas: 1935862)
+[PASS] test_rank_prefers_more_liquid_adapter_when_apy_close() (gas: 1554735)
+[PASS] test_ranking_stable_when_apy_close() (gas: 1353665)
+[PASS] test_score_decreases_with_higher_risk() (gas: 1333165)
+[PASS] test_score_increases_with_higher_apy() (gas: 1213650)
+[PASS] test_score_respects_incentive_component() (gas: 1335506)
+[PASS] test_score_respects_liquidity_penalty() (gas: 1537915)
+[PASS] test_score_respects_stability_component() (gas: 1212946)
+[PASS] test_score_stability_under_apy_fluctuation() (gas: 1421665)
+Suite result: ok. 40 passed; 0 failed; 0 skipped; finished in 62.15ms (58.75ms CPU time)
+
+Ran 4 tests for test/strategies/usdc-lending/UsdcLendingStrategy_CoreVault_Integration.t.sol:UsdcLendingStrategy_CoreVault_Integration_Fuzz
+[PASS] testFuzz_Integration_DepositWithdraw(uint256) (runs: 256, μ: 328841, ~: 328876)
+[PASS] testFuzz_Integration_MultipleDepositsWithdrawals(uint256,uint256,uint256) (runs: 256, μ: 382220, ~: 382243)
+[PASS] testFuzz_Integration_SharePriceMonotonicity(uint256,uint256,uint256) (runs: 256, μ: 403880, ~: 403919)
+[PASS] testFuzz_Integration_TimeBasedYield(uint256,uint256) (runs: 256, μ: 281686, ~: 281742)
+Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 407.13ms (855.84ms CPU time)
+
+Ran 2 tests for test/strategies/usdc-lending/UsdcMultiLendingVault.fuzz.t.sol:UsdcMultiLendingVault_Fuzz_EdgeCases
+[PASS] testFuzz_totalAssets_consistent(uint256) (runs: 256, μ: 566362, ~: 592169)
+[PASS] testFuzz_withdraw_cannotExceedTotal(uint256,uint256) (runs: 256, μ: 533339, ~: 548561)
+Suite result: ok. 2 passed; 0 failed; 0 skipped; finished in 527.83ms (522.72ms CPU time)
+
+Ran 5 tests for test/strategies/usdc-lending/UsdcMultiLendingVault.fuzz.t.sol:UsdcMultiLendingVault_Fuzz_DepositWithdraw
+[PASS] testFuzz_depositWithdraw_roundTrip(uint256) (runs: 256, μ: 538055, ~: 552352)
+[PASS] testFuzz_deposit_validAmount(uint256) (runs: 256, μ: 582219, ~: 601329)
+[PASS] testFuzz_multipleDeposits(uint256[5]) (runs: 256, μ: 1200646, ~: 1221414)
+[PASS] testFuzz_multipleWithdraws(uint256,uint256[3]) (runs: 256, μ: 857278, ~: 944263)
+[PASS] testFuzz_withdraw_validAmount(uint256,uint256) (runs: 256, μ: 684072, ~: 690488)
+Suite result: ok. 5 passed; 0 failed; 0 skipped; finished in 1.50s (2.39s CPU time)
+
+Ran 3 tests for test/strategies/usdc-lending/UsdcMultiLendingVault.invariant.t.sol:UsdcMultiLendingVault_Adversarial_Invariant_Test
+[PASS] invariant_adversarialSummary() (runs: 256, calls: 128000, reverts: 0)
+
+╭--------------------+-----------------------+-------+---------+----------╮
+| Contract           | Selector              | Calls | Reverts | Discards |
++=========================================================================+
+| AdversarialHandler | attackAddAdapter      | 12825 | 0       | 0        |
+|--------------------+-----------------------+-------+---------+----------|
+| AdversarialHandler | attackDeposit         | 12764 | 0       | 0        |
+|--------------------+-----------------------+-------+---------+----------|
+| AdversarialHandler | attackEmergencyRecall | 12556 | 0       | 0        |
+|--------------------+-----------------------+-------+---------+----------|
+| AdversarialHandler | attackFreezeRoles     | 12808 | 0       | 0        |
+|--------------------+-----------------------+-------+---------+----------|
+| AdversarialHandler | attackHarvest         | 12984 | 0       | 0        |
+|--------------------+-----------------------+-------+---------+----------|
+| AdversarialHandler | attackPause           | 12810 | 0       | 0        |
+|--------------------+-----------------------+-------+---------+----------|
+| AdversarialHandler | attackRebalance       | 12850 | 0       | 0        |
+|--------------------+-----------------------+-------+---------+----------|
+| AdversarialHandler | attackWithdraw        | 12674 | 0       | 0        |
+|--------------------+-----------------------+-------+---------+----------|
+| AdversarialHandler | legitimateDeposit     | 12806 | 0       | 0        |
+|--------------------+-----------------------+-------+---------+----------|
+| AdversarialHandler | legitimateWithdraw    | 12923 | 0       | 0        |
+╰--------------------+-----------------------+-------+---------+----------╯
+
+[PASS] invariant_attacker_cannot_steal() (runs: 256, calls: 128000, reverts: 0)
+
+╭--------------------+-----------------------+-------+---------+----------╮
+| Contract           | Selector              | Calls | Reverts | Discards |
++=========================================================================+
+| AdversarialHandler | attackAddAdapter      | 12971 | 0       | 0        |
+|--------------------+-----------------------+-------+---------+----------|
+| AdversarialHandler | attackDeposit         | 12652 | 0       | 0        |
+|--------------------+-----------------------+-------+---------+----------|
+| AdversarialHandler | attackEmergencyRecall | 12647 | 0       | 0        |
+|--------------------+-----------------------+-------+---------+----------|
+| AdversarialHandler | attackFreezeRoles     | 12878 | 0       | 0        |
+|--------------------+-----------------------+-------+---------+----------|
+| AdversarialHandler | attackHarvest         | 12582 | 0       | 0        |
+|--------------------+-----------------------+-------+---------+----------|
+| AdversarialHandler | attackPause           | 12830 | 0       | 0        |
+|--------------------+-----------------------+-------+---------+----------|
+| AdversarialHandler | attackRebalance       | 12798 | 0       | 0        |
+|--------------------+-----------------------+-------+---------+----------|
+| AdversarialHandler | attackWithdraw        | 12737 | 0       | 0        |
+|--------------------+-----------------------+-------+---------+----------|
+| AdversarialHandler | legitimateDeposit     | 13075 | 0       | 0        |
+|--------------------+-----------------------+-------+---------+----------|
+| AdversarialHandler | legitimateWithdraw    | 12830 | 0       | 0        |
+╰--------------------+-----------------------+-------+---------+----------╯
+
+[PASS] invariant_no_successful_attacks() (runs: 256, calls: 128000, reverts: 0)
+
+╭--------------------+-----------------------+-------+---------+----------╮
+| Contract           | Selector              | Calls | Reverts | Discards |
++=========================================================================+
+| AdversarialHandler | attackAddAdapter      | 12940 | 0       | 0        |
+|--------------------+-----------------------+-------+---------+----------|
+| AdversarialHandler | attackDeposit         | 12775 | 0       | 0        |
+|--------------------+-----------------------+-------+---------+----------|
+| AdversarialHandler | attackEmergencyRecall | 12618 | 0       | 0        |
+|--------------------+-----------------------+-------+---------+----------|
+| AdversarialHandler | attackFreezeRoles     | 12805 | 0       | 0        |
+|--------------------+-----------------------+-------+---------+----------|
+| AdversarialHandler | attackHarvest         | 12745 | 0       | 0        |
+|--------------------+-----------------------+-------+---------+----------|
+| AdversarialHandler | attackPause           | 12913 | 0       | 0        |
+|--------------------+-----------------------+-------+---------+----------|
+| AdversarialHandler | attackRebalance       | 12783 | 0       | 0        |
+|--------------------+-----------------------+-------+---------+----------|
+| AdversarialHandler | attackWithdraw        | 12759 | 0       | 0        |
+|--------------------+-----------------------+-------+---------+----------|
+| AdversarialHandler | legitimateDeposit     | 12947 | 0       | 0        |
+|--------------------+-----------------------+-------+---------+----------|
+| AdversarialHandler | legitimateWithdraw    | 12715 | 0       | 0        |
+╰--------------------+-----------------------+-------+---------+----------╯
+
+Suite result: ok. 3 passed; 0 failed; 0 skipped; finished in 71.17s (189.84s CPU time)
+
+Ran 9 tests for test/strategies/usdc-lending/DegradedModeSemantics.t.sol:DegradedModeSemanticsTest
+[PASS] test_D1a_degradedBlocksHarvestNotWithdraw() (gas: 770601)
+[PASS] test_D1b_degradedDoesNotBlockWithdraw() (gas: 806099)
+[PASS] test_D1c_degradedBlocksDeployIdle() (gas: 714758)
+[PASS] test_D1d_degradedBlocksPrepareRebalance() (gas: 793787)
+[PASS] test_D2a_quarantinedAdapterGetsNoNewCapital() (gas: 1543720)
+[PASS] test_D2b_quarantineDoesNotBreakWithdraw() (gas: 865504)
+[PASS] test_D3_staleTvlReducesAllocation() (gas: 1315446)
+[PASS] test_D3b_freshTvlWinsOverStaleHighApy() (gas: 1411324)
+[PASS] test_D4_zeroApyAdapterLosesAdvantage() (gas: 984215)
+Suite result: ok. 9 passed; 0 failed; 0 skipped; finished in 71.21s (35.61ms CPU time)
+
+Ran 23 tests for test/strategies/usdc-lending/UsdcMultiLendingVault.t.sol:UsdcMultiLendingVault_Roles_Test
+[PASS] test_freezeRoles_blocks_grantRole() (gas: 91822)
+[PASS] test_freezeRoles_blocks_renounceRole() (gas: 92306)
+[PASS] test_freezeRoles_blocks_revokeRole() (gas: 94616)
+[PASS] test_freezeRoles_cannot_freeze_twice() (gas: 118458)
+[PASS] test_freezeRoles_emits_event() (gas: 88025)
+[PASS] test_freezeRoles_only_admin() (gas: 66494)
+[PASS] test_freezeRoles_sets_flag() (gas: 87727)
+[PASS] test_grantRole_works_before_freeze() (gas: 46395)
+[PASS] test_revokeRole_works_before_freeze() (gas: 29133)
+[PASS] test_setQuarantineThreshold_aboveMax_reverts() (gas: 66939)
+[PASS] test_setQuarantineThreshold_acceptsMaxBoundary() (gas: 70794)
+[PASS] test_setQuarantineThreshold_happyPath() (gas: 72775)
+[PASS] test_setQuarantineThreshold_onlyParamRole() (gas: 63470)
+[PASS] test_setQuarantineThreshold_zero_reverts() (gas: 64370)
+[PASS] test_setRegimeParams_confidenceZero_reverts() (gas: 62626)
+[PASS] test_setRegimeParams_horizonZero_reverts() (gas: 62359)
+[PASS] test_setRegimeParams_hysteresisEqualsBudget_accepted() (gas: 86652)
+[PASS] test_setRegimeParams_hysteresisExceedsBudget_reverts() (gas: 62183)
+[PASS] test_setRegimeParams_validInputs_accepted() (gas: 86124)
+[PASS] test_setRoleAdmin_blocked_after_freezeRoles() (gas: 115506)
+[PASS] test_setRoleAdmin_cannot_escalate_privileges() (gas: 70741)
+[PASS] test_setRoleAdmin_nonAdmin_reverts() (gas: 61213)
+[PASS] test_setRoleAdmin_onlyDefaultAdmin() (gas: 88659)
+Suite result: ok. 23 passed; 0 failed; 0 skipped; finished in 71.19s (3.64ms CPU time)
+
+Ran 3 tests for test/strategies/usdc-lending/UsdcMultiLendingVault.invariant.t.sol:UsdcMultiLendingVault_Scoring_Invariant_Test
+[PASS] invariant_scoring_conservation() (runs: 256, calls: 128000, reverts: 0)
+
+╭-------------------------+------------+-------+---------+----------╮
+| Contract                | Selector   | Calls | Reverts | Discards |
++===================================================================+
+| ScoringInvariantHandler | changeAPYs | 42526 | 0       | 0        |
+|-------------------------+------------+-------+---------+----------|
+| ScoringInvariantHandler | deposit    | 42534 | 0       | 0        |
+|-------------------------+------------+-------+---------+----------|
+| ScoringInvariantHandler | setAPY     | 42940 | 0       | 0        |
+╰-------------------------+------------+-------+---------+----------╯
+
+[PASS] invariant_scoring_maxExposure() (runs: 256, calls: 128000, reverts: 0)
+
+╭-------------------------+------------+-------+---------+----------╮
+| Contract                | Selector   | Calls | Reverts | Discards |
++===================================================================+
+| ScoringInvariantHandler | changeAPYs | 42668 | 0       | 0        |
+|-------------------------+------------+-------+---------+----------|
+| ScoringInvariantHandler | deposit    | 42723 | 0       | 0        |
+|-------------------------+------------+-------+---------+----------|
+| ScoringInvariantHandler | setAPY     | 42609 | 0       | 0        |
+╰-------------------------+------------+-------+---------+----------╯
+
+[PASS] invariant_scoring_noQuarantine() (runs: 256, calls: 128000, reverts: 0)
+
+╭-------------------------+------------+-------+---------+----------╮
+| Contract                | Selector   | Calls | Reverts | Discards |
++===================================================================+
+| ScoringInvariantHandler | changeAPYs | 42674 | 0       | 0        |
+|-------------------------+------------+-------+---------+----------|
+| ScoringInvariantHandler | deposit    | 42654 | 0       | 0        |
+|-------------------------+------------+-------+---------+----------|
+| ScoringInvariantHandler | setAPY     | 42672 | 0       | 0        |
+╰-------------------------+------------+-------+---------+----------╯
+
+Suite result: ok. 3 passed; 0 failed; 0 skipped; finished in 91.72s (248.45s CPU time)
+
+Ran 77 tests for test/strategies/usdc-lending/adapters/CometUsdcMultiMarketAdapter.t.sol:S22_CometGapTest
+[PASS] test_activeMarket_returns_current() (gas: 17234)
+[PASS] test_addMarket_extends_list() (gas: 65596)
+[PASS] test_addMarket_only_param_role() (gas: 16931)
+[PASS] test_addMarket_reverts_wrong_asset() (gas: 959750)
+[PASS] test_addMarket_reverts_zero() (gas: 15906)
+[PASS] test_capacity_exact_boundary() (gas: 220335)
+[PASS] test_capacity_revert_one_wei_over() (gas: 260859)
+[PASS] test_capacity_zero_means_infinite() (gas: 217803)
+[PASS] test_constructor_grants_roles() (gas: 16036)
+[PASS] test_constructor_loads_from_registry() (gas: 14993)
+[PASS] test_constructor_reverts_no_markets() (gas: 952144)
+[PASS] test_constructor_reverts_zero_admin() (gas: 1053873)
+[PASS] test_constructor_reverts_zero_usdc() (gas: 1054228)
+[PASS] test_constructor_reverts_zero_vault() (gas: 1055674)
+[PASS] test_constructor_sets_state() (gas: 16293)
+[PASS] test_currentAPYBps_clamped_to_uint16_max() (gas: 30207)
+[PASS] test_currentAPYBps_reads_from_active_market() (gas: 27780)
+[PASS] test_currentAPYBps_uses_active_market_after_deposit() (gas: 281090)
+[PASS] test_currentAPYBps_zero_when_rate_zero() (gas: 26539)
+[PASS] test_deposit_emits_event() (gas: 213530)
+[PASS] test_deposit_reverts_non_vault() (gas: 91567)
+[PASS] test_deposit_reverts_over_capacity() (gas: 118036)
+[PASS] test_deposit_reverts_zero() (gas: 19923)
+[PASS] test_deposit_revokes_approval_after() (gas: 211708)
+[PASS] test_deposit_routes_to_best_market() (gas: 329338)
+[PASS] test_deposit_skips_disabled_markets() (gas: 279000)
+[PASS] test_deposit_skips_flagged_markets() (gas: 280396)
+[PASS] test_effectiveAPYBps_single_market() (gas: 222718)
+[PASS] test_effectiveAPYBps_zero_when_no_assets() (gas: 22410)
+[PASS] test_externalMarketTVL_skips_disabled() (gas: 269548)
+[PASS] test_externalMarketTVL_uses_totalsBasic() (gas: 215024)
+[PASS] test_fallback_reverts() (gas: 9050)
+[PASS] test_flagMarket_flags_unflag() (gas: 26463)
+[PASS] test_harvest_returns_zero() (gas: 15610)
+[PASS] test_harvestableProfit_returns_zero() (gas: 8690)
+[PASS] test_idleAssetBalance_reflects_raw_USDC() (gas: 58449)
+[PASS] test_idleAssetBalance_zero_initially() (gas: 12727)
+[PASS] test_investedAssets_reflects_comet_balance() (gas: 211406)
+[PASS] test_isPushMode_false() (gas: 7447)
+[PASS] test_name_returns_correct() (gas: 11321)
+[PASS] test_positions_returns_assets_per_market() (gas: 214054)
+[PASS] test_receiveETH_reverts() (gas: 18810)
+[PASS] test_refreshFromRegistry_onlyParam() (gas: 15323)
+[PASS] test_refreshFromRegistry_reloadsMarkets() (gas: 224230)
+[PASS] test_setCapacity_updates() (gas: 21981)
+[PASS] test_setIncentiveBps_updates() (gas: 40185)
+[PASS] test_setRiskScore_only_param_role() (gas: 14707)
+[PASS] test_setRiskScore_updates() (gas: 23136)
+[PASS] test_toggleMarket_enables_disables() (gas: 67389)
+[PASS] test_totalAssets_sum_idle_and_invested() (gas: 214444)
+[PASS] test_underlying_returns_usdc() (gas: 9880)
+[PASS] test_updateMarketAddress_updates() (gas: 34897)
+[PASS] test_v4d_defaultHaircut_7500() (gas: 10037)
+[PASS] test_v4d_harvest_defersOnStaleOracle() (gas: 967466)
+[PASS] test_v4d_harvest_handlesClaimRevert() (gas: 914871)
+[PASS] test_v4d_harvest_handlesSwapRevertGracefully() (gas: 976162)
+[PASS] test_v4d_harvest_happyPath() (gas: 1051314)
+[PASS] test_v4d_harvest_resetsApprovalAfterSwap() (gas: 1050715)
+[PASS] test_v4d_harvest_revertsOnNonVault() (gas: 889638)
+[PASS] test_v4d_harvestableProfit_returnsExpected() (gas: 950482)
+[PASS] test_v4d_harvestableProfit_zeroIfCannotSwap() (gas: 927704)
+[PASS] test_v4d_harvestableProfit_zeroIfNotInit() (gas: 10032)
+[PASS] test_v4d_incentiveAPYBps_appliesHaircutOnRealized() (gas: 22777)
+[PASS] test_v4d_pendingRewardBalance_reflects() (gas: 923723)
+[PASS] test_v4d_realizedTakesPriorityOverLegacy() (gas: 46419)
+[PASS] test_v4d_setHaircutBps_capCheck() (gas: 16027)
+[PASS] test_v4d_setRewardConfig_happyPath() (gas: 881855)
+[PASS] test_v4d_setRewardConfig_idempotent() (gas: 881993)
+[PASS] test_v4d_setRewardConfig_only_param_role() (gas: 16003)
+[PASS] test_v4d_setRewardConfig_revertsOnZero() (gas: 20256)
+[PASS] test_v4d_setSwapHelper_canDisableHarvest() (gas: 927219)
+[PASS] test_withdraw_caps_to_available() (gas: 259562)
+[PASS] test_withdraw_emits_event() (gas: 263258)
+[PASS] test_withdraw_from_multiple_markets() (gas: 514982)
+[PASS] test_withdraw_only_vault() (gas: 216260)
+[PASS] test_withdraw_sends_to_vault() (gas: 261590)
+[PASS] test_withdrawableAssets_bounded_by_market_cash() (gas: 235169)
+Suite result: ok. 77 passed; 0 failed; 0 skipped; finished in 134.38s (16.64ms CPU time)
+
+Ran 3 tests for test/strategies/usdc-lending/UsdcMultiLendingVault.fuzz.t.sol:UsdcMultiLendingVault_Fuzz_Rebalance
+[PASS] testFuzz_rebalance_positionsSumToTotal(uint16,uint16) (runs: 256, μ: 558037, ~: 558123)
+[PASS] testFuzz_rebalance_timeDelays(uint256) (runs: 256, μ: 970316, ~: 971286)
+[PASS] testFuzz_rebalance_varyingAPYs(uint16,uint16,uint16) (runs: 256, μ: 563662, ~: 563705)
+Suite result: ok. 3 passed; 0 failed; 0 skipped; finished in 135.97s (1.49s CPU time)
+
+Ran 16 tests for test/strategies/usdc-lending/SafetyAdapterCapTier.properties.t.sol:SafetyAdapterCapTierProperties
+[PASS] testFuzz_I10_preserve_safety_tranche_no_unwind(uint16) (runs: 256, μ: 966902, ~: 968512)
+[PASS] testFuzz_I12_safety_disabled_equals_legacy_behavior(uint16) (runs: 256, μ: 1555098, ~: 1555138)
+[PASS] testFuzz_I1_non_safety_uses_normal_caps(uint16) (runs: 256, μ: 464825, ~: 464858)
+[PASS] testFuzz_I2_safety_below_fallback_no_mandate_signal(uint16) (runs: 256, μ: 486272, ~: 486311)
+[PASS] testFuzz_I3_safety_above_fallback_mandate_fires(uint16) (runs: 256, μ: 463429, ~: 463465)
+[PASS] testFuzz_I4_overflow_never_exceeds_fallback_cap(uint96) (runs: 256, μ: 1125182, ~: 1126149)
+[PASS] test_D1f_01_mandate_uses_fallback_cap_for_safety_adapter() (gas: 481819)
+[PASS] test_D1f_02_mandate_uses_normal_cap_for_normal_adapter() (gas: 460153)
+[PASS] test_D1f_03_overflow_routes_to_safety_adapter() (gas: 1126939)
+[PASS] test_D1f_04_safety_adapter_never_in_cooldown() (gas: 733893)
+[PASS] test_D1f_05_normal_adapter_cooldown_blocks_redeploy() (gas: 1596538)
+[PASS] test_D1f_06_valid_safety_tranche_preserved() (gas: 972362)
+[PASS] test_D1f_07_remove_safety_restores_normal_caps() (gas: 505519)
+[PASS] test_D1f_08_dual_safety_priority_aave_before_compound() (gas: 1301491)
+[PASS] test_D1f_09_quarantined_adapter_promotion_reverts() (gas: 232924)
+[PASS] test_D1f_10_promotion_clears_active_cooldown() (gas: 319588)
+Suite result: ok. 16 passed; 0 failed; 0 skipped; finished in 137.92s (3.75s CPU time)
+
+Ran 19 tests for test/strategies/usdc-lending/AdapterFailureResilience.t.sol:AdapterFailureResilience
+[PASS] test_admin_can_unquarantine_and_reenable_deposits() (gas: 613114)
+[PASS] test_auto_quarantine_after_3_failures() (gas: 624418)
+[PASS] test_canHarvest_no_revert_with_broken_adapter() (gas: 455843)
+[PASS] test_canRebalance_no_revert_with_broken_adapter() (gas: 541078)
+[PASS] test_deployIdle_bestEffort_skips_broken_adapter() (gas: 427404)
+[PASS] test_deposit_reverts_when_adapter_views_degraded() (gas: 453035)
+[PASS] test_deposit_reverts_when_depositsDisabled() (gas: 144297)
+[PASS] test_depositsDisabled_set_on_auto_quarantine() (gas: 815261)
+[PASS] test_emergencyRecall_continues_past_broken_adapter() (gas: 742068)
+[PASS] test_harvest_continues_past_broken_adapter() (gas: 640413)
+[PASS] test_harvest_emits_idle_warning_not_revert() (gas: 646164)
+[PASS] test_push_mode_deposit_failure_uses_gradual_decay() (gas: 687041)
+[PASS] test_quarantine_counter_resets_on_success() (gas: 476732)
+[PASS] test_quarantined_adapter_excluded_from_enabledAdapters() (gas: 590089)
+[PASS] test_realizeLiquidity_skips_broken_adapter() (gas: 442288)
+[PASS] test_rebalance_continues_past_broken_adapter() (gas: 626136)
+[PASS] test_totalAssets_fallback_to_positionAssets() (gas: 428729)
+[PASS] test_withdraw_succeeds_with_one_broken_adapter() (gas: 430469)
+[PASS] test_withdrawableAssets_fallback_to_positionAssets() (gas: 438628)
+Suite result: ok. 19 passed; 0 failed; 0 skipped; finished in 148.71s (19.60ms CPU time)
+
+Ran 11 tests for test/strategies/usdc-lending/UsdcMultiLendingVault.invariant.t.sol:UsdcMultiLendingVault_Invariant_Test
+[PASS] invariant_callSummary() (runs: 256, calls: 128000, reverts: 0)
+
+╭--------------+-----------+-------+---------+----------╮
+| Contract     | Selector  | Calls | Reverts | Discards |
++=======================================================+
+| VaultHandler | deposit   | 25491 | 0       | 0        |
+|--------------+-----------+-------+---------+----------|
+| VaultHandler | harvest   | 25846 | 0       | 0        |
+|--------------+-----------+-------+---------+----------|
+| VaultHandler | rebalance | 25655 | 0       | 0        |
+|--------------+-----------+-------+---------+----------|
+| VaultHandler | warpTime  | 25401 | 0       | 0        |
+|--------------+-----------+-------+---------+----------|
+| VaultHandler | withdraw  | 25607 | 0       | 0        |
+╰--------------+-----------+-------+---------+----------╯
+
+[PASS] invariant_deposits_gte_withdrawals() (runs: 256, calls: 128000, reverts: 5)
+
+╭--------------+-----------+-------+---------+----------╮
+| Contract     | Selector  | Calls | Reverts | Discards |
++=======================================================+
+| VaultHandler | deposit   | 25518 | 5       | 0        |
+|--------------+-----------+-------+---------+----------|
+| VaultHandler | harvest   | 25699 | 0       | 0        |
+|--------------+-----------+-------+---------+----------|
+| VaultHandler | rebalance | 25355 | 0       | 0        |
+|--------------+-----------+-------+---------+----------|
+| VaultHandler | warpTime  | 25668 | 0       | 0        |
+|--------------+-----------+-------+---------+----------|
+| VaultHandler | withdraw  | 25760 | 0       | 0        |
+╰--------------+-----------+-------+---------+----------╯
+
+[PASS] invariant_idleCash_bounded() (runs: 256, calls: 128000, reverts: 2)
+
+╭--------------+-----------+-------+---------+----------╮
+| Contract     | Selector  | Calls | Reverts | Discards |
++=======================================================+
+| VaultHandler | deposit   | 25520 | 2       | 0        |
+|--------------+-----------+-------+---------+----------|
+| VaultHandler | harvest   | 25755 | 0       | 0        |
+|--------------+-----------+-------+---------+----------|
+| VaultHandler | rebalance | 25600 | 0       | 0        |
+|--------------+-----------+-------+---------+----------|
+| VaultHandler | warpTime  | 25623 | 0       | 0        |
+|--------------+-----------+-------+---------+----------|
+| VaultHandler | withdraw  | 25502 | 0       | 0        |
+╰--------------+-----------+-------+---------+----------╯
+
+[PASS] invariant_no_fund_leakage() (runs: 256, calls: 128000, reverts: 0)
+
+╭--------------+-----------+-------+---------+----------╮
+| Contract     | Selector  | Calls | Reverts | Discards |
++=======================================================+
+| VaultHandler | deposit   | 25610 | 0       | 0        |
+|--------------+-----------+-------+---------+----------|
+| VaultHandler | harvest   | 25443 | 0       | 0        |
+|--------------+-----------+-------+---------+----------|
+| VaultHandler | rebalance | 25554 | 0       | 0        |
+|--------------+-----------+-------+---------+----------|
+| VaultHandler | warpTime  | 25857 | 0       | 0        |
+|--------------+-----------+-------+---------+----------|
+| VaultHandler | withdraw  | 25536 | 0       | 0        |
+╰--------------+-----------+-------+---------+----------╯
+
+[PASS] invariant_pausable_works() (runs: 256, calls: 128000, reverts: 0)
+
+╭--------------+-----------+-------+---------+----------╮
+| Contract     | Selector  | Calls | Reverts | Discards |
++=======================================================+
+| VaultHandler | deposit   | 25429 | 0       | 0        |
+|--------------+-----------+-------+---------+----------|
+| VaultHandler | harvest   | 25702 | 0       | 0        |
+|--------------+-----------+-------+---------+----------|
+| VaultHandler | rebalance | 25708 | 0       | 0        |
+|--------------+-----------+-------+---------+----------|
+| VaultHandler | warpTime  | 25654 | 0       | 0        |
+|--------------+-----------+-------+---------+----------|
+| VaultHandler | withdraw  | 25507 | 0       | 0        |
+╰--------------+-----------+-------+---------+----------╯
+
+[PASS] invariant_position_tracking_accurate() (runs: 256, calls: 128000, reverts: 0)
+
+╭--------------+-----------+-------+---------+----------╮
+| Contract     | Selector  | Calls | Reverts | Discards |
++=======================================================+
+| VaultHandler | deposit   | 25745 | 0       | 0        |
+|--------------+-----------+-------+---------+----------|
+| VaultHandler | harvest   | 25514 | 0       | 0        |
+|--------------+-----------+-------+---------+----------|
+| VaultHandler | rebalance | 25571 | 0       | 0        |
+|--------------+-----------+-------+---------+----------|
+| VaultHandler | warpTime  | 25478 | 0       | 0        |
+|--------------+-----------+-------+---------+----------|
+| VaultHandler | withdraw  | 25692 | 0       | 0        |
+╰--------------+-----------+-------+---------+----------╯
+
+[PASS] invariant_registry_integrity() (runs: 256, calls: 128000, reverts: 0)
+
+╭--------------+-----------+-------+---------+----------╮
+| Contract     | Selector  | Calls | Reverts | Discards |
++=======================================================+
+| VaultHandler | deposit   | 25645 | 0       | 0        |
+|--------------+-----------+-------+---------+----------|
+| VaultHandler | harvest   | 25777 | 0       | 0        |
+|--------------+-----------+-------+---------+----------|
+| VaultHandler | rebalance | 25331 | 0       | 0        |
+|--------------+-----------+-------+---------+----------|
+| VaultHandler | warpTime  | 25796 | 0       | 0        |
+|--------------+-----------+-------+---------+----------|
+| VaultHandler | withdraw  | 25451 | 0       | 0        |
+╰--------------+-----------+-------+---------+----------╯
+
+[PASS] invariant_roles_consistent() (runs: 256, calls: 128000, reverts: 9)
+
+╭--------------+-----------+-------+---------+----------╮
+| Contract     | Selector  | Calls | Reverts | Discards |
++=======================================================+
+| VaultHandler | deposit   | 25423 | 9       | 0        |
+|--------------+-----------+-------+---------+----------|
+| VaultHandler | harvest   | 25950 | 0       | 0        |
+|--------------+-----------+-------+---------+----------|
+| VaultHandler | rebalance | 25585 | 0       | 0        |
+|--------------+-----------+-------+---------+----------|
+| VaultHandler | warpTime  | 25658 | 0       | 0        |
+|--------------+-----------+-------+---------+----------|
+| VaultHandler | withdraw  | 25384 | 0       | 0        |
+╰--------------+-----------+-------+---------+----------╯
+
+[PASS] invariant_timestamps_valid() (runs: 256, calls: 128000, reverts: 0)
+
+╭--------------+-----------+-------+---------+----------╮
+| Contract     | Selector  | Calls | Reverts | Discards |
++=======================================================+
+| VaultHandler | deposit   | 25795 | 0       | 0        |
+|--------------+-----------+-------+---------+----------|
+| VaultHandler | harvest   | 25618 | 0       | 0        |
+|--------------+-----------+-------+---------+----------|
+| VaultHandler | rebalance | 25623 | 0       | 0        |
+|--------------+-----------+-------+---------+----------|
+| VaultHandler | warpTime  | 25340 | 0       | 0        |
+|--------------+-----------+-------+---------+----------|
+| VaultHandler | withdraw  | 25624 | 0       | 0        |
+╰--------------+-----------+-------+---------+----------╯
+
+[PASS] invariant_totalAssets_equals_positions_plus_idle() (runs: 256, calls: 128000, reverts: 1)
+
+╭--------------+-----------+-------+---------+----------╮
+| Contract     | Selector  | Calls | Reverts | Discards |
++=======================================================+
+| VaultHandler | deposit   | 25483 | 1       | 0        |
+|--------------+-----------+-------+---------+----------|
+| VaultHandler | harvest   | 25638 | 0       | 0        |
+|--------------+-----------+-------+---------+----------|
+| VaultHandler | rebalance | 25533 | 0       | 0        |
+|--------------+-----------+-------+---------+----------|
+| VaultHandler | warpTime  | 25764 | 0       | 0        |
+|--------------+-----------+-------+---------+----------|
+| VaultHandler | withdraw  | 25582 | 0       | 0        |
+╰--------------+-----------+-------+---------+----------╯
+
+[PASS] invariant_withdrawable_lte_total() (runs: 256, calls: 128000, reverts: 0)
+
+╭--------------+-----------+-------+---------+----------╮
+| Contract     | Selector  | Calls | Reverts | Discards |
++=======================================================+
+| VaultHandler | deposit   | 25370 | 0       | 0        |
+|--------------+-----------+-------+---------+----------|
+| VaultHandler | harvest   | 25654 | 0       | 0        |
+|--------------+-----------+-------+---------+----------|
+| VaultHandler | rebalance | 25520 | 0       | 0        |
+|--------------+-----------+-------+---------+----------|
+| VaultHandler | warpTime  | 25612 | 0       | 0        |
+|--------------+-----------+-------+---------+----------|
+| VaultHandler | withdraw  | 25844 | 0       | 0        |
+╰--------------+-----------+-------+---------+----------╯
+
+Suite result: ok. 11 passed; 0 failed; 0 skipped; finished in 151.96s (1578.75s CPU time)
+
+Ran 130 test suites in 151.96s (1020.13s CPU time): 2002 tests passed, 0 failed, 0 skipped (2002 total tests)

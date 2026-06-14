@@ -1,0 +1,64 @@
+{
+  "mandateRedeployCooldownSeconds": 259200,
+  "capDriftToleranceBps": 250,
+  "maxIdleBps": 500,
+  "targetSafetyMarginBps": 300,
+  "safetyFallbackAdapters": [
+    "aave_v3_usdc",
+    "compound_v3_usdc"
+  ],
+  "fallbackAbsCapBps": {
+    "aave_v3_usdc": 5000,
+    "compound_v3_usdc": 4000
+  },
+  "fallbackRelCapBps": {
+    "aave_v3_usdc": 5000,
+    "compound_v3_usdc": 4000
+  },
+  "scoring_weights": {
+    "wAPY": 4000,
+    "wLiq": 2000,
+    "wRisk": 2000,
+    "wStability": 1000,
+    "wIncentive": 1000,
+    "_note": "Sum = 10000 bps"
+  },
+  "adapter_caps": {
+    "adapterMaxExposureBps": 3000,
+    "maxRelativeExposureBps": 2000
+  },
+  "rebalance_gate": {
+    "rebalanceMinMoveBps": 100,
+    "entryDriftBps": 150,
+    "minMoveUsd": 0,
+    "minSecondsBetweenRebalances": 86400,
+    "gateMinNetBenefitBps": 10,
+    "gateHorizonDays": 30,
+    "gasCostUSDC": 3000000,
+    "slippageBpsEstimate": 2,
+    "withdrawalSpreadBpsEstimate": 2,
+    "minBenefitCostRatioBps": 0,
+    "overCapRiskPremiumBps": 200,
+    "rebalancePlanBackoffThreshold": 3,
+    "_note_gas": "gasCostUSDC = 3 USDC represents realistic total cost of a rebalance cycle on Arbitrum: 1 prepareRebalance upkeep + 2 executeRebalanceStep upkeeps x ($0.10 gas + $0.90 LINK premium). Calibrated to Chainlink Automation 2.x Arbitrum Jan-2026. Gate's Python mirror multiplies by action_count \u2192 effective cost scales with plan size.",
+    "_note_overcap": "P0.1 \u2014 200 bps = 2% annualised risk cost on the over-cap portion; kicks in protection benefit."
+  },
+  "incentive": {
+    "incentiveDecayHalfLife": 604800,
+    "_note": "Half-life in seconds = 7 days"
+  },
+  "new_adapter_ramp": {
+    "newAdapterRampBps": 500,
+    "newAdapterRampDuration": 2592000,
+    "_note": "5% cap during first 30 days post-activation"
+  },
+  "misc": {
+    "minAdaptersActive": 2,
+    "dustTolerance": 1000000,
+    "_note_dust": "1 USDC (6 dec)"
+  },
+  "simulation": {
+    "initial_capital_usdc_6dec": 1000000000000,
+    "_note": "1,000,000 USDC in 6-decimal units"
+  }
+}
