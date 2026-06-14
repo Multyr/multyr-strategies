@@ -1,6 +1,0 @@
-adapter,rel_cap_bps,scenario,sharpe_usd,mdd_usd_pct,vol_usd_annual_pct,twr_usd_annual_pct,rebalances,gate_blocked
-dolomite_usdc,100,realistic,1.6014,-0.1451,0.6521,6.2364,411,471
-dolomite_usdc,200,realistic,1.6148,-0.1422,0.652,6.2455,413,469
-dolomite_usdc,400,realistic,1.6179,-0.1422,0.6518,6.2371,416,466
-dolomite_usdc,800,realistic,1.6214,-0.1422,0.652,6.24,424,458
-dolomite_usdc,1000,realistic,1.6214,-0.1422,0.652,6.2401,424,458
