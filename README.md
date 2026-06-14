@@ -1,8 +1,8 @@
 # multyr-strategies
 
-> Production strategies for Multyr Protocol — USDC Lending V9.1.
-> Audit package v4 assembled and verified; Spearbit/Sherlock engagement scheduled Q3 2026.
-> Branch: `feature/p0.7-safety-adapter-tier` — see [`audit_p07_v4/`](audit_p07_v4/) for the submission package.
+> Production strategies for Multyr Protocol — USDC Lending V9.2 + P0.7
+> Safety Adapter Cap Tier, with formal verification evidence and
+> comprehensive backtest validation. External audit engagement pending.
 
 [![License: BUSL-1.1](https://img.shields.io/badge/License-BUSL--1.1-blue.svg)](LICENSE)
 [![Built with Foundry](https://img.shields.io/badge/Built%20with-Foundry-FFDB1C.svg)](https://getfoundry.sh)
@@ -13,7 +13,7 @@
 ## Overview
 
 `multyr-strategies` contains the production lending strategies that plug into the Multyr
-core vault (`multyr-core/CoreVault`). The sole published strategy is **USDC Lending V9.1**
+core vault (`multyr-core/CoreVault`). The sole published strategy is **USDC Lending V9.2 + P0.7**
 — a multi-adapter yield aggregator deployed on Arbitrum One.
 
 The strategy accepts USDC from a `CoreAggregatorVault` and autonomously distributes capital
@@ -26,6 +26,15 @@ promotion. Strategies in development (Multiply, PT-Multiply) are kept in
 `multyr-strategies-dev` (private) until they reach the same standard (ADR-003). Publishing
 a strategy here is the promotion event; the public git history starts at the first clean
 commit.
+
+Version 9.2 introduces **P0.7 Safety Adapter Cap Tier**, a dual-anchor
+safety architecture where designated safety adapters (Aave V3 +
+Compound V3) receive idle-cash overflow that cannot fit in opportunistic
+venues. The mechanism is gated by per-adapter cap-drift mandates,
+per-adapter cooldown, and a four-layer cap engine that preserves the
+V9.1 invariants while extending the safety surface. Full V9.1 invariants
+remain in force; P0.7 adds eight new safety claims documented in
+docs/invariants.md.
 
 ---
 
@@ -41,14 +50,21 @@ graph TB
     Vault --> Settings[StrategySettingsModule]
     Score --> Alloc[StrategyAllocCalcModule]
     Vault --> Adapters
-    Adapters --> Aave[Aave V3]
-    Adapters --> Compound[Compound III]
+    Adapters --> Aave[Aave V3 ★]
+    Adapters --> Compound[Compound III ★]
     Adapters --> Dolomite[Dolomite Margin V9]
     Adapters --> Euler[Euler V2]
     Adapters --> Fluid[Fluid fUSDC]
     Adapters --> Morpho[Morpho Blue]
     Adapters --> Venus[Venus vUSDC]
+    Aave -.-> SafetyTier{Safety Adapter Tier P0.7}
+    Compound -.-> SafetyTier
 ```
+
+★ = safety adapter (P0.7). Safety adapters receive idle-cash overflow
+via the dual-anchor architecture when opportunistic adapters are at cap
+or in cooldown. Priority order: Aave V3 (5000/5000 bps) → Compound III
+(4000/4000 bps).
 
 The main controller (`UsdcMultiLendingVault`) is a stateless dispatcher. Functions not
 defined directly on the controller are routed to one of six delegatecall modules via the
@@ -95,6 +111,41 @@ methods, and security properties.
   Permit2 approval at construction. `initializeMarkets()` must run before admin role
   transfer; the bootstrap sequence enforces this invariant.
 
+---
+
+### P0.7 Safety Adapter Cap Tier invariants
+
+- **Safety hard ceiling discipline**: for every safety adapter `i`,
+  `positionAssets[i] <= hardCeiling_i` where
+  `hardCeiling_i = fbCeiling_i x (BPS + capDriftToleranceBps) / BPS`,
+  within +/-2 wei rounding tolerance.
+  Verified by Halmos P1+P3 (symbolic) and Echidna I03b (1M sequences).
+- **Mandate completeness**: if `positionAssets[i] > hardCeiling_i` for
+  any safety adapter, the cap-drift mandate is detectable on the next
+  rebalance check. Verified by Halmos P2 + Echidna I03c.
+- **Safety tranche preservation**: if a safety adapter has
+  `normalTarget_i < currentPosition_i <= fallbackCeiling_i`, the next
+  rebalance does NOT reduce `currentPosition_i` to `normalTarget_i`.
+  Verified by Halmos P4 (most critical preserve-tranche property).
+- **Non-safety adapter uses normal caps**: for any non-safety adapter,
+  the cap drift gate uses only the normal abs/rel cap path; safety
+  fallback caps never apply. Verified by Halmos P2.
+- **Cooldown semantic (re-deploy only)**: after a cap-drift mandate
+  fires on adapter `i`, `deployIdle` skips `i` until
+  `lastRelCapMandateTs[i] + mandateRedeployCooldownSeconds` has elapsed.
+  The cooldown does NOT prevent future mandates from firing on `i`.
+  Verified by Echidna I04+I05.
+- **Promotion clears cooldown (H-03)**: promoting a non-safety adapter
+  to safety (`addSafetyFallbackAdapter`) clears any prior
+  `lastRelCapMandateTs[i]` cooldown stamp. Verified by Halmos P6 +
+  Echidna I10.
+- **Quarantine blocks safety promotion (L-01)**: `addSafetyFallbackAdapter`
+  reverts if the adapter is currently quarantined. Verified by unit test
+  `test_D1f_09_quarantined_adapter_promotion_reverts`.
+- **Legacy non-regression**: when no safety adapters are configured,
+  the system behaves identically to pre-P0.7 baseline. Verified by
+  Echidna I12.
+
 See [`docs/invariants.md`](docs/invariants.md) for the full formal invariant set and
 [`docs/threat-model.md`](docs/threat-model.md) for the attack surface analysis.
 
@@ -135,6 +186,16 @@ role tables, and APY computation details.
 | `StrategyBootstrapper` | `StrategyBootstrapper.sol` | MEDIUM | One-shot adapter registration; BOOTSTRAP_ROLE renounced post-deploy |
 | `StrategyExplainabilityLens` | `lens/StrategyExplainabilityLens.sol` | LOW | Read-only scoring explainability (best-effort, not authoritative) |
 
+> **P0.7 changes**: `StrategySettingsModule`, `StrategyRebalancePlanModule`,
+> `StrategyRebalanceGateModule`, `StrategyAllocCalcModule`, and
+> `StrategyStorageLayout` are extended with safety-adapter-tier semantics
+> (slots 78-81 packed: capDriftToleranceBps, maxIdleBps,
+> targetSafetyMarginBps, mandateRedeployCooldownSeconds +
+> safetyFallbackAdapters[] + safetyFallback mapping + lastRelCapMandateTs
+> mapping). `StrategyExplainabilityLens` refactored in S2.4-bis to enable
+> coverage instrumentation. See docs/audit-scope.md for line-count
+> breakdown.
+
 Total audit scope: 23 Solidity files, 11,974 lines. See [`docs/audit-scope.md`](docs/audit-scope.md)
 for in-scope file list and line count breakdown.
 
@@ -162,13 +223,6 @@ multyr-strategies/
 |   \- multyr-periphery/                   GitHub submodule
 |- docs/                                   Overview, adapters, audit-scope, invariants, threat-model
 |- audits/                                 Signed external audit PDFs (empty until first published audit)
-|- audit_p07_v4/                           Audit submission package v4 (SHA256: 028e6223...)
-|   |- REPRODUCTION.md                     Deterministic reproduction steps (pinned block 472761449)
-|   |- THREAT_MODEL.md                     Attack surface, trust assumptions, out-of-scope risks
-|   |- EVIDENCE/                           Test output captures (Halmos, Echidna, fork, coverage)
-|   |- BACKTEST/                           Scoring simulation validation data
-|   |- SIGNOFF/                            Cowork sign-off documents (R12_AUDIT, GAS_NOTES, etc.)
-|   \- SRC_SNAPSHOT/                       Frozen source snapshots of 8 critical modules
 |- SECURITY.md
 |- CONTRIBUTING.md
 \- LICENSE
@@ -211,25 +265,22 @@ contract (`LendingStrategyUpkeep`) for post-harvest fee routing.
 
 ## Audits
 
-No external audits have been completed yet. USDC Lending V9.1 has completed internal
-pre-audit hardening (P0.7 Safety Adapter Cap Tier sprint). The first engagement is scheduled
-for Spearbit/Sherlock in 2026-Q3.
+No external audits have been completed yet. USDC Lending **V9.2 +
+P0.7** has completed internal pre-audit hardening including formal
+verification (23 Halmos symbolic proofs), 1M-sequence stateful fuzz
+campaign (Echidna, 12 invariants), 5 Anvil fork-mode integration
+tests, and 97.3% line / 84% diff branch coverage. The first external
+audit engagement is in progress (2026-Q3 target). When the signed
+audit report is published, the PDF will appear in `audits/`.
 
-**Audit submission package v4** is committed at [`audit_p07_v4/`](audit_p07_v4/).
-Entry point: [`audit_p07_v4/README.md`](audit_p07_v4/README.md).
-Reproduction: [`audit_p07_v4/REPRODUCTION.md`](audit_p07_v4/REPRODUCTION.md) (deterministic,
-pinned block 472761449).
-
-When third-party security audit reports are published, the signed PDF files will appear
-in [`audits/`](audits/).
-
-For internal security work — hardening reports, automated tool outputs (Slither, Halmos,
-Echidna, Aderyn), and self-reviews — see `audit_p07_v4/EVIDENCE/` and the `multyr-research`
-repository (private, available to qualified reviewers on request).
+For pre-engagement evidence (formal verification proofs, fuzz campaign
+results, fork test logs, backtest production validation), qualified
+reviewers can request the pre-submission package via
+security@multyr.fi.
 
 | Date | Auditor | Scope | Findings | Report |
-|---|---|---|---|---|
-| Planned 2026-Q3 | TBD (Spearbit/Sherlock) | `multyr-strategies` v1.0 — USDC Lending V9.1 P0.7 | — | — |
+| --------------- | ------- | ------------------------------------------------ | -------- | ------ |
+| 2026-Q3 in progress | TBD | `multyr-strategies` v1.0 (USDC Lending V9.2+P0.7) | — | — |
 
 Bug bounty program: forthcoming (Immunefi — link to be published after first signed
 audit report).
@@ -285,12 +336,14 @@ ARBITRUM_RPC_URL=<rpc> forge test --match-path "test/fork/**"
 FOUNDRY_PROFILE=lending halmos
 ```
 
-Test suite baseline (branch `feature/p0.7-safety-adapter-tier`): **2004 tests, 0 fail**.
-Includes unit/fuzz/integration tests (controller + adapters), 4 adversarial fork E2E tests
-pinned at Arbitrum One block 472761449, 14 Halmos symbolic proofs of USDC conservation /
-RBAC / queue FIFO (0 counterexamples), Echidna fuzzing campaign (corpus in
-`test/strategies/usdc-lending/echidna/corpus/`), and 26 safety-tier P0.7 negative-path
-tests. Coverage report: [`coverage/COVERAGE_BREAKDOWN_PER_FILE.md`](coverage/COVERAGE_BREAKDOWN_PER_FILE.md).
+Test suite baseline (branch `feature/p0.7-safety-adapter-tier`, current
+HEAD): **2002+ tests passing**, 0 failures. Breakdown: ~1,555 V9.1
+baseline tests (preserved) + 447 P0.7 additions (negative path
+coverage, defensive guards, safety overflow lifecycle, adversarial
+fork scenarios). Formal verification: **23 Halmos symbolic proofs**
+(14 V9.1 + 9 P0.7) with 0 counterexamples. Stateful fuzz: **1M
+sequences** over 12 invariants (Echidna baseline). Diff coverage on
+P0.7 surface: 97.3% lines / 84% branches.
 
 ---
 
