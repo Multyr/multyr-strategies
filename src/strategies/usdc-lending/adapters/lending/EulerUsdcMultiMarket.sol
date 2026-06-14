@@ -201,28 +201,6 @@ contract EulerUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
             mkts.length > 0, "EulerAdapter: no markets - registry required or pass _markets array"
         );
     }
-            mkts.push(Market({ addr: _markets[i], enabled: true, flagged: false, riskScoreBps: 0 }));
-            principal.push(0);
-        }
-
-        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
-        _grantRole(PARAM_ROLE, msg.sender);
-
-        // Approve Permit2 for Euler EVK vaults (one-time unlimited approval)
-        // Euler vaults use Permit2 internally during deposit() — this is REQUIRED.
-        USDC.safeApprove(PERMIT2, type(uint256).max);
-
-        // Auto-load from registry if available (will replace constructor markets)
-        if (_registry != address(0)) {
-            _loadFromRegistry();
-        }
-
-        // V9 FIX: HARDENING - Revert if no markets loaded
-        // This prevents deployment of a non-functional adapter
-        require(
-            mkts.length > 0, "EulerAdapter: no markets - registry required or pass _markets array"
-        );
-    }
 
     // --- MARKET INITIALIZATION ---
 
