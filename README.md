@@ -1,7 +1,8 @@
 # multyr-strategies
 
-> Production strategies for Multyr Protocol — USDC Lending V9.1, preparing for first
-> external audit (scheduled 2026-Q3).
+> Production strategies for Multyr Protocol — USDC Lending V9.1.
+> Audit package v4 assembled and verified; Spearbit/Sherlock engagement scheduled Q3 2026.
+> Branch: `feature/p0.7-safety-adapter-tier` — see [`audit_p07_v4/`](audit_p07_v4/) for the submission package.
 
 [![License: BUSL-1.1](https://img.shields.io/badge/License-BUSL--1.1-blue.svg)](LICENSE)
 [![Built with Foundry](https://img.shields.io/badge/Built%20with-Foundry-FFDB1C.svg)](https://getfoundry.sh)
@@ -161,6 +162,13 @@ multyr-strategies/
 |   \- multyr-periphery/                   GitHub submodule
 |- docs/                                   Overview, adapters, audit-scope, invariants, threat-model
 |- audits/                                 Signed external audit PDFs (empty until first published audit)
+|- audit_p07_v4/                           Audit submission package v4 (SHA256: 028e6223...)
+|   |- REPRODUCTION.md                     Deterministic reproduction steps (pinned block 472761449)
+|   |- THREAT_MODEL.md                     Attack surface, trust assumptions, out-of-scope risks
+|   |- EVIDENCE/                           Test output captures (Halmos, Echidna, fork, coverage)
+|   |- BACKTEST/                           Scoring simulation validation data
+|   |- SIGNOFF/                            Cowork sign-off documents (R12_AUDIT, GAS_NOTES, etc.)
+|   \- SRC_SNAPSHOT/                       Frozen source snapshots of 8 critical modules
 |- SECURITY.md
 |- CONTRIBUTING.md
 \- LICENSE
@@ -204,17 +212,24 @@ contract (`LendingStrategyUpkeep`) for post-harvest fee routing.
 ## Audits
 
 No external audits have been completed yet. USDC Lending V9.1 has completed internal
-pre-audit hardening and the first engagement is scheduled for 2026-Q3. When third-party
-security audit reports are published, the signed PDF files will appear in [`audits/`](audits/).
+pre-audit hardening (P0.7 Safety Adapter Cap Tier sprint). The first engagement is scheduled
+for Spearbit/Sherlock in 2026-Q3.
+
+**Audit submission package v4** is committed at [`audit_p07_v4/`](audit_p07_v4/).
+Entry point: [`audit_p07_v4/README.md`](audit_p07_v4/README.md).
+Reproduction: [`audit_p07_v4/REPRODUCTION.md`](audit_p07_v4/REPRODUCTION.md) (deterministic,
+pinned block 472761449).
+
+When third-party security audit reports are published, the signed PDF files will appear
+in [`audits/`](audits/).
 
 For internal security work — hardening reports, automated tool outputs (Slither, Halmos,
-Aderyn), and self-reviews — see the `multyr-research` repository (private, available to
-qualified reviewers on request). Internal reports are not a substitute for third-party
-security review.
+Echidna, Aderyn), and self-reviews — see `audit_p07_v4/EVIDENCE/` and the `multyr-research`
+repository (private, available to qualified reviewers on request).
 
 | Date | Auditor | Scope | Findings | Report |
 |---|---|---|---|---|
-| Planned 2026-Q3 | TBD | `multyr-strategies` v1.0 (USDC Lending V9.1) | — | — |
+| Planned 2026-Q3 | TBD (Spearbit/Sherlock) | `multyr-strategies` v1.0 — USDC Lending V9.1 P0.7 | — | — |
 
 Bug bounty program: forthcoming (Immunefi — link to be published after first signed
 audit report).
@@ -238,7 +253,7 @@ Do not open public GitHub issues for security vulnerabilities.
 
 - [Foundry](https://book.getfoundry.sh/) `forge` >= 0.2.0
 - Git with submodule support
-- For fork tests: Arbitrum One archive RPC endpoint (`ARBITRUM_ARCHIVE_RPC_URL`)
+- For fork tests: Arbitrum One archive RPC endpoint (`ARBITRUM_RPC_URL`)
 
 ### Setup
 
@@ -264,16 +279,18 @@ Build configuration: `via_ir = true`, `optimizer_runs = 200`, Solidity `0.8.28`
 forge test
 
 # Fork tests against live Arbitrum state (requires RPC)
-ARBITRUM_ARCHIVE_RPC_URL=<rpc> forge test --match-path "test/fork/**"
+ARBITRUM_RPC_URL=<rpc> forge test --match-path "test/fork/**"
 
 # Halmos formal verification (symbolic execution)
 FOUNDRY_PROFILE=lending halmos
 ```
 
-Test suite baseline (branch `pierdev`, commit `b15aeb63`): ~1,100 unit tests (controller),
-~250 unit tests (adapters), ~100 integration tests, ~30 fork E2E tests, 61 overlay parity
-assertions (`AllocCalcModule` vs `ScoringModule`), and 14 Halmos symbolic proofs of USDC
-conservation, RBAC guards, and queue FIFO semantics (0 counterexamples).
+Test suite baseline (branch `feature/p0.7-safety-adapter-tier`): **2004 tests, 0 fail**.
+Includes unit/fuzz/integration tests (controller + adapters), 4 adversarial fork E2E tests
+pinned at Arbitrum One block 472761449, 14 Halmos symbolic proofs of USDC conservation /
+RBAC / queue FIFO (0 counterexamples), Echidna fuzzing campaign (corpus in
+`test/strategies/usdc-lending/echidna/corpus/`), and 26 safety-tier P0.7 negative-path
+tests. Coverage report: [`coverage/COVERAGE_BREAKDOWN_PER_FILE.md`](coverage/COVERAGE_BREAKDOWN_PER_FILE.md).
 
 ---
 
