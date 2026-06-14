@@ -26,3 +26,13 @@ node_modules/
 
 # Forge coverage
 lcov.info
+
+# Working outputs (test captures, result reports — evidence lives in audit_p07_v4/)
+outputs/
+
+# Foundry extras
+crytic-export/
+foundry.lock
+
+# Logs
+*.log
