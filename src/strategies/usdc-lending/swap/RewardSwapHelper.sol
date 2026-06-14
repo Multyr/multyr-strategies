@@ -4,6 +4,7 @@ pragma solidity ^0.8.28;
 import { SafeERC20, IERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
 import { ReentrancyGuard } from "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import { Initializable } from "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 
 // ─── Uniswap V3 SwapRouter02 minimal interface ───────────────────────────
 interface ISwapRouterV3 {
@@ -68,16 +69,17 @@ interface IChainlinkFeed {
 ///      Companion view `canSwap(rewardToken)` lets callers (adapters / canHarvest)
 ///      pre-flight the oracle freshness so they can SKIP swap rather than revert,
 ///      avoiding wasted Chainlink Automation LINK on guaranteed-failure tx.
-contract RewardSwapHelper is AccessControl, ReentrancyGuard {
+contract RewardSwapHelper is AccessControl, ReentrancyGuard, Initializable {
     using SafeERC20 for IERC20;
 
     // ─── Roles ──────────────────────────────────────────────────────────
     bytes32 public constant PARAM_ROLE = keccak256("PARAM_ROLE");
 
     // ─── Immutable Storage ──────────────────────────────────────────────
-    address public immutable usdc;
-    address public immutable uniswapV3Router;
-    address public immutable camelotV3Router; // optional (address(0) if not configured)
+    // --- V10 Storage (was immutable in V9.x; logically immutable post-initialize) ---
+    address public usdc;
+    address public uniswapV3Router;
+    address public camelotV3Router; // optional (address(0) if not configured)
 
     // ─── L2 Sequencer Uptime Feed (Step 4.7 RA-10 defense) ──────────────
     /// @notice Arbitrum sequencer uptime feed. address(0) = check disabled.
@@ -145,12 +147,18 @@ contract RewardSwapHelper is AccessControl, ReentrancyGuard {
     uint32 public constant SEQUENCER_GRACE_PERIOD_SEC = 3_600;
 
     // ─── Constructor ────────────────────────────────────────────────────
-    constructor(
+    /// @custom:oz-upgrades-unsafe-allow constructor
+    constructor() {
+        _disableInitializers();
+    }
+
+    /// @notice One-shot initialization called atomically by AdapterFactory.
+    function initialize(
         address usdc_,
         address admin_,
         address uniswapV3Router_,
-        address camelotV3Router_  // can be address(0)
-    ) {
+        address camelotV3Router_
+    ) external initializer {
         if (usdc_ == address(0) || admin_ == address(0) || uniswapV3Router_ == address(0)) {
             revert ZeroAddress();
         }

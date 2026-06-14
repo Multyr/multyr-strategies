@@ -2,6 +2,7 @@
 pragma solidity ^0.8.28;
 
 import { UsdcMultiLendingVault } from "./controller/UsdcLendingStrategy.sol";
+import { Initializable } from "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 
 /**
  * @title StrategyBootstrapper
@@ -27,7 +28,7 @@ import { UsdcMultiLendingVault } from "./controller/UsdcLendingStrategy.sol";
  *
  * INVARIANT: After bootstrap(), no address has BOOTSTRAP_ROLE.
  */
-contract StrategyBootstrapper {
+contract StrategyBootstrapper is Initializable {
     // ═══════════════════════════════════════════════════════════════════════════════
     // ERRORS
     // ═══════════════════════════════════════════════════════════════════════════════
@@ -42,10 +43,11 @@ contract StrategyBootstrapper {
     // ═══════════════════════════════════════════════════════════════════════════════
 
     /// @notice The strategy this bootstrapper is bound to
-    UsdcMultiLendingVault public immutable strategy;
+    // --- V10 Storage (was immutable in V9.x; logically immutable post-initialize) ---
+    UsdcMultiLendingVault public strategy;
 
     /// @notice The deployer who can execute bootstrap
-    address public immutable deployer;
+    address public deployer;
 
     /// @notice One-shot flag - prevents reuse
     bool public used;
@@ -66,10 +68,17 @@ contract StrategyBootstrapper {
      * @param _strategy The UsdcMultiLendingVault to bootstrap
      * @dev Strategy must grant BOOTSTRAP_ROLE to this contract in its constructor
      */
-    constructor(address payable _strategy) {
-        if (_strategy == address(0)) revert ZeroAddress();
+    /// @custom:oz-upgrades-unsafe-allow constructor
+    constructor() {
+        _disableInitializers();
+    }
+
+    /// @notice One-shot initialization called atomically by AdapterFactory.
+    /// @dev deployer_ is explicit — msg.sender in initialize() would be AdapterFactory, not deployer.
+    function initialize(address payable _strategy, address deployer_) external initializer {
+        if (_strategy == address(0) || deployer_ == address(0)) revert ZeroAddress();
         strategy = UsdcMultiLendingVault(_strategy);
-        deployer = msg.sender;
+        deployer = deployer_;
     }
 
     // ═══════════════════════════════════════════════════════════════════════════════
