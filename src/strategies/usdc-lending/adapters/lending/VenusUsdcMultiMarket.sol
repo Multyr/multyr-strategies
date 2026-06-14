@@ -5,6 +5,7 @@ pragma solidity ^0.8.28;
 import { SafeERC20, IERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
 import { ReentrancyGuard } from "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import { Initializable } from "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 
 // --- Venus vToken minimal interface ---
 interface IVToken {
@@ -59,7 +60,7 @@ interface ILendingAdapter {
 /// @dev Raw vToken interface (Compound-fork semantics): mint/redeem, not deposit/withdraw.
 ///      Single-market adapter targeting vUSDC_Core only.
 ///      Mode: PULL (approve underlying then mint).
-contract VenusUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, ReentrancyGuard {
+contract VenusUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, ReentrancyGuard, Initializable {
     using SafeERC20 for IERC20;
 
     // --- Roles ---
@@ -75,9 +76,10 @@ contract VenusUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
     uint256 public constant ARBITRUM_CHAIN_ID = 42161;
 
     // --- Immutable Storage ---
-    address public immutable override underlying; // USDC
-    address public immutable vault;               // Strategy (no-custody)
-    address public immutable vToken;              // Venus vUSDC_Core
+    // --- V10 Storage (was immutable in V9.x; logically immutable post-initialize) ---
+    address public override underlying; // USDC
+    address public vault;               // Strategy (no-custody)
+    address public vToken;              // Venus vUSDC_Core
 
     // --- Configurable Storage ---
     uint256 public capacity; // Deposit cap (0 = unlimited)
@@ -118,17 +120,20 @@ contract VenusUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
     }
 
     // --- Constructor ---
-    constructor(
+    /// @custom:oz-upgrades-unsafe-allow constructor
+    constructor() {
+        _disableInitializers();
+    }
+
+    /// @notice One-shot initialization called atomically by AdapterFactory.
+    /// @dev chain-id check removed per V10 chain-portability goal; deploy script must target correct chain.
+    function initialize(
         address usdc_,
         address admin_,
         address vault_,
         uint256 capacity_,
         address vToken_
-    ) {
-        // FIX P0.L4 (quant audit): BLOCKS_PER_YEAR assume Arbitrum 0.25s blocks.
-        // Su BNB Chain (~3s) sarebbe 10.5M blocks/anno → APY over-reported 12×.
-        // Reverta deploy su qualsiasi chain ≠ Arbitrum One.
-        require(block.chainid == ARBITRUM_CHAIN_ID, "wrong-chain-for-block-cadence");
+    ) external initializer {
         require(
             usdc_ != address(0) && admin_ != address(0)
                 && vault_ != address(0) && vToken_ != address(0),
