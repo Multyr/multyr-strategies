@@ -33,7 +33,9 @@ contract AdapterFactory is AccessControl {
 
     /// @notice Atomic CREATE2 deploy + initialize.
     /// @param creationCode Bytecode (concat constructor+runtime) of target.
-    ///        Constructor MUST call _disableInitializers() and accept ZERO args.
+    ///        Target constructor must accept ZERO args. For non-proxy V10 adapters,
+    ///        the constructor should be empty — the initializer modifier on initialize()
+    ///        provides single-call protection without _disableInitializers().
     /// @param salt CREATE2 salt for deterministic address derivation.
     /// @param initData ABI-encoded call to target's initialize() function.
     /// @return adapter The deployed adapter address.

@@ -68,10 +68,6 @@ contract StrategyBootstrapper is Initializable {
      * @param _strategy The UsdcMultiLendingVault to bootstrap
      * @dev Strategy must grant BOOTSTRAP_ROLE to this contract in its constructor
      */
-    /// @custom:oz-upgrades-unsafe-allow constructor
-    constructor() {
-        _disableInitializers();
-    }
 
     /// @notice One-shot initialization called atomically by AdapterFactory.
     /// @dev deployer_ is explicit — msg.sender in initialize() would be AdapterFactory, not deployer.

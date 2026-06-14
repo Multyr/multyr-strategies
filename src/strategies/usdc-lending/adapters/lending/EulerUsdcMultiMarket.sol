@@ -150,10 +150,6 @@ contract EulerUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
 
     // --- CONSTRUCTOR ---
 
-    /// @custom:oz-upgrades-unsafe-allow constructor
-    constructor() {
-        _disableInitializers();
-    }
 
     /// @notice One-shot initialization called atomically by AdapterFactory.
     /// @dev _admin is explicit because msg.sender in initialize() = AdapterFactory, not deployer.

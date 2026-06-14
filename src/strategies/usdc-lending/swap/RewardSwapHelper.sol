@@ -147,10 +147,6 @@ contract RewardSwapHelper is AccessControl, ReentrancyGuard, Initializable {
     uint32 public constant SEQUENCER_GRACE_PERIOD_SEC = 3_600;
 
     // ─── Constructor ────────────────────────────────────────────────────
-    /// @custom:oz-upgrades-unsafe-allow constructor
-    constructor() {
-        _disableInitializers();
-    }
 
     /// @notice One-shot initialization called atomically by AdapterFactory.
     function initialize(

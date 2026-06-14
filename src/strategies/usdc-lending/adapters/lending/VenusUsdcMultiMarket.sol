@@ -120,10 +120,6 @@ contract VenusUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
     }
 
     // --- Constructor ---
-    /// @custom:oz-upgrades-unsafe-allow constructor
-    constructor() {
-        _disableInitializers();
-    }
 
     /// @notice One-shot initialization called atomically by AdapterFactory.
     /// @dev chain-id check removed per V10 chain-portability goal; deploy script must target correct chain.

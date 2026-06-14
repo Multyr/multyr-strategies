@@ -147,10 +147,6 @@ contract AaveV3USDCAdapter is ILendingAdapter, AccessControl, ReentrancyGuard, I
     }
 
     // --- V10 Constructor (locked) ---
-    /// @custom:oz-upgrades-unsafe-allow constructor
-    constructor() {
-        _disableInitializers();
-    }
 
     // --- V10 Initialization (one-shot, gated by OZ initializer modifier) ---
     /// @notice One-shot initialization called atomically by AdapterFactory.

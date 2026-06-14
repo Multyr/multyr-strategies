@@ -167,10 +167,6 @@ contract MorphoUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentra
     }
 
     // ===== Constructor =====
-    /// @custom:oz-upgrades-unsafe-allow constructor
-    constructor() {
-        _disableInitializers();
-    }
 
     /// @notice One-shot initialization called atomically by AdapterFactory.
     function initialize(

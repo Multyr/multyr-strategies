@@ -168,10 +168,6 @@ contract CometUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
     }
 
     // ----------- Constructor -----------
-    /// @custom:oz-upgrades-unsafe-allow constructor
-    constructor() {
-        _disableInitializers();
-    }
 
     /// @notice One-shot initialization called atomically by AdapterFactory.
     function initialize(
