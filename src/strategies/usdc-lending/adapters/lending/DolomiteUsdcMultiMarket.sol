@@ -5,6 +5,7 @@ import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
 import { ReentrancyGuard } from "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import { Initializable } from "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 
 // ===== Dolomite Adapter Interfaces =====
 
@@ -104,16 +105,17 @@ error DolomiteConfigInvalid();
 
 // ===== Adapter Contract =====
 
-contract DolomiteUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, ReentrancyGuard {
+contract DolomiteUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, ReentrancyGuard, Initializable {
     using SafeERC20 for IERC20;
 
     // --- Roles ---
     bytes32 public constant PARAM_ROLE = keccak256("PARAM_ROLE");
 
     // --- Immutable addresses ---
-    address public immutable asset; // USDC native (Arbitrum)
-    address public immutable vault; // Authorized Strategy Vault
-    IProtocolRegistry public immutable registry; // Optional registry (address(0) if not used)
+    // --- V10 Storage (was immutable in V9.x; logically immutable post-initialize) ---
+    address public asset; // USDC native (Arbitrum)
+    address public vault; // Authorized Strategy Vault
+    IProtocolRegistry public registry; // Optional registry (address(0) if not used)
 
     // --- Capacity and incentives ---
     uint256 public capacity; // 0 = no limit
@@ -217,13 +219,19 @@ contract DolomiteUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reent
 
     // ===== Constructor =====
 
-    constructor(
+    /// @custom:oz-upgrades-unsafe-allow constructor
+    constructor() {
+        _disableInitializers();
+    }
+
+    /// @notice One-shot initialization called atomically by AdapterFactory.
+    function initialize(
         address usdc_,
         address admin_,
         address vault_,
         uint256 capacity_,
         address registry_
-    ) {
+    ) external initializer {
         require(usdc_ != address(0) && admin_ != address(0) && vault_ != address(0), "zero");
         asset = usdc_;
         vault = vault_;
