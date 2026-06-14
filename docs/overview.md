@@ -300,6 +300,91 @@ Consecutive silent invalidations increment `rebalancePlanConsecutiveFailures`. I
 
 ---
 
+---
+
+## 7a. Safety Adapter Cap Tier (P0.7)
+
+P0.7 extends the V9.1 controller stack with a dual-anchor safety
+architecture. Safety adapters are a priority-ordered subset of registered
+adapters (typically Aave V3 + Compound III) that receive idle-cash
+overflow when opportunistic adapters are at cap or in cooldown.
+
+### Storage extensions
+
+Four packed P0.7 fields share storage slot 78 (80 bits total, 176 bits
+unused for future extensions):
+
+| Field | Type | Offset (bytes) | Purpose |
+|---|---|---:|---|
+| `capDriftToleranceBps` | uint16 | 0 | Drift tolerance over soft cap before mandate fires |
+| `maxIdleBps` | uint16 | 2 | Maximum idle cash before safety overflow triggers |
+| `targetSafetyMarginBps` | uint16 | 4 | Margin applied to cap-binding target allocations |
+| `mandateRedeployCooldownSeconds` | uint32 | 6 | Per-adapter post-mandate redeploy block window |
+
+Three additional mappings/arrays occupy slots 79-81:
+
+| Slot | Field | Type | Purpose |
+|---|---|---|---|
+| 79 | `safetyFallbackAdapters` | `address[]` | Priority-ordered safety adapter list (max 10) |
+| 80 | `safetyFallback` | `mapping(address => SafetyFallbackConfig)` | Per-adapter abs/rel cap override |
+| 81 | `lastRelCapMandateTs` | `mapping(address => uint64)` | Per-adapter mandate timestamp for cooldown filter |
+
+### Execution lifecycle
+
+1. **Score → target allocation** (`StrategyAllocCalcModule`): per-adapter
+   target computed via standard scoring pipeline. Safety adapters with
+   `currentPosition` in the tolerance band
+   (`normalTarget < currentPosition <= fallbackCeiling`) are **preserved**
+   (target = currentPosition, no unnecessary unwind).
+2. **Cap drift mandate check** (`StrategyRebalanceGateModule`): if any
+   adapter exceeds its `hardCeiling` (`cap x (1 + capDriftToleranceBps/1e4)`),
+   the gate forces a rebalance with `net_benefit_bps = 0` (gain is
+   protection, not yield).
+3. **Plan execution** (`StrategyRebalancePlanModule`): withdraw from
+   over-cap adapters per plan; `_executeSafetyOverflow` routes excess
+   idle cash to safety adapters in priority order.
+4. **Cooldown** (`StrategyRebalanceGateModule` + `StrategyAllocCalcModule`):
+   mandate firing stamps `lastRelCapMandateTs[adapter] = block.timestamp`.
+   Subsequent `deployIdle` calls skip that adapter until
+   `now >= lastRelCapMandateTs + mandateRedeployCooldownSeconds`. The
+   cooldown does NOT prevent future mandates from firing on the same
+   adapter (e.g., if external TVL continues to drift).
+
+### Governance setters
+
+`StrategySettingsModule` exposes (all timelock-gated):
+
+- `addSafetyFallbackAdapter(address, uint16 absBps, uint16 relBps)` —
+  promote adapter to safety tier. Reverts if adapter is quarantined
+  (L-01 fix). Clears `lastRelCapMandateTs[adapter]` to prevent cooldown
+  bypass (H-03 fix).
+- `removeSafetyFallbackAdapter(address)` — demote from safety.
+- `updateSafetyFallbackCaps(address, uint16 absBps, uint16 relBps)` —
+  adjust per-adapter caps.
+- `setMaxIdleBps(uint16)`, `setTargetSafetyMargin(uint16)`,
+  `setMandateRedeployCooldown(uint32)` — global P0.7 parameter setters
+  with explicit bounds (<= 20%, <= 20%, <= 30 days respectively).
+
+### Production setpoint
+
+The production-confirmed setpoint (per backtest validation 2024-01-01 to
+2026-05-31, 882 days, $1M seed):
+
+```
+mandateRedeployCooldownSeconds = 259200  (3 days)
+capDriftToleranceBps           = 250     (2.5%)
+maxIdleBps                     = 500     (5%)
+targetSafetyMarginBps          = 300     (3%)
+safetyFallbackAdapters         = [Aave V3 5000/5000, Compound III 4000/4000]
+```
+
+Backtest results: TWR 6.246% annualised (USD), Sharpe 1.91, MDD -0.14%,
+424 rebalances of which 98.6% mandate-driven (risk discipline).
+Sensitivity analysis across cooldown {3,5,7,10,14}d, capDrift {150-1000}bps,
+and Dolomite cap variants documented in the pre-submission package
+(available via security@multyr.fi).
+
+
 ## 7. DegradedMode
 
 Three triggers activate DegradedMode (`_isDegradedMode()`, `src/strategies/usdc-lending/controller/StrategyScoringModule.sol:336`):

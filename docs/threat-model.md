@@ -449,6 +449,75 @@ on guaranteed-failure transactions:
 
 ---
 
+---
+
+## P0.7 Safety Adapter Cap Tier — additional threat model
+
+P0.7 introduces three new threat surfaces beyond the V9.1 baseline.
+Each is mitigated by code-level fix + formal verification + targeted
+unit test.
+
+### T-P07-1 Cooldown bypass via governance promotion (H-03)
+
+**Threat**: Adversarial governance promotes a recently-mandated adapter
+to safety tier, bypassing its `mandateRedeployCooldownSeconds` block
+window. Idle cash flows back to the recovering adapter before the
+cooldown has elapsed.
+
+**Mitigation**: `addSafetyFallbackAdapter` clears
+`lastRelCapMandateTs[adapter]` upon promotion. The promotion is logged
+via `RelCapMandateCooldownCleared(adapter, clearedBy, priorTs)` event
+for governance transparency.
+
+**Verification**: Halmos P6 (`check_cooldown_clear_idempotency`) +
+Echidna I10 + unit test in `CapDriftMandate.t.sol`.
+
+### T-P07-2 Quarantined adapter promotion (L-01)
+
+**Threat**: Adversarial governance promotes an adapter currently in
+quarantine state to the safety tier, exposing the protocol to a known-bad
+adapter as priority-ordered overflow destination.
+
+**Mitigation**: `addSafetyFallbackAdapter` reverts with `InvalidAdapter()`
+if the target adapter has `quarantined[adapter] == true`.
+
+**Verification**: Forge unit `test_D1f_09_quarantined_adapter_promotion_reverts`.
+
+### T-P07-3 Storage slot collision across delegate-call modules
+
+**Threat**: The seven controller modules share the storage layout via
+delegate-call. A storage slot mismatch between modules would corrupt
+the P0.7 packed slot 78 (capDrift/maxIdle/margin/cooldown), affecting
+every governance call and rebalance gate decision.
+
+**Mitigation**: `StrategyStorageLayout` is the single source of truth.
+Every controller module inherits `StrategyStorageLayout`. Slot offsets
+are empirically verified via `forge inspect` in CI.
+
+**Verification**: `StorageLayoutP07.t.sol` TC01a-e (5 tests cross-check
+slot offsets across 6 P0.7-aware modules).
+
+## External dependency assumptions (P0.7-specific)
+
+The dual-anchor safety architecture explicitly depends on:
+
+- **Aave V3 Pool** (Arbitrum: `0x794a61358D6845594F94dc1DB02A252b5b4814aD`)
+  operating per published Aave V3 spec with non-rebasing aToken value
+  guarantee for supply/withdraw.
+- **Compound III Comet USDC**
+  (Arbitrum: `0x9c4ec768c28520B50860ea7a15bd7213a9fF58bf`) operating per
+  published Compound III spec.
+
+If either safety adapter is quarantined or fails simultaneously,
+overflow capital remains as idle cash subject to `maxIdleBps` ceiling.
+This degraded mode is by design (no auto-fallback to an unvetted adapter
+under governance control).
+
+Per-protocol failure-mode tests:
+- `V92_AdversarialScenarios::test_E2E_adapter_quarantine_during_overflow`
+- `V92_AdversarialScenarios::test_E2E_failed_adapter_callback`
+
+
 ## Summary
 
 ```mermaid

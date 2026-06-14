@@ -252,6 +252,34 @@ not set). This is a deployment-sequence invariant, not a code bug.
 
 ---
 
+---
+
+## 4a. P0.7 audit-critical surface
+
+The following files are modified by P0.7 and constitute the P0.7 audit
+critical surface. Auditors should pay particular attention to these:
+
+| File | LOC | Why critical |
+|---|---:|---|
+| `controller/StrategySettingsModule.sol` | 655 | Safety adapter setters (H-03 + L-01 fixes) |
+| `controller/StrategyRebalancePlanModule.sol` | 561 | `_executeSafetyOverflow` execution |
+| `controller/StrategyRebalanceGateModule.sol` | 459 | Cap drift mandate detection |
+| `controller/StrategyParamsModule.sol` | 314 | Keeper-facing pokes |
+| `controller/StrategyStorageLayout.sol` | 692 | Slots 78-81 P0.7 declarations |
+| `controller/StrategyAllocCalcModule.sol` | 545 | Preserve-safety-tranche target computation |
+| `lens/StrategyExplainabilityLens.sol` | 535 | Read-only explainability (S2.4-bis refactored) |
+
+Total P0.7 critical surface: 3,761 LOC, ~31.4% of the 11,974 V9.1 audit scope baseline.
+
+### Coverage on P0.7 surface (diff coverage)
+
+- Line coverage: 97.3% (179/184 instrumented lines)
+- Branch coverage: 84% (42/50 audit-surface branches, excluding 4 lens
+  view-only branches documented as exempt)
+- See pre-submission package (security@multyr.fi) for full
+  COVERAGE_BREAKDOWN_PER_FILE.md
+
+
 ## 5. Dependencies
 
 ### 5.1 OpenZeppelin Contracts
@@ -359,6 +387,24 @@ symbolic execution configuration).
 | `WAIVER-03` | Euler V2 `initializeMarkets()` is a deployment invariant, not a code invariant | INFO | Covered in deploy checklist; documented in this doc §4.6 |
 
 ---
+
+### P0.7-specific waivers
+
+- `lens/StrategyExplainabilityLens.sol` — 4 view-only branches exempt
+  from coverage (read-only, no state mutation, off-chain observability).
+  Pre-S2.4-bis the file could not be instrumented under `--ir-minimum`
+  due to Yul stack-too-deep; post-refactor it is instrumentable and
+  6/10 branches are covered.
+- `lib/multyr-core/src/core/modules/QueueModule.sol` — external library
+  dependency, out of `multyr-strategies` audit scope. Stack-too-deep
+  without `--ir-minimum` is upstream library issue, addressed in
+  separate `multyr-core` audit perimeter.
+- 9 defensive guards in `_executeSafetyOverflow` are exercised
+  indirectly via 398k main-path hits during Echidna 1M-sequence
+  campaign. Direct unit tests for 6 of these are deferred due to mock
+  complexity; 3 are explicitly tested in `P07NegativePathsScoring.t.sol`.
+  Full rationale in pre-submission DEFENSIVE_GUARDS.md (available via
+  security@multyr.fi).
 
 ## 8. Audit Checklist
 
