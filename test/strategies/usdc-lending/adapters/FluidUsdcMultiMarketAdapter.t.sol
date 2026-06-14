@@ -166,13 +166,8 @@ contract FluidUsdcMultiMarketAdapterTest is Test {
     function setUp() public {
         usdc = new MockUSDCFluid();
         fToken = new MockFluidFToken(address(usdc));
-        adapter = new FluidUsdcMultiMarketAdapter(
-            address(usdc),
-            admin,
-            vault,
-            0, // unlimited capacity
-            address(fToken)
-        );
+        adapter = new FluidUsdcMultiMarketAdapter();
+        adapter.initialize(address(usdc), admin, vault, 0, address(fToken));
     }
 
     // Helper: deposit via vault
@@ -189,32 +184,35 @@ contract FluidUsdcMultiMarketAdapterTest is Test {
     // ═══════════════════════════════════════════════════════════════════════
 
     function test_constructor_revertsOnZeroAsset() public {
+        FluidUsdcMultiMarketAdapter _tmp = new FluidUsdcMultiMarketAdapter();
         vm.expectRevert(bytes("zero"));
-        new FluidUsdcMultiMarketAdapter(address(0), admin, vault, 0, address(fToken));
+        _tmp.initialize(address(0), admin, vault, 0, address(fToken));
     }
 
     function test_constructor_revertsOnZeroAdmin() public {
+        FluidUsdcMultiMarketAdapter _tmp = new FluidUsdcMultiMarketAdapter();
         vm.expectRevert(bytes("zero"));
-        new FluidUsdcMultiMarketAdapter(address(usdc), address(0), vault, 0, address(fToken));
+        _tmp.initialize(address(usdc), address(0), vault, 0, address(fToken));
     }
 
     function test_constructor_revertsOnZeroVault() public {
+        FluidUsdcMultiMarketAdapter _tmp = new FluidUsdcMultiMarketAdapter();
         vm.expectRevert(bytes("zero"));
-        new FluidUsdcMultiMarketAdapter(address(usdc), admin, address(0), 0, address(fToken));
+        _tmp.initialize(address(usdc), admin, address(0), 0, address(fToken));
     }
 
     function test_constructor_revertsOnZeroFToken() public {
+        FluidUsdcMultiMarketAdapter _tmp = new FluidUsdcMultiMarketAdapter();
         vm.expectRevert(bytes("zero"));
-        new FluidUsdcMultiMarketAdapter(address(usdc), admin, vault, 0, address(0));
+        _tmp.initialize(address(usdc), admin, vault, 0, address(0));
     }
 
     function test_constructor_revertsOnAssetMismatch() public {
         MockUSDCFluid otherUsdc = new MockUSDCFluid();
         MockFluidFToken otherFToken = new MockFluidFToken(address(otherUsdc));
+        FluidUsdcMultiMarketAdapter _tmp = new FluidUsdcMultiMarketAdapter();
         vm.expectRevert(bytes("fToken/asset mismatch"));
-        new FluidUsdcMultiMarketAdapter(
-            address(usdc), admin, vault, 0, address(otherFToken)
-        );
+        _tmp.initialize(address(usdc), admin, vault, 0, address(otherFToken));
     }
 
     function test_constructor_initializesSnapshot() public {
@@ -225,9 +223,8 @@ contract FluidUsdcMultiMarketAdapterTest is Test {
     }
 
     function test_constructor_setsCapacity() public {
-        FluidUsdcMultiMarketAdapter a = new FluidUsdcMultiMarketAdapter(
-            address(usdc), admin, vault, 500_000e6, address(fToken)
-        );
+        FluidUsdcMultiMarketAdapter a = new FluidUsdcMultiMarketAdapter();
+        a.initialize(address(usdc), admin, vault, 500_000e6, address(fToken));
         assertEq(a.capacity(), 500_000e6);
         assertEq(a.maxCapacity(), 500_000e6);
     }
@@ -322,9 +319,8 @@ contract FluidUsdcMultiMarketAdapterTest is Test {
     }
 
     function test_deposit_respectsCapacity() public {
-        adapter = new FluidUsdcMultiMarketAdapter(
-            address(usdc), admin, vault, 500e6, address(fToken)
-        );
+        adapter = new FluidUsdcMultiMarketAdapter();
+        adapter.initialize(address(usdc), admin, vault, 500e6, address(fToken));
         usdc.mint(vault, 600e6);
         vm.startPrank(vault);
         usdc.approve(address(adapter), 600e6);

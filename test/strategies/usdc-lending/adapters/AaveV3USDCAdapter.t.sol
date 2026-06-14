@@ -198,14 +198,8 @@ contract AaveV3USDCAdapterTest is Test {
         pool = new MockAavePool(address(usdc), address(aToken));
         rateProvider = new MockAaveRateProvider();
 
-        adapter = new AaveV3USDCAdapter(
-            address(usdc),
-            address(pool),
-            address(aToken),
-            admin,
-            vault,
-            0 // unlimited cap
-        );
+        adapter = new AaveV3USDCAdapter();
+        adapter.initialize(address(usdc), address(pool), address(aToken), admin, vault, 0);
     }
 
     function _deposit(uint256 amount) internal {
@@ -221,35 +215,41 @@ contract AaveV3USDCAdapterTest is Test {
     // ═══════════════════════════════════════════════════════════════════════
 
     function test_constructor_revertsOnZeroAsset() public {
+        AaveV3USDCAdapter _tmp = new AaveV3USDCAdapter();
         vm.expectRevert(bytes("zero"));
-        new AaveV3USDCAdapter(address(0), address(pool), address(aToken), admin, vault, 0);
+        _tmp.initialize(address(0), address(pool), address(aToken), admin, vault, 0);
     }
 
     function test_constructor_revertsOnZeroPool() public {
+        AaveV3USDCAdapter _tmp = new AaveV3USDCAdapter();
         vm.expectRevert(bytes("zero"));
-        new AaveV3USDCAdapter(address(usdc), address(0), address(aToken), admin, vault, 0);
+        _tmp.initialize(address(usdc), address(0), address(aToken), admin, vault, 0);
     }
 
     function test_constructor_revertsOnZeroAToken() public {
+        AaveV3USDCAdapter _tmp = new AaveV3USDCAdapter();
         vm.expectRevert(bytes("zero"));
-        new AaveV3USDCAdapter(address(usdc), address(pool), address(0), admin, vault, 0);
+        _tmp.initialize(address(usdc), address(pool), address(0), admin, vault, 0);
     }
 
     function test_constructor_revertsOnZeroAdmin() public {
+        AaveV3USDCAdapter _tmp = new AaveV3USDCAdapter();
         vm.expectRevert(bytes("zero"));
-        new AaveV3USDCAdapter(address(usdc), address(pool), address(aToken), address(0), vault, 0);
+        _tmp.initialize(address(usdc), address(pool), address(aToken), address(0), vault, 0);
     }
 
     function test_constructor_revertsOnZeroVault() public {
+        AaveV3USDCAdapter _tmp = new AaveV3USDCAdapter();
         vm.expectRevert(bytes("zero"));
-        new AaveV3USDCAdapter(address(usdc), address(pool), address(aToken), admin, address(0), 0);
+        _tmp.initialize(address(usdc), address(pool), address(aToken), admin, address(0), 0);
     }
 
     function test_constructor_revertsOnATokenAssetMismatch() public {
         MockUSDCAave other = new MockUSDCAave();
         MockAToken mismatched = new MockAToken(address(other));
+        AaveV3USDCAdapter _tmp = new AaveV3USDCAdapter();
         vm.expectRevert(bytes("aToken/asset mismatch"));
-        new AaveV3USDCAdapter(address(usdc), address(pool), address(mismatched), admin, vault, 0);
+        _tmp.initialize(address(usdc), address(pool), address(mismatched), admin, vault, 0);
     }
 
     function test_constructor_setsState() public view {
@@ -343,9 +343,8 @@ contract AaveV3USDCAdapterTest is Test {
     }
 
     function test_deposit_respectsMaxCap() public {
-        adapter = new AaveV3USDCAdapter(
-            address(usdc), address(pool), address(aToken), admin, vault, 500e6
-        );
+        adapter = new AaveV3USDCAdapter();
+        adapter.initialize(address(usdc), address(pool), address(aToken), admin, vault, 500e6);
         usdc.mint(vault, 600e6);
         vm.startPrank(vault);
         usdc.approve(address(adapter), 600e6);

@@ -152,12 +152,8 @@ contract EulerAdapter_Test is Test {
         address[] memory mkts = new address[](1);
         mkts[0] = address(vault1);
 
-        adapter = new EulerUsdcMultiMarketAdapter(
-            vault,         // _vault
-            address(usdc), // _usdc
-            mkts,          // initial markets
-            address(0)     // no registry
-        );
+        adapter = new EulerUsdcMultiMarketAdapter();
+        adapter.initialize(vault, address(usdc), mkts, address(0), admin);
     }
 
     function _addMarketViaConstructor() internal returns (EulerUsdcMultiMarketAdapter) {
@@ -166,7 +162,9 @@ contract EulerAdapter_Test is Test {
         mkts[0] = address(vault1);
         mkts[1] = address(vault2);
         mkts[2] = address(vault3);
-        return new EulerUsdcMultiMarketAdapter(vault, address(usdc), mkts, address(0));
+        EulerUsdcMultiMarketAdapter _e = new EulerUsdcMultiMarketAdapter();
+        _e.initialize(vault, address(usdc), mkts, address(0), admin);
+        return _e;
     }
 
     function _pushDeposit(uint256 amount) internal {
@@ -211,37 +209,42 @@ contract EulerAdapter_Test is Test {
     function test_constructor_reverts_zero_vault() public {
         address[] memory mkts = new address[](1);
         mkts[0] = address(vault1);
+        EulerUsdcMultiMarketAdapter _tmp = new EulerUsdcMultiMarketAdapter();
         vm.expectRevert(bytes("vault zero"));
-        new EulerUsdcMultiMarketAdapter(address(0), address(usdc), mkts, address(0));
+        _tmp.initialize(address(0), address(usdc), mkts, address(0), admin);
     }
 
     function test_constructor_reverts_zero_usdc() public {
         address[] memory mkts = new address[](1);
         mkts[0] = address(vault1);
+        EulerUsdcMultiMarketAdapter _tmp = new EulerUsdcMultiMarketAdapter();
         vm.expectRevert(bytes("usdc zero"));
-        new EulerUsdcMultiMarketAdapter(vault, address(0), mkts, address(0));
+        _tmp.initialize(vault, address(0), mkts, address(0), admin);
     }
 
     function test_constructor_reverts_zero_market() public {
         address[] memory mkts = new address[](2);
         mkts[0] = address(vault1);
         mkts[1] = address(0);
+        EulerUsdcMultiMarketAdapter _tmp = new EulerUsdcMultiMarketAdapter();
         vm.expectRevert(bytes("market zero"));
-        new EulerUsdcMultiMarketAdapter(vault, address(usdc), mkts, address(0));
+        _tmp.initialize(vault, address(usdc), mkts, address(0), admin);
     }
 
     function test_constructor_reverts_duplicate_market() public {
         address[] memory mkts = new address[](2);
         mkts[0] = address(vault1);
         mkts[1] = address(vault1); // duplicate
+        EulerUsdcMultiMarketAdapter _tmp = new EulerUsdcMultiMarketAdapter();
         vm.expectRevert(bytes("market dup"));
-        new EulerUsdcMultiMarketAdapter(vault, address(usdc), mkts, address(0));
+        _tmp.initialize(vault, address(usdc), mkts, address(0), admin);
     }
 
     function test_constructor_reverts_no_markets() public {
         address[] memory empty = new address[](0);
+        EulerUsdcMultiMarketAdapter _tmp = new EulerUsdcMultiMarketAdapter();
         vm.expectRevert(bytes("EulerAdapter: no markets - registry required or pass _markets array"));
-        new EulerUsdcMultiMarketAdapter(vault, address(usdc), empty, address(0));
+        _tmp.initialize(vault, address(usdc), empty, address(0), admin);
     }
 
     // ═══════════════════════════════════════════════════════════════════════
@@ -512,12 +515,8 @@ contract EulerAdapter_RefreshFromRegistry_Test is Test {
         address[] memory constructorMkts = new address[](1);
         constructorMkts[0] = address(vault1);
 
-        adapter = new EulerUsdcMultiMarketAdapter(
-            strVault,
-            address(usdc),
-            constructorMkts,
-            address(registry)
-        );
+        adapter = new EulerUsdcMultiMarketAdapter();
+        adapter.initialize(strVault, address(usdc), constructorMkts, address(registry), address(this));
     }
 
     function test_euler_refreshFromRegistry_happyPath_addsNewVault() public {
@@ -546,9 +545,8 @@ contract EulerAdapter_RefreshFromRegistry_Test is Test {
         // Deploy adapter without registry
         address[] memory mkts = new address[](1);
         mkts[0] = address(vault1);
-        EulerUsdcMultiMarketAdapter adapterNoReg = new EulerUsdcMultiMarketAdapter(
-            strVault, address(usdc), mkts, address(0)
-        );
+        EulerUsdcMultiMarketAdapter adapterNoReg = new EulerUsdcMultiMarketAdapter();
+        adapterNoReg.initialize(strVault, address(usdc), mkts, address(0), address(this));
         vm.expectRevert(bytes("no registry"));
         adapterNoReg.refreshFromRegistry();
     }

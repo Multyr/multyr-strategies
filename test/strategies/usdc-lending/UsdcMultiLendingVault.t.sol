@@ -3245,7 +3245,8 @@ contract S22_BootstrapperTest is UsdcMultiLendingVaultTestBase {
 
         // planMod/settingsMod/allocCalcMod deployed AFTER b to preserve nonce ordering.
         // v=currentNonce+0, b=currentNonce+1. Modules go after the require check.
-        b = new StrategyBootstrapper(payable(address(v)));  // currentNonce+1 (as predicted)
+        b = new StrategyBootstrapper();  // currentNonce+1 (as predicted)
+        b.initialize(payable(address(v)), address(this));
         require(address(b) == predictedB, "nonce prediction off");
 
         StrategyRebalancePlanModule planMod = new StrategyRebalancePlanModule(

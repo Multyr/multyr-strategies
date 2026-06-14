@@ -141,12 +141,8 @@ contract RewardSwapHelperTest is Test {
         uniRouter = new MockUniswapV3Router(address(usdc));
         camelotRouter = new MockCamelotV3Router(address(usdc));
 
-        helper = new RewardSwapHelper(
-            address(usdc),
-            admin,
-            address(uniRouter),
-            address(camelotRouter)
-        );
+        helper = new RewardSwapHelper();
+        helper.initialize(address(usdc), admin, address(uniRouter), address(camelotRouter));
 
         // Default config for COMP: $60, slippage 1%, maxAge 25h (1h buffer over 24h heartbeat)
         feed.set(60e8, block.timestamp);
@@ -173,25 +169,27 @@ contract RewardSwapHelperTest is Test {
     // ═══════════════════════════════════════════════════════════════════════
 
     function test_constructor_revertsOnZeroUsdc() public {
+        RewardSwapHelper _tmp = new RewardSwapHelper();
         vm.expectRevert(RewardSwapHelper.ZeroAddress.selector);
-        new RewardSwapHelper(address(0), admin, address(uniRouter), address(camelotRouter));
+        _tmp.initialize(address(0), admin, address(uniRouter), address(camelotRouter));
     }
 
     function test_constructor_revertsOnZeroAdmin() public {
+        RewardSwapHelper _tmp = new RewardSwapHelper();
         vm.expectRevert(RewardSwapHelper.ZeroAddress.selector);
-        new RewardSwapHelper(address(usdc), address(0), address(uniRouter), address(camelotRouter));
+        _tmp.initialize(address(usdc), address(0), address(uniRouter), address(camelotRouter));
     }
 
     function test_constructor_revertsOnZeroUniRouter() public {
+        RewardSwapHelper _tmp = new RewardSwapHelper();
         vm.expectRevert(RewardSwapHelper.ZeroAddress.selector);
-        new RewardSwapHelper(address(usdc), admin, address(0), address(camelotRouter));
+        _tmp.initialize(address(usdc), admin, address(0), address(camelotRouter));
     }
 
     function test_constructor_camelotZeroAllowed() public {
         // Camelot is optional — address(0) is OK
-        RewardSwapHelper h = new RewardSwapHelper(
-            address(usdc), admin, address(uniRouter), address(0)
-        );
+        RewardSwapHelper h = new RewardSwapHelper();
+        h.initialize(address(usdc), admin, address(uniRouter), address(0));
         assertEq(h.camelotV3Router(), address(0));
     }
 

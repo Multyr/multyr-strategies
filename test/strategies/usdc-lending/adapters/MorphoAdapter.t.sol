@@ -203,14 +203,8 @@ contract MorphoAdapter_Test is Test {
             100_000_000e6
         );
 
-        vm.prank(admin);
-        adapter = new MorphoUsdcMultiMarketAdapter(
-            address(usdc),
-            admin,
-            vault,
-            10_000_000e6, // 10M capacity
-            address(registry) // V9: must have registry with markets
-        );
+        adapter = new MorphoUsdcMultiMarketAdapter();
+        adapter.initialize(address(usdc), admin, vault, 10_000_000e6, address(registry));
     }
 
     function _addMarket(MockMorphoVault v) internal {
@@ -240,18 +234,21 @@ contract MorphoAdapter_Test is Test {
     }
 
     function test_constructor_reverts_zero_usdc() public {
+        MorphoUsdcMultiMarketAdapter _tmp = new MorphoUsdcMultiMarketAdapter();
         vm.expectRevert(bytes("zero"));
-        new MorphoUsdcMultiMarketAdapter(address(0), admin, vault, 10_000_000e6, address(0));
+        _tmp.initialize(address(0), admin, vault, 10_000_000e6, address(0));
     }
 
     function test_constructor_reverts_zero_admin() public {
+        MorphoUsdcMultiMarketAdapter _tmp = new MorphoUsdcMultiMarketAdapter();
         vm.expectRevert(bytes("zero"));
-        new MorphoUsdcMultiMarketAdapter(address(usdc), address(0), vault, 10_000_000e6, address(0));
+        _tmp.initialize(address(usdc), address(0), vault, 10_000_000e6, address(0));
     }
 
     function test_constructor_reverts_zero_vault() public {
+        MorphoUsdcMultiMarketAdapter _tmp = new MorphoUsdcMultiMarketAdapter();
         vm.expectRevert(bytes("zero"));
-        new MorphoUsdcMultiMarketAdapter(address(usdc), admin, address(0), 10_000_000e6, address(0));
+        _tmp.initialize(address(usdc), admin, address(0), 10_000_000e6, address(0));
     }
 
     // ========================================================================
@@ -851,14 +848,8 @@ contract MorphoAdapter_Fuzz_Test is Test {
             100_000_000e6
         );
 
-        vm.prank(admin);
-        adapter = new MorphoUsdcMultiMarketAdapter(
-            address(usdc),
-            admin,
-            vault,
-            type(uint256).max, // no cap
-            address(registry)
-        );
+        adapter = new MorphoUsdcMultiMarketAdapter();
+        adapter.initialize(address(usdc), admin, vault, type(uint256).max, address(registry));
         // vault1 is already added from registry
     }
 
@@ -943,14 +934,8 @@ contract MorphoAdapter_RefreshFromRegistry_Test is Test {
         initial[0] = address(vault1);
         registry.setVaults(initial);
 
-        vm.prank(admin);
-        adapter = new MorphoUsdcMultiMarketAdapter(
-            address(usdc),
-            admin,
-            strVault,
-            0,
-            address(registry)
-        );
+        adapter = new MorphoUsdcMultiMarketAdapter();
+        adapter.initialize(address(usdc), admin, strVault, 0, address(registry));
     }
 
     function test_refreshFromRegistry_happyPath_addsNewMarket() public {

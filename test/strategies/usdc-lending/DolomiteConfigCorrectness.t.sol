@@ -165,13 +165,8 @@ contract DolomiteConfigCorrectnessTest is Test {
         // The constructor requires mkts.length > 0, so we use a registry
         MockDolomiteRegistry registry = new MockDolomiteRegistry(address(usdc), address(poolMarket));
 
-        adapter = new DolomiteUsdcMultiMarketAdapter(
-            address(usdc),
-            admin,
-            vaultAddr,
-            0, // no capacity limit
-            address(registry)
-        );
+        adapter = new DolomiteUsdcMultiMarketAdapter();
+        adapter.initialize(address(usdc), admin, vaultAddr, 0, address(registry));
     }
 
     // -----------------------------------------------------------------------

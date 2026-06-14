@@ -194,7 +194,8 @@ contract LendingReplayDefenseTest is Test {
         uni = new MockUniV3Router(address(usdc));
         camelot = new MockCamelotV3Router(address(usdc));
 
-        helper = new RewardSwapHelper(address(usdc), admin, address(uni), address(camelot));
+        helper = new RewardSwapHelper();
+        helper.initialize(address(usdc), admin, address(uni), address(camelot));
 
         feed.set(60e8, block.timestamp);
         vm.prank(admin);

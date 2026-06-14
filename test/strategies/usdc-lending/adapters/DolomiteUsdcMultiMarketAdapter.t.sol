@@ -187,13 +187,8 @@ contract DolomiteAdapter_Test is Test {
 
         registry = new MockDoloRegistry(address(pool1));
 
-        adapter = new DolomiteUsdcMultiMarketAdapter(
-            address(usdc),
-            admin,
-            vault,
-            10_000_000e6, // capacity
-            address(registry)
-        );
+        adapter = new DolomiteUsdcMultiMarketAdapter();
+        adapter.initialize(address(usdc), admin, vault, 10_000_000e6, address(registry));
 
         // Validate Dolomite config so PoolLike _assetsOn returns real values
         // (else returns 0 and totalAssets accounting silently breaks)
@@ -581,13 +576,8 @@ contract DolomiteAdapter_RefreshFromRegistry_Test is Test {
         initial[0] = address(pool1);
         registry.setVaults(initial);
 
-        adapter = new DolomiteUsdcMultiMarketAdapter(
-            address(usdc),
-            admin,
-            strVault,
-            0,
-            address(registry)
-        );
+        adapter = new DolomiteUsdcMultiMarketAdapter();
+        adapter.initialize(address(usdc), admin, strVault, 0, address(registry));
         vm.prank(admin);
         adapter.validateDolomiteConfig();
     }

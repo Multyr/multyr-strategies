@@ -203,8 +203,8 @@ contract StrategyBootstrapperTestBase is Test {
 
     /// @dev Deploy a bootstrapper from deployer address, grant it BOOTSTRAP_ROLE
     function _deployBootstrapper() internal returns (StrategyBootstrapper bs) {
-        vm.prank(deployer);
-        bs = new StrategyBootstrapper(payable(address(vault)));
+        bs = new StrategyBootstrapper();
+        bs.initialize(payable(address(vault)), deployer);
         vm.prank(admin);
         vault.grantRole(BOOTSTRAP_ROLE, address(bs));
     }
@@ -216,26 +216,27 @@ contract StrategyBootstrapperTestBase is Test {
 
 contract StrategyBootstrapperConstructorTest is StrategyBootstrapperTestBase {
     function test_constructor_setsStrategy() public {
-        vm.prank(deployer);
-        StrategyBootstrapper bs = new StrategyBootstrapper(payable(address(vault)));
+        StrategyBootstrapper bs = new StrategyBootstrapper();
+        bs.initialize(payable(address(vault)), deployer);
         assertEq(address(bs.strategy()), address(vault));
     }
 
     function test_constructor_setsDeployer() public {
-        vm.prank(deployer);
-        StrategyBootstrapper bs = new StrategyBootstrapper(payable(address(vault)));
+        StrategyBootstrapper bs = new StrategyBootstrapper();
+        bs.initialize(payable(address(vault)), deployer);
         assertEq(bs.deployer(), deployer);
     }
 
     function test_constructor_usedIsFalse() public {
-        vm.prank(deployer);
-        StrategyBootstrapper bs = new StrategyBootstrapper(payable(address(vault)));
+        StrategyBootstrapper bs = new StrategyBootstrapper();
+        bs.initialize(payable(address(vault)), deployer);
         assertFalse(bs.used());
     }
 
     function test_constructor_revertsOnZeroAddress() public {
+        StrategyBootstrapper _tmp = new StrategyBootstrapper();
         vm.expectRevert(StrategyBootstrapper.ZeroAddress.selector);
-        new StrategyBootstrapper(payable(address(0)));
+        _tmp.initialize(payable(address(0)), deployer);
     }
 }
 
@@ -403,8 +404,8 @@ contract StrategyBootstrapperViewTest is StrategyBootstrapperTestBase {
 
     function test_hasBootstrapRole_falseWithoutRoleGrant() public {
         // Bootstrapper deployed but BOOTSTRAP_ROLE never granted
-        vm.prank(deployer);
-        StrategyBootstrapper bs = new StrategyBootstrapper(payable(address(vault)));
+        StrategyBootstrapper bs = new StrategyBootstrapper();
+        bs.initialize(payable(address(vault)), deployer);
         assertFalse(bs.hasBootstrapRole());
     }
 }

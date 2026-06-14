@@ -307,7 +307,8 @@ contract DeployUsdcLendingStrategy is Script {
         console.log("[1.1] UsdcMultiLendingVault:", address(result.strategy));
 
         // 1.2 StrategyBootstrapper (INTERNAL — one-shot, no separate script)
-        StrategyBootstrapper boot = new StrategyBootstrapper(payable(address(result.strategy)));
+        StrategyBootstrapper boot = new StrategyBootstrapper();
+        boot.initialize(payable(address(result.strategy)), cfg.deployer);
         result.bootstrapper = address(boot);
         require(result.bootstrapper == predictedBootstrap, "Bootstrapper address mismatch");
         require(
@@ -355,26 +356,20 @@ contract DeployUsdcLendingStrategy is Script {
         console.log("[1.5.2] Registry configured (5 Morpho + 1 Comet + 4 Euler + 1 Dolomite)");
 
         // 1.5.3 Aave (single market — no registry needed)
-        AaveV3USDCAdapter aave = new AaveV3USDCAdapter(
-            USDC, AAVE_POOL, AAVE_AUSDC, cfg.deployer,
-            address(result.strategy), DEFAULT_ADAPTER_CAPACITY
-        );
+        AaveV3USDCAdapter aave = new AaveV3USDCAdapter();
+        aave.initialize(USDC, AAVE_POOL, AAVE_AUSDC, cfg.deployer, address(result.strategy), DEFAULT_ADAPTER_CAPACITY);
         result.aaveAdapter = address(aave);
         console.log("[1.5.3] AaveV3USDCAdapter:", result.aaveAdapter);
 
         // 1.5.4 Morpho
-        MorphoUsdcMultiMarketAdapter morph = new MorphoUsdcMultiMarketAdapter(
-            USDC, cfg.deployer, address(result.strategy),
-            DEFAULT_ADAPTER_CAPACITY, result.protocolRegistry
-        );
+        MorphoUsdcMultiMarketAdapter morph = new MorphoUsdcMultiMarketAdapter();
+        morph.initialize(USDC, cfg.deployer, address(result.strategy), DEFAULT_ADAPTER_CAPACITY, result.protocolRegistry);
         result.morphoAdapter = address(morph);
         console.log("[1.5.4] MorphoAdapter:", result.morphoAdapter);
 
         // 1.5.5 Comet
-        CometUsdcMultiMarketAdapter cmt = new CometUsdcMultiMarketAdapter(
-            USDC, cfg.deployer, address(result.strategy),
-            DEFAULT_ADAPTER_CAPACITY, result.protocolRegistry
-        );
+        CometUsdcMultiMarketAdapter cmt = new CometUsdcMultiMarketAdapter();
+        cmt.initialize(USDC, cfg.deployer, address(result.strategy), DEFAULT_ADAPTER_CAPACITY, result.protocolRegistry);
         result.cometAdapter = address(cmt);
         console.log("[1.5.5] CometAdapter:", result.cometAdapter);
 
@@ -385,9 +380,8 @@ contract DeployUsdcLendingStrategy is Script {
         address[] memory eulerMarkets = new address[](4);
         eulerMarkets[0] = EULER_VAULT_1; eulerMarkets[1] = EULER_VAULT_2;
         eulerMarkets[2] = EULER_VAULT_3; eulerMarkets[3] = EULER_VAULT_4;
-        EulerUsdcMultiMarketAdapter euler = new EulerUsdcMultiMarketAdapter(
-            address(result.strategy), USDC, eulerMarkets, result.protocolRegistry
-        );
+        EulerUsdcMultiMarketAdapter euler = new EulerUsdcMultiMarketAdapter();
+        euler.initialize(address(result.strategy), USDC, eulerMarkets, result.protocolRegistry, cfg.deployer);
         result.eulerAdapter = address(euler);
         {
             uint256 EULER_DUST = 1000; // 0.001 USDC for Permit2 setup
@@ -401,26 +395,20 @@ contract DeployUsdcLendingStrategy is Script {
         console.log("[1.5.6] EulerAdapter:", result.eulerAdapter, "(initializeMarkets done)");
 
         // 1.5.7 Dolomite
-        DolomiteUsdcMultiMarketAdapter dolo = new DolomiteUsdcMultiMarketAdapter(
-            USDC, cfg.deployer, address(result.strategy),
-            DEFAULT_ADAPTER_CAPACITY, result.protocolRegistry
-        );
+        DolomiteUsdcMultiMarketAdapter dolo = new DolomiteUsdcMultiMarketAdapter();
+        dolo.initialize(USDC, cfg.deployer, address(result.strategy), DEFAULT_ADAPTER_CAPACITY, result.protocolRegistry);
         result.dolomiteAdapter = address(dolo);
         console.log("[1.5.7] DolomiteAdapter:", result.dolomiteAdapter);
 
         // 1.5.8 Fluid
-        FluidUsdcMultiMarketAdapter fluid = new FluidUsdcMultiMarketAdapter(
-            USDC, cfg.deployer, address(result.strategy),
-            DEFAULT_ADAPTER_CAPACITY, FLUID_FUSDC
-        );
+        FluidUsdcMultiMarketAdapter fluid = new FluidUsdcMultiMarketAdapter();
+        fluid.initialize(USDC, cfg.deployer, address(result.strategy), DEFAULT_ADAPTER_CAPACITY, FLUID_FUSDC);
         result.fluidAdapter = address(fluid);
         console.log("[1.5.8] FluidAdapter:", result.fluidAdapter);
 
         // 1.5.9 Venus
-        VenusUsdcMultiMarketAdapter venus = new VenusUsdcMultiMarketAdapter(
-            USDC, cfg.deployer, address(result.strategy),
-            DEFAULT_ADAPTER_CAPACITY, VENUS_VTOKEN
-        );
+        VenusUsdcMultiMarketAdapter venus = new VenusUsdcMultiMarketAdapter();
+        venus.initialize(USDC, cfg.deployer, address(result.strategy), DEFAULT_ADAPTER_CAPACITY, VENUS_VTOKEN);
         result.venusAdapter = address(venus);
         console.log("[1.5.9] VenusAdapter:", result.venusAdapter);
         console.log("  [OK] 7 lending adapters deployed");
