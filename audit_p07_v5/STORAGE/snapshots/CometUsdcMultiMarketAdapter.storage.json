@@ -1,0 +1,339 @@
+{
+  "storage": [
+    {
+      "astId": 24,
+      "contract": "src/strategies/usdc-lending/adapters/lending/CometUsdcMultiMarket.sol:CometUsdcMultiMarketAdapter",
+      "label": "_roles",
+      "offset": 0,
+      "slot": "0",
+      "type": "t_mapping(t_bytes32,t_struct(RoleData)19_storage)"
+    },
+    {
+      "astId": 568,
+      "contract": "src/strategies/usdc-lending/adapters/lending/CometUsdcMultiMarket.sol:CometUsdcMultiMarketAdapter",
+      "label": "_status",
+      "offset": 0,
+      "slot": "1",
+      "type": "t_uint256"
+    },
+    {
+      "astId": 395,
+      "contract": "src/strategies/usdc-lending/adapters/lending/CometUsdcMultiMarket.sol:CometUsdcMultiMarketAdapter",
+      "label": "_initialized",
+      "offset": 0,
+      "slot": "2",
+      "type": "t_uint8"
+    },
+    {
+      "astId": 398,
+      "contract": "src/strategies/usdc-lending/adapters/lending/CometUsdcMultiMarket.sol:CometUsdcMultiMarketAdapter",
+      "label": "_initializing",
+      "offset": 1,
+      "slot": "2",
+      "type": "t_bool"
+    },
+    {
+      "astId": 2945,
+      "contract": "src/strategies/usdc-lending/adapters/lending/CometUsdcMultiMarket.sol:CometUsdcMultiMarketAdapter",
+      "label": "underlying",
+      "offset": 2,
+      "slot": "2",
+      "type": "t_address"
+    },
+    {
+      "astId": 2947,
+      "contract": "src/strategies/usdc-lending/adapters/lending/CometUsdcMultiMarket.sol:CometUsdcMultiMarketAdapter",
+      "label": "vault",
+      "offset": 0,
+      "slot": "3",
+      "type": "t_address"
+    },
+    {
+      "astId": 2950,
+      "contract": "src/strategies/usdc-lending/adapters/lending/CometUsdcMultiMarket.sol:CometUsdcMultiMarketAdapter",
+      "label": "registry",
+      "offset": 0,
+      "slot": "4",
+      "type": "t_contract(IProtocolRegistry)2748"
+    },
+    {
+      "astId": 2963,
+      "contract": "src/strategies/usdc-lending/adapters/lending/CometUsdcMultiMarket.sol:CometUsdcMultiMarketAdapter",
+      "label": "mkts",
+      "offset": 0,
+      "slot": "5",
+      "type": "t_array(t_struct(Market)2959_storage)dyn_storage"
+    },
+    {
+      "astId": 2981,
+      "contract": "src/strategies/usdc-lending/adapters/lending/CometUsdcMultiMarket.sol:CometUsdcMultiMarketAdapter",
+      "label": "rebalanceMinMoveBps",
+      "offset": 0,
+      "slot": "6",
+      "type": "t_uint16"
+    },
+    {
+      "astId": 2984,
+      "contract": "src/strategies/usdc-lending/adapters/lending/CometUsdcMultiMarket.sol:CometUsdcMultiMarketAdapter",
+      "label": "minSecondsBetweenOptimize",
+      "offset": 2,
+      "slot": "6",
+      "type": "t_uint32"
+    },
+    {
+      "astId": 2993,
+      "contract": "src/strategies/usdc-lending/adapters/lending/CometUsdcMultiMarket.sol:CometUsdcMultiMarketAdapter",
+      "label": "gateMinNetBenefitBps",
+      "offset": 6,
+      "slot": "6",
+      "type": "t_uint16"
+    },
+    {
+      "astId": 2995,
+      "contract": "src/strategies/usdc-lending/adapters/lending/CometUsdcMultiMarket.sol:CometUsdcMultiMarketAdapter",
+      "label": "slippageBpsEstimate",
+      "offset": 8,
+      "slot": "6",
+      "type": "t_uint16"
+    },
+    {
+      "astId": 2997,
+      "contract": "src/strategies/usdc-lending/adapters/lending/CometUsdcMultiMarket.sol:CometUsdcMultiMarketAdapter",
+      "label": "withdrawalSpreadBpsEstimate",
+      "offset": 10,
+      "slot": "6",
+      "type": "t_uint16"
+    },
+    {
+      "astId": 2999,
+      "contract": "src/strategies/usdc-lending/adapters/lending/CometUsdcMultiMarket.sol:CometUsdcMultiMarketAdapter",
+      "label": "gasCostUSDC",
+      "offset": 0,
+      "slot": "7",
+      "type": "t_uint256"
+    },
+    {
+      "astId": 3001,
+      "contract": "src/strategies/usdc-lending/adapters/lending/CometUsdcMultiMarket.sol:CometUsdcMultiMarketAdapter",
+      "label": "capacity",
+      "offset": 0,
+      "slot": "8",
+      "type": "t_uint256"
+    },
+    {
+      "astId": 3003,
+      "contract": "src/strategies/usdc-lending/adapters/lending/CometUsdcMultiMarket.sol:CometUsdcMultiMarketAdapter",
+      "label": "incentiveBpsGlobal",
+      "offset": 0,
+      "slot": "9",
+      "type": "t_uint16"
+    },
+    {
+      "astId": 3005,
+      "contract": "src/strategies/usdc-lending/adapters/lending/CometUsdcMultiMarket.sol:CometUsdcMultiMarketAdapter",
+      "label": "rewardToken",
+      "offset": 2,
+      "slot": "9",
+      "type": "t_address"
+    },
+    {
+      "astId": 3007,
+      "contract": "src/strategies/usdc-lending/adapters/lending/CometUsdcMultiMarket.sol:CometUsdcMultiMarketAdapter",
+      "label": "rewardsController",
+      "offset": 0,
+      "slot": "10",
+      "type": "t_address"
+    },
+    {
+      "astId": 3009,
+      "contract": "src/strategies/usdc-lending/adapters/lending/CometUsdcMultiMarket.sol:CometUsdcMultiMarketAdapter",
+      "label": "swapHelper",
+      "offset": 0,
+      "slot": "11",
+      "type": "t_address"
+    },
+    {
+      "astId": 3012,
+      "contract": "src/strategies/usdc-lending/adapters/lending/CometUsdcMultiMarket.sol:CometUsdcMultiMarketAdapter",
+      "label": "incentiveHaircutBps",
+      "offset": 20,
+      "slot": "11",
+      "type": "t_uint16"
+    },
+    {
+      "astId": 3014,
+      "contract": "src/strategies/usdc-lending/adapters/lending/CometUsdcMultiMarket.sol:CometUsdcMultiMarketAdapter",
+      "label": "realizedRewardAPRBps",
+      "offset": 22,
+      "slot": "11",
+      "type": "t_uint16"
+    },
+    {
+      "astId": 3059,
+      "contract": "src/strategies/usdc-lending/adapters/lending/CometUsdcMultiMarket.sol:CometUsdcMultiMarketAdapter",
+      "label": "principal",
+      "offset": 0,
+      "slot": "12",
+      "type": "t_array(t_uint256)dyn_storage"
+    },
+    {
+      "astId": 3061,
+      "contract": "src/strategies/usdc-lending/adapters/lending/CometUsdcMultiMarket.sol:CometUsdcMultiMarketAdapter",
+      "label": "principalTotal",
+      "offset": 0,
+      "slot": "13",
+      "type": "t_uint256"
+    },
+    {
+      "astId": 3063,
+      "contract": "src/strategies/usdc-lending/adapters/lending/CometUsdcMultiMarket.sol:CometUsdcMultiMarketAdapter",
+      "label": "lastOptimizeTs",
+      "offset": 0,
+      "slot": "14",
+      "type": "t_uint64"
+    },
+    {
+      "astId": 3065,
+      "contract": "src/strategies/usdc-lending/adapters/lending/CometUsdcMultiMarket.sol:CometUsdcMultiMarketAdapter",
+      "label": "activeIdx",
+      "offset": 8,
+      "slot": "14",
+      "type": "t_uint8"
+    }
+  ],
+  "types": {
+    "t_address": {
+      "encoding": "inplace",
+      "label": "address",
+      "numberOfBytes": "20"
+    },
+    "t_array(t_struct(Market)2959_storage)dyn_storage": {
+      "encoding": "dynamic_array",
+      "label": "struct CometUsdcMultiMarketAdapter.Market[]",
+      "numberOfBytes": "32",
+      "base": "t_struct(Market)2959_storage"
+    },
+    "t_array(t_uint256)dyn_storage": {
+      "encoding": "dynamic_array",
+      "label": "uint256[]",
+      "numberOfBytes": "32",
+      "base": "t_uint256"
+    },
+    "t_bool": {
+      "encoding": "inplace",
+      "label": "bool",
+      "numberOfBytes": "1"
+    },
+    "t_bytes32": {
+      "encoding": "inplace",
+      "label": "bytes32",
+      "numberOfBytes": "32"
+    },
+    "t_contract(IProtocolRegistry)2748": {
+      "encoding": "inplace",
+      "label": "contract IProtocolRegistry",
+      "numberOfBytes": "20"
+    },
+    "t_mapping(t_address,t_bool)": {
+      "encoding": "mapping",
+      "key": "t_address",
+      "label": "mapping(address => bool)",
+      "numberOfBytes": "32",
+      "value": "t_bool"
+    },
+    "t_mapping(t_bytes32,t_struct(RoleData)19_storage)": {
+      "encoding": "mapping",
+      "key": "t_bytes32",
+      "label": "mapping(bytes32 => struct AccessControl.RoleData)",
+      "numberOfBytes": "32",
+      "value": "t_struct(RoleData)19_storage"
+    },
+    "t_struct(Market)2959_storage": {
+      "encoding": "inplace",
+      "label": "struct CometUsdcMultiMarketAdapter.Market",
+      "numberOfBytes": "32",
+      "members": [
+        {
+          "astId": 2952,
+          "contract": "src/strategies/usdc-lending/adapters/lending/CometUsdcMultiMarket.sol:CometUsdcMultiMarketAdapter",
+          "label": "comet",
+          "offset": 0,
+          "slot": "0",
+          "type": "t_address"
+        },
+        {
+          "astId": 2954,
+          "contract": "src/strategies/usdc-lending/adapters/lending/CometUsdcMultiMarket.sol:CometUsdcMultiMarketAdapter",
+          "label": "enabled",
+          "offset": 20,
+          "slot": "0",
+          "type": "t_bool"
+        },
+        {
+          "astId": 2956,
+          "contract": "src/strategies/usdc-lending/adapters/lending/CometUsdcMultiMarket.sol:CometUsdcMultiMarketAdapter",
+          "label": "flagged",
+          "offset": 21,
+          "slot": "0",
+          "type": "t_bool"
+        },
+        {
+          "astId": 2958,
+          "contract": "src/strategies/usdc-lending/adapters/lending/CometUsdcMultiMarket.sol:CometUsdcMultiMarketAdapter",
+          "label": "riskScoreBps",
+          "offset": 22,
+          "slot": "0",
+          "type": "t_uint16"
+        }
+      ]
+    },
+    "t_struct(RoleData)19_storage": {
+      "encoding": "inplace",
+      "label": "struct AccessControl.RoleData",
+      "numberOfBytes": "64",
+      "members": [
+        {
+          "astId": 16,
+          "contract": "src/strategies/usdc-lending/adapters/lending/CometUsdcMultiMarket.sol:CometUsdcMultiMarketAdapter",
+          "label": "members",
+          "offset": 0,
+          "slot": "0",
+          "type": "t_mapping(t_address,t_bool)"
+        },
+        {
+          "astId": 18,
+          "contract": "src/strategies/usdc-lending/adapters/lending/CometUsdcMultiMarket.sol:CometUsdcMultiMarketAdapter",
+          "label": "adminRole",
+          "offset": 0,
+          "slot": "1",
+          "type": "t_bytes32"
+        }
+      ]
+    },
+    "t_uint16": {
+      "encoding": "inplace",
+      "label": "uint16",
+      "numberOfBytes": "2"
+    },
+    "t_uint256": {
+      "encoding": "inplace",
+      "label": "uint256",
+      "numberOfBytes": "32"
+    },
+    "t_uint32": {
+      "encoding": "inplace",
+      "label": "uint32",
+      "numberOfBytes": "4"
+    },
+    "t_uint64": {
+      "encoding": "inplace",
+      "label": "uint64",
+      "numberOfBytes": "8"
+    },
+    "t_uint8": {
+      "encoding": "inplace",
+      "label": "uint8",
+      "numberOfBytes": "1"
+    }
+  }
+}

@@ -1,0 +1,1154 @@
+{
+  "storage": [
+    {
+      "astId": 24,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "_roles",
+      "offset": 0,
+      "slot": "0",
+      "type": "t_mapping(t_bytes32,t_struct(RoleData)19_storage)"
+    },
+    {
+      "astId": 575,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "_paused",
+      "offset": 0,
+      "slot": "1",
+      "type": "t_bool"
+    },
+    {
+      "astId": 676,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "_status",
+      "offset": 0,
+      "slot": "2",
+      "type": "t_uint256"
+    },
+    {
+      "astId": 3332,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "adapters",
+      "offset": 0,
+      "slot": "3",
+      "type": "t_array(t_address)dyn_storage"
+    },
+    {
+      "astId": 3336,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "isAdapter",
+      "offset": 0,
+      "slot": "4",
+      "type": "t_mapping(t_address,t_bool)"
+    },
+    {
+      "astId": 3340,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "enabled",
+      "offset": 0,
+      "slot": "5",
+      "type": "t_mapping(t_address,t_bool)"
+    },
+    {
+      "astId": 3344,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "flagged",
+      "offset": 0,
+      "slot": "6",
+      "type": "t_mapping(t_address,t_bool)"
+    },
+    {
+      "astId": 3348,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "positionAssets",
+      "offset": 0,
+      "slot": "7",
+      "type": "t_mapping(t_address,t_uint256)"
+    },
+    {
+      "astId": 3352,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "pushDepositMode",
+      "offset": 0,
+      "slot": "8",
+      "type": "t_mapping(t_address,t_bool)"
+    },
+    {
+      "astId": 3356,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "depositModeKnown",
+      "offset": 0,
+      "slot": "9",
+      "type": "t_mapping(t_address,t_bool)"
+    },
+    {
+      "astId": 3358,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "maxAdaptersPerAllocation",
+      "offset": 0,
+      "slot": "10",
+      "type": "t_uint16"
+    },
+    {
+      "astId": 3360,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "minAdaptersActive",
+      "offset": 2,
+      "slot": "10",
+      "type": "t_uint16"
+    },
+    {
+      "astId": 3362,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "rebalanceMinMoveBps",
+      "offset": 4,
+      "slot": "10",
+      "type": "t_uint16"
+    },
+    {
+      "astId": 3364,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "minSecondsBetweenRebalances",
+      "offset": 6,
+      "slot": "10",
+      "type": "t_uint32"
+    },
+    {
+      "astId": 3366,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "driftToleranceBps",
+      "offset": 10,
+      "slot": "10",
+      "type": "t_uint16"
+    },
+    {
+      "astId": 3368,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "wAPY",
+      "offset": 12,
+      "slot": "10",
+      "type": "t_uint16"
+    },
+    {
+      "astId": 3370,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "wLiq",
+      "offset": 14,
+      "slot": "10",
+      "type": "t_uint16"
+    },
+    {
+      "astId": 3372,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "wRisk",
+      "offset": 16,
+      "slot": "10",
+      "type": "t_uint16"
+    },
+    {
+      "astId": 3374,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "wStability",
+      "offset": 18,
+      "slot": "10",
+      "type": "t_uint16"
+    },
+    {
+      "astId": 3376,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "wIncentive",
+      "offset": 20,
+      "slot": "10",
+      "type": "t_uint16"
+    },
+    {
+      "astId": 3378,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "incentiveDecayHalfLife",
+      "offset": 22,
+      "slot": "10",
+      "type": "t_uint32"
+    },
+    {
+      "astId": 3380,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "adapterMaxExposureBps",
+      "offset": 26,
+      "slot": "10",
+      "type": "t_uint16"
+    },
+    {
+      "astId": 3382,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "newAdapterRampBps",
+      "offset": 28,
+      "slot": "10",
+      "type": "t_uint16"
+    },
+    {
+      "astId": 3386,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "adapterAbsCapOverrideBps",
+      "offset": 0,
+      "slot": "11",
+      "type": "t_mapping(t_address,t_uint16)"
+    },
+    {
+      "astId": 3389,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "degradedModeActive",
+      "offset": 0,
+      "slot": "12",
+      "type": "t_bool"
+    },
+    {
+      "astId": 3391,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "degradedModeEnteredAt",
+      "offset": 1,
+      "slot": "12",
+      "type": "t_uint64"
+    },
+    {
+      "astId": 3394,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "withdrawalLockSeconds",
+      "offset": 9,
+      "slot": "12",
+      "type": "t_uint64"
+    },
+    {
+      "astId": 3396,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "gateHorizonDays",
+      "offset": 17,
+      "slot": "12",
+      "type": "t_uint16"
+    },
+    {
+      "astId": 3398,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "gateMinNetBenefitBps",
+      "offset": 19,
+      "slot": "12",
+      "type": "t_uint16"
+    },
+    {
+      "astId": 3400,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "slippageBpsEstimate",
+      "offset": 21,
+      "slot": "12",
+      "type": "t_uint16"
+    },
+    {
+      "astId": 3402,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "withdrawalSpreadBpsEstimate",
+      "offset": 23,
+      "slot": "12",
+      "type": "t_uint16"
+    },
+    {
+      "astId": 3404,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "gasCostUSDC",
+      "offset": 0,
+      "slot": "13",
+      "type": "t_uint256"
+    },
+    {
+      "astId": 3406,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "harvestThresholdBps",
+      "offset": 0,
+      "slot": "14",
+      "type": "t_uint16"
+    },
+    {
+      "astId": 3408,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "minSecondsBetweenHarvests",
+      "offset": 2,
+      "slot": "14",
+      "type": "t_uint32"
+    },
+    {
+      "astId": 3410,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "dustTolerance",
+      "offset": 0,
+      "slot": "15",
+      "type": "t_uint256"
+    },
+    {
+      "astId": 3412,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "rolesFrozen",
+      "offset": 0,
+      "slot": "16",
+      "type": "t_bool"
+    },
+    {
+      "astId": 3414,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "paramsFinalized",
+      "offset": 1,
+      "slot": "16",
+      "type": "t_bool"
+    },
+    {
+      "astId": 3416,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "lastHarvestTs",
+      "offset": 2,
+      "slot": "16",
+      "type": "t_uint64"
+    },
+    {
+      "astId": 3418,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "lastRebalanceTs",
+      "offset": 10,
+      "slot": "16",
+      "type": "t_uint64"
+    },
+    {
+      "astId": 3422,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "stabilityEMA",
+      "offset": 0,
+      "slot": "17",
+      "type": "t_mapping(t_address,t_uint256)"
+    },
+    {
+      "astId": 3424,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "stabilityEMAPeriod",
+      "offset": 0,
+      "slot": "18",
+      "type": "t_uint16"
+    },
+    {
+      "astId": 3428,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "riskScoreBps",
+      "offset": 0,
+      "slot": "19",
+      "type": "t_mapping(t_address,t_uint16)"
+    },
+    {
+      "astId": 3432,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "quarantined",
+      "offset": 0,
+      "slot": "20",
+      "type": "t_mapping(t_address,t_bool)"
+    },
+    {
+      "astId": 3436,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "adapterConsecutiveFailures",
+      "offset": 0,
+      "slot": "21",
+      "type": "t_mapping(t_address,t_uint8)"
+    },
+    {
+      "astId": 3438,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "adapterQuarantineThreshold",
+      "offset": 0,
+      "slot": "22",
+      "type": "t_uint8"
+    },
+    {
+      "astId": 3440,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "depositsDisabled",
+      "offset": 1,
+      "slot": "22",
+      "type": "t_bool"
+    },
+    {
+      "astId": 3444,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "adapterActivatedAt",
+      "offset": 0,
+      "slot": "23",
+      "type": "t_mapping(t_address,t_uint64)"
+    },
+    {
+      "astId": 3446,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "minNewAdapterSeed",
+      "offset": 0,
+      "slot": "24",
+      "type": "t_uint256"
+    },
+    {
+      "astId": 3448,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "newAdapterRampDuration",
+      "offset": 0,
+      "slot": "25",
+      "type": "t_uint64"
+    },
+    {
+      "astId": 3450,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "maxIdleAfterDepositBps",
+      "offset": 8,
+      "slot": "25",
+      "type": "t_uint16"
+    },
+    {
+      "astId": 3452,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "bootstrapEndsAt",
+      "offset": 10,
+      "slot": "25",
+      "type": "t_uint64"
+    },
+    {
+      "astId": 3454,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "maxIdleBootstrapBps",
+      "offset": 18,
+      "slot": "25",
+      "type": "t_uint16"
+    },
+    {
+      "astId": 3456,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "degradedViewThresholdBps",
+      "offset": 20,
+      "slot": "25",
+      "type": "t_uint16"
+    },
+    {
+      "astId": 3460,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "adapterLastFailureTs",
+      "offset": 0,
+      "slot": "26",
+      "type": "t_mapping(t_address,t_uint64)"
+    },
+    {
+      "astId": 3462,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "failureDecaySeconds",
+      "offset": 0,
+      "slot": "27",
+      "type": "t_uint32"
+    },
+    {
+      "astId": 3464,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "lastDeployIdleTs",
+      "offset": 4,
+      "slot": "27",
+      "type": "t_uint64"
+    },
+    {
+      "astId": 3466,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "minSecondsBetweenDeployIdle",
+      "offset": 12,
+      "slot": "27",
+      "type": "t_uint32"
+    },
+    {
+      "astId": 3468,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "maxRelativeExposureBps",
+      "offset": 16,
+      "slot": "27",
+      "type": "t_uint16"
+    },
+    {
+      "astId": 3472,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "cachedExternalTVL",
+      "offset": 0,
+      "slot": "28",
+      "type": "t_mapping(t_address,t_uint256)"
+    },
+    {
+      "astId": 3476,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "cachedExternalTVLTs",
+      "offset": 0,
+      "slot": "29",
+      "type": "t_mapping(t_address,t_uint64)"
+    },
+    {
+      "astId": 3478,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "externalTVLStalenessSeconds",
+      "offset": 0,
+      "slot": "30",
+      "type": "t_uint32"
+    },
+    {
+      "astId": 3482,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "lastExtTVLSnapshot",
+      "offset": 0,
+      "slot": "31",
+      "type": "t_mapping(t_address,t_uint256)"
+    },
+    {
+      "astId": 3486,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "lastExtTVLSnapshotTs",
+      "offset": 0,
+      "slot": "32",
+      "type": "t_mapping(t_address,t_uint64)"
+    },
+    {
+      "astId": 3488,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "lastSyncTs",
+      "offset": 0,
+      "slot": "33",
+      "type": "t_uint64"
+    },
+    {
+      "astId": 3490,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "minSecondsBetweenSync",
+      "offset": 8,
+      "slot": "33",
+      "type": "t_uint32"
+    },
+    {
+      "astId": 3494,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "cachedLiquidityBps",
+      "offset": 0,
+      "slot": "34",
+      "type": "t_mapping(t_address,t_uint16)"
+    },
+    {
+      "astId": 3498,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "cachedLiquidityTs",
+      "offset": 0,
+      "slot": "35",
+      "type": "t_mapping(t_address,t_uint64)"
+    },
+    {
+      "astId": 3500,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "liquidityStalenessSeconds",
+      "offset": 0,
+      "slot": "36",
+      "type": "t_uint32"
+    },
+    {
+      "astId": 3502,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "rebalancePlanPhase",
+      "offset": 4,
+      "slot": "36",
+      "type": "t_uint8"
+    },
+    {
+      "astId": 3504,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "rebalancePlanTs",
+      "offset": 5,
+      "slot": "36",
+      "type": "t_uint64"
+    },
+    {
+      "astId": 3506,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "rebalancePlanNextAction",
+      "offset": 13,
+      "slot": "36",
+      "type": "t_uint8"
+    },
+    {
+      "astId": 3508,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "rebalancePlanTotalActions",
+      "offset": 14,
+      "slot": "36",
+      "type": "t_uint8"
+    },
+    {
+      "astId": 3510,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "maxRebalanceActionsPerTx",
+      "offset": 15,
+      "slot": "36",
+      "type": "t_uint8"
+    },
+    {
+      "astId": 3512,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "rebalancePlanMaxAge",
+      "offset": 16,
+      "slot": "36",
+      "type": "t_uint32"
+    },
+    {
+      "astId": 3514,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "rebalancePlanTvl",
+      "offset": 0,
+      "slot": "37",
+      "type": "t_uint256"
+    },
+    {
+      "astId": 3516,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "rebalancePlanMinDrift",
+      "offset": 0,
+      "slot": "38",
+      "type": "t_uint256"
+    },
+    {
+      "astId": 3520,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "rebalancePlanAdapters",
+      "offset": 0,
+      "slot": "39",
+      "type": "t_array(t_address)10_storage"
+    },
+    {
+      "astId": 3524,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "rebalancePlanAmounts",
+      "offset": 0,
+      "slot": "49",
+      "type": "t_array(t_uint256)10_storage"
+    },
+    {
+      "astId": 3526,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "_retryMode",
+      "offset": 0,
+      "slot": "59",
+      "type": "t_bool"
+    },
+    {
+      "astId": 3530,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "lastPokedAPY",
+      "offset": 0,
+      "slot": "60",
+      "type": "t_mapping(t_address,t_uint16)"
+    },
+    {
+      "astId": 3534,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "lastStabilityUpdateTs",
+      "offset": 0,
+      "slot": "61",
+      "type": "t_mapping(t_address,t_uint64)"
+    },
+    {
+      "astId": 3536,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "apyFloorBps",
+      "offset": 0,
+      "slot": "62",
+      "type": "t_uint16"
+    },
+    {
+      "astId": 3538,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "minStabilityUpdateInterval",
+      "offset": 2,
+      "slot": "62",
+      "type": "t_uint32"
+    },
+    {
+      "astId": 3542,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "emaDepositGas",
+      "offset": 0,
+      "slot": "63",
+      "type": "t_mapping(t_address,t_uint64)"
+    },
+    {
+      "astId": 3546,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "emaWithdrawGas",
+      "offset": 0,
+      "slot": "64",
+      "type": "t_mapping(t_address,t_uint64)"
+    },
+    {
+      "astId": 3548,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "gasEmaSmoothingBps",
+      "offset": 0,
+      "slot": "65",
+      "type": "t_uint16"
+    },
+    {
+      "astId": 3550,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "estimatedGasCostUSDC",
+      "offset": 0,
+      "slot": "66",
+      "type": "t_uint256"
+    },
+    {
+      "astId": 3552,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "minBenefitCostRatioBps",
+      "offset": 0,
+      "slot": "67",
+      "type": "t_uint16"
+    },
+    {
+      "astId": 3554,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "entryDriftBps",
+      "offset": 2,
+      "slot": "67",
+      "type": "t_uint16"
+    },
+    {
+      "astId": 3556,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "exitDriftBps",
+      "offset": 4,
+      "slot": "67",
+      "type": "t_uint16"
+    },
+    {
+      "astId": 3558,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "minMoveUsd",
+      "offset": 0,
+      "slot": "68",
+      "type": "t_uint256"
+    },
+    {
+      "astId": 3560,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "recentRebalancePenaltyBps",
+      "offset": 0,
+      "slot": "69",
+      "type": "t_uint16"
+    },
+    {
+      "astId": 3562,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "recentRebalanceWindowSeconds",
+      "offset": 2,
+      "slot": "69",
+      "type": "t_uint32"
+    },
+    {
+      "astId": 3564,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "minLiquidityReadinessBps",
+      "offset": 6,
+      "slot": "69",
+      "type": "t_uint16"
+    },
+    {
+      "astId": 3566,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "currentRegime",
+      "offset": 8,
+      "slot": "69",
+      "type": "t_uint8"
+    },
+    {
+      "astId": 3568,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "regimeHysteresisMultBps",
+      "offset": 9,
+      "slot": "69",
+      "type": "t_uint16"
+    },
+    {
+      "astId": 3570,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "regimeBudgetMultBps",
+      "offset": 11,
+      "slot": "69",
+      "type": "t_uint16"
+    },
+    {
+      "astId": 3572,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "regimeHorizonDays",
+      "offset": 13,
+      "slot": "69",
+      "type": "t_uint16"
+    },
+    {
+      "astId": 3574,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "regimeConfidenceMultBps",
+      "offset": 15,
+      "slot": "69",
+      "type": "t_uint16"
+    },
+    {
+      "astId": 3576,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "rebalanceGateModule_addr",
+      "offset": 0,
+      "slot": "70",
+      "type": "t_address"
+    },
+    {
+      "astId": 3580,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "whitelistedAdapters",
+      "offset": 0,
+      "slot": "71",
+      "type": "t_mapping(t_address,t_bool)"
+    },
+    {
+      "astId": 3584,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "cachedAdapterCapacity",
+      "offset": 0,
+      "slot": "72",
+      "type": "t_mapping(t_address,t_uint256)"
+    },
+    {
+      "astId": 3587,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "rebalancePlanModule_addr",
+      "offset": 0,
+      "slot": "73",
+      "type": "t_address"
+    },
+    {
+      "astId": 3590,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "settingsModule_addr",
+      "offset": 0,
+      "slot": "74",
+      "type": "t_address"
+    },
+    {
+      "astId": 3593,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "allocCalcModule_addr",
+      "offset": 0,
+      "slot": "75",
+      "type": "t_address"
+    },
+    {
+      "astId": 3595,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "overCapRiskPremiumBps",
+      "offset": 20,
+      "slot": "75",
+      "type": "t_uint16"
+    },
+    {
+      "astId": 3597,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "stabilityEMAStalenessSeconds",
+      "offset": 22,
+      "slot": "75",
+      "type": "t_uint32"
+    },
+    {
+      "astId": 3599,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "riskScoreStalenessSeconds",
+      "offset": 26,
+      "slot": "75",
+      "type": "t_uint32"
+    },
+    {
+      "astId": 3601,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "rebalancePlanConsecutiveFailures",
+      "offset": 30,
+      "slot": "75",
+      "type": "t_uint8"
+    },
+    {
+      "astId": 3603,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "rebalancePlanBackoffThreshold",
+      "offset": 31,
+      "slot": "75",
+      "type": "t_uint8"
+    },
+    {
+      "astId": 3607,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "isSeasoned",
+      "offset": 0,
+      "slot": "76",
+      "type": "t_mapping(t_address,t_bool)"
+    },
+    {
+      "astId": 3611,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "lastRiskScoreUpdateTs",
+      "offset": 0,
+      "slot": "77",
+      "type": "t_mapping(t_address,t_uint64)"
+    },
+    {
+      "astId": 3613,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "capDriftToleranceBps",
+      "offset": 0,
+      "slot": "78",
+      "type": "t_uint16"
+    },
+    {
+      "astId": 3615,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "maxIdleBps",
+      "offset": 2,
+      "slot": "78",
+      "type": "t_uint16"
+    },
+    {
+      "astId": 3617,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "targetSafetyMarginBps",
+      "offset": 4,
+      "slot": "78",
+      "type": "t_uint16"
+    },
+    {
+      "astId": 3619,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "mandateRedeployCooldownSeconds",
+      "offset": 6,
+      "slot": "78",
+      "type": "t_uint32"
+    },
+    {
+      "astId": 3623,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "safetyFallbackAdapters",
+      "offset": 0,
+      "slot": "79",
+      "type": "t_array(t_address)dyn_storage"
+    },
+    {
+      "astId": 3634,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "safetyFallback",
+      "offset": 0,
+      "slot": "80",
+      "type": "t_mapping(t_address,t_struct(SafetyFallback)3629_storage)"
+    },
+    {
+      "astId": 3639,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "lastRelCapMandateTs",
+      "offset": 0,
+      "slot": "81",
+      "type": "t_mapping(t_address,t_uint64)"
+    },
+    {
+      "astId": 3641,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "lastSnapshotTotalAssets",
+      "offset": 0,
+      "slot": "82",
+      "type": "t_uint128"
+    },
+    {
+      "astId": 3643,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "lastSnapshotTs",
+      "offset": 16,
+      "slot": "82",
+      "type": "t_uint64"
+    },
+    {
+      "astId": 3645,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "lastSnapshotPredictedAPYBps",
+      "offset": 24,
+      "slot": "82",
+      "type": "t_uint16"
+    },
+    {
+      "astId": 3649,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "__gap",
+      "offset": 0,
+      "slot": "83",
+      "type": "t_array(t_uint256)2_storage"
+    }
+  ],
+  "types": {
+    "t_address": {
+      "encoding": "inplace",
+      "label": "address",
+      "numberOfBytes": "20"
+    },
+    "t_array(t_address)10_storage": {
+      "encoding": "inplace",
+      "label": "address[10]",
+      "numberOfBytes": "320",
+      "base": "t_address"
+    },
+    "t_array(t_address)dyn_storage": {
+      "encoding": "dynamic_array",
+      "label": "address[]",
+      "numberOfBytes": "32",
+      "base": "t_address"
+    },
+    "t_array(t_uint256)10_storage": {
+      "encoding": "inplace",
+      "label": "uint256[10]",
+      "numberOfBytes": "320",
+      "base": "t_uint256"
+    },
+    "t_array(t_uint256)2_storage": {
+      "encoding": "inplace",
+      "label": "uint256[2]",
+      "numberOfBytes": "64",
+      "base": "t_uint256"
+    },
+    "t_bool": {
+      "encoding": "inplace",
+      "label": "bool",
+      "numberOfBytes": "1"
+    },
+    "t_bytes32": {
+      "encoding": "inplace",
+      "label": "bytes32",
+      "numberOfBytes": "32"
+    },
+    "t_mapping(t_address,t_bool)": {
+      "encoding": "mapping",
+      "key": "t_address",
+      "label": "mapping(address => bool)",
+      "numberOfBytes": "32",
+      "value": "t_bool"
+    },
+    "t_mapping(t_address,t_struct(SafetyFallback)3629_storage)": {
+      "encoding": "mapping",
+      "key": "t_address",
+      "label": "mapping(address => struct StrategyStorageLayout.SafetyFallback)",
+      "numberOfBytes": "32",
+      "value": "t_struct(SafetyFallback)3629_storage"
+    },
+    "t_mapping(t_address,t_uint16)": {
+      "encoding": "mapping",
+      "key": "t_address",
+      "label": "mapping(address => uint16)",
+      "numberOfBytes": "32",
+      "value": "t_uint16"
+    },
+    "t_mapping(t_address,t_uint256)": {
+      "encoding": "mapping",
+      "key": "t_address",
+      "label": "mapping(address => uint256)",
+      "numberOfBytes": "32",
+      "value": "t_uint256"
+    },
+    "t_mapping(t_address,t_uint64)": {
+      "encoding": "mapping",
+      "key": "t_address",
+      "label": "mapping(address => uint64)",
+      "numberOfBytes": "32",
+      "value": "t_uint64"
+    },
+    "t_mapping(t_address,t_uint8)": {
+      "encoding": "mapping",
+      "key": "t_address",
+      "label": "mapping(address => uint8)",
+      "numberOfBytes": "32",
+      "value": "t_uint8"
+    },
+    "t_mapping(t_bytes32,t_struct(RoleData)19_storage)": {
+      "encoding": "mapping",
+      "key": "t_bytes32",
+      "label": "mapping(bytes32 => struct AccessControl.RoleData)",
+      "numberOfBytes": "32",
+      "value": "t_struct(RoleData)19_storage"
+    },
+    "t_struct(RoleData)19_storage": {
+      "encoding": "inplace",
+      "label": "struct AccessControl.RoleData",
+      "numberOfBytes": "64",
+      "members": [
+        {
+          "astId": 16,
+          "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+          "label": "members",
+          "offset": 0,
+          "slot": "0",
+          "type": "t_mapping(t_address,t_bool)"
+        },
+        {
+          "astId": 18,
+          "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+          "label": "adminRole",
+          "offset": 0,
+          "slot": "1",
+          "type": "t_bytes32"
+        }
+      ]
+    },
+    "t_struct(SafetyFallback)3629_storage": {
+      "encoding": "inplace",
+      "label": "struct StrategyStorageLayout.SafetyFallback",
+      "numberOfBytes": "32",
+      "members": [
+        {
+          "astId": 3626,
+          "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+          "label": "absCapBps",
+          "offset": 0,
+          "slot": "0",
+          "type": "t_uint16"
+        },
+        {
+          "astId": 3628,
+          "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+          "label": "relCapBps",
+          "offset": 2,
+          "slot": "0",
+          "type": "t_uint16"
+        }
+      ]
+    },
+    "t_uint128": {
+      "encoding": "inplace",
+      "label": "uint128",
+      "numberOfBytes": "16"
+    },
+    "t_uint16": {
+      "encoding": "inplace",
+      "label": "uint16",
+      "numberOfBytes": "2"
+    },
+    "t_uint256": {
+      "encoding": "inplace",
+      "label": "uint256",
+      "numberOfBytes": "32"
+    },
+    "t_uint32": {
+      "encoding": "inplace",
+      "label": "uint32",
+      "numberOfBytes": "4"
+    },
+    "t_uint64": {
+      "encoding": "inplace",
+      "label": "uint64",
+      "numberOfBytes": "8"
+    },
+    "t_uint8": {
+      "encoding": "inplace",
+      "label": "uint8",
+      "numberOfBytes": "1"
+    }
+  }
+}
