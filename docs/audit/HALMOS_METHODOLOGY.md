@@ -100,10 +100,41 @@ jq '.proofs[] | select(.status != "PASS")' \
 
 ## Slowest checks
 
-| Check | Time (s) | Why |
-|-------|----------|-----|
-| check_P3a_mandate_monotone_fb7500_n6000_tol0 | 15.82 | largest asymmetric spread with non-trivial integer remainder |
-| check_P3b_safety_fire_implies_normal_fire_fb7500_n6000_tol0 | 14.98 | same arithmetic + curr branch |
-| check_P3a_mandate_monotone_fb6000_n4000_tol500 | 12.54 | mid-range with non-zero tol |
+| Check | V9.x (s) | V10 (s) | Why |
+|-------|----------|---------|-----|
+| check_P3a_mandate_monotone_fb7500_n6000_tol0 | 15.82 | 15.56 | largest asymmetric spread with non-trivial integer remainder |
+| check_P3b_safety_fire_implies_normal_fire_fb7500_n6000_tol0 | 14.98 | 15.74 | same arithmetic + curr branch |
+| check_P3a_mandate_monotone_fb6000_n4000_tol500 | 12.54 | 12.80 | mid-range with non-zero tol |
 
 All within the 60s solver timeout with 4x headroom on the worst case.
+
+---
+
+## V10.0 storage+initialize impact (additional)
+
+V10.0 refactor replaced constructor-immutable adapter addresses with storage-initialized
+addresses (`initialize()` guarded by OZ `Initializable`).
+
+**Impact on symbolic verification: NONE.**
+
+`HalmosSafetyAdapterCapTier.t.sol` contains 23 `check_*` functions all marked `public pure`.
+They mirror production code with pure arithmetic helper functions (`_fbCeiling`,
+`_mandateAbsHard`) — no adapter contracts instantiated, no storage reads, no setUp().
+The V10 change from immutable to storage is invisible to these proofs.
+
+**V10 re-run result (2026-06-15):** 23/23 PASS, 103.44s total, worst 15.74s.
+Delta vs V9.x baseline: +0.9% total, ±5% on multi-second proofs (solver noise).
+No divergent proofs, no timeouts.
+
+**V10StoragePins helper** (`test/strategies/usdc-lending/halmos/helpers/V10StoragePins.sol`)
+was written as infrastructure for future adapter-touching Halmos tests. Slot numbers
+verified via `forge inspect`: slot 2 is PACKED (`_initialized` u8 + `_initializing` bool
++ first address, offset 2), requiring `bytes32((uint256(uint160(addr)) << 16) | 1)`.
+
+**Compile note:** halmos 0.2.0 runs `forge build --ast` internally. The project requires
+`via_ir = true` (QueueModule.sol stack depth). First halmos run recompiles 186 files
+(~815s). A `[profile.halmos]` section in `foundry.toml` with `out = "out"` shares the
+default profile artifact cache, so subsequent runs skip recompilation.
+
+Evidence: `test/strategies/usdc-lending/halmos/results/halmos-evidence.json` (updated),
+`test/strategies/usdc-lending/halmos/results/HALMOS_V10_DIFF.md`.
