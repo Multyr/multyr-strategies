@@ -1,0 +1,43 @@
+Echidna Smoke Run V10 — 50k sequences
+Date: 2026-06-15
+Duration: ~16 seconds
+Seed: 7378010736652157645
+Workers: 4
+Config: echidna-smoke.yaml (testLimit=50000, seqLen=100, shrinkLimit=5000)
+
+=== INVARIANT RESULTS ===
+echidna_I01_normal_uses_normal_ceiling: passing
+echidna_I02_safety_below_fb_no_mandate: passing
+echidna_I03a_hard_ceiling_ge_fb_ceiling: passing
+echidna_I03b_overflow_within_hard_ceiling_at_deposit: passing
+echidna_I03c_above_hard_implies_above_soft: passing
+echidna_I04a_overflow_respects_ceiling_at_deposit: passing
+echidna_I04b_post_mandate_within_soft_ceiling: passing
+echidna_I05_overflow_no_overdraft: passing
+echidna_I06_accounting_conserved: passing
+echidna_I07_fbCeiling_le_abs_constituent: passing
+echidna_I08_fbCeiling_le_rel_constituent_when_active: passing
+echidna_I09_fbCeiling_le_govbound: passing
+echidna_I10_preserve_safety_tranche_no_unwind: passing
+echidna_I11_mandate_ceiling_monotone: passing
+echidna_I12_safety_disabled_equals_legacy: passing
+
+Total: 15/15 PASS
+
+=== COVERAGE ===
+Unique instructions: 1755
+Unique codehashes: 1
+Corpus size: 20
+Total calls: 50094
+
+=== COMPARISON vs V9.x ===
+V9.x smoke baseline (results/S22_smoke_final.txt): not present in repo
+(V9.x runs were performed pre-git-tracking; current corpus loaded 39 prior sequences)
+Invariant results: identical (15/15 PASS, 0 counter-examples)
+
+=== COUNTER-EXAMPLES ===
+None found.
+
+=== STATUS ===
+PASS — ready for P6-03 baseline 1M run.
+Full run log: outputs/V10_P6_02_smoke_run.txt (gitignored)
