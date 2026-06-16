@@ -1,9 +1,10 @@
 # P0.7 Coverage Breakdown — Deliverable E.7
 
-**Date:** 2026-06-12  
-**Branch:** feature/p0.7-safety-adapter-tier  
-**Tool:** `forge coverage --ir-minimum --no-match-coverage "QueueModule" --report lcov`  
-**Fork block:** 472761449 (Arbitrum mainnet)
+**Date:** 2026-06-16  
+**Branch:** feature/v10.0-storage-initialize  
+**Tool:** `forge coverage --ir-minimum --no-match-coverage "(StrategyExplainabilityLens|QueueModule)" --report lcov`  
+**Fork block:** 472761449 (Arbitrum mainnet)  
+**Note:** V10 refactor adds 45 storage layout tests (StorageLayoutV10Adapters.t.sol) — test-side only, no src coverage delta.
 
 ---
 
