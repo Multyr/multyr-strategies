@@ -32,7 +32,15 @@ outputs/
 
 # Private audit delivery packages (delivered via secure channel, never in public repo)
 audit_p07_v*/
+audit_p07_v*-*.zip
+audit_p07_v*-*.sha256
 evidence/
+
+# Echidna corpus (generated, not committed selectively)
+test/strategies/usdc-lending/echidna/corpus/
+
+# Misnamed scripts/ dir (canonical dir is script/)
+scripts/
 
 # Top-level coverage build artifacts (root only, not docs/coverage/)
 /coverage/
