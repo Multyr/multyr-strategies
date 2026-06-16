@@ -279,6 +279,6 @@ forge test --match-contract 'CapDrift_D1f|SafetyAdapterCapTier' -vv
 ## 10. References
 
 - Branch `feature/p0.7-safety-adapter-tier`, commits `8e846a9..e60d873`.
-- Backtest harness: `multyr/vault-usdc2-brain` repo, `iter-3b` sweep summary.
+- Backtest harness: internal simulation suite, `iter-3b` sweep summary.
 - Related: `docs/audit-scope.md`, `docs/threat-model.md`,
   `docs/GOVERNANCE_POLICY_TRACK.md` (GP-10).

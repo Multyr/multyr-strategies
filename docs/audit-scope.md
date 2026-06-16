@@ -1,7 +1,7 @@
 # USDC Lending Strategy — Audit Scope
 
 **Version**: 1.0.0 — code-first, audit-grade citations
-**Repository**: `vault-usdc2` → target `Multyr/multyr-strategies` (public, BUSL-1.1)
+**Repository**: `Multyr/multyr-strategies` (public, BUSL-1.1)
 **Commit**: b15aeb63
 
 ---

@@ -34,7 +34,7 @@
 | I11_mandate_ceiling_monotone | PASS |
 | I12_safety_disabled_equals_legacy | PASS |
 
-Note: V9.x Cowork prompt referenced "12/12 invariants". Harness actually has 15
+Note: V9.x specification referenced "12/12 invariants". Harness actually has 15
 (I03 and I04 each have sub-variants a/b/c and a/b respectively).
 
 ## Comparison vs V9.x baseline

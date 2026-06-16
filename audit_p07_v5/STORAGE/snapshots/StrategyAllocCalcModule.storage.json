@@ -1,5 +1,0 @@
-{
-  "_note": "StrategyAllocCalcModule inherits all storage from StrategyStorageLayout (controllers) or AccessControl (AdapterFactory). No independent state variables declared. Authoritative layout: StrategyStorageLayout.storage.json",
-  "storage": [],
-  "types": {}
-}

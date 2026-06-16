@@ -6,7 +6,7 @@ Evidence: 	est/strategies/usdc-lending/halmos/results/halmos-evidence.json
 
 ## Commit 2 setUp analysis — MOOT
 
-The Cowork Phase 3 prompt anticipated a setUp() refactor for HalmosSafetyAdapterCapTier.t.sol
+The V10 Phase 3 specification anticipated a setUp() refactor for HalmosSafetyAdapterCapTier.t.sol
 to pin adapter storage slots via m.store(). After reading the file:
 
 - All 23 check_* functions are public pure — pure arithmetic, no state reads.

@@ -23,7 +23,7 @@ rebalancing system.
 
 Each strategy published in this repository has completed internal pre-audit hardening before
 promotion. Strategies in development (Multiply, PT-Multiply) are kept in
-`multyr-strategies-dev` (private) until they reach the same standard (ADR-003). Publishing
+private development repositories until they reach the same standard (ADR-003). Publishing
 a strategy here is the promotion event; the public git history starts at the first clean
 commit.
 
@@ -394,7 +394,7 @@ available under the **MIT License** — see
 
 See [`CONTRIBUTING.md`](CONTRIBUTING.md). This repository contains only strategies that
 have completed internal pre-audit hardening. Development work on new or in-progress
-strategies belongs in `multyr-strategies-dev` (private).
+strategies belongs in private development repositories.
 
 ---
 

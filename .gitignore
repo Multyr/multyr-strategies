@@ -27,8 +27,15 @@ node_modules/
 # Forge coverage
 lcov.info
 
-# Working outputs (test captures, result reports — evidence lives in audit_p07_v4/)
+# Working outputs (test captures, result reports)
 outputs/
+
+# Private audit delivery packages (delivered via secure channel, never in public repo)
+audit_p07_v*/
+evidence/
+
+# Top-level coverage build artifacts (root only, not docs/coverage/)
+/coverage/
 
 # Foundry extras
 crytic-export/

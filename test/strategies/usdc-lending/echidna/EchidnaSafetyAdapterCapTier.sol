@@ -18,7 +18,7 @@ pragma solidity ^0.8.28;
 //   min(absCapBps*tvl/BPS, relCapBps*extTVL/BPS) [if relCapBps>0].
 // Normal adapters are capped by normalAbsCapBps (the shared adapterMaxExposureBps).
 //
-// GOVERNANCE SEMANTIC A (from Cowork S2.2 triage):
+// GOVERNANCE SEMANTIC A (cap reduction semantics):
 //   Cap reduction via governance CAN leave existing position above new soft cap.
 //   The protocol does NOT revert the setter; instead, the next mandate check fires.
 //   Invariants I03c and I04b explicitly cover this scenario.

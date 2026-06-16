@@ -1,7 +1,0 @@
-testLimit: 1000000
-seqLen: 200
-shrinkLimit: 20000
-corpusDir: "test/strategies/usdc-lending/echidna/corpus"
-coverage: true
-format: "text"
-workers: 8

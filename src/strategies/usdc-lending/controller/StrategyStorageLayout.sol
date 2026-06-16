@@ -378,7 +378,7 @@ contract StrategyStorageLayout is AccessControl, Pausable, ReentrancyGuard {
     // =======================================================================
 
     // === P0.7 — Safety Adapter Cap Tier (2026-06-11) ========================
-    // Pierre architectural design. Audit ref: docs/SAFETY_ADAPTER_TIER.md
+    // P0.7 safety cap tier architecture. Audit ref: docs/SAFETY_ADAPTER_TIER.md
     //
     // This is a SECOND, governance-approved cap layer for adapters explicitly
     // designated as liquidity-parking venues (e.g. Aave). NOT a cap bypass:
