@@ -378,8 +378,9 @@ targetSafetyMarginBps          = 300     (3%)
 safetyFallbackAdapters         = [Aave V3 5000/5000, Compound III 4000/4000]
 ```
 
-Backtest results: TWR 6.246% annualised (USD), Sharpe 1.91, MDD -0.14%,
+Backtest results: TWR 6.24% annualised (USD), Sharpe 1.62 (USD), MDD -0.14%,
 424 rebalances of which 98.6% mandate-driven (risk discipline).
+Production validation window: 2024-01-01 to 2026-05-31 (882 days, PRODUCTION_VALIDATION_FINAL.csv).
 Sensitivity analysis across cooldown {3,5,7,10,14}d, capDrift {150-1000}bps,
 and Dolomite cap variants documented in the pre-submission package
 (available via security@multyr.fi).
