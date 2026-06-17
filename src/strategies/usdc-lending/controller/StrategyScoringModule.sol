@@ -321,9 +321,9 @@ contract StrategyScoringModule is StrategyStorageLayout {
     /// @notice Count adapters that are enabled, not quarantined, and minimally liquid.
     /// @dev    Uses cachedLiquidityBps (poked by keeper) — stale = conservative (under-counts eligible).
     function _countEligibleAdapters() internal view returns (uint16 count) {
-        address[] memory enabled = _enabledAdapters();
-        for (uint256 i = 0; i < enabled.length; ) {
-            address a = enabled[i];
+        address[] memory enabledList = _enabledAdapters();
+        for (uint256 i = 0; i < enabledList.length; ) {
+            address a = enabledList[i];
             if (!quarantined[a] && cachedLiquidityBps[a] >= MIN_LIQ_BPS_FOR_ELIGIBILITY) {
                 unchecked { ++count; }
             }
@@ -334,8 +334,8 @@ contract StrategyScoringModule is StrategyStorageLayout {
     /// @notice Three-trigger degraded mode check per docs/TIER_MODEL.md Section 7.
     /// @dev    Triggers: MAJORITY_INELIGIBLE, FAILURE_VELOCITY, EXT_TVL_PANIC (Phase 1.5).
     function _isDegradedMode() internal view returns (bool, string memory) {
-        address[] memory enabled = _enabledAdapters();
-        uint16 enabledCount = uint16(enabled.length);
+        address[] memory enabledList = _enabledAdapters();
+        uint16 enabledCount = uint16(enabledList.length);
         if (enabledCount == 0) return (false, "");
 
         uint16 eligibleCount = _countEligibleAdapters();
@@ -344,8 +344,8 @@ contract StrategyScoringModule is StrategyStorageLayout {
         }
 
         uint16 recentFailures = 0;
-        for (uint256 i = 0; i < enabled.length; ) {
-            uint64 lastFail = adapterLastFailureTs[enabled[i]];
+        for (uint256 i = 0; i < enabledList.length; ) {
+                uint64 lastFail = adapterLastFailureTs[enabledList[i]];
             if (lastFail > 0 && block.timestamp - lastFail < FAILURE_VELOCITY_WINDOW) {
                 unchecked { ++recentFailures; }
             }
@@ -355,9 +355,9 @@ contract StrategyScoringModule is StrategyStorageLayout {
             return (true, "FAILURE_VELOCITY");
         }
         // Trigger 3: EXT_TVL_PANIC — 30% drop in external TVL within 1-hour window.
-        for (uint256 i = 0; i < enabled.length; ) {
-            address a = enabled[i];
-            uint256 snapshot = lastExtTVLSnapshot[a];
+        for (uint256 i = 0; i < enabledList.length; ) {
+                address a = enabledList[i];
+                uint256 snapshot = lastExtTVLSnapshot[a];
             uint256 current  = cachedExternalTVL[a];
             if (snapshot > 0 && current < snapshot) {
                 uint256 dropBps = ((snapshot - current) * 10_000) / snapshot;
@@ -532,9 +532,9 @@ contract StrategyScoringModule is StrategyStorageLayout {
     // Emits AdapterSkippedLowConfidence for enabled adapters excluded from the plan
     // due to CONFIDENCE_ZERO. AllocCalcModule is view-only and cannot emit events.
     function _emitLowConfidenceSkips(address[] memory selected, uint256 selCount) internal {
-        address[] memory enabled = _enabledAdapters();
-        for (uint256 i = 0; i < enabled.length;) {
-            address a = enabled[i];
+        address[] memory enabledList = _enabledAdapters();
+        for (uint256 i = 0; i < enabledList.length;) {
+            address a = enabledList[i];
             bool inPlan = false;
             for (uint256 j = 0; j < selCount;) {
                 if (selected[j] == a) { inPlan = true; break; }
