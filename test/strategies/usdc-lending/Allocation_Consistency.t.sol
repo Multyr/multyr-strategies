@@ -198,7 +198,7 @@ contract Allocation_Consistency is Test {
     function _setMaxExposure(uint16 bps) internal {
         vm.prank(admin);
         StrategySettingsModule(address(vault)).setRebalanceParams(
-            5, 2, 50, 21600, 80, bps, 8000
+            5, 2, 50, 21600, 80, bps, 5000
         );
     }
 

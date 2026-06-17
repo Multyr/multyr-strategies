@@ -1122,13 +1122,13 @@ contract LensInternalsTest is Scoring_Model {
         _addAndEnable(adapterA);
         _addAndEnable(adapterB);
 
-        // Set global ceiling to 50% (5000 bps) — tighter than the ramp limit (80%).
-        // At T2+, this would cap posA at 50% of TVL. At T1, effectiveAbsCapBps
+        // Set global ceiling to 30% (3000 bps) — tighter than the ramp limit (50%).
+        // At T2+, this would cap posA at 30% of TVL. At T1, effectiveAbsCapBps
         // short-circuits to 10000 (100%), so the ceiling is never applied.
-        // With ramp=8000 (80%), posA = 800 USDC. Ceiling of 50% would give 500 USDC.
-        // posA=800 > 500 proves the T1 short-circuit bypassed the global ceiling.
+        // With ramp=5000 (50%), posA = 500 USDC. Ceiling of 30% would give 300 USDC.
+        // posA=500 > 300 proves the T1 short-circuit bypassed the global ceiling.
         vm.prank(admin);
-        StrategySettingsModule(address(vault)).setRebalanceParams(5, 2, 50, 21600, 80, 5000, 8000);
+        StrategySettingsModule(address(vault)).setRebalanceParams(5, 2, 50, 21600, 80, 3000, 5000);
 
         // maxIdleAfterDepositBps raised to 100% — ramp leaves ~20% idle, which is expected
         vm.prank(admin);
@@ -1140,8 +1140,8 @@ contract LensInternalsTest is Scoring_Model {
         uint256 posA = vault.positionAssets(address(adapterA));
         uint256 posB = vault.positionAssets(address(adapterB));
 
-        // posA=800 (ramp-limited at 80%) > 500 (ceiling at 50%) — T1 bypasses global ceiling
-        assertGt(posA, 500e6, "T1: posA exceeds 50%-ceiling - global ceiling bypassed at T1");
+        // posA=500 (ramp-limited at 50%) > 300 (ceiling at 30%) — T1 bypasses global ceiling
+        assertGt(posA, 300e6, "T1: posA exceeds 30%-ceiling - global ceiling bypassed at T1");
 
         // adapter B not selected (dMax=1 — single-adapter mode)
         assertEq(posB, 0, "T1: only top adapter selected");

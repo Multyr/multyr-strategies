@@ -96,7 +96,7 @@ contract IdleConvergence is UsdcMultiLendingVaultTestBase {
         // Set low maxExposure to force caps
         vm.prank(admin);
         StrategySettingsModule(address(vault)).setRebalanceParams(
-            5, 2, 50, 21600, 80, 2500, 8000 // maxExposureBps=25%
+            5, 2, 50, 21600, 80, 2500, 5000 // maxExposureBps=25%
         );
 
         _mintAndTransferToVault(core, 1_000_000e6);

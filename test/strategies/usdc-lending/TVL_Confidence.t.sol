@@ -385,7 +385,7 @@ contract TVL_Confidence is Test {
         // Lower maxExposure to 40% so 3 adapters can all get allocation
         vm.prank(admin);
         StrategySettingsModule(address(vault)).setRebalanceParams(
-            5, 2, 50, 21600, 80, 4000, 8000
+            5, 2, 50, 21600, 80, 4000, 5000
         );
 
         _addAndEnable(adapterBig);   // 50M

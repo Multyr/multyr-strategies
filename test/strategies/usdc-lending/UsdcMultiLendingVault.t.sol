@@ -919,7 +919,7 @@ contract UsdcMultiLendingVault_ParamSetters_Test is UsdcMultiLendingVaultTestBas
 
     function test_setRebalanceParams_updates_values() public {
         vm.prank(paramSetter);
-        StrategySettingsModule(address(vault)).setRebalanceParams(4, 3, 100, 43200, 100, 6000, 600);
+        StrategySettingsModule(address(vault)).setRebalanceParams(4, 3, 100, 43200, 100, 5000, 600);
 
         assertEq(vault.maxAdaptersPerAllocation(), 4);
         assertEq(vault.minAdaptersActive(), 3);
@@ -937,6 +937,31 @@ contract UsdcMultiLendingVault_ParamSetters_Test is UsdcMultiLendingVaultTestBas
         vm.expectRevert(MinAdaptersTooLow.selector);
         vm.prank(paramSetter);
         StrategySettingsModule(address(vault)).setRebalanceParams(1, 2, 50, 21600, 80, 5000, 500);
+    }
+
+    // C-03: bounds on previously-unbounded params
+    function test_setRebalanceParams_reverts_driftTolerance_too_high() public {
+        vm.expectRevert(ParamOutOfRange.selector);
+        vm.prank(paramSetter);
+        StrategySettingsModule(address(vault)).setRebalanceParams(3, 2, 50, 21600, 2001, 5000, 500);
+    }
+
+    function test_setRebalanceParams_reverts_adapterMaxExposure_too_high() public {
+        vm.expectRevert(ParamOutOfRange.selector);
+        vm.prank(paramSetter);
+        StrategySettingsModule(address(vault)).setRebalanceParams(3, 2, 50, 21600, 80, 5001, 500);
+    }
+
+    function test_setRebalanceParams_reverts_newAdapterRamp_too_high() public {
+        vm.expectRevert(ParamOutOfRange.selector);
+        vm.prank(paramSetter);
+        StrategySettingsModule(address(vault)).setRebalanceParams(3, 2, 50, 21600, 80, 5000, 5001);
+    }
+
+    function test_setRebalanceParams_reverts_rebalanceMinMove_too_high() public {
+        vm.expectRevert(ParamOutOfRange.selector);
+        vm.prank(paramSetter);
+        StrategySettingsModule(address(vault)).setRebalanceParams(3, 2, 5001, 21600, 80, 5000, 500);
     }
 
     function test_setHarvestParams_updates_values() public {

@@ -120,7 +120,7 @@ contract CTO_DynamicAdapterCount is UsdcMultiLendingVaultTestBase {
         // Lower maxExposure to 25% so 5 adapters can all fit
         vm.prank(admin);
         StrategySettingsModule(address(vault)).setRebalanceParams(
-            5, 2, 50, 21600, 80, 2500, 8000 // maxExposureBps=2500 (25%)
+            5, 2, 50, 21600, 80, 2500, 5000 // maxExposureBps=2500 (25%)
         );
 
         _mintAndTransferToVault(core, 10_000_000e6);

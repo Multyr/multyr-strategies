@@ -121,6 +121,11 @@ contract StrategySettingsModule is StrategyStorageLayout {
         if (_maxAdaptersPerAllocation < 2) revert MinAdaptersTooLow();
         if (_minAdaptersActive < 2) revert MinAdaptersTooLow();
         if (!(_minSecondsBetweenRebalances >= 3600 && _minSecondsBetweenRebalances <= 604800)) revert ParamOutOfRange(); // "range: 1h-7d"
+        // C-03: bounds on previously-unbounded params (P0.7 mandate-gate integrity).
+        if (_driftToleranceBps > 2000) revert ParamOutOfRange();                                       // max 20%
+        if (_adapterMaxExposureBps > 5000) revert ParamOutOfRange();                                     // max 50% (0 = disabled/no ceiling)
+        if (_newAdapterRampBps > 5000) revert ParamOutOfRange();                                       // max 50%
+        if (_rebalanceMinMoveBps > 5000) revert ParamOutOfRange();                                     // max 50%
         maxAdaptersPerAllocation = _maxAdaptersPerAllocation;
         minAdaptersActive = _minAdaptersActive;
         rebalanceMinMoveBps = _rebalanceMinMoveBps;
