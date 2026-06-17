@@ -68,8 +68,10 @@ contract V92_SafetyTierE2E is Test {
     // ── setUp: S01 fork + deploy, S02 configure safety tier ───────────────────
 
     function setUp() public {
-        // S01: Fork Arbitrum mainnet at pinned block — exercises real USDC ERC-20.
-        vm.createSelectFork(vm.envString("ARBITRUM_RPC_URL"), FORK_BLOCK);
+        // S01: Skip gracefully if no RPC URL configured (e.g., in CI without secret).
+        string memory rpc = vm.envOr("ARBITRUM_RPC_URL", string(""));
+        if (bytes(rpc).length == 0) { vm.skip(true); return; }
+        vm.createSelectFork(rpc, FORK_BLOCK);
 
         // S01: Deploy mock adapters referencing real USDC token address.
         adapterA = new ScoringMockAdapter(ARBITRUM_USDC);

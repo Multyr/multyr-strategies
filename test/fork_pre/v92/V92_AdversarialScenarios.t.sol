@@ -75,7 +75,10 @@ contract V92_AdversarialScenarios is Test {
     ScoringMockAdapter    internal adapterC;
 
     function setUp() public {
-        vm.createSelectFork(vm.envString("ARBITRUM_RPC_URL"), FORK_BLOCK);
+        // Skip gracefully if no RPC URL configured (e.g., in CI without secret).
+        string memory rpc = vm.envOr("ARBITRUM_RPC_URL", string(""));
+        if (bytes(rpc).length == 0) { vm.skip(true); return; }
+        vm.createSelectFork(rpc, FORK_BLOCK);
 
         adapterA = new ScoringMockAdapter(ARBITRUM_USDC);
         adapterB = new ScoringMockAdapter(ARBITRUM_USDC);
