@@ -218,9 +218,11 @@ contract AaveV3USDCAdapter is ILendingAdapter, AccessControl, ReentrancyGuard, I
     }
 
     function withdrawableAssets() public view override returns (uint256) {
-        // Conservative: min(aToken balance, pool liquidity)
+        // Conservative: min(aToken balance, pool liquidity).
+        // In Aave V3, USDC is held by the aToken contract (not the Pool proxy),
+        // so liquidity must be checked against aToken's underlying balance.
         uint256 bal = IAToken(aToken).balanceOf(address(this));
-        uint256 liq = IERC20(asset).balanceOf(address(pool));
+        uint256 liq = IERC20(asset).balanceOf(aToken);
         return bal < liq ? bal : liq;
     }
 

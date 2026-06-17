@@ -77,6 +77,12 @@ contract MockAToken {
         balanceOf[from] -= amount;
         _supply -= amount;
     }
+
+    // Transfer USDC held by this aToken contract to a recipient (called by pool on withdraw).
+    // In real Aave V3, aToken holds the underlying and releases it during pool.withdraw().
+    function transferUsdcTo(address to, uint256 amount) external {
+        MockUSDCAave(underlyingAsset).transfer(to, amount);
+    }
 }
 
 /// @dev Mock Aave V3 Pool — controllable rate + cash + revert flag for getReserveData
@@ -96,8 +102,8 @@ contract MockAavePool {
 
     function supply(address _asset, uint256 amount, address onBehalfOf, uint16 /*ref*/) external {
         require(_asset == asset, "wrong asset");
-        // pull underlying from msg.sender (adapter)
-        MockUSDCAave(asset).transferFrom(msg.sender, address(this), amount);
+        // pull underlying from msg.sender (adapter) → route to aToken (mirrors real Aave V3)
+        MockUSDCAave(asset).transferFrom(msg.sender, aToken, amount);
         // mint aToken 1:1 to onBehalfOf
         MockAToken(aToken).poolMint(onBehalfOf, amount);
     }
@@ -108,7 +114,7 @@ contract MockAavePool {
         uint256 actualAmount = amount;
         // Aave cap: cannot exceed aToken bal. We assume amount valid (test controls).
         MockAToken(aToken).poolBurn(msg.sender, actualAmount);
-        MockUSDCAave(asset).transfer(to, actualAmount);
+        MockAToken(aToken).transferUsdcTo(to, actualAmount); // aToken holds USDC in real Aave V3
         return actualAmount;
     }
 
@@ -303,10 +309,10 @@ contract AaveV3USDCAdapterTest is Test {
 
     function test_withdrawableAssets_boundedByPoolLiquidity() public {
         _deposit(1000e6);
-        // pool has 1000e6 USDC after deposit; aToken bal = 1000e6
-        // simulate pool drain: send some USDC out of pool
-        vm.prank(address(pool));
-        usdc.transfer(alice, 700e6); // pool now has 300e6
+        // aToken holds 1000e6 USDC after deposit (real Aave V3 behavior modeled by mock)
+        // simulate aToken drain: send some USDC out of aToken
+        vm.prank(address(aToken));
+        usdc.transfer(alice, 700e6); // aToken now has 300e6
         assertEq(adapter.withdrawableAssets(), 300e6);
     }
 
@@ -324,7 +330,7 @@ contract AaveV3USDCAdapterTest is Test {
         _deposit(1000e6);
         assertEq(usdc.balanceOf(vault), 0);
         assertEq(adapter.investedAssets(), 1000e6);
-        assertEq(usdc.balanceOf(address(pool)), 1000e6);
+        assertEq(usdc.balanceOf(address(aToken)), 1000e6); // aToken holds USDC (not pool proxy)
     }
 
     function test_deposit_revertsOnZeroAmount() public {
@@ -385,8 +391,8 @@ contract AaveV3USDCAdapterTest is Test {
 
     function test_withdraw_clampedByPoolLiquidity() public {
         _deposit(1000e6);
-        // drain pool to 200e6
-        vm.prank(address(pool));
+        // drain aToken to 200e6 (aToken holds USDC in real Aave V3 / this mock)
+        vm.prank(address(aToken));
         usdc.transfer(alice, 800e6);
 
         vm.prank(vault);

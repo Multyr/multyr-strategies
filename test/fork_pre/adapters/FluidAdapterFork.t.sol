@@ -5,13 +5,10 @@ pragma solidity 0.8.28;
 // FluidAdapterFork.t.sol — Phase F1: Fluid adapter deposit + withdraw
 // ───────────────────────────────────────────────────────────────────────────
 // Fork: Arbitrum mainnet, block 472761449
-// Run: ARBITRUM_RPC_URL=<rpc> FLUID_FUSDC=<addr> \
-//        forge test --match-contract FluidAdapterFork -vvv
+// Run: ARBITRUM_RPC_URL=<rpc> forge test --match-contract FluidAdapterFork -vvv
 //
-// ADDRESS REQUIRED: FLUID_FUSDC env var must be set.
-// This is the Fluid fUSDC ERC-4626 vault on Arbitrum.
-// DefiLlama: fluid-lending USDC on Arbitrum, ~27M TVL (largest Fluid pool).
-// Enabled in backtest from 2024-10-15 — exists at block 472761449.
+// FLUID_FUSDC = 0x1A996cb54bb95462040408C06122D45D6Cdb6096 (from deploy config)
+// Fluid lending enabled from 2024-10-15 — confirmed present at block 472761449.
 //
 // F1-Fluid-1 — deposit 100K USDC into real Fluid fUSDC vault
 // F1-Fluid-2 — withdraw 50K USDC after deposit + 1-day warp
@@ -19,7 +16,7 @@ pragma solidity 0.8.28;
 
 import {ForkTestBase} from "../helpers/ForkTestBase.sol";
 import {FluidUsdcMultiMarketAdapter}
-    from "../../../../src/strategies/usdc-lending/adapters/lending/FluidUsdcMultiMarket.sol";
+    from "@multyr-strategies/strategies/usdc-lending/adapters/lending/FluidUsdcMultiMarket.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 interface IFluidVault {
@@ -32,21 +29,18 @@ contract FluidAdapterFork is ForkTestBase {
 
     FluidUsdcMultiMarketAdapter internal adapter;
 
-    address internal admin      = address(0xAD);
-    address internal vault      = address(this);
-    address internal fluidFusdc;
+    address internal admin = address(0xAD);
+    address internal vault = address(this);
 
     function setUp() public {
-        (, fluidFusdc) = _setupForkWithAddr("FLUID_FUSDC");
-        if (fluidFusdc == address(0)) return; // skipped by _setupForkWithAddr
+        _setupFork();
 
-        // Verify fToken asset is USDC before initializing
-        require(IFluidVault(fluidFusdc).asset() == USDC, "fToken.asset != USDC");
+        // Verify fToken is USDC (sanity check against chain state)
+        require(IFluidVault(FLUID_FUSDC).asset() == USDC, "fToken.asset != USDC");
 
-        // V10 deploy+init pattern: empty constructor + initialize
-        // Fluid initialize: (usdc_, admin_, vault_, capacity_, fToken_)
+        // V10 deploy+init: fToken passed directly as last arg (no registry needed)
         adapter = new FluidUsdcMultiMarketAdapter();
-        adapter.initialize(USDC, admin, vault, MAX_CAP, fluidFusdc);
+        adapter.initialize(USDC, admin, vault, MAX_CAP, FLUID_FUSDC);
 
         _dealUsdc(vault, SEED_USDC);
     }
@@ -57,13 +51,13 @@ contract FluidAdapterFork is ForkTestBase {
         uint256 depositAmt = 100_000e6;
 
         uint256 vaultUsdcBefore = IERC20(USDC).balanceOf(vault);
-        uint256 sharesBefore    = IFluidVault(fluidFusdc).balanceOf(address(adapter));
+        uint256 sharesBefore    = IFluidVault(FLUID_FUSDC).balanceOf(address(adapter));
 
         IERC20(USDC).approve(address(adapter), depositAmt);
         adapter.deposit(depositAmt);
 
         uint256 vaultUsdcAfter = IERC20(USDC).balanceOf(vault);
-        uint256 sharesAfter    = IFluidVault(fluidFusdc).balanceOf(address(adapter));
+        uint256 sharesAfter    = IFluidVault(FLUID_FUSDC).balanceOf(address(adapter));
 
         assertEq(vaultUsdcBefore - vaultUsdcAfter, depositAmt, "vault USDC decrease mismatch");
         assertGt(sharesAfter, sharesBefore, "fUSDC shares should increase after deposit");

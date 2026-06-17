@@ -14,7 +14,7 @@ pragma solidity 0.8.28;
 
 import {ForkTestBase} from "../helpers/ForkTestBase.sol";
 import {AaveV3USDCAdapter}
-    from "../../../../src/strategies/usdc-lending/adapters/lending/AaveV3USDCmarket.sol";
+    from "@multyr-strategies/strategies/usdc-lending/adapters/lending/AaveV3USDCmarket.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract AaveV3AdapterFork is ForkTestBase {

@@ -10,15 +10,33 @@ pragma solidity 0.8.28;
 // Verifies V10 deploy+init pattern against real Compound III USDC Comet:
 //   F1-Comet-1 — deposit 100K USDC → Comet balance increases correctly
 //   F1-Comet-2 — withdraw 50K USDC after deposit + 1-day warp → returns USDC
+//
+// NOTE: CometUsdcMultiMarketAdapter.initialize() requires mkts.length > 0.
+// Since no real registry exists in tests, we pass a MockCometRegistry that
+// returns COMET_USDC for getEnabledVaults(). The adapter loads it during init.
 // ═══════════════════════════════════════════════════════════════════════════
 
 import {ForkTestBase} from "../helpers/ForkTestBase.sol";
 import {CometUsdcMultiMarketAdapter}
-    from "../../../../src/strategies/usdc-lending/adapters/lending/CometUsdcMultiMarket.sol";
+    from "@multyr-strategies/strategies/usdc-lending/adapters/lending/CometUsdcMultiMarket.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 interface IComet {
     function balanceOf(address account) external view returns (uint256);
+}
+
+/// @dev Minimal registry stub: returns a single Comet market for COMPOUND_V3.
+/// The adapter calls getEnabledVaults(ProtocolType.COMPOUND_V3) where ProtocolType
+/// is an enum that maps to uint8. The mock accepts any uint8 and returns COMET_USDC.
+contract MockCometRegistry {
+    address private _market;
+
+    constructor(address market) { _market = market; }
+
+    function getEnabledVaults(uint8) external view returns (address[] memory vaults) {
+        vaults = new address[](1);
+        vaults[0] = _market;
+    }
 }
 
 contract CometAdapterFork is ForkTestBase {
@@ -31,14 +49,12 @@ contract CometAdapterFork is ForkTestBase {
     function setUp() public {
         _setupFork();
 
-        // V10 deploy+init pattern: empty constructor + initialize
-        // registry = address(0): markets added manually via addMarket()
-        adapter = new CometUsdcMultiMarketAdapter();
-        adapter.initialize(USDC, admin, vault, MAX_CAP, address(0));
+        // Deploy mock registry so initialize() passes the mkts.length > 0 require.
+        MockCometRegistry reg = new MockCometRegistry(COMET_USDC);
 
-        // Add the real Compound III USDC Comet as active market
-        vm.prank(admin);
-        adapter.addMarket(COMET_USDC);
+        // V10 deploy+init pattern: empty constructor + initialize (with registry)
+        adapter = new CometUsdcMultiMarketAdapter();
+        adapter.initialize(USDC, admin, vault, MAX_CAP, address(reg));
 
         // Seed vault (this contract) with USDC
         _dealUsdc(vault, SEED_USDC);
