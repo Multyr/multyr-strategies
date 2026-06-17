@@ -389,7 +389,7 @@ contract StrategyStorageLayout is AccessControl, Pausable, ReentrancyGuard {
     // Backtest validation: iter-3b (10-iteration sweep) — TWR USD 5.62% vs
     // Aave standalone 5.37% (+25 bps), Sharpe 0.729 vs Aave 0.33.
     //
-    // Slot packing: uint16 + uint16 + uint32 = 64 bits in one slot.
+    // Slot packing: capDriftToleranceBps(uint16,@0) + uint16 + uint16 + uint32 = 80 bits in slot 78.
     uint16 public maxIdleBps;                       // 0 = disabled, max 2000
     uint16 public targetSafetyMarginBps;            // 0 = disabled, max 2000
     uint32 public mandateRedeployCooldownSeconds;   // 0 = disabled, max 30 days
