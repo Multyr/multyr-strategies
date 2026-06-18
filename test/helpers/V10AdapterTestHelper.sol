@@ -98,10 +98,11 @@ abstract contract V10AdapterTestHelper {
         address admin_,
         address vault_,
         uint256 capacity_,
-        address vToken_
+        address vToken_,
+        uint256 blocksPerYear_
     ) internal returns (VenusUsdcMultiMarketAdapter adapter) {
         adapter = new VenusUsdcMultiMarketAdapter();
-        adapter.initialize(usdc_, admin_, vault_, capacity_, vToken_);
+        adapter.initialize(usdc_, admin_, vault_, capacity_, vToken_, blocksPerYear_);
     }
 
     function deployRewardSwapHelper(

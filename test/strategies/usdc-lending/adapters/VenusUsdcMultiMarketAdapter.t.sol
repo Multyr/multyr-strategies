@@ -155,7 +155,7 @@ contract VenusUsdcMultiMarketAdapterTest is Test {
         usdc = new MockUSDCVenus();
         vToken = new MockVToken(address(usdc));
         adapter = new VenusUsdcMultiMarketAdapter();
-        adapter.initialize(address(usdc), admin, vault, 0, address(vToken));
+        adapter.initialize(address(usdc), admin, vault, 0, address(vToken), 126_144_000);
     }
 
     // ═══════════════════════════════════════════════════════════════════════
@@ -180,7 +180,7 @@ contract VenusUsdcMultiMarketAdapterTest is Test {
     function test_constructor_succeedsOnArbitrum() public {
         vm.chainId(ARBITRUM_CHAIN_ID);
         VenusUsdcMultiMarketAdapter a = new VenusUsdcMultiMarketAdapter();
-        a.initialize(address(usdc), admin, vault, 100_000e6, address(vToken));
+        a.initialize(address(usdc), admin, vault, 100_000e6, address(vToken), 126_144_000);
         assertEq(a.underlying(), address(usdc));
         assertEq(a.vault(), vault);
         assertEq(a.vToken(), address(vToken));
@@ -190,25 +190,25 @@ contract VenusUsdcMultiMarketAdapterTest is Test {
     function test_constructor_revertsOnZeroAsset() public {
         VenusUsdcMultiMarketAdapter _tmp = new VenusUsdcMultiMarketAdapter();
         vm.expectRevert(bytes("zero"));
-        _tmp.initialize(address(0), admin, vault, 0, address(vToken));
+        _tmp.initialize(address(0), admin, vault, 0, address(vToken), 126_144_000);
     }
 
     function test_constructor_revertsOnZeroAdmin() public {
         VenusUsdcMultiMarketAdapter _tmp = new VenusUsdcMultiMarketAdapter();
         vm.expectRevert(bytes("zero"));
-        _tmp.initialize(address(usdc), address(0), vault, 0, address(vToken));
+        _tmp.initialize(address(usdc), address(0), vault, 0, address(vToken), 126_144_000);
     }
 
     function test_constructor_revertsOnZeroVault() public {
         VenusUsdcMultiMarketAdapter _tmp = new VenusUsdcMultiMarketAdapter();
         vm.expectRevert(bytes("zero"));
-        _tmp.initialize(address(usdc), admin, address(0), 0, address(vToken));
+        _tmp.initialize(address(usdc), admin, address(0), 0, address(vToken), 126_144_000);
     }
 
     function test_constructor_revertsOnZeroVToken() public {
         VenusUsdcMultiMarketAdapter _tmp = new VenusUsdcMultiMarketAdapter();
         vm.expectRevert(bytes("zero"));
-        _tmp.initialize(address(usdc), admin, vault, 0, address(0));
+        _tmp.initialize(address(usdc), admin, vault, 0, address(0), 126_144_000);
     }
 
     function test_constructor_revertsOnVTokenAssetMismatch() public {
@@ -216,7 +216,26 @@ contract VenusUsdcMultiMarketAdapterTest is Test {
         MockVToken mismatchVToken = new MockVToken(address(otherToken));
         VenusUsdcMultiMarketAdapter _tmp = new VenusUsdcMultiMarketAdapter();
         vm.expectRevert(bytes("vToken/asset mismatch"));
-        _tmp.initialize(address(usdc), admin, vault, 0, address(mismatchVToken));
+        _tmp.initialize(address(usdc), admin, vault, 0, address(mismatchVToken), 126_144_000);
+    }
+
+    // C-04: blocksPerYear bounds
+    function test_constructor_revertsOnZeroBlocksPerYear() public {
+        VenusUsdcMultiMarketAdapter _tmp = new VenusUsdcMultiMarketAdapter();
+        vm.expectRevert(bytes("blocksPerYear"));
+        _tmp.initialize(address(usdc), admin, vault, 0, address(vToken), 0);
+    }
+
+    function test_constructor_revertsOnBlocksPerYearTooHigh() public {
+        VenusUsdcMultiMarketAdapter _tmp = new VenusUsdcMultiMarketAdapter();
+        vm.expectRevert(bytes("blocksPerYear"));
+        _tmp.initialize(address(usdc), admin, vault, 0, address(vToken), 200_000_001);
+    }
+
+    function test_constructor_setsBlocksPerYear() public {
+        VenusUsdcMultiMarketAdapter _tmp = new VenusUsdcMultiMarketAdapter();
+        _tmp.initialize(address(usdc), admin, vault, 0, address(vToken), 15_768_000); // Optimism/Base
+        assertEq(_tmp.blocksPerYear(), 15_768_000);
     }
 
     // ═══════════════════════════════════════════════════════════════════════
@@ -334,7 +353,7 @@ contract VenusUsdcMultiMarketAdapterTest is Test {
     function test_deposit_respectsCapacity() public {
         // Redeploy with capacity 500
         adapter = new VenusUsdcMultiMarketAdapter();
-        adapter.initialize(address(usdc), admin, vault, 500e6, address(vToken));
+        adapter.initialize(address(usdc), admin, vault, 500e6, address(vToken), 126_144_000);
 
         usdc.mint(vault, 600e6);
         vm.startPrank(vault);

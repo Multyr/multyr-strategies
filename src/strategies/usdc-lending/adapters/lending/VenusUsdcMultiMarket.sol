@@ -67,12 +67,7 @@ contract VenusUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
     bytes32 public constant PARAM_ROLE = keccak256("PARAM_ROLE");
 
     // --- Constants ---
-    /// @dev Arbitrum ~0.25s blocks → 126,144,000 blocks/year
-    uint256 public constant BLOCKS_PER_YEAR = 126_144_000;
-
-    /// @dev Arbitrum One chain ID — guard contro deploy su altre chain (es. BNB
-    /// dove Venus ha block cadence ~3s, l'APY sarebbe over-reported di ~12×)
-    /// Quant audit P0.L4
+    /// @dev Arbitrum One chain ID (informational; chain guard removed in V10 for portability).
     uint256 public constant ARBITRUM_CHAIN_ID = 42161;
 
     // --- Immutable Storage ---
@@ -96,6 +91,10 @@ contract VenusUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
     /// @notice Haircut applied to realized reward APR. LOSS percentage in bps.
     ///         Default 7500 = 75% loss -> retain 25%. Range [0, 10000].
     uint16 public incentiveHaircutBps = 7500;
+
+    /// @notice Blocks per year for this chain, set at initialize(). Range (0, 200_000_000].
+    ///         Arbitrum: 126_144_000 (0.25s), Optimism/Base: 15_768_000 (2s), BNB: 10_512_000 (3s).
+    uint256 public blocksPerYear;
 
     // --- Events ---
     event Supplied(uint256 assets);
@@ -128,7 +127,8 @@ contract VenusUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
         address admin_,
         address vault_,
         uint256 capacity_,
-        address vToken_
+        address vToken_,
+        uint256 blocksPerYear_
     ) external initializer {
         require(
             usdc_ != address(0) && admin_ != address(0)
@@ -136,11 +136,13 @@ contract VenusUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
             "zero"
         );
         require(IVToken(vToken_).underlying() == usdc_, "vToken/asset mismatch");
+        require(blocksPerYear_ > 0 && blocksPerYear_ <= 200_000_000, "blocksPerYear");
 
         underlying = usdc_;
         vault = vault_;
         vToken = vToken_;
         capacity = capacity_;
+        blocksPerYear = blocksPerYear_;
 
         _grantRole(DEFAULT_ADMIN_ROLE, admin_);
         _grantRole(PARAM_ROLE, admin_);
@@ -266,10 +268,10 @@ contract VenusUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
     // ═══════════════════════════════════════════════════════════
 
     /// @notice APY from supplyRatePerBlock annualized (simple, not compound)
-    /// @dev rate * BLOCKS_PER_YEAR / 1e14 → bps
+    /// @dev rate * blocksPerYear / 1e14 → bps
     function currentAPYBps() external view override returns (uint16) {
         uint256 rate = IVToken(vToken).supplyRatePerBlock();
-        uint256 apyWad = rate * BLOCKS_PER_YEAR; // 1e18 scale
+        uint256 apyWad = rate * blocksPerYear; // 1e18 scale
         uint256 bps = apyWad / 1e14;             // 1e18 → 1e4 (bps)
         // casting to uint16 is safe because overflow is checked with ternary
         // forge-lint: disable-next-line(unsafe-typecast)

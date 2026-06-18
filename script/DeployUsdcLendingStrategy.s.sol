@@ -133,6 +133,8 @@ contract DeployUsdcLendingStrategy is Script {
     address constant DOLOMITE_dUSDC = 0x444868B6e8079ac2c55eea115250f92C2b2c4D14;
     address constant FLUID_FUSDC    = 0x1A996cb54bb95462040408C06122D45D6Cdb6096;
     address constant VENUS_VTOKEN   = 0x7D8609f8da70fF9027E9bc5229Af4F6727662707;
+    // Arbitrum: 0.25s blocks → 365.25d × 24h × 3600s / 0.25s = 126,144,000
+    uint256 constant VENUS_BLOCKS_PER_YEAR = 126_144_000;
 
     uint256 constant DEFAULT_ADAPTER_CAPACITY = 50_000_000e6; // 50M USDC
 
@@ -408,7 +410,7 @@ contract DeployUsdcLendingStrategy is Script {
 
         // 1.5.9 Venus
         VenusUsdcMultiMarketAdapter venus = new VenusUsdcMultiMarketAdapter();
-        venus.initialize(USDC, cfg.deployer, address(result.strategy), DEFAULT_ADAPTER_CAPACITY, VENUS_VTOKEN);
+        venus.initialize(USDC, cfg.deployer, address(result.strategy), DEFAULT_ADAPTER_CAPACITY, VENUS_VTOKEN, VENUS_BLOCKS_PER_YEAR);
         result.venusAdapter = address(venus);
         console.log("[1.5.9] VenusAdapter:", result.venusAdapter);
         console.log("  [OK] 7 lending adapters deployed");
