@@ -34,4 +34,4 @@ In `StrategyScoringModule._deployIdleToAdaptersInternal()` lines ~445-454:
 
 ---
 
-_Discovered: Wave 1 H-03 session | Status: pending separate task_
+_Discovered: Wave 1 H-03 session | Status: **RESOLVED** in commit `c15fd397` (F-SCORING-01 task)_

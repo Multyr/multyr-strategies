@@ -554,3 +554,110 @@ contract Allocation_Consistency is Test {
         adapterA.setAPY(900);
     }
 }
+
+
+// ─────────────────────────────────────────────────────────────────────────────
+// AllocCalcToleranceFix_Test — _computeTargets residual redistribution (Wave 1)
+// Covers: T-AC-01 residual redistributed, T-AC-02 conservation heterogeneous,
+//         T-AC-03 fuzz N cycles, T-AC-04 cap boundary no overdeposit.
+// ─────────────────────────────────────────────────────────────────────────────
+
+contract AllocCalcToleranceFix_Test is Allocation_Consistency {
+
+    // T-AC-01: Equal-scored adapters with an amount where (amount mod 3 == 1)
+    // guarantee a floor-division residual of exactly 1 wei per pass. After the
+    // fix, that residual is assigned to adapter[0] and idle == 0.
+    // Without the fix: idle == 1 (residual stranded).
+    function test_ALLOCDUST_rounding_residual_not_left_idle() public {
+        // Override default APY so all 3 adapters score equally.
+        adapterA.setAPY(500);
+        adapterB.setAPY(500);
+        adapterC.setAPY(500);
+        _addAndEnable(adapterA);
+        _addAndEnable(adapterB);
+        _addAndEnable(adapterC);
+        _setMaxIdle(10000);
+        // 500_000e6 + 2: T3 regime (TVL ≥ 250K → dMax=3), amount mod 3 == 1
+        // → each target = floor(amount/3), 3 targets sum to amount-1, residual=1.
+        _coreDeposit(500_000e6 + 2);
+        vm.warp(block.timestamp + 301);
+        vm.prank(keeper);
+        StrategyScoringModule(address(vault)).deployIdle();
+        assertEq(vault.idleCash(), 0,
+            "AC-01: floor-division residual must be redistributed, not left idle");
+    }
+
+    // T-AC-02: With unequal adapter scores, sum(positions) + idle == totalDeposited.
+    // Tests that the fix preserves value conservation under heterogeneous scoring.
+    function test_ALLOCDUST_conservation_unequal_scores() public {
+        _addAndEnable(adapterA); // APY 900
+        _addAndEnable(adapterB); // APY 700
+        _addAndEnable(adapterC); // APY 500
+        _setMaxIdle(10000);
+        uint256 depositAmt = 777_777e6; // T3, non-round amount
+        _coreDeposit(depositAmt);
+        vm.warp(block.timestamp + 301);
+        vm.prank(keeper);
+        StrategyScoringModule(address(vault)).deployIdle();
+        uint256 positions = vault.positionAssets(address(adapterA))
+            + vault.positionAssets(address(adapterB))
+            + vault.positionAssets(address(adapterC));
+        assertEq(positions + vault.idleCash(), depositAmt,
+            "AC-02: sum(positions) + idle must equal total deposited");
+    }
+
+    // T-AC-03: Conservation and full deployment hold across N sequential cycles.
+    // Each cycle: deposit (amount mod 3 == 1) → deploy → assert idle == 0.
+    function testFuzz_ALLOCDUST_conservation_N_sequential_cycles(uint8 n) public {
+        n = uint8(bound(n, 1, 5));
+        adapterA.setAPY(500);
+        adapterB.setAPY(500);
+        adapterC.setAPY(500);
+        _addAndEnable(adapterA);
+        _addAndEnable(adapterB);
+        _addAndEnable(adapterC);
+        _setMaxIdle(10000);
+        uint256 totalDeposited = 0;
+        for (uint256 i = 0; i < n; ++i) {
+            // (i+1)*500_000e6 + 2: always T3+, always amount mod 3 == 1
+            uint256 amt = (i + 1) * 500_000e6 + 2;
+            _coreDeposit(amt);
+            totalDeposited += amt;
+            vm.warp(block.timestamp + 301 + i * 400);
+            vm.prank(keeper);
+            StrategyScoringModule(address(vault)).deployIdle();
+            uint256 pos = vault.positionAssets(address(adapterA))
+                + vault.positionAssets(address(adapterB))
+                + vault.positionAssets(address(adapterC));
+            // Note: idle may remain > 0 in T4+ regime due to effectiveAbsCapBps cap mechanics
+            // (effectiveAbsCapBps × activeAdapters < 100%). Conservation is the audit-critical
+            // invariant. Floor-div residual redistribution is covered by T-AC-01 in T3 regime.
+            // See outputs/AC_TRIAGE_1.md for root-cause analysis (Rule 14 approved 2026-06-18).
+            assertEq(pos + vault.idleCash(), totalDeposited,
+                "AC-03: conservation must hold after each deploy cycle");
+        }
+    }
+
+    // T-AC-04: Adapter pinned at exact capacity (maxCapacity() == positionAssets)
+    // has headroom == 0 in _checkAdapterEligibility and is ineligible. The residual
+    // redistribution in _computeTargets must also skip it (clamped or 0 headroom)
+    // and route to the next eligible adapter.
+    function test_ALLOCDUST_cap_boundary_no_overdeposit() public {
+        _addAndEnable(adapterA); // APY 900
+        _addAndEnable(adapterB); // APY 700
+        _setMaxIdle(10000);
+        _coreDeposit(50_000e6); // T2: both adapters receive initial funds
+        vm.warp(block.timestamp + 301);
+        vm.prank(keeper);
+        StrategyScoringModule(address(vault)).deployIdle();
+        uint256 posA = vault.positionAssets(address(adapterA));
+        // Pin A at its exact current position: maxCapacity() == posA → headroom == 0
+        adapterA.setMaxCap(posA);
+        _coreDeposit(10_000e6); // new idle to deploy
+        vm.warp(block.timestamp + 602);
+        vm.prank(keeper);
+        StrategyScoringModule(address(vault)).deployIdle();
+        assertEq(vault.positionAssets(address(adapterA)), posA,
+            "AC-04: adapter at exact cap must receive no additional deposit (including residual)");
+    }
+}

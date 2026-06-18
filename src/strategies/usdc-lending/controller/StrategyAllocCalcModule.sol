@@ -444,6 +444,21 @@ contract StrategyAllocCalcModule is StrategyStorageLayout {
             }
             remaining -= distributed;
         }
+        // Residual redistribution: floor-division across selCount adapters leaves
+        // up to (selCount-1) wei unassigned per pass. After the 3-pass loop, if a
+        // sub-dust residual remains and an adapter still has headroom, assign it
+        // there rather than leaving it as idle. Prevents silent idle accumulation
+        // across repeated deployIdle calls (systematic drift).
+        if (remaining > 0 && remaining <= _dust) {
+            for (uint256 j = 0; j < selCount; ++j) {
+                if (clamped[j]) continue;
+                uint256 rem = headrooms[j] > targets[j] ? headrooms[j] - targets[j] : 0;
+                if (rem >= remaining) {
+                    targets[j] += remaining;
+                    break;
+                }
+            }
+        }
     }
 
     // ── Inlined cap/seed helpers (mirrors ScoringModule — same storage context) ─
