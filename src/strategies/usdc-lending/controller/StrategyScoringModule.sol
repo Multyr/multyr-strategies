@@ -446,11 +446,23 @@ contract StrategyScoringModule is StrategyStorageLayout {
             if (targets[j] == 0) continue;
             address a = selected[j];
             if (bestEffort) {
+                uint256 idleBefore = ASSET.balanceOf(address(this));
                 bool deposited = _safeAdapterDeposit(a, targets[j]);
-                if (deposited) positionAssets[a] += targets[j];
+                if (deposited) {
+                    uint256 actualDeposited = idleBefore - ASSET.balanceOf(address(this));
+                    positionAssets[a] += actualDeposited;
+                    if (actualDeposited < targets[j]) {
+                        emit DeployIdleDepositPartial(a, targets[j], actualDeposited);
+                    }
+                }
             } else {
+                uint256 idleBefore = ASSET.balanceOf(address(this));
                 _adapterDeposit(a, targets[j]);
-                positionAssets[a] += targets[j];
+                uint256 actualDeposited = idleBefore - ASSET.balanceOf(address(this));
+                positionAssets[a] += actualDeposited;
+                if (actualDeposited < targets[j]) {
+                    emit DeployIdleDepositPartial(a, targets[j], actualDeposited);
+                }
             }
             if (!isSeasoned[a] && positionAssets[a] > _minSeed) {
                 isSeasoned[a] = true;
@@ -523,9 +535,11 @@ contract StrategyScoringModule is StrategyStorageLayout {
             uint256 idleBefore = ASSET.balanceOf(address(this));
             bool ok = _safeAdapterDeposit(a, toDeposit);
             if (!ok) continue;
-            positionAssets[a] = current + toDeposit;
-            remaining -= toDeposit;
-            emit SafetyOverflowDeployed(a, toDeposit, idleBefore, ASSET.balanceOf(address(this)));
+            uint256 idleAfter = ASSET.balanceOf(address(this));
+            uint256 actualDeposited = idleBefore - idleAfter;
+            positionAssets[a] = current + actualDeposited;
+            remaining -= actualDeposited;
+            emit SafetyOverflowDeployed(a, toDeposit, idleBefore, idleAfter);
         }
     }
 

@@ -595,3 +595,145 @@ contract H03_RebalanceDepositAccounting_Test is RebalanceAccountingTest {
             "H03-5: positionAssets[adapter3] not overstated");
     }
 }
+
+// ============================================================================
+// F-SCORING-01 -- StrategyScoringModule.deployIdle: positionAssets uses actualDeposited
+// ============================================================================
+// Mirrors H-03 pattern for the deployIdle path.
+// Three locations fixed:
+//   (a) _deployIdleToAdapters bestEffort path   (line ~450)
+//   (b) _deployIdleToAdapters strict path       (line ~453)
+//   (c) _executeSafetyOverflow                  (line ~526)
+// Tests cover paths (a) via the public deployIdle() API (bestEffort=true).
+// Path (b) is also exercised indirectly through deposit() auto-deploy flow.
+// Path (c) requires safety fallback adapter setup -- covered by existing
+// SafetyAdapterCapTier tests; accounting correctness asserted here.
+// ============================================================================
+
+contract FSCORING01_DeployIdleAccounting_Test is RebalanceAccountingTest {
+
+    // -------------------------------------------------------------------------
+    // FS-01-1: partial deposit -- positionAssets reflects actualDeposited
+    // -------------------------------------------------------------------------
+
+    /// @notice When adapter1 only accepts 50% of the deployIdle target,
+    ///         positionAssets must not overstate the actual USDC deposited.
+    function test_FS01_deployIdle_partial_deposit_correctly_accounted() public {
+        // Only add adapter1 so all idle goes to it (simpler accounting check)
+        // setUp() already added all 3; we restrict capacity on adapter2 and adapter3
+        adapter2.setMaxCap(0);
+        adapter3.setMaxCap(0);
+
+        // Make adapter1 accept only 50% of whatever is offered
+        adapter1.setPartialDepositBps(5000);
+
+        uint256 depositAmount = 100_000e6;
+        _coreDeposit(depositAmount);
+
+        // Capture state AFTER _coreDeposit: vault.deposit() calls deployIdleToAdapters
+        // (strict path) internally, so adapter1 may already hold some balance.
+        // We measure deltas from this snapshot to isolate the explicit deployIdle call.
+        uint256 idleBefore = IERC20(ARBITRUM_USDC).balanceOf(address(vault));
+        uint256 pos1Before = vault.positionAssets(address(adapter1));
+        uint256 adapter1TotalBefore = adapter1.totalAssets();
+
+        _warpAndDeployIdle();
+
+        uint256 idleAfter = IERC20(ARBITRUM_USDC).balanceOf(address(vault));
+        uint256 actualDeposited = idleBefore >= idleAfter ? idleBefore - idleAfter : 0;
+
+        uint256 pos1After = vault.positionAssets(address(adapter1));
+
+        // positionAssets delta must equal actual USDC deposited (balance delta)
+        assertEq(pos1After - pos1Before, actualDeposited,
+            "FS01-1: positionAssets delta must equal balance delta from deployIdle");
+
+        // Sanity: adapter balance increment equals actualDeposited (no phantom assets)
+        assertEq(adapter1.totalAssets() - adapter1TotalBefore, actualDeposited,
+            "FS01-1: adapter balance increment must equal actualDeposited");
+    }
+
+    // -------------------------------------------------------------------------
+    // FS-01-2: failed deposit -- positionAssets stays unchanged
+    // -------------------------------------------------------------------------
+
+    /// @notice If adapter1 deposit reverts during deployIdle, positionAssets
+    ///         must not change -- no phantom assets.
+    function test_FS01_deployIdle_failed_deposit_no_overstate() public {
+        adapter2.setMaxCap(0);
+        adapter3.setMaxCap(0);
+
+        uint256 depositAmount = 100_000e6;
+        _coreDeposit(depositAmount);
+
+        // Set revert flag AFTER deposit so vault.deposit() succeeds.
+        // Only the subsequent explicit deployIdle() call will encounter the revert.
+        adapter1.setDepositReverts(true);
+
+        uint256 pos1Before = vault.positionAssets(address(adapter1));
+
+        _warpAndDeployIdle();
+
+        uint256 pos1After = vault.positionAssets(address(adapter1));
+
+        assertEq(pos1After, pos1Before,
+            "FS01-2: positionAssets must not change when deployIdle deposit reverts");
+    }
+
+    // -------------------------------------------------------------------------
+    // FS-01-3: fuzz partial acceptance -- no drift for any ratio
+    // -------------------------------------------------------------------------
+
+    function testFuzz_FS01_deployIdle_no_drift_partial_acceptance(uint16 acceptBps) public {
+        acceptBps = uint16(bound(acceptBps, 0, 10000));
+
+        adapter2.setMaxCap(0);
+        adapter3.setMaxCap(0);
+        adapter1.setPartialDepositBps(acceptBps);
+
+        _coreDeposit(100_000e6);
+
+        uint256 idleBefore = IERC20(ARBITRUM_USDC).balanceOf(address(vault));
+        uint256 pos1Before = vault.positionAssets(address(adapter1));
+
+        _warpAndDeployIdle();
+
+        uint256 idleAfter = IERC20(ARBITRUM_USDC).balanceOf(address(vault));
+        uint256 actualDeposited = idleBefore >= idleAfter ? idleBefore - idleAfter : 0;
+        uint256 pos1After = vault.positionAssets(address(adapter1));
+
+        assertEq(pos1After - pos1Before, actualDeposited,
+            "FS01-fuzz: positionAssets delta must equal balance delta for any acceptance ratio");
+    }
+
+    // -------------------------------------------------------------------------
+    // FS-01-4: regression -- full-accept deployIdle not broken by fix
+    // -------------------------------------------------------------------------
+
+    /// @notice Normal full-accept deployIdle must still work correctly after the fix.
+    ///         positionAssets must match actual adapter balance (no overstatement,
+    ///         no understatement).
+    function test_FS01_deployIdle_full_accept_regression() public {
+        // All adapters accept 100% (default partialDepositBps = 10000)
+        _coreDeposit(300_000e6);
+
+        uint256 totalBefore = vault.totalAssets();
+
+        _warpAndDeployIdle();
+
+        // Check per-adapter: positionAssets must not exceed actual balance
+        assertLe(vault.positionAssets(address(adapter1)),
+            adapter1.totalAssets() + vault.dustTolerance(),
+            "FS01-4: positionAssets[adapter1] not overstated");
+        assertLe(vault.positionAssets(address(adapter2)),
+            adapter2.totalAssets() + vault.dustTolerance(),
+            "FS01-4: positionAssets[adapter2] not overstated");
+        assertLe(vault.positionAssets(address(adapter3)),
+            adapter3.totalAssets() + vault.dustTolerance(),
+            "FS01-4: positionAssets[adapter3] not overstated");
+
+        // totalAssets must be conserved
+        assertApproxEqAbs(vault.totalAssets(), totalBefore, vault.dustTolerance(),
+            "FS01-4: totalAssets conserved after full-accept deployIdle");
+    }
+}
