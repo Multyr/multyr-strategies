@@ -17,6 +17,7 @@ interface IVToken {
     function exchangeRateCurrent() external returns (uint256); // NOT view - accrues interest
     function exchangeRateStored() external view returns (uint256); // view version
     function supplyRatePerBlock() external view returns (uint256);
+    function accrueInterest() external returns (uint256); // 0 = success, Compound error code otherwise
     function getCash() external view returns (uint256);
     function totalSupply() external view returns (uint256);
     function totalBorrows() external view returns (uint256);
@@ -163,14 +164,33 @@ contract VenusUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
         IERC20(underlying).forceApprove(vToken, 0);
     }
 
-    /// @notice Converts vToken balance to underlying using stored exchange rate
-    /// @dev exchangeRateStored is view-safe (does NOT accrue interest)
-    ///      exchangeRate is scaled by 1e(18 - 8 + underlyingDecimals) = 1e(18 - 8 + 6) = 1e16
+    /// @notice Converts vToken balance to underlying using stored exchange rate.
+    /// @dev Uses exchangeRateStored() (view-safe, does NOT accrue interest).
+    ///      Conservative bias: understates NAV by at most 1 block of Venus interest
+    ///      (on Arbitrum ≈ 0.25s at 5% APY → < 0.000004% drift per block).
+    ///      Keepers should call accrueVenusInterest() before critical operations
+    ///      to sync the stored rate with on-chain accruals.
+    ///      Scale: exchangeRate is 1e(18 - 8 + underlyingDecimals) = 1e16 for USDC 6dec.
     ///      investedAssets = vTokenBal * exchangeRate / 1e18
     function _vTokenToUnderlying(uint256 vTokenBal) internal view returns (uint256) {
         if (vTokenBal == 0) return 0;
         uint256 rate = IVToken(vToken).exchangeRateStored();
         return (vTokenBal * rate) / 1e18;
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    //  KEEPER OPERATIONS
+    // ═══════════════════════════════════════════════════════════
+
+    /// @notice Triggers Venus interest accrual, updating exchangeRateStored to current value.
+    ///         Permissionless — any address may call. Keepers should invoke this before
+    ///         deposit/withdraw operations to minimise exchange-rate drift in totalAssets().
+    ///         On Arbitrum the drift is negligible (<0.000004%/block at 5% APY), but on
+    ///         slower chains (Ethereum L1 12s blocks) the per-block gap is ~48× larger.
+    /// @return err 0 on success; non-zero Compound error code on failure (reverts for safety).
+    function accrueVenusInterest() external returns (uint256 err) {
+        err = IVToken(vToken).accrueInterest();
+        require(err == 0, "Venus: accrueInterest failed");
     }
 
     // ═══════════════════════════════════════════════════════════

@@ -128,6 +128,21 @@ contract MockVToken {
         MockUSDCVenus(underlying).transfer(msg.sender, underlyingAmount);
         return 0;
     }
+
+    // HIGH-V1: keeper accrual simulation support
+    bool public accrueInterestCalled;
+    uint256 public pendingRate; // if set, applied as new exchangeRate when accrueInterest() is called
+
+    function setNextAccruedRate(uint256 r) external { pendingRate = r; }
+
+    function accrueInterest() external returns (uint256) {
+        accrueInterestCalled = true;
+        if (pendingRate > 0) {
+            exchangeRate = pendingRate;
+            pendingRate = 0;
+        }
+        return 0; // 0 = success (Compound error code convention)
+    }
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -944,5 +959,52 @@ contract S21_VenusSetterTest is VenusUsdcMultiMarketAdapterTest {
         vm.prank(admin);
         vm.expectRevert(bytes("bps>10000"));
         adapter.setIncentiveHaircutBps(10_001);
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// HIGH-V1 — accrueVenusInterest keeper pattern tests
+// ═══════════════════════════════════════════════════════════════════════════
+
+contract VenusAdapter_AccrueInterest_Test is VenusUsdcMultiMarketAdapterTest {
+
+    // ── Test 1: accrueVenusInterest() calls vToken.accrueInterest() ──────
+    // Verifies the keeper helper dispatches to the vToken and tracks the call.
+    function test_accrueVenusInterest_triggers_vToken_accrual() public {
+        assertFalse(vToken.accrueInterestCalled(), "precondition: not yet called");
+        adapter.accrueVenusInterest();
+        assertTrue(vToken.accrueInterestCalled(), "accrueInterest must have been called on vToken");
+    }
+
+    // ── Test 2: totalAssets() reflects updated stored rate after keeper call ──
+    // Simulates interest accrual: pendingRate is higher than initial rate.
+    // Before keeper call: totalAssets uses old stored rate (conservative).
+    // After keeper call: accrueInterest() applies pendingRate → totalAssets increases.
+    function test_totalAssets_reflects_updated_rate_after_accrual() public {
+        // Deposit 1000 USDC at initial rate 2e16 (1 vToken = 0.02 USDC)
+        usdc.mint(vault, 1000e6);
+        vm.startPrank(vault);
+        usdc.approve(address(adapter), 1000e6);
+        adapter.deposit(1000e6);
+        vm.stopPrank();
+
+        uint256 assetsBefore = adapter.totalAssets();
+        assertEq(assetsBefore, 1000e6, "initial totalAssets = 1000");
+
+        // Simulate pending interest: next accrual will set rate to 2.02e16 (+1%)
+        uint256 newRate = 2.02e16; // 1% interest accrued
+        vToken.setNextAccruedRate(newRate);
+
+        // Before keeper: totalAssets still uses old stored rate
+        assertEq(adapter.totalAssets(), assetsBefore, "before accrual: totalAssets unchanged");
+
+        // Keeper calls accrueVenusInterest() — stored rate is now updated
+        adapter.accrueVenusInterest();
+
+        uint256 assetsAfter = adapter.totalAssets();
+        // vTokenBal * newRate / 1e18 = (1000e6 * 1e18 / 2e16) * 2.02e16 / 1e18
+        //                             = 50_000e6 * 2.02e16 / 1e18 = 1010e6
+        assertEq(assetsAfter, 1010e6, "after accrual: totalAssets reflects 1% interest");
+        assertGt(assetsAfter, assetsBefore, "accrual increases reported totalAssets");
     }
 }
