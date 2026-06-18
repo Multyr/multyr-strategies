@@ -184,7 +184,7 @@ contract EulerUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
 
         // Approve Permit2 for Euler EVK vaults (one-time unlimited approval)
         // Euler vaults use Permit2 internally during deposit() -- this is REQUIRED.
-        USDC.safeApprove(PERMIT2, type(uint256).max);
+        USDC.forceApprove(PERMIT2, type(uint256).max);
 
         // Auto-load from registry if available (will replace constructor markets)
         if (_registry != address(0)) {
