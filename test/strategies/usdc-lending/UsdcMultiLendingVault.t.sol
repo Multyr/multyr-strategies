@@ -97,6 +97,7 @@ contract MockLendingAdapter is ILendingAdapter {
     bool public maxCapacityReverts;
     uint256 public extMarketTVL;
     uint16 public liquidityBpsMock = 10000; // default: 100% liquid
+    uint16 public partialDepositBps = 10000; // 100% = accept full amount; <10000 = partial
 
     constructor(address _underlying) {
         underlying_ = _underlying;
@@ -170,6 +171,14 @@ contract MockLendingAdapter is ILendingAdapter {
         liquidityBpsMock = _bps;
     }
 
+    function setPartialDepositBps(uint16 _bps) external {
+        partialDepositBps = _bps;
+    }
+
+    function setDeposited(uint256 _deposited) external {
+        deposited = _deposited;
+    }
+
     function name() external pure override returns (string memory) {
         return "MockAdapter";
     }
@@ -190,14 +199,17 @@ contract MockLendingAdapter is ILendingAdapter {
 
     function deposit(uint256 assets) external override {
         require(!depositReverts, "deposit reverts");
+        uint256 accepted = (assets * partialDepositBps) / 10000;
         if (pullMode) {
-            // Pull mode: adapter calls transferFrom
-            MockUSDC(underlying_).transferFrom(msg.sender, address(this), assets);
+            // Pull mode: adapter calls transferFrom for accepted portion only
+            MockUSDC(underlying_).transferFrom(msg.sender, address(this), accepted);
         } else {
-            // Push mode: funds already transferred to adapter
-            require(MockUSDC(underlying_).balanceOf(address(this)) >= assets, "not enough");
+            // Push mode: funds already transferred; return excess to sender
+            require(MockUSDC(underlying_).balanceOf(address(this)) >= accepted, "not enough");
+            uint256 excess = assets - accepted;
+            if (excess > 0) MockUSDC(underlying_).transfer(msg.sender, excess);
         }
-        deposited += assets;
+        deposited += accepted;
     }
 
     function withdraw(uint256 assets, address receiver) external override returns (uint256) {

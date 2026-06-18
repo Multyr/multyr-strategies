@@ -498,6 +498,7 @@ contract StrategyStorageLayout is AccessControl, Pausable, ReentrancyGuard {
     event LiquidityCacheStale(address indexed adapter, uint256 age);
     event RebalancePlanCreated(uint8 actionCount, uint256 totalMoved, uint256 tvlSnapshot);
     event RebalanceStepExecuted(uint8 fromAction, uint8 toAction);
+    event RebalanceDepositPartial(address indexed adapter, uint256 planned, uint256 actual);
     event ExternalTVLStalenessUpdated(uint32 oldValue, uint32 newValue);
     event LiquidityStalenessUpdated(uint32 oldValue, uint32 newValue);
     event RebalancePlanMaxAgeUpdated(uint32 oldValue, uint32 newValue);

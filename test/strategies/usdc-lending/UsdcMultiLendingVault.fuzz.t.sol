@@ -884,6 +884,7 @@ contract UsdcMultiLendingVault_Fuzz_AccessControl is UsdcMultiLendingVaultFuzzBa
     /// @notice Fuzz: random addresses cannot call privileged functions
     function testFuzz_deposit_onlyCore(address caller) public {
         vm.assume(caller != core);
+        vm.assume(caller != router); // router also holds CORE_ROLE
 
         _mintAndApprove(caller, 1000e6);
 
