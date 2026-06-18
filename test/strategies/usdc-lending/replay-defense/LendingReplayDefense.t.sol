@@ -197,6 +197,11 @@ contract LendingReplayDefenseTest is Test {
         helper = new RewardSwapHelper();
         helper.initialize(address(usdc), admin, address(uni), address(camelot));
 
+        // Grant KEEPER_ROLE to alice — she is the authorized keeper/adapter in these RA tests
+        bytes32 keeperRole = keccak256("KEEPER_ROLE");
+        vm.prank(admin);
+        helper.grantRole(keeperRole, alice);
+
         feed.set(60e8, block.timestamp);
         vm.prank(admin);
         helper.setRewardConfig(

@@ -74,6 +74,9 @@ contract RewardSwapHelper is AccessControl, ReentrancyGuard, Initializable {
 
     // ─── Roles ──────────────────────────────────────────────────────────
     bytes32 public constant PARAM_ROLE = keccak256("PARAM_ROLE");
+    /// @notice Callers permitted to execute swapToUSDC (adapters + keeper bots).
+    ///         Granted by admin post-deploy to each adapter via grantRole(KEEPER_ROLE, adapter).
+    bytes32 public constant KEEPER_ROLE = keccak256("KEEPER_ROLE");
 
     // ─── Immutable Storage ──────────────────────────────────────────────
     // --- V10 Storage (was immutable in V9.x; logically immutable post-initialize) ---
@@ -180,7 +183,7 @@ contract RewardSwapHelper is AccessControl, ReentrancyGuard, Initializable {
         uint16  slippageBps
     ) external onlyRole(PARAM_ROLE) {
         if (rewardToken == address(0) || chainlinkFeed == address(0)) revert ZeroAddress();
-        if (slippageBps > 1000) revert SlippageTooHigh(slippageBps); // hard cap 10%
+        if (slippageBps > 500) revert SlippageTooHigh(slippageBps); // hard cap 5% (sandwich mitigation)
         if (uniswapV3Path.length == 0) revert InvalidConfig();
         if (maxFeedAgeSec < MIN_MAX_FEED_AGE_SEC || maxFeedAgeSec > MAX_MAX_FEED_AGE_SEC) {
             revert MaxFeedAgeOutOfRange(maxFeedAgeSec);
@@ -254,7 +257,7 @@ contract RewardSwapHelper is AccessControl, ReentrancyGuard, Initializable {
         address rewardToken,
         uint256 amountIn,
         address receiver
-    ) external nonReentrant returns (uint256 amountOut) {
+    ) external nonReentrant onlyRole(KEEPER_ROLE) returns (uint256 amountOut) {
         RewardConfig memory cfg = configs[rewardToken];
         if (!cfg.enabled) revert NotEnabled(rewardToken);
         if (receiver == address(0)) revert ZeroAddress();
