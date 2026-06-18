@@ -103,6 +103,10 @@ contract MockDoloERC4626 {
         _totalAssets -= assets;
         MockUSDCDolo(assetAddr).transfer(receiver, assets);
     }
+
+    /// @dev Test helper: increase _totalAssets without minting new shares (simulates interest accrual).
+    ///      Caller must also mint the corresponding USDC to this contract to back withdrawals.
+    function simulateInterest(uint256 extra) external { _totalAssets += extra; }
 }
 
 /// @dev IDolomiteMargin types
@@ -677,5 +681,105 @@ contract S21_DolomiteSetterTest is DolomiteAdapter_Test {
     function test_fallback_reverts() public {
         (bool ok,) = address(adapter).call(abi.encodeWithSignature("doesNotExist()"));
         assertFalse(ok, "fallback must revert");
+    }
+}
+
+// ============================================================================
+// S22 — HIGH-D-01: Principal accounting proportional reduction tests
+// ============================================================================
+
+contract S22_DolomitePrincipalAccounting_Test is DolomiteAdapter_Test {
+
+    // Simulate ERC4626 interest accrual: increase _totalAssets (shares unchanged)
+    // and mint matching USDC so the market has liquidity to back withdrawals.
+    function _accrueInterest(MockDoloERC4626 mkt, uint256 extra) internal {
+        usdc.mint(address(mkt), extra);
+        mkt.simulateInterest(extra);
+    }
+
+    // Deposit `amount` USDC into erc1 (pool1 disabled at idx=0, erc1 at idx=1).
+    function _depositToERC4626(uint256 amount) internal {
+        _addERC4626(erc1);
+        vm.prank(admin);
+        adapter.toggleMarket(0, false);
+        _mintAndApprove(vault, amount);
+        vm.prank(vault);
+        adapter.deposit(amount);
+    }
+
+    // ── Test 1: partial withdraw proportionally reduces principal ──────────
+    // Without the fix, withdrawing 550 from a 1100 position (original deposit 1000)
+    // would leave principal = 1000 - 550 = 450 (WRONG — ignores interest).
+    // With the fix: principal is reduced proportionally: 1000 * 550/1100 = 500.
+    function test_withdraw_partial_preserves_principal_proportion() public {
+        _depositToERC4626(1000e6);
+        assertEq(adapter.principalAt(1), 1000e6, "initial principal");
+
+        // Simulate 10% interest: 1000 → 1100
+        _accrueInterest(erc1, 100e6);
+        assertEq(adapter.totalAssets(), 1100e6, "total after interest");
+
+        // Withdraw exactly 50% of position (550 of 1100)
+        vm.prank(vault);
+        uint256 got = adapter.withdraw(550e6, vault);
+        assertEq(got, 550e6);
+
+        // Expected: 1000 * (1100 - 550) / 1100 = 500 (not 450 = 1000 - 550)
+        assertEq(adapter.principalAt(1), 500e6, "proportional reduction: must be 500, not 450");
+        assertEq(adapter.principalTotalValue(), 500e6, "principalTotal matches");
+    }
+
+    // ── Test 2: full withdrawal zeroes principal ───────────────────────────
+    function test_withdraw_full_zeros_principal() public {
+        _depositToERC4626(1000e6);
+        _accrueInterest(erc1, 100e6);
+
+        vm.prank(vault);
+        adapter.withdraw(1100e6, vault);
+
+        assertEq(adapter.principalAt(1), 0, "full withdrawal: principal must be 0");
+        assertEq(adapter.principalTotalValue(), 0, "principalTotal must be 0");
+    }
+
+    // ── Test 3: multiple partial withdraws — principal stays non-negative ──
+    function testFuzz_principal_invariant_after_N_partial_withdraws(
+        uint256 interestBps,
+        uint256 n
+    ) public {
+        interestBps = bound(interestBps, 0, 2000); // 0–20% interest
+        n = bound(n, 1, 5);
+
+        _depositToERC4626(1000e6);
+        uint256 interestAmount = (1000e6 * interestBps) / 10000;
+        if (interestAmount > 0) _accrueInterest(erc1, interestAmount);
+
+        uint256 total = adapter.totalAssets();
+        uint256 perWithdraw = total / (n + 1);
+
+        for (uint256 i = 0; i < n; ++i) {
+            if (perWithdraw < 1) break;
+            vm.prank(vault);
+            adapter.withdraw(perWithdraw, vault);
+            assertLe(adapter.principalAt(1), 1000e6, "principal never exceeds original deposit");
+        }
+    }
+
+    // ── Test 4: multi-step proportional reduction exact math ──────────────
+    function test_withdraw_after_interest_accrual_reduces_principal_proportionally() public {
+        // Deposit 3000, accrue 1500 → total = 4500
+        _depositToERC4626(3000e6);
+        _accrueInterest(erc1, 1500e6);
+        assertEq(adapter.principalAt(1), 3000e6, "initial principal = deposit");
+
+        // Withdraw 900 = 20% of 4500 → principal must decrease by 20%: 3000 * 900/4500 = 600
+        vm.prank(vault);
+        adapter.withdraw(900e6, vault);
+        assertEq(adapter.principalAt(1), 2400e6, "after 1st withdraw: 3000 - 600 = 2400");
+
+        // Remaining: 3600 total, principal 2400
+        // Withdraw 720 = 20% of 3600 → reduction = 2400 * 720/3600 = 480
+        vm.prank(vault);
+        adapter.withdraw(720e6, vault);
+        assertEq(adapter.principalAt(1), 1920e6, "after 2nd withdraw: 2400 - 480 = 1920");
     }
 }

@@ -675,6 +675,17 @@ contract DolomiteUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reent
         }
     }
 
+    /// @notice Returns the recorded deposit principal for a market (telemetry/testing).
+    function principalAt(uint256 idx) external view returns (uint256) {
+        require(idx < mkts.length, "idx");
+        return principal[idx];
+    }
+
+    /// @notice Returns the total recorded principal across all markets (telemetry/testing).
+    function principalTotalValue() external view returns (uint256) {
+        return principalTotal;
+    }
+
     // ===== Lifecycle: No-custody =====
 
     function deposit(uint256 assets) external nonReentrant onlyVault {
@@ -728,6 +739,10 @@ contract DolomiteUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reent
             uint256 take = can < want ? can : want;
             if (take < 1) continue; // slither: incorrect-equality - use < 1 instead of == 0
 
+            // HIGH-D-01: capture before the market call — ERC4626 interest accrual
+            // increases assetsPerShare, so a flat deduction by `take` would understate
+            // principal consumption; reduce proportionally to fraction of position withdrawn.
+            uint256 assetsOnBefore = _assetsOn(i);
             Market storage m = mkts[i];
             if (m.mtype == MarketType.ERC4626) {
                 // slither: unused-return - capture return value
@@ -740,10 +755,9 @@ contract DolomiteUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reent
 
             IERC20(asset).safeTransfer(vault, take);
 
-            uint256 p = principal[i];
-            if (p >= take) principal[i] = p - take;
-            else principal[i] = 0;
-            principalTotal = principalTotal >= take ? principalTotal - take : 0;
+            uint256 reduction = assetsOnBefore > 0 ? (principal[i] * take) / assetsOnBefore : principal[i];
+            principal[i] = principal[i] >= reduction ? principal[i] - reduction : 0;
+            principalTotal = principalTotal >= reduction ? principalTotal - reduction : 0;
 
             withdrawn += take;
             emit Withdrawn(take, m.addr, vault);
@@ -788,6 +802,8 @@ contract DolomiteUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reent
         int256 netBps = _estimateNetBenefitBps(fromIdx, toIdx, movedPlan, tvl);
         if (netBps < int256(uint256(gateMinNetBenefitBps))) return (0, address(0), address(0));
 
+        // HIGH-D-01: capture before withdraw for proportional principal reduction
+        uint256 fromAssetsOnBefore = _assetsOn(fromIdx);
         Market storage mf = mkts[fromIdx];
         Market storage mt = mkts[toIdx];
 
@@ -813,9 +829,11 @@ contract DolomiteUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reent
         }
         _revokeMarketApproval(mt.addr);
 
-        // Update principal
-        uint256 pf = principal[fromIdx];
-        principal[fromIdx] = pf >= movedPlan ? pf - movedPlan : 0;
+        // Update principal — HIGH-D-01: proportional reduction mirrors withdraw() fix
+        uint256 fromReduction = fromAssetsOnBefore > 0
+            ? (principal[fromIdx] * movedPlan) / fromAssetsOnBefore
+            : principal[fromIdx];
+        principal[fromIdx] = principal[fromIdx] >= fromReduction ? principal[fromIdx] - fromReduction : 0;
         principal[toIdx] += movedPlan;
         require(toIdx <= type(uint8).max, "DolomiteUsdcMultiMarket: toIdx overflow");
         require(block.timestamp <= type(uint64).max, "DolomiteUsdcMultiMarket: timestamp overflow");
