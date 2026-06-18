@@ -21,13 +21,13 @@ pragma solidity ^0.8.28;
 //   (`overCapRiskPremiumBps`) continues to weight the benefit calc.
 //
 // Test matrix (D1a / D1b / D1c):
-//   D1a  — normal operation: no adapter exceeds the hard ceiling after a
+//   D1a  -- normal operation: no adapter exceeds the hard ceiling after a
 //          deposit + deploy + keep cycle. Mandate never fires.
-//   D1b  — forced over-ceiling: iterative yield pushes adapter above
+//   D1b  -- forced over-ceiling: iterative yield pushes adapter above
 //          hardCeiling. canRebalance returns ok=true with netBenefitBps=0
 //          (mandate fired). Executing the plan brings the adapter back
 //          within maxExp.
-//   D1c  — drift within tolerance: stdstore lands the position precisely
+//   D1c  -- drift within tolerance: stdstore lands the position precisely
 //          above maxExp but below hardCeiling. Mandate does NOT fire.
 //
 // Plus setter tests:
@@ -233,7 +233,7 @@ abstract contract CapDriftBase is Test {
     /// @dev Push adapterC above the hardCeiling via iterative at-most-2x yield
     ///      doublings. Each step stays safely under the sync-time 3x
     ///      suspicious-movement skip guard. Reverts with a descriptive message
-    ///      if five rounds do not suffice — this would indicate a test setup
+    ///      if five rounds do not suffice -- this would indicate a test setup
     ///      drift, not a production bug.
     function _forceAdapterCOverCeiling() internal {
         for (uint256 i = 0; i < 6; i++) {
@@ -352,7 +352,7 @@ contract CapDriftSetter_Test is CapDriftBase {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// D1a — Normal operation: no adapter exceeds the hard ceiling after a
+// D1a -- Normal operation: no adapter exceeds the hard ceiling after a
 //       deposit + deploy cycle. Mandate never fires.
 // ═══════════════════════════════════════════════════════════════════════════════
 
@@ -390,7 +390,7 @@ contract CapDrift_D1a_NormalOperation is CapDriftBase {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// D1b — Forced over-ceiling: mandate fires, plan divests, adapter back in cap.
+// D1b -- Forced over-ceiling: mandate fires, plan divests, adapter back in cap.
 // ═══════════════════════════════════════════════════════════════════════════════
 
 contract CapDrift_D1b_ForcedOverCeiling is CapDriftBase {
@@ -444,7 +444,7 @@ contract CapDrift_D1b_ForcedOverCeiling is CapDriftBase {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// D1c — Drift within tolerance: mandate does NOT fire, gate falls through.
+// D1c -- Drift within tolerance: mandate does NOT fire, gate falls through.
 // ═══════════════════════════════════════════════════════════════════════════════
 
 contract CapDrift_D1c_WithinTolerance is CapDriftBase {
@@ -499,12 +499,12 @@ contract CapDrift_D1c_WithinTolerance is CapDriftBase {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// D1d (P0.5 — 2026-04-25) — Relative cap drift mandate.
+// D1d (P0.5 -- 2026-04-25) -- Relative cap drift mandate.
 // ───────────────────────────────────────────────────────────────────────────────
 // Symmetric companion of D1b, exercising the rel cap branch of
 // `_checkCapDriftMandate` introduced in P0.5. Setup uses a SHALLOW external
 // market (extTVL just above the CONFIDENCE_ZERO floor) so that the relative
-// cap is the binding constraint — the absolute cap stays well above the
+// cap is the binding constraint -- the absolute cap stays well above the
 // position throughout. With the new behaviour:
 //   1) `_targetAllocations` now clamps to the tighter rel cap.
 //   2) The plan generates a withdraw of (curr - relCap).
@@ -526,7 +526,7 @@ contract CapDrift_D1d_RelCapDriftMandate is CapDriftBase {
 
         // Shrink adapterC's external market to a SMALL band so the rel cap
         // is the binding constraint (well below the absolute cap).
-        adapterC.setExtMarketTVL(800_000e6); // 800K → dyn rel cap band 5% = 40K
+        adapterC.setExtMarketTVL(800_000e6); // 800K -> dyn rel cap band 5% = 40K
         vm.prank(keeper);
         StrategyParamsModule(address(vault)).pokeExternalTVL();
 
@@ -547,7 +547,7 @@ contract CapDrift_D1d_RelCapDriftMandate is CapDriftBase {
     }
 
     /// @dev Push adapterC above the rel hard ceiling using stdstore +
-    ///      matching mock state. Relies on extTVL band → 500 bps cap.
+    ///      matching mock state. Relies on extTVL band -> 500 bps cap.
     function _forceAdapterCOverRelCeiling() internal {
         StdStorage storage s = stdstore;
 
@@ -625,18 +625,18 @@ contract CapDrift_D1d_RelCapDriftMandate is CapDriftBase {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// D1f (P0.7 — 2026-06-11) — Safety Adapter Cap Tier.
+// D1f (P0.7 -- 2026-06-11) -- Safety Adapter Cap Tier.
 // ───────────────────────────────────────────────────────────────────────────────
 // Architectural design ratified after 10 backtest sweep iterations on real
-// Arbitrum data (2024-01-01 → 2026-05-31). Final iter-3b setpoint:
+// Arbitrum data (2024-01-01 -> 2026-05-31). Final iter-3b setpoint:
 //   TWR USD 5.62% vs Aave standalone 5.37% (+25 bps), Sharpe 0.729 vs 0.33.
 //
 // Test harness uses _baseParams.adapterMaxExposureBps = 5000 (50%). Safety
 // adapter is configured with fallback caps at 7000 (70%) for both abs and
-// rel — meaningfully above the normal cap, so we can exercise positions in
+// rel -- meaningfully above the normal cap, so we can exercise positions in
 // the band (5000, 7000] without colliding with the normal mandate.
 //
-// Tolerance = 250 bps → normal hardCeiling = 50% × 1.025 = 51.25% of TVL,
+// Tolerance = 250 bps -> normal hardCeiling = 50% × 1.025 = 51.25% of TVL,
 // safety hardCeiling = 70% × 1.025 = 71.75% of TVL.
 //
 // Refs: docs/SAFETY_ADAPTER_TIER.md, memory.md sessione 13,
@@ -788,8 +788,8 @@ contract CapDrift_D1f_SafetyAdapterCapTier is CapDriftBase {
         uint256 posAAfter = vault.positionAssets(address(adapterA));
 
         // The overflow path must have moved at least SOME idle into the safety
-        // adapter. We do not assert the exact target — the regular plan may
-        // also touch adapterA before overflow kicks in — but the post-state
+        // adapter. We do not assert the exact target -- the regular plan may
+        // also touch adapterA before overflow kicks in -- but the post-state
         // must be strictly closer to the desired equilibrium.
         assertLt(idleAfter, idleBefore, "deployIdle must have reduced idle");
         assertGt(posAAfter, posABefore, "safety adapter must have absorbed overflow");
@@ -802,7 +802,7 @@ contract CapDrift_D1f_SafetyAdapterCapTier is CapDriftBase {
 
     /// @notice (04) When the mandate fires on a SAFETY adapter (pushed past
     ///         its fallback ceiling), the cooldown timestamp is NOT set.
-    ///         By design, safety adapters never enter cooldown — the overflow
+    ///         By design, safety adapters never enter cooldown -- the overflow
     ///         path is their only deposit channel and it self-regulates via
     ///         fbCeiling - current.
     function test_D1f_04_safety_adapter_never_in_cooldown() public {
@@ -844,7 +844,7 @@ contract CapDrift_D1f_SafetyAdapterCapTier is CapDriftBase {
         usdc.mint(address(vault), 50_000e6);
 
         // _drainPlan executed actions that updated lastDeployIdleTs indirectly?
-        // No — only deposit/withdraw + adapter deposit calls. But the rebalance
+        // No -- only deposit/withdraw + adapter deposit calls. But the rebalance
         // path may have stamped lastRebalanceTs. Warp to be safe.
         vm.warp(block.timestamp + 301);
 
@@ -858,7 +858,7 @@ contract CapDrift_D1f_SafetyAdapterCapTier is CapDriftBase {
         );
     }
 
-    /// @notice (06) "Preserve safety tranche" — when the mandate fires on a
+    /// @notice (06) "Preserve safety tranche" -- when the mandate fires on a
     ///         non-safety adapter, the prepared plan must withdraw from THAT
     ///         adapter, not from a safety adapter legitimately sitting in its
     ///         overflow tranche.
@@ -898,7 +898,7 @@ contract CapDrift_D1f_SafetyAdapterCapTier is CapDriftBase {
         assertEq(nb, int256(0), "post-removal: mandate signature nb=0");
     }
 
-    /// @notice (08) Dual-anchor production setpoint — primary safety venue
+    /// @notice (08) Dual-anchor production setpoint -- primary safety venue
     ///         (Aave-like adapterA) fills toward its 50% fallback cap FIRST,
     ///         then secondary (Compound-like adapterB at 40% caps) absorbs
     ///         residual overflow. Verifies safetyFallbackAdapters[0] = Aave,
@@ -985,7 +985,7 @@ contract CapDrift_D1f_SafetyAdapterCapTier is CapDriftBase {
         assertTrue(vault.quarantined(address(adapterC)), "setup: adapterC quarantined");
 
         vm.prank(admin);
-        vm.expectRevert(); // InvalidAdapter — quarantined branch
+        vm.expectRevert(); // InvalidAdapter -- quarantined branch
         StrategySettingsModule(address(vault)).addSafetyFallbackAdapter(
             address(adapterC), 5000, 5000
         );
@@ -1037,4 +1037,228 @@ contract CapDrift_D1f_SafetyAdapterCapTier is CapDriftBase {
     // Re-declare the event so vm.expectEmit can match it. Must match the
     // signature in StrategyStorageLayout.sol bit-for-bit.
     event RelCapMandateCooldownCleared(address indexed adapter, address indexed clearedBy, uint64 priorTs);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// CapDrift_D1f_SafetyOverflowMargin
+// ─────────────────────────────────────────────────────────────────────────────
+// Verifies Wave 1 item 13/15: _executeSafetyOverflow must apply
+// targetSafetyMarginBps symmetrically with _targetAllocations, so that
+// post-deposit yield accrual does not push positionAssets above fbCeiling and
+// break the "preserve safety tranche" clause (current <= fbCeiling) in
+// _targetAllocations. Fix: fbCeilingNet = fbCeiling * safetyMult / 10_000.
+// ═══════════════════════════════════════════════════════════════════════════════
+
+contract CapDrift_D1f_SafetyOverflowMargin is CapDrift_D1f_SafetyAdapterCapTier {
+
+    // ── helpers ───────────────────────────────────────────────────────────────
+
+    /// @dev Compute fbCeiling and fbCeilingNet for adapterA from current TVL.
+    ///      Both are fixed inside _executeSafetyOverflow (tvl snapped at entry).
+    ///      Because TVL is conserved across overflow (no funds created/destroyed),
+    ///      computing them from the post-call TVL is equivalent.
+    function _fbCeilingsForA()
+        internal view returns (uint256 fbCeiling, uint256 fbCeilingNet)
+    {
+        uint256 tvl = _totalTvl();
+        fbCeiling    = (uint256(SAFETY_FB_ABS_BPS) * tvl) / 10_000;
+        uint256 marginBps = StrategyParamsModule(address(vault)).targetSafetyMarginBps();
+        fbCeilingNet = (fbCeiling * (10_000 - marginBps)) / 10_000;
+    }
+
+    /// @dev Isolate the overflow path: block all normal scoring by setting
+    ///      maxCap=0 on every adapter, then zero out all recorded positions
+    ///      so the full vault balance is available as idle surplus for the
+    ///      overflow path alone.
+    function _isolateOverflow() internal {
+        adapterA.setMaxCap(0);
+        adapterB.setMaxCap(0);
+        adapterC.setMaxCap(0);
+        _forcePosition(adapterA, 0);
+        _forcePosition(adapterB, 0);
+        _forcePosition(adapterC, 0);
+    }
+
+    // ── SM01 ──────────────────────────────────────────────────────────────────
+
+    /// @notice SM01 -- overflow deposits to fbCeilingNet, NOT to fbCeiling.
+    ///
+    ///   Without fix: overflow fills to fbCeiling -> positionAssets[A] == fbCeiling
+    ///                -> assertion `< fbCeiling` FAILS.
+    ///   With fix:    overflow fills to fbCeilingNet < fbCeiling -> PASSES.
+    ///
+    ///   Setup: all adapters blocked from normal scoring; 5M idle surplus
+    ///   (>> fbCeilingNet) forces saturation of A in the overflow loop.
+    function test_SM01_overflow_respects_target_margin() public {
+        _isolateOverflow();
+        usdc.mint(address(vault), 5_000_000e6);
+
+        vm.warp(block.timestamp + 301);
+        vm.prank(keeper);
+        StrategyScoringModule(address(vault)).deployIdle();
+
+        (uint256 fbCeiling, uint256 fbCeilingNet) = _fbCeilingsForA();
+        uint256 posA = vault.positionAssets(address(adapterA));
+
+        // Primary (discriminating): strict inequality proves margin is applied.
+        // Without the fix posA == fbCeiling and this fails.
+        assertLt(posA, fbCeiling, "SM01: overflow must stop below fbCeiling (margin not applied)");
+
+        // Secondary: position must not exceed fbCeilingNet (+ dust rounding).
+        assertLe(
+            posA,
+            fbCeilingNet + vault.dustTolerance(),
+            "SM01: overflow must not exceed fbCeilingNet"
+        );
+
+        // Sanity: something was actually deposited (surplus exceeded fbCeilingNet).
+        assertGt(posA, 0, "SM01: at least some surplus must have been routed to A");
+    }
+
+    // ── SM02 ──────────────────────────────────────────────────────────────────
+
+    /// @notice SM02 -- yield within the margin gap (fbCeilingNet..fbCeiling) keeps
+    ///         the "preserve safety tranche" clause active at the next rebalance.
+    ///
+    ///   The margin buys headroom: overflow stops at fbCeilingNet, leaving room
+    ///   for up to marginBps% yield before current > fbCeiling would break the
+    ///   preserve-tranche guard in _targetAllocations.
+    ///
+    ///   With fix: A at fbCeiling-1 -> current <= fbCeiling -> tranche preserved.
+    ///   Without fix (A at fbCeiling): yield -> A > fbCeiling -> NOT preserved.
+    function test_SM02_yield_within_margin_preserves_safety_tranche() public {
+        (uint256 fbCeiling, uint256 fbCeilingNet) = _fbCeilingsForA();
+
+        // (1) Simulate overflow having deposited A to fbCeilingNet.
+        _forcePosition(adapterA, fbCeilingNet);
+
+        // (2) Simulate yield accrual pushing A toward fbCeiling but still within
+        //     it -- exactly the headroom the margin is designed to accommodate.
+        //     fbCeiling - 1 is strictly within the permitted [fbCeilingNet, fbCeiling] window.
+        _forcePosition(adapterA, fbCeiling - 1);
+
+        // (3) Trigger a mandate rebalance on adapterB (above its hard ceiling)
+        //     so that prepareRebalance actually produces a plan.
+        _forcePctOfNewTvl(adapterB, 5500); // above normalHardCeiling ~51.25%
+        vm.warp(block.timestamp + 22000);
+
+        vm.prank(keeper);
+        StrategyRebalancePlanModule(address(vault)).prepareRebalance();
+
+        // (4) Preserve-tranche clause: current(A) <= fbCeiling -> A held at current.
+        //     The plan must NOT include a withdraw from adapterA.
+        assertFalse(
+            _planHasWithdrawFor(address(adapterA)),
+            "SM02: safety tranche must be preserved (A within fbCeiling after yield)"
+        );
+    }
+
+    // ── SM03 ──────────────────────────────────────────────────────────────────
+
+    /// @notice SM03 -- fuzz: for any surplus amount, overflow never exceeds fbCeilingNet.
+    ///
+    ///   Exercises SM01's core invariant across a range of surplus sizes.
+    ///   Lower bound (500K) is chosen so the surplus exceeds fbCeilingNet
+    ///   in the TVL regimes that arise with the forced-zero adapter layout --
+    ///   this ensures saturation and makes the test discriminating.
+    function testFuzz_SM03_overflow_bounded_by_fbCeilingNet(uint256 extraIdle) public {
+        extraIdle = bound(extraIdle, 500_000e6, 10_000_000e6);
+
+        _isolateOverflow();
+        usdc.mint(address(vault), extraIdle);
+
+        vm.warp(block.timestamp + 301);
+        vm.prank(keeper);
+        StrategyScoringModule(address(vault)).deployIdle();
+
+        (uint256 fbCeiling, uint256 fbCeilingNet) = _fbCeilingsForA();
+        uint256 posA = vault.positionAssets(address(adapterA));
+        uint256 dust = vault.dustTolerance();
+
+        // Must not exceed fbCeilingNet (rounding tolerance = dustTolerance).
+        assertLe(
+            posA,
+            fbCeilingNet + dust,
+            "SM03: overflow must not exceed fbCeilingNet for any surplus size"
+        );
+        // fbCeiling must be strictly greater (sanity: the fix actually reduces headroom).
+        assertLt(fbCeilingNet, fbCeiling, "SM03: fbCeilingNet < fbCeiling (margin > 0)");
+    }
+
+    // ── SM04 ──────────────────────────────────────────────────────────────────
+
+    /// @notice SM04 -- zero margin: overflow fills to full fbCeiling (non-regression).
+    ///
+    ///   When targetSafetyMarginBps == 0, safetyMult == 10_000 and
+    ///   fbCeilingNet == fbCeiling exactly. The overflow loop must behave as
+    ///   before the fix (fill to fbCeiling). This guards against under-deployment
+    ///   regressions for protocols that set margin=0 intentionally.
+    function test_SM04_zero_margin_deposits_to_full_fbCeiling() public {
+        vm.prank(admin);
+        StrategySettingsModule(address(vault)).setTargetSafetyMargin(0);
+
+        _isolateOverflow();
+        usdc.mint(address(vault), 5_000_000e6);
+
+        vm.warp(block.timestamp + 301);
+        vm.prank(keeper);
+        StrategyScoringModule(address(vault)).deployIdle();
+
+        uint256 tvl = _totalTvl(); // conserved
+        uint256 fbCeiling = (uint256(SAFETY_FB_ABS_BPS) * tvl) / 10_000;
+        uint256 posA = vault.positionAssets(address(adapterA));
+        uint256 dust = vault.dustTolerance();
+
+        // With margin=0, fbCeilingNet == fbCeiling: A must reach (and not exceed) fbCeiling.
+        assertLe(posA, fbCeiling,             "SM04: zero margin -- must not exceed fbCeiling");
+        assertGe(posA, fbCeiling - dust,      "SM04: zero margin -- must reach full fbCeiling");
+    }
+
+    // ── SM05 ──────────────────────────────────────────────────────────────────
+
+    /// @notice SM05 -- when adapter is already at fbCeilingNet, overflow skips it.
+    ///
+    ///   Uses margin=2000 (20%, governance max). With A pre-filled above the
+    ///   resulting fbCeilingNet, the overflow loop must find current >= fbCeilingNet
+    ///   and continue past A without depositing. This tests the `continue` branch
+    ///   of the eligibility check and proves the fix does not over-deposit when A
+    ///   is already at or above its margin-adjusted ceiling.
+    function test_SM05_high_margin_skips_adapter_at_fbCeilingNet() public {
+        // Use governance-maximum margin (2000 bps = 20%).
+        // safetyMult = 8000 -> fbCeilingNet = 80% × fbCeiling = 80% × 70% TVL = 56% TVL.
+        vm.prank(admin);
+        StrategySettingsModule(address(vault)).setTargetSafetyMargin(2000);
+
+        // Force B and C to zero (they participate in no-normal-score path).
+        adapterB.setMaxCap(0); adapterC.setMaxCap(0);
+        _forcePosition(adapterB, 0); _forcePosition(adapterC, 0);
+
+        // Pre-fill A above fbCeilingNet for any TVL that arises after the mint.
+        // setUp's _seedVault deploys nothing (all adapters have maxCap=0 by
+        // default), so vault retains the full 1M USDC from the seed. After mint:
+        //   vault USDC = 1M (seed) + 200K (mint) = 1.2M
+        //   TVL = posA + 1.2M
+        //   fbCeilingNet (margin=2000) = 56% x TVL = 56% x (posA + 1.2M)
+        // For posA >= fbCeilingNet:
+        //   posA x 0.44 >= 0.672M  ->  posA >= 1.527M.  Use 2M.
+        //   TVL = 2M + 1.2M = 3.2M
+        //   fbCeiling    = 70% x 3.2M = 2.24M
+        //   fbCeilingNet = 80% x 2.24M = 1.792M
+        //   posA (2M) > fbCeilingNet (1.792M) -> overflow skips A.
+        adapterA.setMaxCap(0);
+        _forcePosition(adapterA, 2_000_000e6);
+
+        usdc.mint(address(vault), 200_000e6);
+
+        vm.warp(block.timestamp + 301);
+        vm.prank(keeper);
+        StrategyScoringModule(address(vault)).deployIdle();
+
+        // A must not have received any additional overflow deposits.
+        assertEq(
+            vault.positionAssets(address(adapterA)),
+            2_000_000e6,
+            "SM05: overflow must skip adapter already at or above fbCeilingNet"
+        );
+    }
 }

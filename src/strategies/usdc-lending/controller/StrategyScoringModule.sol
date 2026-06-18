@@ -501,6 +501,17 @@ contract StrategyScoringModule is StrategyStorageLayout {
         if (idleBalance <= maxIdleAmt) return;
         uint256 remaining = idleBalance - maxIdleAmt;
         uint256 _dust = dustTolerance;
+        // Yield-buffer margin: by parking at fbCeiling x (1 - marginBps/10_000)
+        // we leave room for post-deposit yield to accumulate without pushing
+        // positionAssets above fbCeiling. If positionAssets > fbCeiling, the
+        // "preserve safety tranche" clause in _targetAllocations (which requires
+        // current <= fbCeiling) does NOT fire, exposing the safety tranche to
+        // rebalance-driven withdrawal and defeating P0.7. Symmetric with how
+        // _targetAllocations applies safetyMult to cap-binding scoring targets.
+        // When targetSafetyMarginBps == 0, safetyMult == 10_000 and
+        // fbCeilingNet == fbCeiling — exact non-regression.
+        uint256 marginBps = uint256(targetSafetyMarginBps);
+        uint256 safetyMult = 10_000 - marginBps;
 
         for (uint256 i = 0; i < nSafety && remaining > _dust;) {
             address a = safetyFallbackAdapters[i];
@@ -526,9 +537,10 @@ contract StrategyScoringModule is StrategyStorageLayout {
                 if (fbRelCeiling < fbCeiling) fbCeiling = fbRelCeiling;
             }
 
+            uint256 fbCeilingNet = (fbCeiling * safetyMult) / 10_000;
             uint256 current = positionAssets[a];
-            if (current >= fbCeiling) continue;
-            uint256 room = fbCeiling - current;
+            if (current >= fbCeilingNet) continue;
+            uint256 room = fbCeilingNet - current;
             uint256 toDeposit = remaining < room ? remaining : room;
             if (toDeposit < _dust) continue;
 
