@@ -64,3 +64,28 @@ Do NOT use internal library functions — those get inlined and don't reduce cal
 Use `public`/`external` functions in a deployed library or in an existing module.
 
 _Discovered: Wave 1 lens-refactor WS | Status: **OPEN** — out of scope for current task_
+
+---
+
+## F-SIZE-02 -- UsdcMultiLendingVault bytecode size exceeds project 1KB-safety rule
+
+**Discovered during**: Pre-Wave 2 contract sizes audit (`forge build --sizes`)
+**File**: `src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol`
+**Severity**: LOW (still below EIP-170 hard limit 24,576 B)
+
+### Description
+
+`forge build --sizes` reports `UsdcMultiLendingVault` at **23,992 bytes**.
+
+- EIP-170 hard limit: 24,576 B OK (margin 584 B)
+- Project 1KB-safety rule (CLAUDE.md rule 15): 23,552 B FAIL (440 B over)
+
+Margin to EIP-170 is only 584 B -- the second most critical size finding.
+Any Wave 2 code addition touching UsdcLendingStrategy.sol risks crossing EIP-170.
+
+### Fix needed
+
+Extract cold-path or admin-only logic to a separate module (delegatecall pattern
+already used by the vault). Candidates: bootstrapping logic, settings delegation.
+
+_Discovered: Wave 1 closing sizes audit | Status: **OPEN** -- out of scope for current task_
