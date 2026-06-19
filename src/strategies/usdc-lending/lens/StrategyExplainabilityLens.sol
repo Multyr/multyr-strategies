@@ -2,6 +2,7 @@
 pragma solidity ^0.8.28;
 
 import { ILendingAdapter } from "../interfaces/ILendingAdapter.sol";
+import { StrategyConfigLib } from "../lib/StrategyConfigLib.sol";
 
 /// @title StrategyExplainabilityLens — Read-only external explainability for UsdcLendingStrategy
 /// @notice Standalone periphery contract. Reads strategy state via public getters and adapter
@@ -13,21 +14,6 @@ import { ILendingAdapter } from "../interfaces/ILendingAdapter.sol";
 ///         This separation is intentional for audit cleanliness.
 contract StrategyExplainabilityLens {
 
-    // ═══════════════════════════════════════════════════════════════════
-    // CONSTANTS (mirrored from StrategyStorageLayout)
-    // ═══════════════════════════════════════════════════════════════════
-
-    uint256 constant DEFAULT_STABILITY_BPS = 7000;
-    uint256 constant DEFAULT_RISK_BPS = 7000;
-    uint256 constant DEFAULT_LIQ_BPS = 5000;
-
-    uint256 constant CONFIDENCE_ZERO  = 0;
-    uint256 constant CONFIDENCE_MICRO = 3000;
-    uint256 constant CONFIDENCE_SMALL = 5000;
-    uint256 constant CONFIDENCE_LOW   = 7000;
-    uint256 constant CONFIDENCE_MED   = 8500;
-    uint256 constant CONFIDENCE_HIGH  = 9500;
-    uint256 constant CONFIDENCE_VHIGH = 10000;
 
     // ═══════════════════════════════════════════════════════════════════
     // IMMUTABLES
@@ -112,12 +98,12 @@ contract StrategyExplainabilityLens {
         liqBps = _clampLiq(adapter);
 
         uint256 riskScore = strategy.riskScoreBps(adapter);
-        uint256 baseRisk = riskScore > 0 ? (10000 - riskScore) : DEFAULT_RISK_BPS;
+        uint256 baseRisk = riskScore > 0 ? (10000 - riskScore) : StrategyConfigLib.DEFAULT_RISK_BPS;
         confidenceBps = _tvlConfidence(adapter);
         riskBps = (baseRisk * confidenceBps) / 1e4;
 
         stabilityBps = strategy.stabilityEMA(adapter);
-        if (stabilityBps < 1) stabilityBps = DEFAULT_STABILITY_BPS;
+        if (stabilityBps < 1) stabilityBps = StrategyConfigLib.DEFAULT_STABILITY_BPS;
 
         // FIX P1.L6: _decayedIncentive deleted; P0.L1A forces wIncentive=0 in scoring.
         // Lens reflects actual scoring contribution which is 0 until P0.L1B reward pipeline.
@@ -296,7 +282,7 @@ contract StrategyExplainabilityLens {
 
         if (selCount >= maxAdapters) { info.skipReason = SkipReason.NotSelected; return (info, false); }
         if (strategy.flagged(adapter)) { info.skipReason = SkipReason.Flagged; return (info, false); }
-        if (conf == CONFIDENCE_ZERO) { info.skipReason = SkipReason.LowConfidence; return (info, false); }
+        if (conf == StrategyConfigLib.CONFIDENCE_ZERO) { info.skipReason = SkipReason.LowConfidence; return (info, false); }
         if (current >= maxExp) { info.skipReason = SkipReason.OverMaxCap; return (info, false); }
 
         uint256 headroom = maxExp - current;
@@ -346,44 +332,29 @@ contract StrategyExplainabilityLens {
     function _clampLiq(address adapter) internal view returns (uint256) {
         uint256 tot;
         try ILendingAdapter(adapter).totalAssets() returns (uint256 t) { tot = t; }
-        catch { return DEFAULT_LIQ_BPS; }
+        catch { return StrategyConfigLib.DEFAULT_LIQ_BPS; }
         if (tot <= strategy.dustTolerance()) return 10000;
         uint256 wa;
         try ILendingAdapter(adapter).withdrawableAssets() returns (uint256 w) { wa = w; }
-        catch { return DEFAULT_LIQ_BPS; }
+        catch { return StrategyConfigLib.DEFAULT_LIQ_BPS; }
         uint256 liq = (wa * 1e4) / tot;
         return liq > 10000 ? 10000 : liq;
     }
 
+    // HIGH-LENS-03 fix: aligned to core 3-state semantic via StrategyConfigLib.
+    // Previous impl had two divergences: (1) checked staleness before cacheTs==0,
+    // returning StrategyConfigLib.CONFIDENCE_MICRO instead of StrategyConfigLib.CONFIDENCE_ZERO when cacheTs==0;
+    // (2) returned StrategyConfigLib.CONFIDENCE_MICRO for extTVL==0, core returns StrategyConfigLib.CONFIDENCE_ZERO.
     function _tvlConfidence(address adapter) internal view returns (uint256) {
-        uint256 extTVL = strategy.cachedExternalTVL(adapter);
-        uint32 staleness = strategy.externalTVLStalenessSeconds();
-        if (staleness > 0 && strategy.cachedExternalTVLTs(adapter) > 0) {
-            if (block.timestamp - strategy.cachedExternalTVLTs(adapter) > staleness) {
-                return CONFIDENCE_MICRO;
-            }
-        }
-        if (extTVL < 1) return CONFIDENCE_MICRO;
-        if (extTVL < 100_000e6) return CONFIDENCE_ZERO;
-        if (extTVL < 500_000e6) return CONFIDENCE_MICRO;
-        if (extTVL < 2_000_000e6) return CONFIDENCE_SMALL;
-        if (extTVL < 10_000_000e6) return CONFIDENCE_LOW;
-        if (extTVL < 50_000_000e6) return CONFIDENCE_MED;
-        if (extTVL < 250_000_000e6) return CONFIDENCE_HIGH;
-        return CONFIDENCE_VHIGH;
+        return StrategyConfigLib.tvlConfidence(
+            strategy.cachedExternalTVL(adapter),
+            strategy.cachedExternalTVLTs(adapter),
+            strategy.externalTVLStalenessSeconds()
+        );
     }
 
     function _effectiveRelativeCapBps(uint256 extTVL) internal pure returns (uint16) {
-        if (extTVL < 100_000e6) return 0;
-        if (extTVL < 500_000e6) return 200;
-        if (extTVL < 1_000_000e6) return 500;
-        if (extTVL < 2_000_000e6) return 800;
-        if (extTVL < 3_000_000e6) return 1000;
-        if (extTVL < 10_000_000e6) return 1200;
-        if (extTVL < 25_000_000e6) return 1500;
-        if (extTVL < 50_000_000e6) return 1800;
-        if (extTVL < 250_000_000e6) return 2000;
-        return 2500;
+        return StrategyConfigLib.effectiveRelativeCapBps(extTVL);
     }
 
     // FIX P1.L6: _decayedIncentive deleted (P0.L1A forces wIncentive=0).
@@ -425,11 +396,11 @@ contract StrategyExplainabilityLens {
             uint256 apyNorm = maxAPY > 0 ? (uint256(rawAPYs[i]) * 1e4) / maxAPY : 0;
             uint256 liq = _clampLiq(adapter);
             uint256 riskScore = strategy.riskScoreBps(adapter);
-            uint256 risk = riskScore > 0 ? (10000 - riskScore) : DEFAULT_RISK_BPS;
+            uint256 risk = riskScore > 0 ? (10000 - riskScore) : StrategyConfigLib.DEFAULT_RISK_BPS;
             uint256 conf = _tvlConfidence(adapter);
             risk = (risk * conf) / 1e4;
             uint256 stab = strategy.stabilityEMA(adapter);
-            if (stab < 1) stab = DEFAULT_STABILITY_BPS;
+            if (stab < 1) stab = StrategyConfigLib.DEFAULT_STABILITY_BPS;
             // FIX P1.L6: _decayedIncentive deleted post-P0.L1A.
             uint16 inc = 0;
             rawScores[i] = uint256(wA) * apyNorm + uint256(wL) * liq + uint256(wR) * risk

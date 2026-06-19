@@ -21,6 +21,7 @@ import { ReentrancyGuard } from "@openzeppelin/contracts/security/ReentrancyGuar
 import { IERC20Metadata } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import { ILendingAdapter } from "../interfaces/ILendingAdapter.sol";
+import { StrategyConfigLib } from "../lib/StrategyConfigLib.sol";
 
 // ── Structs ──────────────────────────────────────────────────────────────────
 
@@ -661,34 +662,18 @@ contract StrategyStorageLayout is AccessControl, Pausable, ReentrancyGuard {
         return liq;
     }
 
-    /// @dev TVL confidence — 3-state: UNAVAILABLE (ts==0), STALE (beyond window), FRESH.
-    ///      Canonical version (aligned with ScoringModule Audit #2 P0.6 fix).
+    /// @dev TVL confidence -- delegates to StrategyConfigLib (single source of truth).
+    ///      3-state: UNAVAILABLE (cacheTs==0), STALE (beyond window), FRESH.
     function _tvlConfidence(address adapter) internal view returns (uint256) {
-        uint64 cacheTs = cachedExternalTVLTs[adapter];
-        uint256 extTVL = cachedExternalTVL[adapter];
-        if (cacheTs == 0) return CONFIDENCE_ZERO;
-        uint32 _staleness = externalTVLStalenessSeconds;
-        if (_staleness > 0 && block.timestamp - cacheTs > _staleness) return CONFIDENCE_MICRO;
-        if (extTVL < 100_000e6) return CONFIDENCE_ZERO;
-        if (extTVL < 500_000e6) return CONFIDENCE_MICRO;
-        if (extTVL < 2_000_000e6) return CONFIDENCE_SMALL;
-        if (extTVL < 10_000_000e6) return CONFIDENCE_LOW;
-        if (extTVL < 50_000_000e6) return CONFIDENCE_MED;
-        if (extTVL < 250_000_000e6) return CONFIDENCE_HIGH;
-        return CONFIDENCE_VHIGH;
+        return StrategyConfigLib.tvlConfidence(
+            cachedExternalTVL[adapter],
+            cachedExternalTVLTs[adapter],
+            externalTVLStalenessSeconds
+        );
     }
 
-    /// @dev Dynamic relative exposure cap — scales with external market depth.
+    /// @dev Dynamic relative exposure cap -- delegates to StrategyConfigLib (single source of truth).
     function _effectiveRelativeCapBps(uint256 extTVL) internal pure returns (uint16) {
-        if (extTVL < 100_000e6) return 0;
-        if (extTVL < 500_000e6) return 200;
-        if (extTVL < 1_000_000e6) return 500;
-        if (extTVL < 2_000_000e6) return 800;
-        if (extTVL < 3_000_000e6) return 1000;
-        if (extTVL < 10_000_000e6) return 1200;
-        if (extTVL < 25_000_000e6) return 1500;
-        if (extTVL < 50_000_000e6) return 1800;
-        if (extTVL < 250_000_000e6) return 2000;
-        return 2500;
+        return StrategyConfigLib.effectiveRelativeCapBps(extTVL);
     }
 }
