@@ -439,6 +439,11 @@ contract V92_SafetyTierE2E is Test {
         // Restore A to 65%, then strip safety status. Normal hardCeiling ~51.25%.
         _forcePctOfNewTvl(adapterA, 6500);
 
+        // H-02-FIX: capture reference TVL after last force-position setup.
+        // removeSafetyFallbackAdapter and canRebalance are fund-neutral (storage writes
+        // and view calls only). S13 asserts both directions: no assets lost AND none created.
+        uint256 tvl_refS13 = _totalTvl();
+
         vm.prank(admin);
         StrategySettingsModule(address(vault)).removeSafetyFallbackAdapter(address(adapterA));
 
@@ -464,14 +469,49 @@ contract V92_SafetyTierE2E is Test {
             assertEq(nb12, int256(0), "S12: mandate signature nb=0 (protection, not APY)");
         }
 
-        // ── S13: Accounting conservation ──────────────────────────────────────
-        // Total assets (idle + all positions) must approximate the deposited amount.
-        // Dust tolerance = 10000 wei per _baseParams; allow a slightly wider margin
-        // for integer rounding across multi-step stdstore writes.
+        // ── S13: Accounting conservation (TWO-SIDED) ─────────────────────────
+        // H-02-FIX: Conservation invariant must be two-sided to catch value-inflation bugs.
+        // tvl_refS13 was captured after S12 force (last fund-moving op before S13).
+        // removeSafetyFallbackAdapter + canRebalance are fund-neutral: no USDC transfers.
+        // Lower bound: no funds destroyed. Upper bound: no funds created from thin air.
         uint256 totalS13 = _totalTvl();
         assertGt(totalS13, 0,
             "S13: protocol TVL must be positive (no catastrophic accounting loss)");
         assertGe(totalS13, DEPOSIT_AMOUNT,
-            "S13: total assets must not drop below initial deposit amount");
+            "S13: lower bound -- total assets must not drop below initial deposit amount");
+        // Upper bound: admin storage ops + read-only canRebalance must not move funds.
+        assertApproxEqAbs(totalS13, tvl_refS13, 10_000,
+            "S13: upper bound -- removeSafetyFallbackAdapter + canRebalance must not move funds (two-sided, +-10000 wei dust)");
     }
+    // ═══════════════════════════════════════════════════════════════════════════
+    // S13 conservation: standalone two-sided TVL conservation across deployIdle
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    /// @notice Two-sided conservation invariant: deployIdle must not create or destroy
+    ///         funds. TVL before == TVL after (±dustTolerance). Covers the full path:
+    ///         deposit → deployIdle, with real Arbitrum USDC via deal.
+    function test_S13_conservation_normal_flow() public {
+        // Deposit 1M USDC.
+        deal(ARBITRUM_USDC, core, DEPOSIT_AMOUNT);
+        vm.startPrank(core);
+        IERC20(ARBITRUM_USDC).transfer(address(vault), DEPOSIT_AMOUNT);
+        vault.deposit(DEPOSIT_AMOUNT);
+        vm.stopPrank();
+
+        uint256 tvlAfterDeposit = _totalTvl();
+        assertEq(tvlAfterDeposit, DEPOSIT_AMOUNT,
+            "S13-flow: TVL after deposit must equal deposited amount exactly");
+
+        // deployIdle moves funds from vault idle to adapters -- must conserve TVL.
+        vm.prank(keeper);
+        StrategyScoringModule(address(vault)).deployIdle();
+
+        uint256 tvlAfterDeploy = _totalTvl();
+
+        // TWO-SIDED conservation: neither funds lost nor created during deployIdle.
+        // dustTolerance = 10_000 wei (baseParams.dustTolerance).
+        assertApproxEqAbs(tvlAfterDeploy, DEPOSIT_AMOUNT, 10_000,
+            "S13-flow: deployIdle must conserve TVL two-sided (no value creation or destruction)");
+    }
+
 }
