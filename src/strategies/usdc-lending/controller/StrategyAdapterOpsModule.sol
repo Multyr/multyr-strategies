@@ -162,4 +162,64 @@ contract StrategyAdapterOpsModule is StrategyStorageLayout {
         }
         emit GasEmaUpdated(adapter, updated, isDeposit);
     }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // Position sync (extracted from StrategyScoringModule, F-SIZE-01)
+    // ═══════════════════════════════════════════════════════════════════════
+
+    /// @notice Sync positionAssets from live adapter balances. Called via delegatecall.
+    ///         force=true: bypass cooldown (rebalance). force=false: respect cooldown (deployIdle).
+    function syncPositionAssets(bool force) external onlyDelegateCall {
+        if (!force && lastSyncTs != 0
+            && block.timestamp < uint256(lastSyncTs) + minSecondsBetweenSync) return;
+
+        address[] storage _adapters = adapters;
+        uint256 n = _adapters.length;
+        uint256 totalDrift = 0;
+        bool hasNegative = false;
+        uint256 _dust = dustTolerance;
+
+        for (uint256 i = 0; i < n;) {
+            address adapter = _adapters[i];
+            if (enabled[adapter] || positionAssets[adapter] > 0) {
+                uint256 oldPos = positionAssets[adapter];
+                uint256 actual = _safeTotalAssets(adapter);
+                if (actual == 0 && oldPos > 0) {
+                    emit PositionSyncSkippedSuspicious(adapter, oldPos, actual);
+                    unchecked { ++i; }
+                    continue;
+                }
+                if (oldPos > 0 && actual > oldPos * 3) {
+                    emit PositionSyncSkippedSuspicious(adapter, oldPos, actual);
+                    unchecked { ++i; }
+                    continue;
+                }
+                uint256 diff = actual > oldPos ? actual - oldPos : oldPos - actual;
+                if (actual < oldPos) hasNegative = true;
+                unchecked { totalDrift += diff; }
+                if (diff >= _dust) {
+                    positionAssets[adapter] = actual;
+                    emit PositionAssetsSynced(adapter, oldPos, actual);
+                }
+            }
+            unchecked { ++i; }
+        }
+
+        lastSyncTs = uint64(block.timestamp);
+        if (totalDrift > 0) emit DriftMeasured(totalDrift, hasNegative);
+
+        uint32 _liqStaleness = liquidityStalenessSeconds;
+        if (_liqStaleness > 0) {
+            for (uint256 j = 0; j < n;) {
+                address a = _adapters[j];
+                if (enabled[a] && cachedLiquidityTs[a] > 0) {
+                    uint256 age = block.timestamp - cachedLiquidityTs[a];
+                    if (age > _liqStaleness) {
+                        emit LiquidityCacheStale(a, age);
+                    }
+                }
+                unchecked { ++j; }
+            }
+        }
+    }
 }

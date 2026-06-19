@@ -36,6 +36,7 @@ import { StrategyAdapterOpsModule }            from "../../../../src/strategies/
 import { StrategyRebalanceGateModule }         from "../../../../src/strategies/usdc-lending/controller/StrategyRebalanceGateModule.sol";
 import { StrategyRebalancePlanModule }         from "../../../../src/strategies/usdc-lending/controller/StrategyRebalancePlanModule.sol";
 import { ScoringMockAdapter }                  from "../Scoring_Model.t.sol";
+import { StrategySafetyOverflowModule } from "../../../../src/strategies/usdc-lending/controller/StrategySafetyOverflowModule.sol";
 
 contract V92_SafetyTierE2E is Test {
     using stdStorage for StdStorage;
@@ -111,6 +112,10 @@ contract V92_SafetyTierE2E is Test {
 
         StrategyAllocCalcModule allocCalcMod = new StrategyAllocCalcModule(ARBITRUM_USDC, core);
         vm.prank(admin); vault.setAllocCalcModule(address(allocCalcMod));
+        StrategySafetyOverflowModule overflowMod = new StrategySafetyOverflowModule(
+            ARBITRUM_USDC, core, address(0), address(0), address(adapterOpsMod)
+        );
+        vm.prank(admin); StrategySettingsModule(address(vault)).setSafetyOverflowModule(address(overflowMod));
 
         vm.startPrank(admin);
         address(vault).call(abi.encodeWithSignature("whitelistAdapter(address,bool)", address(adapterA), true));

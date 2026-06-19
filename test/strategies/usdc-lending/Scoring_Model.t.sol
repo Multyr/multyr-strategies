@@ -25,6 +25,7 @@ import { StrategyAdapterOpsModule } from "../../../src/strategies/usdc-lending/c
 import {
     ILendingAdapter
 } from "../../../src/strategies/usdc-lending/interfaces/ILendingAdapter.sol";
+import { StrategySafetyOverflowModule } from "../../../src/strategies/usdc-lending/controller/StrategySafetyOverflowModule.sol";
 
 // ============================================================================
 // MOCK: Adapter with independent totalAssets / withdrawableAssets control
@@ -231,6 +232,11 @@ contract Scoring_Model is Test {
         StrategyAllocCalcModule _allocCalcMod0 = new StrategyAllocCalcModule(ARBITRUM_USDC, core);
         vm.prank(admin);
         vault.setAllocCalcModule(address(_allocCalcMod0));
+        StrategySafetyOverflowModule _overflowMod = new StrategySafetyOverflowModule(
+            ARBITRUM_USDC, core, address(0), address(0), address(adapterOpsMod)
+        );
+        vm.prank(admin);
+        StrategySettingsModule(address(vault)).setSafetyOverflowModule(address(_overflowMod));
 
         // Set vault on adapters
         adapterA.setVault(address(vault));

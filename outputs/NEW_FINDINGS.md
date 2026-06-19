@@ -89,3 +89,17 @@ Extract cold-path or admin-only logic to a separate module (delegatecall pattern
 already used by the vault). Candidates: bootstrapping logic, settings delegation.
 
 _Discovered: Wave 1 closing sizes audit | Status: **OPEN** -- out of scope for current task_
+
+---
+
+## F-SIZE-02 UPDATE -- UsdcMultiLendingVault grew +56 B after F-SIZE-01
+
+**Discovered during**: F-SIZE-01 (StrategyScoringModule EIP-170 refactor)
+**File**: `src/strategies/usdc-lending/controller/StrategyStorageLayout.sol`
+**Change**: Added `address public safetyOverflowModule_addr;` storage var + `event SafetyOverflowModuleSet` + reduced `__gap[2]` to `__gap[1]` -- net +56 B to all inheriting contracts.
+
+UsdcMultiLendingVault grew from **23,992 B -> 24,048 B** (margin 584 -> 528 B vs EIP-170 hard limit 24,576 B).
+Still below EIP-170 hard limit. Project 1KB-safety rule (23,552 B) already exceeded before this change.
+F-SIZE-02 must close this separately.
+
+_Status: **OPEN** -- tracked under F-SIZE-02_

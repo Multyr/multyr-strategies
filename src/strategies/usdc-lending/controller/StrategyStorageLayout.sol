@@ -440,7 +440,10 @@ contract StrategyStorageLayout is AccessControl, Pausable, ReentrancyGuard {
     //   - packed uint16/uint32/uint32/uint8/uint8 block (1 slot)
     //   - isSeasoned mapping head (1 slot)
     //   - lastRiskScoreUpdateTs mapping head (1 slot)
-    uint256[2] private __gap;
+    // Reduced from 2 to 1 (2026-06-20): safetyOverflowModule_addr (EIP-170 F-SIZE-01 refactor).
+    /// @notice StrategySafetyOverflowModule address (set-once via setSafetyOverflowModule).
+    address public safetyOverflowModule_addr;
+    uint256[1] private __gap;
 
     // ── Shared events ───────────────────────────────────────────────────────
 
@@ -493,6 +496,7 @@ contract StrategyStorageLayout is AccessControl, Pausable, ReentrancyGuard {
     event RebalancePlanModuleSet(address indexed module);
     event SettingsModuleSet(address indexed module);
     event AllocCalcModuleSet(address indexed module);
+    event SafetyOverflowModuleSet(address indexed module);
     event PositionSyncSkippedSuspicious(address indexed adapter, uint256 oldPos, uint256 actual);
     event DriftMeasured(uint256 totalDrift, bool hasNegativeDrift);
     event SyncIntervalUpdated(uint32 interval);

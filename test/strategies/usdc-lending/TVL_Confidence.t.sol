@@ -24,6 +24,7 @@ import { StrategyAdapterOpsModule } from "../../../src/strategies/usdc-lending/c
 import { ScoringMockAdapter } from "./Scoring_Model.t.sol";
 import { ParamOutOfRange } from "../../../src/strategies/usdc-lending/controller/StrategyStorageLayout.sol";
 import { StrategyRebalancePlanModule } from "../../../src/strategies/usdc-lending/controller/StrategyRebalancePlanModule.sol";
+import { StrategySafetyOverflowModule } from "../../../src/strategies/usdc-lending/controller/StrategySafetyOverflowModule.sol";
 
 /// @title TVL Confidence Tests — CTO mandated
 /// @notice Tests external market TVL integration: confidence bands, relative cap, no dominance.
@@ -127,6 +128,11 @@ contract TVL_Confidence is Test {
         StrategyAllocCalcModule _allocCalcMod0 = new StrategyAllocCalcModule(ARBITRUM_USDC, core);
         vm.prank(admin);
         vault.setAllocCalcModule(address(_allocCalcMod0));
+        StrategySafetyOverflowModule _overflowMod = new StrategySafetyOverflowModule(
+            ARBITRUM_USDC, core, address(0), address(0), address(adapterOpsMod)
+        );
+        vm.prank(admin);
+        StrategySettingsModule(address(vault)).setSafetyOverflowModule(address(_overflowMod));
 
         adapterBig.setVault(address(vault));
         adapterMed.setVault(address(vault));

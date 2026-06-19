@@ -23,6 +23,7 @@ import {
 } from "../../../src/strategies/usdc-lending/interfaces/ILendingAdapter.sol";
 import { StrategyExplainabilityLens } from "../../../src/strategies/usdc-lending/lens/StrategyExplainabilityLens.sol";
 import { StrategyRebalancePlanModule } from "../../../src/strategies/usdc-lending/controller/StrategyRebalancePlanModule.sol";
+import { StrategySafetyOverflowModule } from "../../../src/strategies/usdc-lending/controller/StrategySafetyOverflowModule.sol";
 
 // ============================================================================
 // MOCK: Adapter with controllable APY for stability EMA testing
@@ -178,6 +179,11 @@ contract StabilityEMA_Test is Test {
         StrategyAllocCalcModule _allocCalcMod0 = new StrategyAllocCalcModule(ARBITRUM_USDC, core);
         vm.prank(admin);
         vault.setAllocCalcModule(address(_allocCalcMod0));
+        StrategySafetyOverflowModule _overflowMod = new StrategySafetyOverflowModule(
+            ARBITRUM_USDC, core, address(0), address(0), address(adapterOpsMod)
+        );
+        vm.prank(admin);
+        StrategySettingsModule(address(vault)).setSafetyOverflowModule(address(_overflowMod));
 
         // Register and enable adapters
         vm.startPrank(admin);

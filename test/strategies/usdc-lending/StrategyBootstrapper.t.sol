@@ -28,6 +28,7 @@ import { StrategyAllocCalcModule } from "../../../src/strategies/usdc-lending/co
 import {
     ILendingAdapter
 } from "../../../src/strategies/usdc-lending/interfaces/ILendingAdapter.sol";
+import { StrategySafetyOverflowModule } from "../../../src/strategies/usdc-lending/controller/StrategySafetyOverflowModule.sol";
 
 // ============================================================================
 // MINIMAL MOCKS
@@ -199,6 +200,11 @@ contract StrategyBootstrapperTestBase is Test {
         StrategyAllocCalcModule _allocCalcMod0 = new StrategyAllocCalcModule(ARBITRUM_USDC, core);
         vm.prank(admin);
         vault.setAllocCalcModule(address(_allocCalcMod0));
+        StrategySafetyOverflowModule _overflowMod = new StrategySafetyOverflowModule(
+            ARBITRUM_USDC, core, address(0), address(0), address(adapterOpsMod)
+        );
+        vm.prank(admin);
+        StrategySettingsModule(address(vault)).setSafetyOverflowModule(address(_overflowMod));
     }
 
     /// @dev Deploy a bootstrapper from deployer address, grant it BOOTSTRAP_ROLE

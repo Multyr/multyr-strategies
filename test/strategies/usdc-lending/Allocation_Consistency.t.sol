@@ -26,6 +26,7 @@ import {
     ILendingAdapter
 } from "../../../src/strategies/usdc-lending/interfaces/ILendingAdapter.sol";
 import { ScoringMockAdapter } from "./Scoring_Model.t.sol";
+import { StrategySafetyOverflowModule } from "../../../src/strategies/usdc-lending/controller/StrategySafetyOverflowModule.sol";
 
 // ============================================================================
 // ALLOCATION CONSISTENCY + SYSTEM INVARIANTS + EXPLAINABILITY — BLOCCO C, I, M
@@ -148,6 +149,11 @@ contract Allocation_Consistency is Test {
         StrategyAllocCalcModule _allocCalcMod0 = new StrategyAllocCalcModule(ARBITRUM_USDC, core);
         vm.prank(admin);
         vault.setAllocCalcModule(address(_allocCalcMod0));
+        StrategySafetyOverflowModule _overflowMod = new StrategySafetyOverflowModule(
+            ARBITRUM_USDC, core, address(0), address(0), address(adapterOpsMod)
+        );
+        vm.prank(admin);
+        StrategySettingsModule(address(vault)).setSafetyOverflowModule(address(_overflowMod));
 
         adapterA.setVault(address(vault));
         adapterB.setVault(address(vault));

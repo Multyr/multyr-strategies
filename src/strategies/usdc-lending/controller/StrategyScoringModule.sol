@@ -423,6 +423,15 @@ contract StrategyScoringModule is StrategyStorageLayout {
     bytes4 private constant RECORD_FAILURE_SEL = bytes4(keccak256("recordAdapterFailure(address)"));
     bytes4 private constant RECORD_SUCCESS_SEL = bytes4(keccak256("recordAdapterSuccess(address)"));
 
+    // ── SafetyOverflowModule delegatecall selectors (F-SIZE-01) ────────────────────
+
+    bytes4 private constant EXEC_SAFETY_OVERFLOW_SEL =
+        bytes4(keccak256("executeSafetyOverflow()"));
+    bytes4 private constant EMIT_LOW_CONF_SEL =
+        bytes4(keccak256("emitLowConfidenceSkips(address[],uint256)"));
+    bytes4 private constant SYNC_POSITION_ASSETS_SEL =
+        bytes4(keccak256("syncPositionAssets(bool)"));
+
     function _deployIdleToAdapters(uint256 amount, bool bestEffort) internal {
         if (amount < 1) return;
         address ac = allocCalcModule_addr;
@@ -438,8 +447,14 @@ contract StrategyScoringModule is StrategyStorageLayout {
             abi.decode(res, (address[], uint256[], uint256));
 
         // Emit observability events for adapters skipped due to low confidence.
-        // AllocCalcModule is view-only; ScoringModule emits on its behalf.
-        _emitLowConfidenceSkips(selected, selCount);
+        // AllocCalcModule is view-only; ScoringModule delegates to SafetyOverflowModule.
+        address _overflowMod = safetyOverflowModule_addr;
+        if (_overflowMod != address(0)) {
+            (bool _okEmit,) = _overflowMod.delegatecall(
+                abi.encodeWithSelector(EMIT_LOW_CONF_SEL, selected, selCount)
+            );
+            require(_okEmit, "SafetyOverflow: emitLowConfidenceSkips");
+        }
 
         uint256 _minSeed = _minSeedInternal();
         for (uint256 j = 0; j < selCount; ++j) {
@@ -472,107 +487,21 @@ contract StrategyScoringModule is StrategyStorageLayout {
 
         // === SAFETY OVERFLOW (P0.7 — 2026-06-11) ===========================
         // After the normal allocator plan completes, if idle still exceeds
-        // maxIdleBps × tvl, route the excess to the governance-approved
-        // safety adapters using their elevated fallback caps. This is the
-        // ONLY path that can push a safety adapter above its normal cap.
+        // maxIdleBps x tvl, route the excess to governance-approved safety
+        // adapters via StrategySafetyOverflowModule (F-SIZE-01 delegatecall).
         // No-op when maxIdleBps == 0 OR safetyFallbackAdapters is empty.
-        _executeSafetyOverflow();
-    }
-
-    /// @notice Route excess idle into ordered safety-fallback adapters.
-    /// @dev    Best-effort: each deposit goes through _safeAdapterDeposit
-    ///         (catches adapter failures, does not revert the deploy). The
-    ///         overflow respects fallbackAbsCap and fallbackRelCap PER ADAPTER
-    ///         — never the normal abs/rel cap, which would defeat the purpose.
-    ///         Skips safety adapters that are disabled, flagged, quarantined,
-    ///         or whose extTVL is below 500K (MICRO band). Safety adapters do
-    ///         NOT honour mandate cooldown because by construction they are
-    ///         exempt from the cooldown set.
-    function _executeSafetyOverflow() internal {
-        uint16 maxIdleBpsLocal = maxIdleBps;
-        if (maxIdleBpsLocal == 0) return;
-        uint256 nSafety = safetyFallbackAdapters.length;
-        if (nSafety == 0) return;
-
-        uint256 tvl = _tvl();
-        if (tvl < 1) return;
-        uint256 maxIdleAmt = (tvl * uint256(maxIdleBpsLocal)) / 1e4;
-        uint256 idleBalance = ASSET.balanceOf(address(this));
-        if (idleBalance <= maxIdleAmt) return;
-        uint256 remaining = idleBalance - maxIdleAmt;
-        uint256 _dust = dustTolerance;
-        // Yield-buffer margin: by parking at fbCeiling x (1 - marginBps/10_000)
-        // we leave room for post-deposit yield to accumulate without pushing
-        // positionAssets above fbCeiling. If positionAssets > fbCeiling, the
-        // "preserve safety tranche" clause in _targetAllocations (which requires
-        // current <= fbCeiling) does NOT fire, exposing the safety tranche to
-        // rebalance-driven withdrawal and defeating P0.7. Symmetric with how
-        // _targetAllocations applies safetyMult to cap-binding scoring targets.
-        // When targetSafetyMarginBps == 0, safetyMult == 10_000 and
-        // fbCeilingNet == fbCeiling — exact non-regression.
-        uint256 marginBps = uint256(targetSafetyMarginBps);
-        uint256 safetyMult = 10_000 - marginBps;
-
-        for (uint256 i = 0; i < nSafety && remaining > _dust;) {
-            address a = safetyFallbackAdapters[i];
-            unchecked { ++i; }
-
-            // Eligibility gates — order chosen for cheapest-first short-circuit.
-            if (!enabled[a]) continue;
-            if (flagged[a]) continue;
-            if (quarantined[a]) continue;
-
-            // Pool depth gate — refuse to park into adapters below MICRO band
-            // (500K USDC extTVL), where a $1M deposit would distort the rate
-            // and breach the "safety venue must be deep" precondition.
-            uint256 extTVL = cachedExternalTVL[a];
-            if (extTVL < 500_000e6) continue;
-
-            // Fallback caps (governance-approved second tier).
-            SafetyFallback memory sf = safetyFallback[a];
-            if (sf.absCapBps == 0) continue; // belt-and-braces: not a safety adapter
-            uint256 fbCeiling = (uint256(sf.absCapBps) * tvl) / 1e4;
-            if (sf.relCapBps > 0) {
-                uint256 fbRelCeiling = (uint256(sf.relCapBps) * extTVL) / 1e4;
-                if (fbRelCeiling < fbCeiling) fbCeiling = fbRelCeiling;
-            }
-
-            uint256 fbCeilingNet = (fbCeiling * safetyMult) / 10_000;
-            uint256 current = positionAssets[a];
-            if (current >= fbCeilingNet) continue;
-            uint256 room = fbCeilingNet - current;
-            uint256 toDeposit = remaining < room ? remaining : room;
-            if (toDeposit < _dust) continue;
-
-            uint256 idleBefore = ASSET.balanceOf(address(this));
-            bool ok = _safeAdapterDeposit(a, toDeposit);
-            if (!ok) continue;
-            uint256 idleAfter = ASSET.balanceOf(address(this));
-            uint256 actualDeposited = idleBefore - idleAfter;
-            positionAssets[a] = current + actualDeposited;
-            remaining -= actualDeposited;
-            emit SafetyOverflowDeployed(a, toDeposit, idleBefore, idleAfter);
+        // No-op when safetyOverflowModule_addr not yet set (backward compat).
+        address _safetyMod = safetyOverflowModule_addr;
+        if (_safetyMod != address(0)) {
+            (bool _okOverflow,) = _safetyMod.delegatecall(
+                abi.encodeWithSelector(EXEC_SAFETY_OVERFLOW_SEL)
+            );
+            require(_okOverflow, "SafetyOverflow: executeSafetyOverflow");
         }
     }
 
-    // Emits AdapterSkippedLowConfidence for enabled adapters excluded from the plan
-    // due to CONFIDENCE_ZERO. AllocCalcModule is view-only and cannot emit events.
-    function _emitLowConfidenceSkips(address[] memory selected, uint256 selCount) internal {
-        address[] memory enabledList = _enabledAdapters();
-        for (uint256 i = 0; i < enabledList.length;) {
-            address a = enabledList[i];
-            bool inPlan = false;
-            for (uint256 j = 0; j < selCount;) {
-                if (selected[j] == a) { inPlan = true; break; }
-                unchecked { ++j; }
-            }
-            if (!inPlan && _tvlConfidence(a) == CONFIDENCE_ZERO) {
-                uint256 extTVL = cachedExternalTVL[a];
-                emit AdapterSkippedLowConfidence(a, extTVL, CONFIDENCE_ZERO);
-            }
-            unchecked { ++i; }
-        }
-    }
+    // _executeSafetyOverflow and _emitLowConfidenceSkips extracted to
+    // StrategySafetyOverflowModule (F-SIZE-01, 2026-06-20).
 
     function _computeAdapterScores(address[] memory enabledAdapters)
         internal
@@ -689,71 +618,13 @@ contract StrategyScoringModule is StrategyStorageLayout {
         return tvlBased > _dust ? tvlBased : _dust;
     }
 
-    /// @dev Sync positionAssets from live adapter balances. Co-located with capital operations.
-    ///      force=true: bypass cooldown (rebalance). force=false: respect cooldown (deployIdle).
-    ///      Guards: skip zero-on-nonzero, skip >3x jump, skip if drift < dust.
-    ///      DOS-safe: _safeTotalAssets uses staticcall + fallback → bricked adapter = no change.
+    /// @dev Sync positionAssets from live adapter balances.
+    ///      Extracted to AdapterOpsModule (F-SIZE-01, 2026-06-20).
     function _syncPositionAssets(bool force) internal {
-        // FAST PATH: cooldown check (single SLOAD, no external calls)
-        if (!force && lastSyncTs != 0
-            && block.timestamp < uint256(lastSyncTs) + minSecondsBetweenSync) return;
-
-        address[] storage _adapters = adapters;
-        uint256 n = _adapters.length;
-        uint256 totalDrift = 0;
-        bool hasNegative = false;
-        uint256 _dust = dustTolerance;
-
-        for (uint256 i = 0; i < n;) {
-            address adapter = _adapters[i];
-            // Sync enabled OR disabled-with-funds (drift can hide in disabled adapters)
-            if (enabled[adapter] || positionAssets[adapter] > 0) {
-                uint256 oldPos = positionAssets[adapter];
-                uint256 actual = _safeTotalAssets(adapter);
-
-                // Guard: skip if adapter returns 0 but had funds (bricked/reverted fallback)
-                if (actual == 0 && oldPos > 0) {
-                    emit PositionSyncSkippedSuspicious(adapter, oldPos, actual);
-                    unchecked { ++i; }
-                    continue;
-                }
-                // Guard: skip if >3x jump (suspicious manipulation)
-                if (oldPos > 0 && actual > oldPos * 3) {
-                    emit PositionSyncSkippedSuspicious(adapter, oldPos, actual);
-                    unchecked { ++i; }
-                    continue;
-                }
-
-                uint256 diff = actual > oldPos ? actual - oldPos : oldPos - actual;
-                if (actual < oldPos) hasNegative = true;
-                unchecked { totalDrift += diff; }
-
-                // Skip SSTORE if drift < dustTolerance
-                if (diff >= _dust) {
-                    positionAssets[adapter] = actual;
-                    emit PositionAssetsSynced(adapter, oldPos, actual);
-                }
-            }
-            unchecked { ++i; }
-        }
-
-        lastSyncTs = uint64(block.timestamp);
-        if (totalDrift > 0) emit DriftMeasured(totalDrift, hasNegative);
-
-        // V9.1 CTO: check liquidity cache staleness — emit events for monitoring
-        uint32 _liqStaleness = liquidityStalenessSeconds;
-        if (_liqStaleness > 0) {
-            for (uint256 j = 0; j < n;) {
-                address a = _adapters[j];
-                if (enabled[a] && cachedLiquidityTs[a] > 0) {
-                    uint256 age = block.timestamp - cachedLiquidityTs[a];
-                    if (age > _liqStaleness) {
-                        emit LiquidityCacheStale(a, age);
-                    }
-                }
-                unchecked { ++j; }
-            }
-        }
+        (bool ok,) = adapterOpsModule.delegatecall(
+            abi.encodeWithSelector(SYNC_POSITION_ASSETS_SEL, force)
+        );
+        require(ok, "AdapterOps: syncPositionAssets");
     }
 
     // _enabledAdapters, _tvl — inherited from StrategyStorageLayout.

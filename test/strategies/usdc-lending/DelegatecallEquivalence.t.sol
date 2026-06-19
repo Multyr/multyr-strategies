@@ -26,6 +26,7 @@ import {
 } from "../../../src/strategies/usdc-lending/controller/StrategyStorageLayout.sol";
 import { StrategyExplainabilityLens } from "../../../src/strategies/usdc-lending/lens/StrategyExplainabilityLens.sol";
 import { ScoringMockAdapter } from "./Scoring_Model.t.sol";
+import { StrategySafetyOverflowModule } from "../../../src/strategies/usdc-lending/controller/StrategySafetyOverflowModule.sol";
 
 /// @title Delegatecall Equivalence Tests — CTO mandated
 /// @notice Proves that module-based functions match strategy scoring behavior
@@ -128,6 +129,11 @@ contract DelegatecallEquivalence is Test {
         StrategyAllocCalcModule _allocCalcMod0 = new StrategyAllocCalcModule(ARBITRUM_USDC, core);
         vm.prank(admin);
         vault.setAllocCalcModule(address(_allocCalcMod0));
+        StrategySafetyOverflowModule _overflowMod = new StrategySafetyOverflowModule(
+            ARBITRUM_USDC, core, address(0), address(0), address(adapterOpsMod)
+        );
+        vm.prank(admin);
+        StrategySettingsModule(address(vault)).setSafetyOverflowModule(address(_overflowMod));
         lens = address(new StrategyExplainabilityLens(address(vault)));
 
         adapterA.setVault(address(vault));

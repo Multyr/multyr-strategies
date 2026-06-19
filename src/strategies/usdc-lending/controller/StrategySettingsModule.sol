@@ -53,6 +53,17 @@ contract StrategySettingsModule is StrategyStorageLayout {
         emit ParametersFinalized();
     }
 
+    // ── Module address setters (F-SIZE-01 2026-06-20) ───────────────────────
+
+    /// @notice Set StrategySafetyOverflowModule address (set-once, DEFAULT_ADMIN_ROLE).
+    function setSafetyOverflowModule(address _overflowModule)
+        external onlyRoleOrRevert(DEFAULT_ADMIN_ROLE)
+    {
+        require(safetyOverflowModule_addr == address(0) && _overflowModule != address(0), "overflow-module");
+        safetyOverflowModule_addr = _overflowModule;
+        emit SafetyOverflowModuleSet(_overflowModule);
+    }
+
     // ══════════════════════════════════════════════════════════════════════
     //  ROLE ADMIN
     // ══════════════════════════════════════════════════════════════════════
