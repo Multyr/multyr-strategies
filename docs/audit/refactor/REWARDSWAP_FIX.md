@@ -1,3 +1,7 @@
+# HIGH-R1 + HIGH-R2 -- RewardSwapHelper Slippage Cap + KEEPER_ROLE
+
+*Promoted from outputs/R12_RESULT.md -- Wave 1 fix log.*
+
 # HIGH-R1 + HIGH-R2 RESULT — RewardSwapHelper slippage cap + KEEPER_ROLE
 
 ## Gate

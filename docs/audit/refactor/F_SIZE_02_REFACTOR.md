@@ -1,3 +1,5 @@
+*Promoted from outputs/F_SIZE_02_RESULT.md -- Wave 2 refactor log.*
+
 # F-SIZE-02 RESULT — UsdcMultiLendingVault EIP-170 Refactor
 
 **Task**: Reduce UsdcMultiLendingVault below 22,000 B (was 24,048 B — 496 B from EIP-170 hard limit, CRITICAL).

@@ -1,3 +1,5 @@
+*Promoted from outputs/F_SIZE_01_RESULT.md -- Wave 2 refactor log.*
+
 # F-SIZE-01 RESULT -- StrategyScoringModule EIP-170 Refactor
 
 **Task**: Reduce StrategyScoringModule below 22,000 B (was 24,426 B -- only 150 B from EIP-170 hard limit CRITICAL).

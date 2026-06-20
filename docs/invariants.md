@@ -555,7 +555,9 @@ Example: `AaveV3USDCAdapter.deposit()` at
 
 ## P0.7 Safety Adapter Cap Tier invariants
 
-P0.7 extends the V9.1 invariant set with 8 safety-tier guarantees.
+P0.7 extends the V9.1 invariant set with 8 safety-tier guarantees. The full Echidna
+campaign covers 15 invariants (I01–I12 + 3 Wave 2 additions) — see
+`docs/audit/verification/ECHIDNA_RESULTS_SUMMARY.md` for the 1M-sequence baseline evidence.
 Each invariant has at least one of (Halmos symbolic proof, Echidna
 stateful fuzz, unit test) verification.
 
@@ -638,7 +640,7 @@ when safety is unconfigured.
 
 Verification:
 - Echidna `echidna_I12_legacy_when_disabled`
-- Existing V9.1 unit test suite (1555+ tests) passes unchanged
+- Existing V9.1 unit test suite (1555+ tests) passes unchanged (2,354 total post Wave 1+2)
 
 ## Cross-reference: arithmetic safety
 

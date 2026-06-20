@@ -1,3 +1,5 @@
+*Promoted from outputs/WAVE2_TASKS123_RESULT.md -- Wave 2 closing verification.*
+
 # WAVE2_TASKS123_RESULT — Echidna audit + foundry.toml + Compound III
 
 **Date**: 2026-06-20

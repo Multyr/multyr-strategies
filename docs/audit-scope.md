@@ -13,7 +13,7 @@ on Arbitrum One. It deploys depositor USDC across up to 7 lending protocol adapt
 (Aave V3, Compound III, Dolomite, Euler V2, Fluid, Morpho, Venus) via a keeper-driven
 scoring and rebalancing system.
 
-**23 Solidity files, 11,974 lines total** are in scope for the primary audit.
+**25 Solidity files, 12,678 lines total** are in scope for the primary audit (Wave 1+2 additions: StrategySafetyOverflowModule, StrategyConfigLib).
 
 The strategy is **not upgradeable**. No proxy pattern. No EIP-1967, no UUPS, no
 Transparent. Immutable contract addresses. Governance changes flow through a Timelock
@@ -36,6 +36,7 @@ Transparent. Immutable contract addresses. Governance changes flow through a Tim
 | `controller/StrategySettingsModule.sol` | 513 | `StrategySettingsModule` | HIGH |
 | `controller/StrategyParamsModule.sol` | 314 | `StrategyParamsModule` | MEDIUM |
 | `controller/StrategyAdapterOpsModule.sol` | 165 | `StrategyAdapterOpsModule` | HIGH |
+| `controller/StrategySafetyOverflowModule.sol` | 180 | `StrategySafetyOverflowModule` | HIGH |
 
 All 9 controller files share storage via inherited `StrategyStorageLayout`. Modules
 are dispatched via delegatecall from `UsdcMultiLendingVault.fallback()` at
@@ -96,18 +97,29 @@ Chainlink-anchored reward swap with Uniswap V3 → Camelot V3 fallback. MEV-resi
 `StrategyBootstrapper` is used once at deploy-time; `StrategyExplainabilityLens` is
 read-only (view-only, no state mutations).
 
-### 2.8 Line Count Summary
+### 2.8 Libraries
+
+| File | Lines | Contract | Priority |
+|------|-------|----------|---------|
+| `lib/StrategyConfigLib.sol` | 62 | `StrategyConfigLib` | LOW |
+
+Pure library inlined at compile time. Single source of truth for parameter reads shared across lens files and module boundaries. Deploys as 3 B stub (inline = no runtime overhead).
+
+### 2.9 Line Count Summary
 
 | Category | Files | Lines |
 |----------|-------|-------|
-| Controller (core) | 9 | 4,807 |
+| Controller (core) | 10 | 4,987 |
 | Adapters (lending) | 7 | 5,349 |
 | Rate providers | 2 | 86 |
 | Automation | 1 | 641 |
 | Interfaces | 1 | 54 |
 | Swap | 1 | 411 |
+| Libraries | 1 | 62 |
 | Periphery | 2 | 626 |
-| **Total** | **23** | **11,974** |
+| **Total** | **25** | **12,216** |
+
+*Note: Line counts reflect Wave 1+2 refactoring. StrategyScoringModule and UsdcMultiLendingVault shrank (F-SIZE-01/02 extraction); StrategySafetyOverflowModule and StrategyConfigLib are new.*
 
 ---
 
@@ -452,7 +464,7 @@ the raw size measurement.
 `foundry.toml` at repo root. Relevant settings:
 - `via_ir = true` — IR-based optimization, enables DCE (dead code elimination)
 - `optimizer_runs = 200` — standard runs for deployment size vs gas balance
-- `solc = "0.8.28"` (controller); `0.8.24` (rate providers, ILendingAdapter)
+- `solc = "0.8.28"` (all 25 files — floating pragmas pinned to exact 0.8.28 in Wave 1+2)
 
 ---
 
@@ -498,7 +510,7 @@ the raw size measurement.
 **Code reference commit**: b15aeb63 (pierdev, post CITATIONS-FIX merge)
 
 **Sources used**:
-- All 23 files in `src/strategies/usdc-lending/` (11,974 lines total, per `wc -l`)
+- All 25 files in `src/strategies/usdc-lending/` (12,678 lines total, per `wc -l` excluding `factory/`)
 - `docs/_runbooks/RUNBOOK-DOCS-CONSOLIDATE-01b.md` — scope definitions
 - `docs/strategies/multiply/BUGS_FOUND.md` — cross-reference for finding IDs
 

@@ -7,6 +7,35 @@ Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [1.1.1] — Wave 1+2 Hardening — 2026-06-20
+
+Pre-audit security hardening on top of V10.0. Full evidence: `docs/audit/WAVE1_2_SUMMARY.md`.
+
+### Fixed (Wave 1 — 15 findings: 4 CRITICAL, 11 HIGH)
+
+- **CRITICAL-C1**: `_effectiveAbsCapBps()` ignored `adapterMaxExposureBps` at T1 TVL — cap enforcement now uniform across all tiers (SCORING-INV-2)
+- **CRITICAL-C2/C3**: RewardSwapHelper slot manipulation + dead-code reference (R12 fix)
+- **CRITICAL-C4**: Venus `BLOCKS_PER_YEAR` hardcoded Arbitrum-only → configurable `blocksPerYear` per chain
+- HIGH fixes: StrategyConfigLib extraction (lens dedup), contract size headroom (F-SIZE-01/02), 11 additional security/correctness items
+
+### Hardening (Wave 2 — 8 items)
+
+- Foundry deterministic build: `evm_version=cancun`, `bytecode_hash=none`, `cbor_metadata=false`
+- Echidna: 15 invariants (I01–I12 + 3 Wave 2 additions), 1,000,860 sequence baseline, 0 counter-examples
+- Floating pragmas pinned to exact `0.8.28` across all 76 Solidity files
+- Contract sizes: all 25 production contracts under 23,552 B (project 1KB-safety rule)
+- `StrategySafetyOverflowModule` extracted from ScoringModule (F-SIZE-01, 24,426→21,528 B)
+- `StrategyAdapterOpsModule` extended with realizeLiquidity + view diagnostics (F-SIZE-02)
+- AllocCalc: fix at T1 TVL (AC-TRIAGE)
+- 2,354 tests passing (0 failures); 23 Halmos proofs 23/23 pass
+
+### Added
+
+- `docs/audit/` — full audit evidence folder (Wave 1+2 refactor docs, Echidna 1M evidence, contract sizes)
+- `docs/v10/` — V10 design rationale and multichain playbook
+
+---
+
 ## [1.1.0] — V10.0 — 2026-06-16
 
 ### Breaking changes
