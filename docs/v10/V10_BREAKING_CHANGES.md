@@ -58,7 +58,7 @@ uint256 private constant BLOCKS_PER_YEAR = 126_144_000; // Arbitrum-only hardcod
 uint256 public blocksPerYear; // set per-chain via initialize()
 ```
 
-Fix for **HIGH-C4** — Venus interest computation was wrong on all non-Arbitrum chains.
+Fix for **C-04** — Venus interest computation was wrong on all non-Arbitrum chains.
 
 ---
 
@@ -158,6 +158,30 @@ tracking. Off-chain NAV calculations assuming full-principal withdrawal must be 
 New keeper-callable `accrueVenusInterest()` forces Venus interest accrual before
 NAV reads. Off-chain keeper infrastructure must call this periodically (recommended
 cadence: every 4-6 hours on Arbitrum).
+
+### 4.7 Allocator T1 cap enforcement — F-SCORING-INV2
+
+**Impact**: BREAKING for any deploy with TVL < 25K USDC initial seed.
+
+`StrategyAllocCalcModule._effectiveAbsCapBps()` now respects
+`adapterMaxExposureBps` governance ceiling even in T1 single-adapter mode
+(`dynamicMax=1`, TVL < 25K USDC). Previously bypassed silently.
+
+```solidity
+// V9.2 / pre-fix: T1 always returns 10000 (100%) -- bypassed governance setter
+// V10 / post-fix: T1 returns min(adapterMaxExposureBps, 10000)
+if (dMax == 1) {
+    uint16 globalCeiling = adapterMaxExposureBps;
+    return globalCeiling > 0 ? uint256(globalCeiling) : 10000;
+}
+```
+
+Sentinel preservation: `globalCeiling == 0` = no constraint (T1 original behavior).
+Production impact: zero (TVL >> 25K USDC always at deployment).
+Bootstrap impact: cap now respected from first deposit.
+
+Decision rationale: Pierre Option B (2026-06-18) — governance setter
+consistency principle. Auditor preferred over silent override.
 
 ---
 
