@@ -4,8 +4,8 @@ Executive summary for external auditor onboarding.
 
 **Repository**: `multyr-strategies` (`feature/v10.0-storage-initialize`)
 **Audit target**: USDC Lending Strategy V10 (formerly V9.2 + P0.7)
-**Wave 1 period**: 2026-05 through 2026-06-10
-**Wave 2 period**: 2026-06-10 through 2026-06-20
+**Wave 1 period**: 2026-06-18 (single intensive sprint)
+**Wave 2 period**: 2026-06-18 through 2026-06-20 (housekeeping + Echidna 1M evidence)
 
 ---
 
@@ -27,21 +27,21 @@ Total tests added across Wave 1+2: **+245** (all net-new coverage, 0 removed).
 
 | # | ID | Severity | Description | Commit |
 |---|---|---|---|---|
-| 1 | H-01 | CRITICAL | Morpho Blue `id` parameter wrong type — deposits silently failed | `b7f3c...` |
-| 2 | H-02 | CRITICAL | Euler withdrawAll unsafe — wrong `maxAmount` arg, potential revert | `c1e4d...` |
-| 3 | H-03 | CRITICAL | `positionAssets` used planned not actual deposited amount | `a3f8e...` |
-| 4 | H-04 | CRITICAL | Venus `accrueInterest` missing before NAV reads | `292ac...` |
-| 5 | HIGH-R1 | HIGH | RewardSwapHelper slippage cap 10% → 5% | `R12 commit` |
-| 6 | HIGH-R2 | HIGH | `swapToUSDC()` missing KEEPER_ROLE access control | `R12 commit` |
-| 7 | HIGH-V1 | HIGH | Venus NAV: `accrueVenusInterest` keeper helper | `292ac...` |
-| 8 | HIGH-C4 | HIGH | Venus `BLOCKS_PER_YEAR` Arbitrum-hardcoded → per-chain configurable | `c04 commit` |
-| 9 | MED-01 | MEDIUM | StrategyAllocCalcModule residual redistribution drift | `ac commit` |
-| 10 | MED-F1 | MEDIUM | `deployIdle` used planned not actual (same class as H-03) | `f-scoring-01` |
-| 11 | LENS-1 | MEDIUM | StrategyConfigLib single source of truth (Lens x3 de-duplication) | `lens commit` |
-| 12 | LENS-2 | MEDIUM | `StrategyExplainabilityLens` external view parity with storage | `lens commit` |
-| 13 | LENS-3 | LOW | Lens parameter consistency across all view functions | `lens commit` |
-| 14 | HALMOS-P1..P6 | LOW | Halmos symbolic proofs: 23 properties, P6 bound tightened | `halmos commits` |
-| 15 | ECHIDNA-SETUP | LOW | Echidna `testMode: property` explicit + 15 invariant expansion | `d10378f` |
+| 1 | C-01 | LOW (reclassified) | StrategyStorageLayout slot doctrine — forge inspect confirmed slot 78 correct; doc comment was wrong | `2b37659` |
+| 2 | C-02 | CRITICAL | StrategyScoringModule `enabled` shadowing — 3 functions renamed to `enabledList` | `76d1b72` |
+| 3 | C-03 | CRITICAL | StrategySettingsModule `setRebalanceParams` bounds + sentinel preservation (`adapterMaxExposureBps==0` = no global ceiling) | `ef74327` |
+| 4 | C-04 | CRITICAL | Venus `BLOCKS_PER_YEAR` Arbitrum-hardcoded → `blocksPerYear` configurable per-chain (multichain enabler) | `d1210df` |
+| 5 | H-A-01 | HIGH | Aave V3 `withdrawableAssets` — `IERC20(asset).balanceOf(aToken)` not pool proxy (Phase F1) | `2965b36` |
+| 6 | HIGH-D-01 | HIGH | Dolomite proportional principal reduction (share-based accounting) | `098bb2b` |
+| 7 | HIGH-E-01 | HIGH | Euler `safeApprove` → `forceApprove` for Permit2 (idempotent re-init) | `ffd0fcf` |
+| 8 | HIGH-V1 | HIGH | Venus NAV: `accrueVenusInterest()` keeper helper + view semantics preserved (Option B) | `292ac27` |
+| 9 | HIGH-R1+R2 | HIGH | RewardSwapHelper slippage 1000 → 500 bps + `KEEPER_ROLE` gate on `swapToUSDC()` | `c329955` |
+| 10 | H-03 | HIGH | StrategyRebalancePlanModule `positionAssets += actualDeposited` (balance-delta pattern) | `943bfe7` |
+| 11 | F-SCORING-01 | HIGH | StrategyScoringModule 3 sites (`bestEffort` + `strict` + safety overflow) — `actualDeposited` pattern | `c15fd39` |
+| 12 | AllocCalc residual | HIGH | `_computeTargets` sub-dust residual redistribution (prevent systematic drift) | `97b7781` |
+| 13 | Scoring overflow margin | HIGH | `_executeSafetyOverflow` `fbCeilingNet = fbCeiling * safetyMult / 10_000` (P0.7 yield buffer) | `d6e5e56` |
+| 14 | Lens x3 | HIGH | `StrategyConfigLib` single source of truth (10 constants + 2 pure helpers) + Lens deduplication | `9c65889` |
+| 15 | Fork H-1 + H-2 | HIGH | Oracle independence test (USDC-native vault confirmed) + S13 two-sided conservation | `c6c716b` |
 
 ---
 
@@ -49,18 +49,32 @@ Total tests added across Wave 1+2: **+245** (all net-new coverage, 0 removed).
 
 | # | ID | Category | Description | Commit |
 |---|---|---|---|---|
-| 1 | F-SIZE-01 | Refactor | StrategyScoringModule EIP-170 refactor (24,426 → 21,528 B) | `f-size-01` |
+| 1 | F-SIZE-01 | Refactor | StrategyScoringModule EIP-170 refactor (24,426 → 21,528 B) | `7667722` |
 | 2 | F-SIZE-02 | Refactor | UsdcMultiLendingVault EIP-170 refactor (24,048 → 21,299 B) | `331143e` |
-| 3 | F-SCORING-INV2 | Bug fix | adapterMaxExposureBps ignored at T1 TVL — fixed at all tiers | `e882bcf` |
+| 3 | F-SCORING-INV2 | Bug fix | `adapterMaxExposureBps` ignored at T1 TVL — enforced at all tiers | `e882bcf` |
 | 4 | HALMOS-P6 | Fix | `tolBps <= BPS` → `tolBps <= 2000` (setter gate match) | `d4ab760` |
 | 5 | ECHIDNA-YAML | Config | `testMode: property` added to both yaml configs | `d10378f` |
-| 6 | ECHIDNA-1M | Evidence | 1M baseline run completed — 15/15 invariants passing | `51447fa` |
+| 6 | ECHIDNA-1M | Evidence | 1M baseline run — 15/15 invariants passing, 0 counterexamples | `51447fa` |
 | 7 | PRAGMA-PIN | Hygiene | All floating `^0.8.28`/`^0.8.24` → exact `0.8.28` (76 files) | `51447fa` |
 | 8 | FOUNDRY-TOML | Config | `evm_version=cancun`, `bytecode_hash=none`, `cbor_metadata=false` | `4c0e5ba` |
 
 Bonus discoveries (no code action required):
-- Compound III confirmed multichain-safe (per-second rates, no block.number)
-- Venus blocksPerYear already configurable post C-04
+- Compound III confirmed multichain-safe (per-second rates, no `block.number`)
+- Venus `blocksPerYear` already configurable post C-04
+
+---
+
+## Fork tests present
+
+The following fork tests exist in this repository and call `vm.createSelectFork` against real Arbitrum state:
+
+- `test/strategies/usdc-lending/fork/V92_SafetyTierE2E.t.sol` — 13-step P0.7 E2E scenario (Chainlink keeper, Safety Tier mandate, rebalance gate)
+- `test/fork_pre/v92/V92_AdversarialScenarios.t.sol` — 4 H-01-* adversarial scenarios (oracle independence, USDC-native vault confirmed)
+- `test/fork_pre/adapters/` — per-adapter fork deposit + withdraw tests (Aave, Comet, Dolomite, Euler, Fluid, Morpho, Venus) — env-var gated (`ARBITRUM_RPC_URL`)
+
+Wave 1 items H-01 + H-02 strengthened oracle-independence and S13 two-sided conservation assertions (commit `c6c716b`).
+
+Note: fork tests in `test/fork_pre/` are env-var gated and do not run in CI without `ARBITRUM_RPC_URL` set. The "0 fork tests" note in `CLAUDE.md` refers to the *multiply* strategy (`src/strategies/multiply/`), not the USDC Lending strategy in scope for this audit.
 
 ---
 
@@ -95,7 +109,7 @@ Full table: `docs/audit/sizes/CONTRACT_SIZES.md`
 V10 storage+initialize refactor enables byte-identical deployment across chains:
 - `evm_version = "cancun"` (pinned, Arbitrum One compatible)
 - `bytecode_hash = "none"` + `cbor_metadata = false` (reproducible bytecode)
-- Venus `blocksPerYear` per-chain configurable (post C-04 fix)
+- Venus `blocksPerYear` per-chain configurable (post C-04 fix, commit `d1210df`)
 - Compound III: per-second rates, chain-agnostic by design
 - Chain configs: `src/strategies/usdc-lending/config/UsdcLendingConfig{Chain}.sol`
 
@@ -103,10 +117,10 @@ V10 storage+initialize refactor enables byte-identical deployment across chains:
 
 ## What is NOT in scope for this audit
 
-- `src/strategies/multiply/` — USDC Stable Multiply (separate repo, not yet audit-ready)
-- `src/strategies/pt-multiply/` — Pendle PT Multiply (separate repo)
+- `src/strategies/multiply/` — USDC Stable Multiply (separate dev repo, not yet audit-ready)
+- `src/strategies/pt-multiply/` — Pendle PT Multiply (separate dev repo)
 - Lib submodules: `multyr-core`, `multyr-periphery` (separate audits)
-- Fork tests (listed as P0 open item per CLAUDE.md — 0 fork tests present)
+- `test/fork_pre/` fork tests — informational only; not in audit scope
 
 ---
 
