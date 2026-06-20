@@ -389,7 +389,7 @@ contract HalmosSafetyAdapterCapTier is Test {
         uint16 tolBps
     ) public pure {
         vm.assume(normalAbsCapBps >= 1 && normalAbsCapBps <= ABS_CAP_MAX);
-        vm.assume(tolBps <= BPS);
+        vm.assume(tolBps <= 2000); // matches setCapDriftTolerance setter gate (StrategySettingsModule:372)
 
         uint256 absCapBpsEff = uint256(normalAbsCapBps);
         uint256 effectiveHard = _mandateAbsHard(absCapBpsEff, tvl, tolBps);
