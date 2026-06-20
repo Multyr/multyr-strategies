@@ -10,6 +10,7 @@ pragma solidity 0.8.28;
 // =============================================================================
 
 import { IERC20Metadata } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
+import { ILendingAdapter } from "../interfaces/ILendingAdapter.sol";
 import {
     StrategyStorageLayout
 } from "./StrategyStorageLayout.sol";
@@ -119,5 +120,61 @@ contract StrategySafetyOverflowModule is StrategyStorageLayout {
         if (!ok) return false;
         if (res.length == 0) return ok;
         return abi.decode(res, (bool));
+    }
+
+    // ── Degraded-view checks (F-SIZE-02) ─────────────────────────────────────
+
+    /// @notice Emit telemetry + return degraded flag. Called via delegatecall from deposit/harvest.
+    function checkAndEmitDegradedViews() external onlyDelegateCall returns (bool degraded, uint16 bps) {
+        (degraded, bps) = _checkDegradedAdapterViews();
+        if (bps >= 100) emit DegradedViewsObserved(bps);
+    }
+
+    function _checkDegradedAdapterViews() private view returns (bool, uint16) {
+        uint256 n = adapters.length;
+        uint256 healthyAssets;
+        uint256 fallbackAssets;
+        for (uint256 i = 0; i < n; ++i) {
+            address a = adapters[i];
+            if (!enabled[a] || quarantined[a]) continue;
+            try ILendingAdapter(a).totalAssets() returns (uint256 val) {
+                healthyAssets += val;
+            } catch {
+                fallbackAssets += positionAssets[a];
+            }
+        }
+        uint256 total = healthyAssets + fallbackAssets;
+        if (total == 0) return (false, 0);
+        uint16 bps = uint16((fallbackAssets * 1e4) / total);
+        return (bps > degradedViewThresholdBps, bps);
+    }
+
+    /// @notice Inline degraded mode detection. Read-only; called via delegatecall from deposit().
+    function checkDegradedModeLocally() external view onlyDelegateCall returns (string memory) {
+        address[] memory _enabled = _enabledAdapters();
+        uint16 enabledCount = uint16(_enabled.length);
+        if (enabledCount == 0) return "";
+        uint16 eligibleCount = 0;
+        uint16 recentFailures = 0;
+        for (uint256 i = 0; i < _enabled.length; ) {
+            address a = _enabled[i];
+            if (!quarantined[a] && cachedLiquidityBps[a] >= 100) { unchecked { ++eligibleCount; } }
+            uint64 lastFail = adapterLastFailureTs[a];
+            if (lastFail > 0 && block.timestamp - lastFail < 1 hours) { unchecked { ++recentFailures; } }
+            unchecked { ++i; }
+        }
+        if (eligibleCount * 2 < enabledCount) return "MAJORITY_INELIGIBLE";
+        if (recentFailures >= 2) return "FAILURE_VELOCITY";
+        for (uint256 i = 0; i < _enabled.length; ) {
+            address a = _enabled[i];
+            uint256 snapshot = lastExtTVLSnapshot[a];
+            uint256 current  = cachedExternalTVL[a];
+            if (snapshot > 0 && current < snapshot) {
+                uint256 dropBps = ((snapshot - current) * 10_000) / snapshot;
+                if (dropBps >= EXT_TVL_PANIC_DROP_BPS) return "EXT_TVL_PANIC";
+            }
+            unchecked { ++i; }
+        }
+        return "";
     }
 }

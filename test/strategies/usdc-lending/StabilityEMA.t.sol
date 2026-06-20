@@ -533,7 +533,7 @@ contract StabilityEMA_Test is Test {
     // 4. COORDINATION HOOKS
     // ────────────────────────────────────────────────────────────────────
 
-    function test_coordinationHooks_defaults() public view {
+    function test_coordinationHooks_defaults() public {
         assertEq(vault.lastInternalRebalanceTs(), 0, "no rebalance yet");
         assertFalse(vault.isInternallyRebalancing(), "no plan active");
         assertEq(vault.rebalancePenaltyBps(), 0, "no penalty when never rebalanced");

@@ -88,7 +88,65 @@ Any Wave 2 code addition touching UsdcLendingStrategy.sol risks crossing EIP-170
 Extract cold-path or admin-only logic to a separate module (delegatecall pattern
 already used by the vault). Candidates: bootstrapping logic, settings delegation.
 
-_Discovered: Wave 1 closing sizes audit | Status: **OPEN** -- out of scope for current task_
+_Discovered: Wave 1 closing sizes audit | Status: **CLOSED** — fixed in F-SIZE-02 (21,352 B → −2,696 B)_
+
+---
+
+## F-SCORING-INV2 — Allocator ignores adapterMaxExposureBps when dynamicMax=1 (TVL < 25B)
+
+**Discovered during**: F-SIZE-02 (SCORING-INV-2 triage)
+**File**: `src/strategies/usdc-lending/controller/StrategyAllocCalcModule.sol:478-493`
+**Severity**: MEDIUM (governance cap parameter silently bypassed at low TVL)
+
+### Description
+
+`_effectiveAbsCapBps()` returns `10000` (100%) unconditionally when `_effectiveMaxAdapters() == 1`.
+The `adapterMaxExposureBps` governance parameter is applied only when `dMax >= 2`:
+
+```solidity
+function _effectiveAbsCapBps(address adapter) internal view returns (uint256) {
+    uint16 dMax = _effectiveMaxAdapters();
+    if (dMax == 0) return 0;
+    if (dMax == 1) return 10000;  // adapterMaxExposureBps NOT applied here
+    uint256 cap = (11000 + uint256(dMax) - 1) / uint256(dMax);
+    ...
+    uint16 globalCeiling = adapterMaxExposureBps;
+    if (globalCeiling > 0 && globalCeiling < cap) cap = uint256(globalCeiling);
+    ...
+}
+```
+
+`_effectiveMaxAdapters()` returns `1` when TVL < 25,000e6 (25B USDC). At TVL = 10B USDC,
+`dynamicMax = 1`, so the cap for any single adapter is 100% — regardless of the governance
+setting `adapterMaxExposureBps = 5000` (50%).
+
+This was discovered because the SCORING-INV-2 invariant (`pos ≤ adapterMaxExposureBps * tvl / 10000`)
+is stated in terms of `adapterMaxExposureBps`, but the allocator overrides this at low TVL.
+
+### Design ambiguity for audit team
+
+Two interpretations:
+1. **Intended behavior**: At low TVL with `dynamicMax=1`, concentrating 100% in the best adapter
+   is by design (diversification has a minimum TVL threshold). The invariant SCORING-INV-2 is
+   then mis-stated — it should check against `_effectiveAbsCapBps()` not `adapterMaxExposureBps`.
+2. **Bug**: `adapterMaxExposureBps` is a governance-set hard cap that must always be respected.
+   Fix: in `_effectiveAbsCapBps`, apply `adapterMaxExposureBps` even when `dMax == 1`.
+
+At protocol TVL (>> 25B USDC), this path is never triggered. The issue only manifests at very
+low TVL during early protocol operation.
+
+### How found
+
+F-SIZE-02 extracted `_checkDegradedModeLocally()` to `StrategySafetyOverflowModule`. A test
+setUp didn't wire the overflow module (`safetyOverflowModule_addr = address(0)`). In PRE,
+the inline function triggered "MAJORITY_INELIGIBLE" (cachedLiquidityBps = 0 → not eligible)
+→ degradedModeActive = true → deposits skipped. In POST, addr(0) returns "" → deposits
+proceeded → allocator cap bug surfaced.
+
+Fix for SCORING-INV-2 failure: wire `StrategySafetyOverflowModule` in the test setUp (done in
+`test/strategies/usdc-lending/UsdcMultiLendingVault.invariant.t.sol` L945-952, F-SIZE-02).
+
+_Discovered: F-SIZE-02 | Status: **OPEN — audit team to resolve design ambiguity**_
 
 ---
 

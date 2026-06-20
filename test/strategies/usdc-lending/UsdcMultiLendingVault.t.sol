@@ -1869,7 +1869,7 @@ contract UsdcMultiLendingVault_Views_Test is UsdcMultiLendingVaultTestBase {
         assertFalse(vault.hasIdleCash());
     }
 
-    function test_canHarvest_returns_status() public view {
+    function test_canHarvest_returns_status() public {
         (bool ok, uint256 sumHarvestable, uint64 sinceLastHarvest) = vault.canHarvest();
         assertFalse(ok); // No harvestable profit and recent harvest
         assertEq(sumHarvestable, 0);
@@ -2907,7 +2907,7 @@ contract S21_CoordinationHooksTest is UsdcMultiLendingVaultTestBase {
     }
 
     // GAP: liquidityReadinessBps not asserted at zero-position state
-    function test_liquidityReadinessBps_tenThousandWithNoAdapters() public view {
+    function test_liquidityReadinessBps_tenThousandWithNoAdapters() public {
         assertEq(vault.liquidityReadinessBps(), 10000, "no adapters => fully liquid");
     }
 

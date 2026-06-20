@@ -222,4 +222,89 @@ contract StrategyAdapterOpsModule is StrategyStorageLayout {
             }
         }
     }
+
+    // ── Liquidity realization (F-SIZE-02) ────────────────────────────────────
+
+    /// @notice Two-pass pro-rata withdrawal from adapters. Called via delegatecall from vault.
+    function executeRealizeLiquidity(uint256 amountNeeded) external onlyDelegateCall {
+        uint256 tvl = _tvl();
+        if (tvl < 1) return;
+        uint256 totalRealized = 0;
+        uint256 n = adapters.length;
+        for (uint8 pass = 0; pass < 2 && totalRealized < amountNeeded; ++pass) {
+            uint256 need = amountNeeded - totalRealized;
+            for (uint256 i = 0; i < n && totalRealized < amountNeeded; ++i) {
+                address a = adapters[i];
+                if (!enabled[a]) continue;
+                if (pass == 1 && quarantined[a]) continue;
+                uint256 pos = positionAssets[a];
+                if (pos < 1) continue;
+                uint256 w = pass == 0 ? (need * pos) / tvl : need;
+                if (w > pos) w = pos;
+                if (w < 1) continue;
+                try ILendingAdapter(a).withdraw(w, address(this)) returns (uint256 got) {
+                    positionAssets[a] -= got;
+                    totalRealized += got;
+                    _recordAdapterSuccess(a);
+                } catch (bytes memory reason) {
+                    emit AdapterWithdrawFailed(a, w, reason);
+                    _recordAdapterFailure(a);
+                }
+            }
+        }
+        if (totalRealized < amountNeeded) emit WithdrawalShortfall(amountNeeded, totalRealized);
+        emit LiquidityRealized(amountNeeded, totalRealized);
+    }
+
+    // ── View diagnostics (F-SIZE-02) ─────────────────────────────────────────
+
+    /// @notice Weighted average liquidity readiness across enabled adapters.
+    function liquidityReadinessBps() external view onlyDelegateCall returns (uint16) {
+        uint256 totalWeight = 0;
+        uint256 weightedLiq = 0;
+        uint256 n = adapters.length;
+        for (uint256 i = 0; i < n;) {
+            address a = adapters[i];
+            if (enabled[a] && !quarantined[a]) {
+                uint256 pos = positionAssets[a];
+                uint16 liq = cachedLiquidityBps[a];
+                if (liq == 0) liq = 5000;
+                weightedLiq += pos * liq;
+                totalWeight += pos;
+            }
+            unchecked { ++i; }
+        }
+        if (totalWeight == 0) return 10000;
+        uint256 result = weightedLiq / totalWeight;
+        return result > 10000 ? uint16(10000) : uint16(result);
+    }
+
+    /// @notice Rebalance penalty: higher = capital should not move.
+    function rebalancePenaltyBps() external view onlyDelegateCall returns (uint16) {
+        if (rebalancePlanPhase > 0) return 5000;
+        if (lastRebalanceTs == 0) return 0;
+        uint256 elapsed = block.timestamp - lastRebalanceTs;
+        uint256 cooldown = minSecondsBetweenRebalances;
+        if (cooldown == 0) return 0;
+        if (elapsed >= cooldown) return 0;
+        return uint16((2000 * (cooldown - elapsed)) / cooldown);
+    }
+
+    /// @notice Returns harvest readiness and harvestable sum.
+    function canHarvest() external view onlyDelegateCall returns (bool ok, uint256 sumHarvestable, uint64 sinceLastHarvest) {
+        uint256 n = adapters.length;
+        for (uint256 i = 0; i < n;) {
+            address adapter = adapters[i];
+            if (enabled[adapter]) {
+                try ILendingAdapter(adapter).harvestableProfit() returns (uint256 profit) {
+                    sumHarvestable += profit;
+                } catch { }
+            }
+            unchecked { ++i; }
+        }
+        uint256 tvl = _tvl();
+        ok = (sumHarvestable > 0 && sumHarvestable >= (harvestThresholdBps * tvl) / 1e4)
+            || (minSecondsBetweenHarvests > 0 && block.timestamp - lastHarvestTs >= minSecondsBetweenHarvests);
+        sinceLastHarvest = uint64(block.timestamp - lastHarvestTs);
+    }
 }

@@ -945,6 +945,14 @@ contract UsdcMultiLendingVault_Scoring_Invariant_Test is StdInvariant, Test {
         StrategyAllocCalcModule _allocCalcMod2 = new StrategyAllocCalcModule(ARBITRUM_USDC, core);
         vm.prank(admin);
         vault.setAllocCalcModule(address(_allocCalcMod2));
+        // F-SIZE-02: wire StrategySafetyOverflowModule — _checkDegradedModeLocally() delegatecalls here.
+        // Without this, safetyOverflowModule_addr=address(0) → delegatecall returns "" → degraded mode
+        // never activates → deployIdleToAdapters is called even when adapters are unliquid.
+        StrategySafetyOverflowModule _overflowMod2 = new StrategySafetyOverflowModule(
+            ARBITRUM_USDC, core, address(0), address(0), address(adapterOpsMod)
+        );
+        vm.prank(admin);
+        StrategySettingsModule(address(vault)).setSafetyOverflowModule(address(_overflowMod2));
 
         // Exit bootstrap for normal operation
         vm.prank(admin);
@@ -1000,4 +1008,23 @@ contract UsdcMultiLendingVault_Scoring_Invariant_Test is StdInvariant, Test {
     }
 
     /// @notice SCORING-INV-4: dep
+
+    /// @notice Deterministic repro: small deposit then large deposit must not exceed maxExposure
+    function test_scoring_maxExposure_smallThenLargeDeposit() public {
+        uint256 d1 = 1_004_662; // matches shrunk counterexample bound(4662, 1e6, 10_000e6)
+        uint256 d2 = 10_000e6; // matches bound(huge, 1e6, 10_000e6) = max
+        usdc.mint(core, d1);
+        vm.prank(core); usdc.transfer(address(vault), d1);
+        vm.prank(core); vault.deposit(d1);
+        usdc.mint(core, d2);
+        vm.prank(core); usdc.transfer(address(vault), d2);
+        vm.prank(core); vault.deposit(d2);
+        uint256 tvl = vault.totalAssets();
+        uint256 maxExp = (uint256(vault.adapterMaxExposureBps()) * tvl) / 1e4;
+        uint256 dust = vault.dustTolerance();
+        for (uint256 i = 0; i < adapters.length; i++) {
+            uint256 pos = vault.positionAssets(address(adapters[i]));
+            assertLe(pos, maxExp + dust, string.concat("SCORING-INV-2-repro: adapter exceeds maxExposure"));
+        }
+    }
 }
