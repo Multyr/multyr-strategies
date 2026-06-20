@@ -122,7 +122,8 @@ Fork test files: `test/strategies/usdc-lending/fork/`
 **[x] VERIFIED** — Foundry config enforces determinism:
 - `foundry.toml`: `bytecode_hash = "none"`, `cbor_metadata = false`, `evm_version = "cancun"` (commit `4c0e5ba`)
 - CBOR detection test: `test_bytecode_reproducibility` (UsdcLendingDeploy.t.sol) — confirms CBOR tail absent
-- Double-clean-build determinism: running in background (see Wave 3 Step 3 pre-flight)
+- Double-clean-build determinism: **CONFIRMED** — two independent `forge clean && forge build` runs
+  produce identical `UsdcMultiLendingVault` bytecode SHA256: `28D392F6D19287BEDC0E35A1CC11DC2FD8A6BED9250DA23EAE7E32166BD7BAD5`
 
 ---
 
