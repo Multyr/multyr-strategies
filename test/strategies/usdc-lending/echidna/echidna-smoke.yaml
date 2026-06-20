@@ -1,3 +1,4 @@
+testMode: property  # echidna_* functions return bool (true = invariant holds)
 testLimit: 50000
 seqLen: 100
 shrinkLimit: 5000
