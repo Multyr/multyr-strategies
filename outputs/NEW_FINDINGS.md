@@ -146,7 +146,7 @@ proceeded → allocator cap bug surfaced.
 Fix for SCORING-INV-2 failure: wire `StrategySafetyOverflowModule` in the test setUp (done in
 `test/strategies/usdc-lending/UsdcMultiLendingVault.invariant.t.sol` L945-952, F-SIZE-02).
 
-_Discovered: F-SIZE-02 | Status: **OPEN — audit team to resolve design ambiguity**_
+_Discovered: F-SIZE-02 | Status: **CLOSED — fixed in F-SCORING-INV2 (Option B: adapterMaxExposureBps respected at all TVL tiers). SCORING-INV-2 invariant verified in canonical form. 4 new tests added. 18 precondition lines realigned across 6 test files.**_
 
 ---
 

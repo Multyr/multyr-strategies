@@ -1286,10 +1286,10 @@ contract UsdcMultiLendingVault_Deposit_Test is UsdcMultiLendingVaultTestBase {
 
     function test_deposit_deploys_to_adapters() public {
         _setupAdaptersForRebalance();
-        _mintAndTransferToVault(core, 1000e6);
+        _mintAndTransferToVault(core, 250_000e6);
 
         vm.prank(core);
-        vault.deposit(1000e6);
+        vault.deposit(250_000e6);
 
         // Funds should be deployed to adapters (not left as idle)
         assertLe(vault.idleCash(), vault.dustTolerance());
@@ -1379,10 +1379,10 @@ contract UsdcMultiLendingVault_Withdraw_Test is UsdcMultiLendingVaultTestBase {
         super.setUp();
         _setupAdaptersForRebalance();
 
-        // Deposit 1000 USDC
-        _mintAndTransferToVault(core, 1000e6);
+        // Deposit 250_000 USDC (T3 TVL: dMax=3, all 3 adapters allocatable, idle~=0)
+        _mintAndTransferToVault(core, 250_000e6);
         vm.prank(core);
-        vault.deposit(1000e6);
+        vault.deposit(250_000e6);
     }
 
     function test_withdraw_sends_to_receiver() public {
@@ -1433,18 +1433,18 @@ contract UsdcMultiLendingVault_Withdraw_Test is UsdcMultiLendingVaultTestBase {
     function test_withdraw_caps_to_available() public {
         // Try to withdraw more than available
         vm.prank(core);
-        uint256 withdrawn = vault.withdraw(2000e6, core);
+        uint256 withdrawn = vault.withdraw(500_000e6, core); // 2x deposit to cap at available
 
         // Should only get what's available
-        assertLe(withdrawn, 1000e6);
+        assertLe(withdrawn, 250_000e6);
     }
 
     function test_withdraw_full_amount() public {
         vm.prank(core);
-        uint256 withdrawn = vault.withdraw(1000e6, core);
+        uint256 withdrawn = vault.withdraw(250_000e6, core);
 
-        assertEq(withdrawn, 1000e6);
-        assertEq(usdc.balanceOf(core), 1000e6);
+        assertEq(withdrawn, 250_000e6);
+        assertEq(usdc.balanceOf(core), 250_000e6);
     }
 
     function test_withdraw_redeploys_excess_idle() public {
@@ -1465,10 +1465,10 @@ contract UsdcMultiLendingVault_Harvest_Test is UsdcMultiLendingVaultTestBase {
         super.setUp();
         _setupAdaptersForRebalance();
 
-        // Deposit 1000 USDC
-        _mintAndTransferToVault(core, 1000e6);
+        // Deposit 250_000 USDC (T3 TVL: dMax=3, idle~=0 after deploy)
+        _mintAndTransferToVault(core, 250_000e6);
         vm.prank(core);
-        vault.deposit(1000e6);
+        vault.deposit(250_000e6);
     }
 
     function test_harvest_collects_from_adapters() public {
@@ -1834,9 +1834,9 @@ contract UsdcMultiLendingVault_Views_Test is UsdcMultiLendingVaultTestBase {
         super.setUp();
         _setupAdaptersForRebalance();
 
-        _mintAndTransferToVault(core, 1000e6);
+        _mintAndTransferToVault(core, 250_000e6);
         vm.prank(core);
-        vault.deposit(1000e6);
+        vault.deposit(250_000e6);
     }
 
     function test_asset_returns_usdc() public view {
@@ -1844,11 +1844,11 @@ contract UsdcMultiLendingVault_Views_Test is UsdcMultiLendingVaultTestBase {
     }
 
     function test_totalAssets_includes_adapters() public view {
-        assertEq(vault.totalAssets(), 1000e6);
+        assertEq(vault.totalAssets(), 250_000e6);
     }
 
     function test_withdrawableAssets_returns_sum() public view {
-        assertEq(vault.withdrawableAssets(), 1000e6);
+        assertEq(vault.withdrawableAssets(), 250_000e6);
     }
 
     function test_positions_returns_all_adapters() public view {
@@ -2043,20 +2043,20 @@ contract UsdcMultiLendingVault_NoCashInvariant_Test is UsdcMultiLendingVaultTest
     function test_deposit_enforces_noCash() public {
         // With enabled adapters, deposit should work and leave no idle
         _setupAdaptersForRebalance();
-        _mintAndTransferToVault(core, 1000e6);
+        _mintAndTransferToVault(core, 250_000e6);
 
         vm.prank(core);
-        vault.deposit(1000e6);
+        vault.deposit(250_000e6);
 
         assertLe(vault.idleCash(), vault.dustTolerance());
     }
 
     function test_harvest_enforces_noCash() public {
         _setupAdaptersForRebalance();
-        _mintAndTransferToVault(core, 1000e6);
+        _mintAndTransferToVault(core, 250_000e6);
 
         vm.prank(core);
-        vault.deposit(1000e6);
+        vault.deposit(250_000e6);
 
         adapter1.setHarvestable(100e6);
 
@@ -2447,9 +2447,9 @@ contract UsdcMultiLendingVault_MutationKiller_Test is UsdcMultiLendingVaultTestB
     // ---- _realizeLiquidity tests (L533, L577-584) ----
 
     function test_realizeLiquidity_calculates_pro_rata() public {
-        _mintAndTransferToVault(core, 1000e6);
+        _mintAndTransferToVault(core, 250_000e6);
         vm.prank(core);
-        vault.deposit(1000e6);
+        vault.deposit(250_000e6);
 
         uint256 pos1Before = vault.positionAssets(address(adapter1));
         uint256 pos2Before = vault.positionAssets(address(adapter2));
@@ -2669,13 +2669,13 @@ contract UsdcMultiLendingVault_MutationKiller_Test is UsdcMultiLendingVaultTestB
 
     function test_maxExposure_limits_allocation() public {
         // Use default params (50% exposure, 34% ramp) - allows full deployment with 3 adapters
-        _mintAndTransferToVault(core, 1000e6);
+        _mintAndTransferToVault(core, 250_000e6);
         vm.prank(core);
-        vault.deposit(1000e6);
+        vault.deposit(250_000e6);
 
         // Verify funds were deployed (tests that exposure calculation works)
         uint256 tvl = vault.totalAssets();
-        assertEq(tvl, 1000e6);
+        assertEq(tvl, 250_000e6);
 
         // All funds should be allocated across adapters (idle <= dust)
         assertLe(vault.idleCash(), vault.dustTolerance());

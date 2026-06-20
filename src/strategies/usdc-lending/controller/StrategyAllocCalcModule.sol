@@ -478,7 +478,15 @@ contract StrategyAllocCalcModule is StrategyStorageLayout {
     function _effectiveAbsCapBps(address adapter) internal view returns (uint256) {
         uint16 dMax = _effectiveMaxAdapters();
         if (dMax == 0) return 0;
-        if (dMax == 1) return 10000;
+        // T1: single-adapter mode. Governance ceiling (adapterMaxExposureBps) still
+        // respected if set. Sentinel preservation: globalCeiling == 0 = no constraint
+        // -> returns 10000 (100% TVL allowed = original T1 behavior).
+        // Fix: F-SCORING-INV2 (audit Wave 2) -- ensures governance setter never silently
+        // overridden regardless of TVL.
+        if (dMax == 1) {
+            uint16 globalCeiling = adapterMaxExposureBps;
+            return globalCeiling > 0 ? uint256(globalCeiling) : 10000;
+        }
         uint256 cap = (11000 + uint256(dMax) - 1) / uint256(dMax);
         if (cap > 10000) cap = 10000;
         if (cap < 2500) cap = 2500;
