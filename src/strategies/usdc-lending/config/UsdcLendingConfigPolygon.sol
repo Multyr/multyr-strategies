@@ -39,5 +39,9 @@ library UsdcLendingConfigPolygon {
         // Venus: not on Polygon PoS — disabled (venusBlocksPerYear=0)
         cfg.venusVToken        = address(0);
         cfg.venusBlocksPerYear = 0;
+
+        cfg.governanceMultisig = address(0); // Polygon PoS multisig — set before deploy
+        cfg.deploySalt = keccak256(abi.encode("UsdcLendingV10", uint256(137))); // chain-id 137
+        cfg.permit2    = 0x000000000022D473030F116dDEE9F6B43aC78BA3;
     }
 }

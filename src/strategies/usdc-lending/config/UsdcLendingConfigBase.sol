@@ -39,5 +39,9 @@ library UsdcLendingConfigBase {
         // Venus: not deployed on Base — disabled (venusBlocksPerYear=0)
         cfg.venusVToken        = address(0);
         cfg.venusBlocksPerYear = 0;
+
+        cfg.governanceMultisig = address(0); // Base multisig — set before deploy
+        cfg.deploySalt = keccak256(abi.encode("UsdcLendingV10", uint256(8453))); // chain-id 8453
+        cfg.permit2    = 0x000000000022D473030F116dDEE9F6B43aC78BA3;
     }
 }

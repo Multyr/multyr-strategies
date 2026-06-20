@@ -33,5 +33,9 @@ library UsdcLendingConfigArbitrum {
 
         cfg.venusVToken        = 0x7D8609f8da70fF9027E9bc5229Af4F6727662707;
         cfg.venusBlocksPerYear = BLOCKS_PER_YEAR;
+
+        cfg.governanceMultisig = address(0); // Arbitrum One multisig — set before deploy
+        cfg.deploySalt = keccak256(abi.encode("UsdcLendingV10", uint256(42161))); // chain-id 42161 in salt for collision-resistance
+        cfg.permit2    = 0x000000000022D473030F116dDEE9F6B43aC78BA3;
     }
 }

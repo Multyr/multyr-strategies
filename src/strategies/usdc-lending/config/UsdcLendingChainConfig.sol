@@ -37,4 +37,19 @@ struct UsdcLendingChainConfig {
     // Per-chain block production rate for APY computation (C-04).
     // 0 = Venus adapter disabled on this chain.
     uint256 venusBlocksPerYear;
+
+    // ── Governance ───────────────────────────────────────────────────────────
+    // Chain-specific governance multisig / timelock that receives DEFAULT_ADMIN_ROLE.
+    // address(0) = must be set before deploy.
+    address governanceMultisig;
+
+    // ── Deterministic deploy ─────────────────────────────────────────────────
+    // Chain-unique CREATE2 salt for the strategy vault deployment.
+    // Prevents address collision if the same factory is used across chains.
+    bytes32 deploySalt;
+
+    // ── Permit2 ──────────────────────────────────────────────────────────────
+    // Canonical Permit2 contract address. Universal across EVM chains.
+    // 0x000000000022D473030F116dDEE9F6B43aC78BA3
+    address permit2;
 }
