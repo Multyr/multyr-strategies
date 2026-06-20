@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.28;
+pragma solidity 0.8.28;
 
 import { Test } from "forge-std/Test.sol";
 import { FluidUsdcMultiMarketAdapter } from "../../../../src/strategies/usdc-lending/adapters/lending/FluidUsdcMultiMarket.sol";

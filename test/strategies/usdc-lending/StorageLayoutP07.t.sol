@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.28;
+pragma solidity 0.8.28;
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // StorageLayoutP07.t.sol -- P0.7 cross-module storage layout consistency.

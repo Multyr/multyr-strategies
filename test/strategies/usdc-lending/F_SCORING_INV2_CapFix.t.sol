@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.28;
+pragma solidity 0.8.28;
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // F_SCORING_INV2_CapFix.t.sol — F-SCORING-INV2 fix regression tests (Wave 2)

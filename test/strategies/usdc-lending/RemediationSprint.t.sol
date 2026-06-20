@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.28;
+pragma solidity 0.8.28;
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // RemediationSprint.t.sol -- Real-contract harness for 2026-04-22 remediation sprint

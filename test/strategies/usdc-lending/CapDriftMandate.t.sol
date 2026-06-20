@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.28;
+pragma solidity 0.8.28;
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // CapDriftMandate.t.sol -- P0.4 (2026-04-24) cap drift mandate bypass

@@ -1,0 +1,223 @@
+[2026-06-20 19:54:18.62] Compiling test/strategies/usdc-lending/echidna/EchidnaSafetyAdapterCapTier.sol... WARNING: slither not found. Echidna uses Slither (https://github.com/crytic/slither) to perform source analysis, which makes fuzzing more effective. You should install it with 'pip3 install slither-analyzer --user'
+Done! (7.819754334s)
+Analyzing contract: /mnt/c/Users/Pierre/Multyr/multyr-strategies/test/strategies/usdc-lending/echidna/EchidnaSafetyAdapterCapTier.sol:EchidnaSafetyAdapterCapTier
+Loaded 7 transaction sequences from test/strategies/usdc-lending/echidna/corpus/reproducers
+Loaded 54 transaction sequences from test/strategies/usdc-lending/echidna/corpus/coverage
+[2026-06-20 19:54:27.18] [Worker 4] New coverage: 851 instr, 1 contracts, 1 seqs in corpus
+[2026-06-20 19:54:27.18] [Worker 4] Sequence replayed from corpus file 3839781732829237318.txt (1/8)
+[2026-06-20 19:54:27.19] [Worker 5] New coverage: 851 instr, 1 contracts, 2 seqs in corpus
+[2026-06-20 19:54:27.19] [Worker 5] Sequence replayed from corpus file 4791316882981750857.txt (1/8)
+[2026-06-20 19:54:27.19] [Worker 0] New coverage: 851 instr, 1 contracts, 3 seqs in corpus
+[2026-06-20 19:54:27.19] [Worker 0] Sequence replayed from corpus file 1741195589903990740.txt (1/8)
+[2026-06-20 19:54:27.20] [Worker 5] New coverage: 1094 instr, 1 contracts, 4 seqs in corpus
+[2026-06-20 19:54:27.20] [Worker 5] Sequence replayed from corpus file 4959599605862162201.txt (2/8)
+[2026-06-20 19:54:27.21]  Saved reproducer to test/strategies/usdc-lending/echidna/corpus/coverage/3466916112249010558.txt
+[2026-06-20 19:54:27.21] [Worker 0] New coverage: 1269 instr, 1 contracts, 5 seqs in corpus
+[2026-06-20 19:54:27.21] [Worker 0] Sequence replayed from corpus file 1742249026263412327.txt (2/8)
+[2026-06-20 19:54:27.23] [Worker 0] Sequence replayed from corpus file 227288732450395413.txt (3/8)
+[2026-06-20 19:54:27.24]  Saved reproducer to test/strategies/usdc-lending/echidna/corpus/coverage/2241399587699602540.txt
+[2026-06-20 19:54:27.26]  Saved reproducer to test/strategies/usdc-lending/echidna/corpus/coverage/4646820779782171585.txt
+[2026-06-20 19:54:27.38] [Worker 0] New coverage: 1433 instr, 1 contracts, 6 seqs in corpus
+[2026-06-20 19:54:27.38] [Worker 0] Sequence replayed from corpus file 3133775477024702875.txt (4/8)
+[2026-06-20 19:54:27.39]  Saved reproducer to test/strategies/usdc-lending/echidna/corpus/coverage/196129907252435466.txt
+[2026-06-20 19:54:27.39] [Worker 0] Sequence replayed from corpus file 3839781732829237318.txt (5/8)
+[2026-06-20 19:54:27.40]  Saved reproducer to test/strategies/usdc-lending/echidna/corpus/coverage/6804725562448277578.txt
+[2026-06-20 19:54:27.40] [Worker 0] Sequence replayed from corpus file 4791316882981750857.txt (6/8)
+[2026-06-20 19:54:27.41] [Worker 0] Sequence replayed from corpus file 4959599605862162201.txt (7/8)
+[2026-06-20 19:54:27.41]  Saved reproducer to test/strategies/usdc-lending/echidna/corpus/coverage/5983428299069152546.txt
+[2026-06-20 19:54:27.41] [Worker 0] Sequence replayed from corpus file 1138827201782200118.txt (8/8)
+[2026-06-20 19:54:27.65] [Worker 6] New coverage: 1673 instr, 1 contracts, 7 seqs in corpus
+[2026-06-20 19:54:27.65] [Worker 6] Sequence replayed from corpus file 6504648143578103377.txt (1/8)
+[2026-06-20 19:54:27.65] [Worker 5] New coverage: 1673 instr, 1 contracts, 8 seqs in corpus
+[2026-06-20 19:54:27.65] [Worker 5] Sequence replayed from corpus file 5672937422756624439.txt (3/8)
+[2026-06-20 19:54:27.66] [Worker 5] Sequence replayed from corpus file 5983428299069152546.txt (4/8)
+[2026-06-20 19:54:27.68] [Worker 2] New coverage: 1694 instr, 1 contracts, 9 seqs in corpus
+[2026-06-20 19:54:27.68] [Worker 2] Sequence replayed from corpus file 2111162680221987189.txt (1/8)
+[2026-06-20 19:54:27.70] [Worker 3] New coverage: 1715 instr, 1 contracts, 10 seqs in corpus
+[2026-06-20 19:54:27.70] [Worker 3] Sequence replayed from corpus file 3165210464403335162.txt (1/8)
+[2026-06-20 19:54:27.70] [Worker 7] New coverage: 1715 instr, 1 contracts, 11 seqs in corpus
+[2026-06-20 19:54:27.70] [Worker 7] Sequence replayed from corpus file 847866604816663231.txt (1/5)
+[2026-06-20 19:54:27.71]  Saved reproducer to test/strategies/usdc-lending/echidna/corpus/coverage/6504648143578103377.txt
+[2026-06-20 19:54:27.75] [Worker 2] Sequence replayed from corpus file 2264430307803901285.txt (2/8)
+[2026-06-20 19:54:27.76] [Worker 2] Sequence replayed from corpus file 227288732450395413.txt (3/8)
+[2026-06-20 19:54:27.78]  Saved reproducer to test/strategies/usdc-lending/echidna/corpus/coverage/5182743145150070473.txt
+[2026-06-20 19:54:27.85] [Worker 5] New coverage: 1752 instr, 1 contracts, 12 seqs in corpus
+[2026-06-20 19:54:27.85] [Worker 5] Sequence replayed from corpus file 6081683180681525474.txt (5/8)
+[2026-06-20 19:54:27.87]  Saved reproducer to test/strategies/usdc-lending/echidna/corpus/coverage/3420166764242187692.txt
+[2026-06-20 19:54:27.89] [Worker 1] New coverage: 1752 instr, 1 contracts, 13 seqs in corpus
+[2026-06-20 19:54:27.89] [Worker 1] Sequence replayed from corpus file 1192053738727955978.txt (1/8)
+[2026-06-20 19:54:27.89] [Worker 4] New coverage: 1752 instr, 1 contracts, 14 seqs in corpus
+[2026-06-20 19:54:27.89] [Worker 4] Sequence replayed from corpus file 4056132601660521651.txt (2/8)
+[2026-06-20 19:54:27.94] [Worker 0] New coverage: 1752 instr, 1 contracts, 15 seqs in corpus
+[2026-06-20 19:54:27.94] [Worker 2] Sequence replayed from corpus file 2629267487264104063.txt (4/8)
+[2026-06-20 19:54:27.96]  Saved reproducer to test/strategies/usdc-lending/echidna/corpus/coverage/8324027977498520001.txt
+[2026-06-20 19:54:28.05] [Worker 5] New coverage: 1755 instr, 1 contracts, 16 seqs in corpus
+[2026-06-20 19:54:28.05] [Worker 5] Sequence replayed from corpus file 6128936813123838644.txt (6/8)
+[2026-06-20 19:54:28.05] [Worker 6] New coverage: 1755 instr, 1 contracts, 17 seqs in corpus
+[2026-06-20 19:54:28.05] [Worker 6] Sequence replayed from corpus file 6712127735028230255.txt (2/8)
+[2026-06-20 19:54:28.05]  Saved reproducer to test/strategies/usdc-lending/echidna/corpus/coverage/8386402210540147116.txt
+[2026-06-20 19:54:28.06] [Worker 6] Sequence replayed from corpus file 6804725562448277578.txt (3/8)
+[2026-06-20 19:54:28.07] [Worker 3] New coverage: 1755 instr, 1 contracts, 18 seqs in corpus
+[2026-06-20 19:54:28.07] [Worker 3] Sequence replayed from corpus file 3271351747263175949.txt (2/8)
+[2026-06-20 19:54:28.08] [Worker 4] Sequence replayed from corpus file 4126298783543348673.txt (3/8)
+[2026-06-20 19:54:28.09] [Worker 7] Sequence replayed from corpus file 8611663521208798900.txt (2/5)
+[2026-06-20 19:54:28.11] [Worker 2] New coverage: 1755 instr, 1 contracts, 19 seqs in corpus
+[2026-06-20 19:54:28.11] [Worker 2] Sequence replayed from corpus file 2850387977590017880.txt (5/8)
+[2026-06-20 19:54:28.12]  Saved reproducer to test/strategies/usdc-lending/echidna/corpus/coverage/3340524619169694668.txt
+[2026-06-20 19:54:28.23] [Worker 3] Sequence replayed from corpus file 3340524619169694668.txt (3/8)
+[2026-06-20 19:54:28.23] [Worker 6] Sequence replayed from corpus file 7458854440487475848.txt (4/8)
+[2026-06-20 19:54:28.25] [Worker 1] New coverage: 1755 instr, 1 contracts, 20 seqs in corpus
+[2026-06-20 19:54:28.25] [Worker 1] Sequence replayed from corpus file 1202638786811726074.txt (2/8)
+[2026-06-20 19:54:28.27] [Worker 0] New coverage: 1755 instr, 1 contracts, 21 seqs in corpus
+[2026-06-20 19:54:28.28] [Worker 2] Sequence replayed from corpus file 295060688584614187.txt (6/8)
+[2026-06-20 19:54:28.30]  Saved reproducer to test/strategies/usdc-lending/echidna/corpus/coverage/1192053738727955978.txt
+[2026-06-20 19:54:28.41] [Worker 3] Sequence replayed from corpus file 3354103532888513844.txt (4/8)
+[2026-06-20 19:54:28.42] [Worker 6] Sequence replayed from corpus file 7742277771150243568.txt (5/8)
+[2026-06-20 19:54:28.42] [Worker 5] Sequence replayed from corpus file 6131681470085653242.txt (7/8)
+[2026-06-20 19:54:28.44] [Worker 1] Sequence replayed from corpus file 1585610864976510300.txt (3/8)
+[2026-06-20 19:54:28.44] [Worker 4] Sequence replayed from corpus file 438292638793505553.txt (4/8)
+[2026-06-20 19:54:28.44] [Worker 1] Sequence replayed from corpus file 1741195589903990740.txt (4/8)
+[2026-06-20 19:54:28.45] [Worker 2] Sequence replayed from corpus file 3060569375339338473.txt (7/8)
+[2026-06-20 19:54:28.45] [Worker 1] Sequence replayed from corpus file 1742249026263412327.txt (5/8)
+[2026-06-20 19:54:28.46] [Worker 7] Sequence replayed from corpus file 8683004896297423639.txt (3/5)
+[2026-06-20 19:54:28.47] [Worker 1] Sequence replayed from corpus file 196129907252435466.txt (6/8)
+[2026-06-20 19:54:28.47] [Worker 2] Sequence replayed from corpus file 3133775477024702875.txt (8/8)
+[2026-06-20 19:54:28.50]  Saved reproducer to test/strategies/usdc-lending/echidna/corpus/coverage/625029157684349388.txt
+[2026-06-20 19:54:28.55] [Worker 3] Sequence replayed from corpus file 3382061525584593510.txt (5/8)
+[2026-06-20 19:54:28.58] [Worker 6] Sequence replayed from corpus file 7743281580750690489.txt (6/8)
+[2026-06-20 19:54:28.62] [Worker 7] Sequence replayed from corpus file 8850230028635371583.txt (4/5)
+[2026-06-20 19:54:28.63] [Worker 1] Sequence replayed from corpus file 2026828915660741840.txt (7/8)
+[2026-06-20 19:54:28.71]  Saved reproducer to test/strategies/usdc-lending/echidna/corpus/coverage/3018401446980124770.txt
+[2026-06-20 19:54:28.74] [Worker 3] Sequence replayed from corpus file 3420166764242187692.txt (6/8)
+[2026-06-20 19:54:28.76] [Worker 6] Sequence replayed from corpus file 8090341757756593641.txt (7/8)
+[2026-06-20 19:54:28.77] [Worker 7] New coverage: 1755 instr, 1 contracts, 22 seqs in corpus
+[2026-06-20 19:54:28.77] [Worker 7] Sequence replayed from corpus file 9177489744195236133.txt (5/5)
+[2026-06-20 19:54:28.78] [Worker 4] Sequence replayed from corpus file 4528410825646308423.txt (5/8)
+[2026-06-20 19:54:28.79]  Saved reproducer to test/strategies/usdc-lending/echidna/corpus/coverage/1809719953408693887.txt
+[2026-06-20 19:54:28.79] [Worker 4] Sequence replayed from corpus file 4646820779782171585.txt (6/8)
+[2026-06-20 19:54:28.79] [Worker 1] Sequence replayed from corpus file 2065630598381783706.txt (8/8)
+[2026-06-20 19:54:28.80] [Worker 5] Sequence replayed from corpus file 625029157684349388.txt (8/8)
+[2026-06-20 19:54:28.90] [Worker 3] Sequence replayed from corpus file 3520542111993634038.txt (7/8)
+[2026-06-20 19:54:28.93] [Worker 6] Sequence replayed from corpus file 8392147371589964052.txt (8/8)
+[2026-06-20 19:54:28.98] [Worker 4] Sequence replayed from corpus file 4652496135183524206.txt (7/8)
+[2026-06-20 19:54:28.99]  Saved reproducer to test/strategies/usdc-lending/echidna/corpus/coverage/6712127735028230255.txt
+[2026-06-20 19:54:29.06] [Worker 3] Sequence replayed from corpus file 3524656833796981883.txt (8/8)
+[2026-06-20 19:54:29.16] [Worker 4] Sequence replayed from corpus file 4748137967664939753.txt (8/8)
+[2026-06-20 19:54:29.18]  Saved reproducer to test/strategies/usdc-lending/echidna/corpus/coverage/3271351747263175949.txt
+[2026-06-20 19:54:29.30]  Saved reproducer to test/strategies/usdc-lending/echidna/corpus/coverage/2087503628162640398.txt
+[2026-06-20 19:54:29.49]  Saved reproducer to test/strategies/usdc-lending/echidna/corpus/coverage/1202638786811726074.txt
+[2026-06-20 19:54:29.69]  Saved reproducer to test/strategies/usdc-lending/echidna/corpus/coverage/9008050990796710114.txt
+[2026-06-20 19:54:29.75]  Saved reproducer to test/strategies/usdc-lending/echidna/corpus/coverage/9177489744195236133.txt
+[2026-06-20 19:54:30.16] [status] tests: 0/15, fuzzing: 11392/1000000, values: [], cov: 1755, corpus: 22
+[2026-06-20 19:54:33.16] [status] tests: 0/15, fuzzing: 25878/1000000, values: [], cov: 1755, corpus: 22
+[2026-06-20 19:54:36.17] [status] tests: 0/15, fuzzing: 38901/1000000, values: [], cov: 1755, corpus: 22
+[2026-06-20 19:54:39.18] [status] tests: 0/15, fuzzing: 51625/1000000, values: [], cov: 1755, corpus: 22
+[2026-06-20 19:54:42.18] [status] tests: 0/15, fuzzing: 65260/1000000, values: [], cov: 1755, corpus: 22
+[2026-06-20 19:54:45.19] [status] tests: 0/15, fuzzing: 77984/1000000, values: [], cov: 1755, corpus: 22
+[2026-06-20 19:54:48.19] [status] tests: 0/15, fuzzing: 91198/1000000, values: [], cov: 1755, corpus: 22
+[2026-06-20 19:54:52.80] [status] tests: 0/15, fuzzing: 104201/1000000, values: [], cov: 1755, corpus: 22
+[2026-06-20 19:54:55.81] [status] tests: 0/15, fuzzing: 116982/1000000, values: [], cov: 1755, corpus: 22
+[2026-06-20 19:54:58.81] [status] tests: 0/15, fuzzing: 128974/1000000, values: [], cov: 1755, corpus: 22
+[2026-06-20 19:55:01.82] [status] tests: 0/15, fuzzing: 142568/1000000, values: [], cov: 1755, corpus: 22
+[2026-06-20 19:55:04.82] [status] tests: 0/15, fuzzing: 155940/1000000, values: [], cov: 1755, corpus: 22
+[2026-06-20 19:55:07.83] [status] tests: 0/15, fuzzing: 170329/1000000, values: [], cov: 1755, corpus: 22
+[2026-06-20 19:55:10.84] [status] tests: 0/15, fuzzing: 184178/1000000, values: [], cov: 1755, corpus: 22
+[2026-06-20 19:55:13.86] [status] tests: 0/15, fuzzing: 197616/1000000, values: [], cov: 1755, corpus: 22
+[2026-06-20 19:55:16.88] [status] tests: 0/15, fuzzing: 210746/1000000, values: [], cov: 1755, corpus: 22
+[2026-06-20 19:55:19.89] [status] tests: 0/15, fuzzing: 223807/1000000, values: [], cov: 1755, corpus: 22
+[2026-06-20 19:55:22.89] [status] tests: 0/15, fuzzing: 236110/1000000, values: [], cov: 1755, corpus: 22
+[2026-06-20 19:55:27.41] [status] tests: 0/15, fuzzing: 248309/1000000, values: [], cov: 1755, corpus: 22
+[2026-06-20 19:55:30.42] [status] tests: 0/15, fuzzing: 260857/1000000, values: [], cov: 1755, corpus: 22
+[2026-06-20 19:55:33.43] [status] tests: 0/15, fuzzing: 273932/1000000, values: [], cov: 1755, corpus: 22
+[2026-06-20 19:55:36.44] [status] tests: 0/15, fuzzing: 287870/1000000, values: [], cov: 1755, corpus: 22
+[2026-06-20 19:55:39.45] [status] tests: 0/15, fuzzing: 301254/1000000, values: [], cov: 1755, corpus: 22
+[2026-06-20 19:55:42.45] [status] tests: 0/15, fuzzing: 315488/1000000, values: [], cov: 1755, corpus: 22
+[2026-06-20 19:55:45.46] [status] tests: 0/15, fuzzing: 328974/1000000, values: [], cov: 1755, corpus: 22
+[2026-06-20 19:55:48.46] [status] tests: 0/15, fuzzing: 342806/1000000, values: [], cov: 1755, corpus: 22
+[2026-06-20 19:55:51.47] [status] tests: 0/15, fuzzing: 355453/1000000, values: [], cov: 1755, corpus: 22
+[2026-06-20 19:55:54.47] [status] tests: 0/15, fuzzing: 368827/1000000, values: [], cov: 1755, corpus: 22
+[2026-06-20 19:55:59.14] [status] tests: 0/15, fuzzing: 380933/1000000, values: [], cov: 1755, corpus: 22
+[2026-06-20 19:56:02.15] [status] tests: 0/15, fuzzing: 393710/1000000, values: [], cov: 1755, corpus: 22
+[2026-06-20 19:56:05.16] [status] tests: 0/15, fuzzing: 405766/1000000, values: [], cov: 1755, corpus: 22
+[2026-06-20 19:56:08.16] [status] tests: 0/15, fuzzing: 418642/1000000, values: [], cov: 1755, corpus: 22
+[2026-06-20 19:56:11.17] [status] tests: 0/15, fuzzing: 432318/1000000, values: [], cov: 1755, corpus: 22
+[2026-06-20 19:56:14.17] [status] tests: 0/15, fuzzing: 446332/1000000, values: [], cov: 1755, corpus: 22
+[2026-06-20 19:56:16.80] [Worker 0] New coverage: 1755 instr, 1 contracts, 23 seqs in corpus
+[2026-06-20 19:56:16.94]  Saved reproducer to test/strategies/usdc-lending/echidna/corpus/coverage/6199273031322988053.txt
+[2026-06-20 19:56:17.19] [status] tests: 0/15, fuzzing: 459817/1000000, values: [], cov: 1755, corpus: 23
+[2026-06-20 19:56:20.19] [status] tests: 0/15, fuzzing: 472289/1000000, values: [], cov: 1755, corpus: 23
+[2026-06-20 19:56:23.20] [status] tests: 0/15, fuzzing: 486041/1000000, values: [], cov: 1755, corpus: 23
+[2026-06-20 19:56:26.20] [status] tests: 0/15, fuzzing: 499180/1000000, values: [], cov: 1755, corpus: 23
+[2026-06-20 19:56:29.21] [status] tests: 0/15, fuzzing: 511721/1000000, values: [], cov: 1755, corpus: 23
+[2026-06-20 19:56:33.82] [status] tests: 0/15, fuzzing: 524500/1000000, values: [], cov: 1755, corpus: 23
+[2026-06-20 19:56:36.82] [status] tests: 0/15, fuzzing: 537987/1000000, values: [], cov: 1755, corpus: 23
+[2026-06-20 19:56:39.83] [status] tests: 0/15, fuzzing: 550661/1000000, values: [], cov: 1755, corpus: 23
+[2026-06-20 19:56:42.83] [status] tests: 0/15, fuzzing: 564121/1000000, values: [], cov: 1755, corpus: 23
+[2026-06-20 19:56:45.84] [status] tests: 0/15, fuzzing: 577507/1000000, values: [], cov: 1755, corpus: 23
+[2026-06-20 19:56:48.84] [status] tests: 0/15, fuzzing: 591654/1000000, values: [], cov: 1755, corpus: 23
+[2026-06-20 19:56:51.85] [status] tests: 0/15, fuzzing: 604558/1000000, values: [], cov: 1755, corpus: 23
+[2026-06-20 19:56:54.85] [status] tests: 0/15, fuzzing: 617654/1000000, values: [], cov: 1755, corpus: 23
+[2026-06-20 19:56:57.86] [status] tests: 0/15, fuzzing: 632021/1000000, values: [], cov: 1755, corpus: 23
+[2026-06-20 19:57:00.86] [status] tests: 0/15, fuzzing: 645426/1000000, values: [], cov: 1755, corpus: 23
+[2026-06-20 19:57:03.87] [status] tests: 0/15, fuzzing: 658450/1000000, values: [], cov: 1755, corpus: 23
+[2026-06-20 19:57:08.69] [status] tests: 0/15, fuzzing: 671826/1000000, values: [], cov: 1755, corpus: 23
+[2026-06-20 19:57:11.69] [status] tests: 0/15, fuzzing: 684582/1000000, values: [], cov: 1755, corpus: 23
+[2026-06-20 19:57:14.70] [status] tests: 0/15, fuzzing: 696873/1000000, values: [], cov: 1755, corpus: 23
+[2026-06-20 19:57:17.70] [status] tests: 0/15, fuzzing: 710331/1000000, values: [], cov: 1755, corpus: 23
+[2026-06-20 19:57:20.71] [status] tests: 0/15, fuzzing: 723203/1000000, values: [], cov: 1755, corpus: 23
+[2026-06-20 19:57:23.71] [status] tests: 0/15, fuzzing: 735759/1000000, values: [], cov: 1755, corpus: 23
+[2026-06-20 19:57:26.72] [status] tests: 0/15, fuzzing: 748407/1000000, values: [], cov: 1755, corpus: 23
+[2026-06-20 19:57:29.72] [status] tests: 0/15, fuzzing: 761030/1000000, values: [], cov: 1755, corpus: 23
+[2026-06-20 19:57:32.73] [status] tests: 0/15, fuzzing: 772908/1000000, values: [], cov: 1755, corpus: 23
+[2026-06-20 19:57:35.73] [status] tests: 0/15, fuzzing: 785919/1000000, values: [], cov: 1755, corpus: 23
+[2026-06-20 19:57:40.56] [status] tests: 0/15, fuzzing: 798587/1000000, values: [], cov: 1755, corpus: 23
+[2026-06-20 19:57:43.56] [status] tests: 0/15, fuzzing: 810239/1000000, values: [], cov: 1755, corpus: 23
+[2026-06-20 19:57:46.58] [status] tests: 0/15, fuzzing: 822031/1000000, values: [], cov: 1755, corpus: 23
+[2026-06-20 19:57:49.58] [status] tests: 0/15, fuzzing: 833865/1000000, values: [], cov: 1755, corpus: 23
+[2026-06-20 19:57:52.59] [status] tests: 0/15, fuzzing: 846594/1000000, values: [], cov: 1755, corpus: 23
+[2026-06-20 19:57:55.61] [status] tests: 0/15, fuzzing: 860274/1000000, values: [], cov: 1755, corpus: 23
+[2026-06-20 19:57:58.62] [status] tests: 0/15, fuzzing: 873601/1000000, values: [], cov: 1755, corpus: 23
+[2026-06-20 19:58:01.62] [status] tests: 0/15, fuzzing: 886131/1000000, values: [], cov: 1755, corpus: 23
+[2026-06-20 19:58:04.63] [status] tests: 0/15, fuzzing: 894932/1000000, values: [], cov: 1755, corpus: 23
+[2026-06-20 19:58:07.64] [status] tests: 0/15, fuzzing: 907665/1000000, values: [], cov: 1755, corpus: 23
+[2026-06-20 19:58:10.65] [status] tests: 0/15, fuzzing: 919353/1000000, values: [], cov: 1755, corpus: 23
+[2026-06-20 19:58:15.40] [status] tests: 0/15, fuzzing: 931183/1000000, values: [], cov: 1755, corpus: 23
+[2026-06-20 19:58:18.42] [status] tests: 0/15, fuzzing: 942051/1000000, values: [], cov: 1755, corpus: 23
+[2026-06-20 19:58:21.66] [status] tests: 0/15, fuzzing: 954332/1000000, values: [], cov: 1755, corpus: 23
+[2026-06-20 19:58:24.69] [status] tests: 0/15, fuzzing: 967680/1000000, values: [], cov: 1755, corpus: 23
+[2026-06-20 19:58:27.69] [status] tests: 0/15, fuzzing: 978025/1000000, values: [], cov: 1755, corpus: 23
+[2026-06-20 19:58:30.51] [Worker 7] Test limit reached. Stopping.
+[2026-06-20 19:58:30.70] [status] tests: 0/15, fuzzing: 990518/1000000, values: [], cov: 1755, corpus: 23
+[2026-06-20 19:58:31.48] [Worker 6] Test limit reached. Stopping.
+[2026-06-20 19:58:31.82] [Worker 5] Test limit reached. Stopping.
+[2026-06-20 19:58:32.48] [Worker 4] Test limit reached. Stopping.
+[2026-06-20 19:58:33.12] [Worker 0] Test limit reached. Stopping.
+[2026-06-20 19:58:33.13] [Worker 2] Test limit reached. Stopping.
+[2026-06-20 19:58:33.24] [Worker 3] Test limit reached. Stopping.
+[2026-06-20 19:58:33.62] [Worker 1] Test limit reached. Stopping.
+[2026-06-20 19:58:33.62] [status] tests: 0/15, fuzzing: 1000860/1000000, values: [], cov: 1755, corpus: 23
+echidna_I04a_overflow_respects_ceiling_at_deposit: passing
+echidna_I10_preserve_safety_tranche_no_unwind: passing
+echidna_I04b_post_mandate_within_soft_ceiling: passing
+echidna_I11_mandate_ceiling_monotone: passing
+echidna_I03c_above_hard_implies_above_soft: passing
+echidna_I01_normal_uses_normal_ceiling: passing
+echidna_I05_overflow_no_overdraft: passing
+echidna_I03b_overflow_within_hard_ceiling_at_deposit: passing
+echidna_I02_safety_below_fb_no_mandate: passing
+echidna_I12_safety_disabled_equals_legacy: passing
+echidna_I07_fbCeiling_le_abs_constituent: passing
+echidna_I09_fbCeiling_le_govbound: passing
+echidna_I03a_hard_ceiling_ge_fb_ceiling: passing
+echidna_I06_accounting_conserved: passing
+echidna_I08_fbCeiling_le_rel_constituent_when_active: passing
+
+
+Unique instructions: 1755
+Unique codehashes: 1
+Corpus size: 23
+Seed: 1191146323191387670
+
+[2026-06-20 19:58:33.62] Saving test reproducers... Done! (0.000001173s)
+[2026-06-20 19:58:33.62] Saving corpus... Done! (2.572309897s)
+[2026-06-20 19:58:36.19] Saving coverage... Done! (0.080196861s)

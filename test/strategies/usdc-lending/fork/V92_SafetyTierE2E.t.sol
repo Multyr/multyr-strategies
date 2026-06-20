@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.28;
+pragma solidity 0.8.28;
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // V92_SafetyTierE2E.t.sol — P0.7 Safety Adapter Cap Tier — 13-step fork E2E

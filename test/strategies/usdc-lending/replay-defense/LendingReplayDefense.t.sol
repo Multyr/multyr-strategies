@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.28;
+pragma solidity 0.8.28;
 
 /// @title Replay-attack defense regression tests
 /// @notice Phase 4 Step 4.7 — verifies adapters/helper resist 10 known patterns.

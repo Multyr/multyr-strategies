@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.28;
+pragma solidity 0.8.28;
 
 // =============================================================================
 // StorageLayoutV10Adapters.t.sol — V10 adapter storage layout consistency

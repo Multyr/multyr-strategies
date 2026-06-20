@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.28;
+pragma solidity 0.8.28;
 
 /// @notice Halmos 0.2.0 formal verification of P0.7 Safety Adapter Cap Tier.
 /// @dev 23 check_* properties, all PASS; no prop_* skips.

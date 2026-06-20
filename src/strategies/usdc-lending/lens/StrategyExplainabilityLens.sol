@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.28;
+pragma solidity 0.8.28;
 
 import { ILendingAdapter } from "../interfaces/ILendingAdapter.sol";
 import { StrategyConfigLib } from "../lib/StrategyConfigLib.sol";

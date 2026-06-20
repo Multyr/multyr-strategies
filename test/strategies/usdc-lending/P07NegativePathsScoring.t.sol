@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.28;
+pragma solidity 0.8.28;
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // P07NegativePathsScoring.t.sol — E.8 + H-02 diff branch coverage (2026-06-13)

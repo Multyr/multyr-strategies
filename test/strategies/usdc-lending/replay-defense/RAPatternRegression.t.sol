@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.28;
+pragma solidity 0.8.28;
 
 /// @title RA Pattern Regression Tests (S27)
 /// @notice Regression tests for 5 Risk Audit patterns not covered in LendingReplayDefense.t.sol:

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.28;
+pragma solidity 0.8.28;
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // Lens_Core_Parity.t.sol -- HIGH-LENS-01/02/03 (Wave 1, item 14/15)

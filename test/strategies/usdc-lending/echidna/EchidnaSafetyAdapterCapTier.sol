@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.28;
+pragma solidity 0.8.28;
 
 // =============================================================================
 // EchidnaSafetyAdapterCapTier.sol -- P0.7 stateful fuzzing harness (S2.2)
