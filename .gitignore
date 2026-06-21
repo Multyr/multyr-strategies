@@ -51,3 +51,8 @@ foundry.lock
 
 # Logs
 *.log
+
+# Audit submission packages (build artifacts, distributed via GitHub Release)
+audit_p07_v*.zip
+audit_p07_v*.zip.sha256
+audit_p07_v*/
