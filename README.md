@@ -291,7 +291,7 @@ security@multyr.fi.
 
 | Date | Auditor | Scope | Findings | Report |
 | --------------- | ------- | ------------------------------------------------ | -------- | ------ |
-| 2026-Q3 in progress | TBD (Spearbit / Sherlock) | `multyr-strategies` v1.0 (USDC Lending V10) | — | — |
+| 2026-Q3 in progress | TBD | `multyr-strategies` v1.0 (USDC Lending V10) | — | — |
 
 Bug bounty program: forthcoming (Immunefi — link to be published after first signed
 audit report).
