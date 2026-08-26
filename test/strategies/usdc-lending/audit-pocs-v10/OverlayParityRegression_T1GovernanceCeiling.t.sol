@@ -2,41 +2,30 @@
 pragma solidity ^0.8.28;
 
 /**
- * FINDING: The F-SCORING-INV2 governance-ceiling fix for the T1 (single-
- *          adapter, dMax==1) tier was applied to
+ * FINDING (FIXED): The F-SCORING-INV2 governance-ceiling fix for the T1
+ *          (single-adapter, dMax==1) tier had been applied to
  *          `StrategyAllocCalcModule._effectiveAbsCapBps()` (the engine that
  *          actually computes allocation targets) but NOT to the parallel,
  *          supposedly-identical copy in
  *          `StrategyScoringModule.effectiveAbsCapBps()` (the public getter
- *          reachable through the vault). This is a live regression of
- *          exactly the invariant `docs/invariants.md` I-ALLOC-06 exists to
- *          protect ("Overlay parity ... AllocCalcModule._effectiveAbsCapBps
- *          ≡ ScoringModule.effectiveAbsCapBps for all inputs"), and it was
- *          originally fixed once already as AUDIT-FINDING-13.
- * SEVERITY: HIGH (observability/integrity, not direct fund loss). Any
- *           consumer that trusts `ScoringModule.effectiveAbsCapBps()` as
- *           ground truth for "what cap is this adapter actually under" — a
- *           monitoring dashboard, `StrategyExplainabilityLens`, a risk
- *           system, another on-chain contract — will be told an adapter is
- *           allowed 100% concentration when the REAL allocation engine is
- *           actually enforcing a tighter governance-set emergency ceiling.
- *           This exact divergence class caused AUDIT-FINDING-13 (see
- *           docs/threat-model.md §9) and evidently was reintroduced here.
+ *          reachable through the vault) -- a live regression of exactly the
+ *          invariant `docs/invariants.md` I-ALLOC-06 exists to protect,
+ *          previously fixed once already as AUDIT-FINDING-13.
+ * SEVERITY: HIGH (observability/integrity, not direct fund loss) (was).
  *
- * StrategyAllocCalcModule.sol:486-489 (current, fixed):
+ * FIX: `StrategyScoringModule.effectiveAbsCapBps()`'s T1 branch now mirrors
+ * `StrategyAllocCalcModule._effectiveAbsCapBps()` exactly:
  *     if (dMax == 1) {
- *         uint16 globalCeiling = adapterMaxExposureBps;
- *         return globalCeiling > 0 ? uint256(globalCeiling) : 10000;
+ *         uint16 t1Ceiling = adapterMaxExposureBps;
+ *         return t1Ceiling > 0 ? t1Ceiling : 10000;
  *     }
  *
- * StrategyScoringModule.sol:254-256 (current, STALE / pre-fix):
- *     // T1: single-adapter mode = intentional 100% concentration by design.
- *     // Global ceiling does not apply ...
- *     if (dMax == 1) return 10000;
- *
- * The existing regression test (Overlay_Parity.t.sol, "T1 ignores global
- * ceiling", expects 10000) still passes because it asserts the STALE
- * behavior as correct, so this divergence currently ships silently.
+ * NOTE: `test/strategies/usdc-lending/Overlay_Parity.t.sol`'s "T1 ignores
+ * global ceiling" case still asserts the old (10000, unconstrained) value
+ * for the *ceiling-unset* case -- which remains correct (globalCeiling==0 is
+ * the documented sentinel for "no constraint"). It just never covered the
+ * ceiling-SET case this PoC exercises, which is why the regression shipped
+ * silently.
  */
 
 import { Test, console2 } from "forge-std/Test.sol";
@@ -65,7 +54,7 @@ contract OverlayParityRegression_PoC is UsdcMultiLendingVaultTestBase {
         assertEq(vault.adapterMaxExposureBps(), 3000, "sanity: 30% emergency ceiling is active");
     }
 
-    function test_POC_scoring_getter_diverges_from_actual_enforced_T1_cap() public {
+    function test_POC_scoring_getter_now_matches_actual_enforced_T1_cap() public {
         // Stay in T1 tier (TVL < $25,000). Deploy via deployIdleToAdapters()
         // directly (bestEffort=true) rather than the full deposit() flow, so
         // the (unrelated) post-deposit idle-threshold checks in deposit()
@@ -81,30 +70,25 @@ contract OverlayParityRegression_PoC is UsdcMultiLendingVaultTestBase {
         );
         require(okDeploy, "deployIdleToAdapters call failed");
 
-        // The public getter (reachable through the vault, used by external
-        // consumers as "the cap this adapter is under") reports 10000 (100%,
-        // unconstrained) -- the STALE, pre-governance-ceiling value.
+        // The public getter now correctly reflects the 30% governance
+        // ceiling instead of the stale, unconstrained 10000.
         (bool ok, bytes memory ret) = address(vault).call(
             abi.encodeWithSignature("effectiveAbsCapBps(address)", address(adapter1))
         );
         require(ok, "effectiveAbsCapBps call failed");
         uint16 reportedCapBps = abi.decode(ret, (uint16));
-        assertEq(reportedCapBps, 10000, "sanity: the getter claims 100% (unconstrained), ignoring the 30% governance ceiling");
+        assertEq(reportedCapBps, 3000, "FIXED: the getter now reports the real 30% governance ceiling");
 
-        // But the REAL allocation engine (AllocCalcModule, exercised through
-        // the actual deposit path above) enforced the 30% ceiling for real:
-        // the single T1 adapter received at most 30% of TVL, not 100%.
+        // The real allocation engine (AllocCalcModule, exercised through the
+        // actual deposit path above) enforces the same 30% ceiling.
         uint256 actualPosition = vault.positionAssets(address(adapter1));
         uint256 impliedCapBps = (actualPosition * 10_000) / depositAmt;
 
-        assertLe(
-            impliedCapBps, 3000,
-            "sanity: the real engine really did enforce the 30% ceiling on this single T1 adapter"
-        );
+        assertLe(impliedCapBps, 3000, "sanity: the engine really did enforce the 30% ceiling on this single T1 adapter");
 
-        assertTrue(
-            reportedCapBps != impliedCapBps,
-            "VULNERABLE: ScoringModule.effectiveAbsCapBps() (10000) diverges from what StrategyAllocCalcModule actually enforced (<=3000) -- overlay parity (I-ALLOC-06) is broken for the T1 + governance-ceiling case"
+        assertEq(
+            reportedCapBps, uint16(3000),
+            "FIXED: ScoringModule.effectiveAbsCapBps() now matches what StrategyAllocCalcModule actually enforces -- overlay parity (I-ALLOC-06) restored"
         );
     }
 }

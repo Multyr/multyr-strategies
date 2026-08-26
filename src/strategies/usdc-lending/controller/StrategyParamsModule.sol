@@ -181,6 +181,25 @@ contract StrategyParamsModule is StrategyStorageLayout {
                     emit ExternalTVLRejected(adapter, prev, tvl);
                 }
             } catch {}
+
+            // Audit HIGH 1.6 fix: populate cachedAdapterCapacity so the delta
+            // jump limiter in StrategyAllocCalcModule._checkAdapterEligibility()
+            // (which reads this mapping) is no longer permanently inert. Same
+            // keeper cadence and try/catch-safe pattern as the externalMarketTVL
+            // poke above -- a bricked/reverting maxCapacity() simply leaves the
+            // cache at its last known-good value.
+            try ILendingAdapter(adapter).maxCapacity() returns (uint256 cap) {
+                uint256 prevCap = cachedAdapterCapacity[adapter];
+                if (prevCap > 0 && cap > prevCap) {
+                    uint256 maxCapJump = (prevCap * MAX_EXTERNAL_TVL_JUMP_BPS) / 10_000;
+                    if (cap > maxCapJump) {
+                        emit AdapterCapacityJump(adapter, prevCap, cap);
+                    }
+                } else if (prevCap > 0 && cap < prevCap) {
+                    emit AdapterCapacityDecreased(adapter, cap, prevCap);
+                }
+                cachedAdapterCapacity[adapter] = cap;
+            } catch {}
             unchecked { ++i; }
         }
     }

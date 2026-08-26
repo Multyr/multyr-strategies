@@ -99,7 +99,10 @@ contract StrategyScoringModule is StrategyStorageLayout {
     ///           4. scoring pipeline: compute → normalize → target allocs
     ///           5. aggregate APYs + normalized scores + moved
     ///         The plan module consumes these, runs gate check and builds actions.
-    function computeInputsForPlan() external onlyDelegateCall returns (
+    /// @dev KEEPER_ROLE only — the sole legitimate caller is prepareRebalance()
+    ///      (KEEPER-gated); this forces a position sync, so it must not be
+    ///      reachable unauthenticated.
+    function computeInputsForPlan() external onlyDelegateCall onlyRoleOrRevert(KEEPER_ROLE) returns (
         address[] memory enabledList,
         uint256[] memory targetAllocs,
         uint256[] memory normScores,
@@ -166,7 +169,9 @@ contract StrategyScoringModule is StrategyStorageLayout {
     /// @notice Deploy idle to adapters — external entry point for delegatecall from strategy.
     /// @dev    Was _deployIdleToAdapters(uint256, bool) internal in UsdcLendingStrategy.
     ///         Made external with onlyDelegateCall for module extraction.
-    function deployIdleToAdapters(uint256 amount, bool bestEffort) external onlyDelegateCall {
+    ///         CORE_ROLE (deposit/withdraw) or KEEPER_ROLE (harvest/deployIdle/
+    ///         rebalance finalize) — see onlyKeeperOrCoreOrRevert doc.
+    function deployIdleToAdapters(uint256 amount, bool bestEffort) external onlyDelegateCall onlyKeeperOrCoreOrRevert {
         _deployIdleToAdapters(amount, bestEffort);
     }
 
@@ -251,9 +256,17 @@ contract StrategyScoringModule is StrategyStorageLayout {
     function effectiveAbsCapBps(address adapter) public view onlyDelegateCall returns (uint16) {
         uint16 dMax = effectiveMaxAdaptersPerAllocation();
         if (dMax == 0) return 0;
-        // T1: single-adapter mode = intentional 100% concentration by design.
-        // Global ceiling does not apply — there is no diversification choice to constrain.
-        if (dMax == 1) return 10000;
+        // T1: single-adapter mode. Governance ceiling (adapterMaxExposureBps) still
+        // respected if set. Sentinel preservation: globalCeiling == 0 = no constraint
+        // -> returns 10000 (100% TVL allowed = original T1 behavior).
+        // Fix: F-SCORING-INV2 (audit Wave 2) -- mirrors StrategyAllocCalcModule
+        // ._effectiveAbsCapBps() exactly (I-ALLOC-06 overlay parity). Before this
+        // fix, this getter still returned the stale 10000 while AllocCalcModule
+        // enforced the governance ceiling for real -- a live parity regression.
+        if (dMax == 1) {
+            uint16 t1Ceiling = adapterMaxExposureBps;
+            return t1Ceiling > 0 ? t1Ceiling : 10000;
+        }
         // Layer 1: STRUCTURAL_BASE — ceil(11000 / dMax), floor 2500, ceiling 10000
         uint256 cap = (11000 + uint256(dMax) - 1) / uint256(dMax);
         if (cap > 10000) cap = 10000;

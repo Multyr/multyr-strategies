@@ -2,19 +2,19 @@
 pragma solidity ^0.8.28;
 
 /**
- * FINDING: STILL PRESENT, unchanged on feature/v10.0-storage-initialize.
- *          `StrategySettingsModule.setDustTolerance()` has no upper bound
- *          and, unlike `setRebalanceParams` (which DID gain bounds on this
- *          branch -- see C-03 comment in the source), was not touched by
- *          this branch's hardening pass. PARAM_ROLE can still set
- *          `dustTolerance = type(uint256).max` and then permanently lock it
- *          in via `finalizeParameters()` (which still performs zero
- *          validation), neutralizing the "idle cash must deploy"
- *          NoCashInvariant forever.
- * SEVERITY: MEDIUM.
+ * FINDING (FIXED): `StrategySettingsModule.setDustTolerance()` had no upper
+ *          bound. PARAM_ROLE could set `dustTolerance = type(uint256).max`
+ *          and permanently lock it in via `finalizeParameters()`, silently
+ *          neutralizing the "idle cash must deploy" NoCashInvariant forever.
+ * SEVERITY: MEDIUM (was).
+ *
+ * FIX: `setDustTolerance()` now enforces `_dustTolerance <= 100_000e6`
+ * (100K USDC), matching the `ParamOutOfRange` pattern every sibling setter
+ * in the file already used.
  */
 
 import { Test, console2 } from "forge-std/Test.sol";
+import { ParamOutOfRange } from "../../../../src/strategies/usdc-lending/controller/StrategyStorageLayout.sol";
 import {
     UsdcMultiLendingVaultTestBase,
     MockUSDC,
@@ -28,32 +28,33 @@ contract UnboundedDustTolerance_PoC is UsdcMultiLendingVaultTestBase {
         adapter1.setMaxCap(0); // starve headroom so idle cash has nowhere to go
     }
 
-    function test_POC_paramRole_sets_unbounded_dustTolerance_then_locks_it_forever() public {
+    function test_POC_unbounded_dustTolerance_now_blocked() public {
         vm.prank(paramSetter);
-        (bool ok, ) = address(vault).call(
+        (bool ok, bytes memory ret) = address(vault).call(
             abi.encodeWithSignature("setDustTolerance(uint256)", type(uint256).max)
         );
-        require(ok, "setDustTolerance call unexpectedly failed");
-        assertEq(vault.dustTolerance(), type(uint256).max, "sanity: dustTolerance accepted with no bound");
+        assertFalse(ok, "FIXED: setDustTolerance(type(uint256).max) must now revert");
+        assertEq(bytes4(ret), ParamOutOfRange.selector);
+        assertEq(vault.dustTolerance(), 3e6, "dustTolerance unchanged from the test-harness default");
 
+        // A sane value within bounds still works normally.
         vm.prank(paramSetter);
-        (bool okFinalize, ) = address(vault).call(abi.encodeWithSignature("finalizeParameters()"));
-        require(okFinalize, "finalizeParameters call unexpectedly failed");
-        assertTrue(vault.paramsFinalized());
-
-        vm.prank(paramSetter);
-        (bool okSecondSet, ) = address(vault).call(
-            abi.encodeWithSignature("setDustTolerance(uint256)", 3e6)
+        (bool okSane, ) = address(vault).call(
+            abi.encodeWithSignature("setDustTolerance(uint256)", 50_000e6)
         );
-        assertFalse(okSecondSet, "sanity: dustTolerance is now permanently locked at type(uint256).max");
+        assertTrue(okSane, "sanity: an in-bounds dustTolerance is still settable");
+        assertEq(vault.dustTolerance(), 50_000e6);
     }
 
-    function test_POC_massive_idle_cash_never_triggers_NoCashInvariant() public {
+    function test_POC_massive_idle_cash_still_triggers_NoCashInvariant() public {
+        // The maximum allowed dustTolerance (100K) is still far below a 1M
+        // deposit that can't be deployed (adapter capped at 0), so the
+        // invariant fires as designed -- it can no longer be defeated.
         vm.prank(paramSetter);
         (bool ok, ) = address(vault).call(
-            abi.encodeWithSignature("setDustTolerance(uint256)", type(uint256).max)
+            abi.encodeWithSignature("setDustTolerance(uint256)", 100_000e6)
         );
-        require(ok, "setDustTolerance call unexpectedly failed");
+        require(ok, "setDustTolerance(100_000e6) unexpectedly failed");
 
         uint256 depositAmt = 1_000_000e6;
         usdc.mint(core, depositAmt);
@@ -61,9 +62,7 @@ contract UnboundedDustTolerance_PoC is UsdcMultiLendingVaultTestBase {
         usdc.transfer(address(vault), depositAmt);
 
         vm.prank(core);
+        vm.expectRevert(); // NoCashInvariant
         vault.deposit(depositAmt);
-
-        assertEq(vault.idleCash(), depositAmt, "VULNERABLE: entire deposit sits idle with zero on-chain protest");
-        assertEq(vault.positionAssets(address(adapter1)), 0, "nothing was deployed to the adapter");
     }
 }

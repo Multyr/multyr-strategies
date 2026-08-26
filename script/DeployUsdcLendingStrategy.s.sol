@@ -38,6 +38,7 @@ import { StrategySettingsModule } from "@multyr-strategies/strategies/usdc-lendi
 import { StrategyAllocCalcModule } from "@multyr-strategies/strategies/usdc-lending/controller/StrategyAllocCalcModule.sol";
 import { StrategyRebalancePlanModule } from "@multyr-strategies/strategies/usdc-lending/controller/StrategyRebalancePlanModule.sol";
 import { StrategyBootstrapper } from "@multyr-strategies/strategies/usdc-lending/StrategyBootstrapper.sol";
+import { AdapterFactory } from "@multyr-strategies/strategies/usdc-lending/factory/AdapterFactory.sol";
 
 // Automation
 import { StrategyUpkeep } from "@multyr-strategies/strategies/usdc-lending/automation/LendingStrategyUpkeep.sol";
@@ -130,6 +131,7 @@ contract DeployUsdcLendingStrategy is Script {
         // Strategy
         UsdcMultiLendingVault strategy;
         address bootstrapper;
+        address adapterFactory;
         // Automation
         address strategyUpkeep;
         // Registry
@@ -227,19 +229,39 @@ contract DeployUsdcLendingStrategy is Script {
         returns (DeploymentResult memory result)
     {
         // Nonce layout (V10):
-        //   N+0 = StrategyParamsModule
-        //   N+1 = StrategyScoringModule
-        //   N+2 = StrategyAdapterOpsModule
-        //   N+3 = StrategyRebalanceGateModule
-        //   N+4 = UsdcMultiLendingVault (assembly CREATE)
-        //   N+5 = StrategyBootstrapper
+        //   N+0 = AdapterFactory
+        //   N+1 = StrategyParamsModule
+        //   N+2 = StrategyScoringModule
+        //   N+3 = StrategyAdapterOpsModule
+        //   N+4 = StrategyRebalanceGateModule
+        //   N+5 = UsdcMultiLendingVault (assembly CREATE)
+        //   (StrategyBootstrapper is deployed via AdapterFactory.deployAndInit()
+        //    below -- a CREATE2 from the factory, not a direct deployer-nonce
+        //    CREATE, so its address is predicted via factory.computeAddress()
+        //    instead of vm.computeCreateAddress(). This closes the
+        //    front-runnable deploy-then-initialize() window: CREATE2 deploy and
+        //    initialize() now execute atomically in one transaction.)
         uint64 n = vm.getNonce(cfg.deployer);
-        address predictedParams   = vm.computeCreateAddress(cfg.deployer, n);
-        address predictedScoring  = vm.computeCreateAddress(cfg.deployer, n + 1);
-        address predictedOps      = vm.computeCreateAddress(cfg.deployer, n + 2);
-        address predictedGate     = vm.computeCreateAddress(cfg.deployer, n + 3);
-        address predictedStrategy = vm.computeCreateAddress(cfg.deployer, n + 4);
-        address predictedBootstrap = vm.computeCreateAddress(cfg.deployer, n + 5);
+        address predictedFactory  = vm.computeCreateAddress(cfg.deployer, n);
+        address predictedParams   = vm.computeCreateAddress(cfg.deployer, n + 1);
+        address predictedScoring  = vm.computeCreateAddress(cfg.deployer, n + 2);
+        address predictedOps      = vm.computeCreateAddress(cfg.deployer, n + 3);
+        address predictedGate     = vm.computeCreateAddress(cfg.deployer, n + 4);
+        address predictedStrategy = vm.computeCreateAddress(cfg.deployer, n + 5);
+
+        // 1.-1 AdapterFactory — atomic CREATE2-deploy-then-initialize for the
+        // bootstrapper and all 7 lending adapters (see factory/AdapterFactory.sol).
+        // cfg.deployer receives both DEFAULT_ADMIN_ROLE and DEPLOYER_ROLE via
+        // the constructor.
+        AdapterFactory factory = new AdapterFactory(cfg.deployer);
+        result.adapterFactory = address(factory);
+        require(result.adapterFactory == predictedFactory, "AdapterFactory address mismatch");
+        console.log("[1.-1] AdapterFactory:", result.adapterFactory);
+
+        bytes32 bootstrapSalt = keccak256(abi.encodePacked(chainCfg.deploySalt, "bootstrapper"));
+        address predictedBootstrap = factory.computeAddress(
+            type(StrategyBootstrapper).creationCode, bootstrapSalt
+        );
 
         // 1.0a ParamsModule
         StrategyParamsModule params = new StrategyParamsModule(chainCfg.usdc, cfg.vault);
@@ -288,9 +310,15 @@ contract DeployUsdcLendingStrategy is Script {
         console.log("[1.1] UsdcMultiLendingVault:", address(result.strategy));
 
         // 1.2 StrategyBootstrapper (INTERNAL — one-shot, no separate script)
-        StrategyBootstrapper boot = new StrategyBootstrapper();
-        boot.initialize(payable(address(result.strategy)), cfg.deployer);
-        result.bootstrapper = address(boot);
+        // Atomic CREATE2-deploy-then-initialize via AdapterFactory: deploy and
+        // initialize() now happen in a single transaction, closing the window
+        // where an unrelated address could front-run initialize() and set
+        // itself as `deployer` (see AdapterFactory.sol docstring).
+        result.bootstrapper = factory.deployAndInit(
+            type(StrategyBootstrapper).creationCode,
+            bootstrapSalt,
+            abi.encodeCall(StrategyBootstrapper.initialize, (payable(address(result.strategy)), cfg.deployer))
+        );
         require(result.bootstrapper == predictedBootstrap, "Bootstrapper address mismatch");
         require(
             result.strategy.hasRole(result.strategy.BOOTSTRAP_ROLE(), result.bootstrapper),
@@ -336,35 +364,65 @@ contract DeployUsdcLendingStrategy is Script {
         reg.addVault(SimpleProtocolRegistry.ProtocolType.DOLOMITE, chainCfg.dolomiteDUsdc, "Dolomite dUSDC", 300, 5_000_000e6);
         console.log("[1.5.2] Registry configured (5 Morpho + 1 Comet + 4 Euler + 1 Dolomite)");
 
+        // All 7 adapters below are deployed via AdapterFactory.deployAndInit():
+        // CREATE2 + initialize() execute atomically in one transaction, closing
+        // the front-runnable window that a separate `new X(); x.initialize(...)`
+        // pair leaves open (an unrelated caller taking DEFAULT_ADMIN_ROLE +
+        // PARAM_ROLE on the adapter and pointing its onlyVault gate elsewhere).
+        AdapterFactory factory = AdapterFactory(result.adapterFactory);
+
         // 1.5.3 Aave (single market — no registry needed)
-        AaveV3USDCAdapter aave = new AaveV3USDCAdapter();
-        aave.initialize(chainCfg.usdc, chainCfg.aavePool, chainCfg.aaveAUsdc, cfg.deployer, address(result.strategy), DEFAULT_ADAPTER_CAPACITY);
-        result.aaveAdapter = address(aave);
+        result.aaveAdapter = factory.deployAndInit(
+            type(AaveV3USDCAdapter).creationCode,
+            keccak256(abi.encodePacked(chainCfg.deploySalt, "aave")),
+            abi.encodeCall(
+                AaveV3USDCAdapter.initialize,
+                (chainCfg.usdc, chainCfg.aavePool, chainCfg.aaveAUsdc, cfg.deployer, address(result.strategy), DEFAULT_ADAPTER_CAPACITY)
+            )
+        );
         console.log("[1.5.3] AaveV3USDCAdapter:", result.aaveAdapter);
 
         // 1.5.4 Morpho
-        MorphoUsdcMultiMarketAdapter morph = new MorphoUsdcMultiMarketAdapter();
-        morph.initialize(chainCfg.usdc, cfg.deployer, address(result.strategy), DEFAULT_ADAPTER_CAPACITY, result.protocolRegistry);
-        result.morphoAdapter = address(morph);
+        result.morphoAdapter = factory.deployAndInit(
+            type(MorphoUsdcMultiMarketAdapter).creationCode,
+            keccak256(abi.encodePacked(chainCfg.deploySalt, "morpho")),
+            abi.encodeCall(
+                MorphoUsdcMultiMarketAdapter.initialize,
+                (chainCfg.usdc, cfg.deployer, address(result.strategy), DEFAULT_ADAPTER_CAPACITY, result.protocolRegistry)
+            )
+        );
         console.log("[1.5.4] MorphoAdapter:", result.morphoAdapter);
 
         // 1.5.5 Comet
-        CometUsdcMultiMarketAdapter cmt = new CometUsdcMultiMarketAdapter();
-        cmt.initialize(chainCfg.usdc, cfg.deployer, address(result.strategy), DEFAULT_ADAPTER_CAPACITY, result.protocolRegistry);
-        result.cometAdapter = address(cmt);
+        result.cometAdapter = factory.deployAndInit(
+            type(CometUsdcMultiMarketAdapter).creationCode,
+            keccak256(abi.encodePacked(chainCfg.deploySalt, "comet")),
+            abi.encodeCall(
+                CometUsdcMultiMarketAdapter.initialize,
+                (chainCfg.usdc, cfg.deployer, address(result.strategy), DEFAULT_ADAPTER_CAPACITY, result.protocolRegistry)
+            )
+        );
         console.log("[1.5.5] CometAdapter:", result.cometAdapter);
 
         // 1.5.6 Euler — initializeMarkets() BEFORE any role transfer
         // ⚠ CRITICAL (v8-hotfix): Euler Permit2 internal allowance must be set before first deposit.
         //   USDC dust transferred to adapter → initializeMarkets() → THEN role transfer in Phase 3.5.
         //   Without this, first strategy deposit to Euler silently fails or quarantines the adapter.
+        //   initializeMarkets() itself is a separate, PARAM_ROLE-gated post-init step (not the
+        //   OZ `initializer` this fix targets) — safe to run after the atomic deploy+init below.
         address[] memory eulerMarkets = new address[](4);
         eulerMarkets[0] = chainCfg.eulerVault1; eulerMarkets[1] = chainCfg.eulerVault2;
         eulerMarkets[2] = chainCfg.eulerVault3; eulerMarkets[3] = chainCfg.eulerVault4;
-        EulerUsdcMultiMarketAdapter euler = new EulerUsdcMultiMarketAdapter();
-        euler.initialize(address(result.strategy), chainCfg.usdc, eulerMarkets, result.protocolRegistry, cfg.deployer);
-        result.eulerAdapter = address(euler);
+        result.eulerAdapter = factory.deployAndInit(
+            type(EulerUsdcMultiMarketAdapter).creationCode,
+            keccak256(abi.encodePacked(chainCfg.deploySalt, "euler")),
+            abi.encodeCall(
+                EulerUsdcMultiMarketAdapter.initialize,
+                (address(result.strategy), chainCfg.usdc, eulerMarkets, result.protocolRegistry, cfg.deployer)
+            )
+        );
         {
+            EulerUsdcMultiMarketAdapter euler = EulerUsdcMultiMarketAdapter(payable(result.eulerAdapter));
             uint256 EULER_DUST = 1000; // 0.001 USDC for Permit2 setup
             require(
                 IERC20(chainCfg.usdc).balanceOf(cfg.deployer) >= EULER_DUST,
@@ -376,23 +434,38 @@ contract DeployUsdcLendingStrategy is Script {
         console.log("[1.5.6] EulerAdapter:", result.eulerAdapter, "(initializeMarkets done)");
 
         // 1.5.7 Dolomite
-        DolomiteUsdcMultiMarketAdapter dolo = new DolomiteUsdcMultiMarketAdapter();
-        dolo.initialize(chainCfg.usdc, cfg.deployer, address(result.strategy), DEFAULT_ADAPTER_CAPACITY, result.protocolRegistry);
-        result.dolomiteAdapter = address(dolo);
+        result.dolomiteAdapter = factory.deployAndInit(
+            type(DolomiteUsdcMultiMarketAdapter).creationCode,
+            keccak256(abi.encodePacked(chainCfg.deploySalt, "dolomite")),
+            abi.encodeCall(
+                DolomiteUsdcMultiMarketAdapter.initialize,
+                (chainCfg.usdc, cfg.deployer, address(result.strategy), DEFAULT_ADAPTER_CAPACITY, result.protocolRegistry)
+            )
+        );
         console.log("[1.5.7] DolomiteAdapter:", result.dolomiteAdapter);
 
         // 1.5.8 Fluid
-        FluidUsdcMultiMarketAdapter fluid = new FluidUsdcMultiMarketAdapter();
-        fluid.initialize(chainCfg.usdc, cfg.deployer, address(result.strategy), DEFAULT_ADAPTER_CAPACITY, chainCfg.fluidFUsdc);
-        result.fluidAdapter = address(fluid);
+        result.fluidAdapter = factory.deployAndInit(
+            type(FluidUsdcMultiMarketAdapter).creationCode,
+            keccak256(abi.encodePacked(chainCfg.deploySalt, "fluid")),
+            abi.encodeCall(
+                FluidUsdcMultiMarketAdapter.initialize,
+                (chainCfg.usdc, cfg.deployer, address(result.strategy), DEFAULT_ADAPTER_CAPACITY, chainCfg.fluidFUsdc)
+            )
+        );
         console.log("[1.5.8] FluidAdapter:", result.fluidAdapter);
 
         // 1.5.9 Venus
-        VenusUsdcMultiMarketAdapter venus = new VenusUsdcMultiMarketAdapter();
-        venus.initialize(chainCfg.usdc, cfg.deployer, address(result.strategy), DEFAULT_ADAPTER_CAPACITY, chainCfg.venusVToken, chainCfg.venusBlocksPerYear);
-        result.venusAdapter = address(venus);
+        result.venusAdapter = factory.deployAndInit(
+            type(VenusUsdcMultiMarketAdapter).creationCode,
+            keccak256(abi.encodePacked(chainCfg.deploySalt, "venus")),
+            abi.encodeCall(
+                VenusUsdcMultiMarketAdapter.initialize,
+                (chainCfg.usdc, cfg.deployer, address(result.strategy), DEFAULT_ADAPTER_CAPACITY, chainCfg.venusVToken, chainCfg.venusBlocksPerYear)
+            )
+        );
         console.log("[1.5.9] VenusAdapter:", result.venusAdapter);
-        console.log("  [OK] 7 lending adapters deployed");
+        console.log("  [OK] 7 lending adapters deployed (atomic deploy+init via AdapterFactory)");
 
         return result;
     }
@@ -750,6 +823,7 @@ contract DeployUsdcLendingStrategy is Script {
         vm.serializeAddress(j, "allocCalcModule", result.allocCalcModule);
         vm.serializeAddress(j, "rebalancePlanModule", result.rebalancePlanModule);
         vm.serializeAddress(j, "bootstrapper", result.bootstrapper);
+        vm.serializeAddress(j, "adapterFactory", result.adapterFactory);
         vm.serializeAddress(j, "strategyUpkeep", result.strategyUpkeep);
         vm.serializeAddress(j, "protocolRegistry", result.protocolRegistry);
         vm.serializeAddress(j, "aaveAdapter", result.aaveAdapter);

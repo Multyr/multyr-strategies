@@ -2,34 +2,27 @@
 pragma solidity ^0.8.28;
 
 /**
- * FINDING: `StrategyRebalanceGateModule.checkGate()` takes `enabledAdapters`
- *          and `tvl` as plain, unvalidated calldata parameters and is guarded
- *          only by `onlyDelegateCall` (rejects direct calls to the standalone
- *          module, NOT calls arriving via the vault's fallback dispatcher).
- *          Since `rebalanceGateModule_addr` sits in
- *          `UsdcLendingStrategy.fallback()`'s dispatch chain with no access
- *          check before delegatecall, ANY address can call
- *          `vault.checkGate(apyBpsArray, enabledAdapters, targetAllocs, tvl, moved)`
- *          directly, supplying whatever `tvl`/`enabledAdapters` it likes.
- * SEVERITY: HIGH. New in this branch: firing the P0.4 "cap drift mandate"
- *           check with `emitOnMandate=true` now WRITES STATE —
- *           `lastRelCapMandateTs[hitAdapter] = block.timestamp`
- *           (StrategyRebalanceGateModule.sol:145-153) — which
- *           `StrategyAllocCalcModule._checkAdapterEligibility()`
- *           (StrategyAllocCalcModule.sol:361-370) then reads to make a
- *           targeted adapter fully ineligible for ANY new deposit
- *           (`deployIdle()`, `deposit()`) for up to
- *           `mandateRedeployCooldownSeconds` (governance-configurable, max 30
- *           days). By passing a spoofed `tvl=1`, the absolute hard-ceiling
- *           check `curr > (absCapBps * tvl / 1e4) * (1+tol) / 1e4` collapses
- *           to `curr > 0`, so ANY adapter holding a nonzero real position can
- *           be targeted — for free (gas only), by anyone, repeatably,
- *           indefinitely (just call again before each cooldown window
- *           expires) — a persistent, unauthenticated capital-starvation
- *           attack on a chosen adapter, or the whole fleet.
+ * FINDING (FIXED): `StrategyRebalanceGateModule.checkGate()` took
+ *          `enabledAdapters` and `tvl` as plain, unvalidated calldata
+ *          parameters and was guarded only by `onlyDelegateCall`, reachable
+ *          unauthenticated through the vault's fallback dispatcher. Firing
+ *          the P0.4 "cap drift mandate" check with `emitOnMandate=true`
+ *          writes `lastRelCapMandateTs[hitAdapter] = block.timestamp`, which
+ *          `StrategyAllocCalcModule._checkAdapterEligibility()` then reads to
+ *          make a targeted adapter fully ineligible for new deposits for up
+ *          to `mandateRedeployCooldownSeconds`. A spoofed `tvl=1` collapsed
+ *          the hard ceiling to ~0, so any adapter with a nonzero position
+ *          could be locked out for free, repeatably, by anyone.
+ * SEVERITY: HIGH (was).
+ *
+ * FIX: `checkGate()` now requires `onlyRoleOrRevert(KEEPER_ROLE)` -- its only
+ * legitimate caller is `prepareRebalance()` (already KEEPER-gated), so
+ * msg.sender is always the same already-authorized keeper by the time this
+ * runs.
  */
 
 import { Test, console2 } from "forge-std/Test.sol";
+import { Unauthorized } from "../../../../src/strategies/usdc-lending/controller/StrategyStorageLayout.sol";
 import {
     UsdcMultiLendingVaultTestBase,
     MockUSDC,
@@ -61,7 +54,7 @@ contract UnauthenticatedCheckGate_PoC is UsdcMultiLendingVaultTestBase {
         require(ok2, "setMandateRedeployCooldown failed");
     }
 
-    function test_POC_unprivileged_caller_locks_out_healthy_adapter_via_spoofed_checkGate() public {
+    function test_POC_spoofed_checkGate_now_blocked_for_unprivileged_caller() public {
         assertEq(vault.lastRelCapMandateTs(address(adapter1)), 0, "sanity: no mandate cooldown active yet");
         assertFalse(vault.hasRole(vault.KEEPER_ROLE(), attacker));
         assertFalse(vault.hasRole(vault.PARAM_ROLE(), attacker));
@@ -69,7 +62,7 @@ contract UnauthenticatedCheckGate_PoC is UsdcMultiLendingVaultTestBase {
 
         address[] memory targets = new address[](1);
         targets[0] = address(adapter1);
-        uint16[] memory apys = new uint16[](0);       // never read: mandate fires before this is touched
+        uint16[] memory apys = new uint16[](0);
         uint256[] memory targetAllocs = new uint256[](0);
 
         vm.prank(attacker);
@@ -77,35 +70,30 @@ contract UnauthenticatedCheckGate_PoC is UsdcMultiLendingVaultTestBase {
             abi.encodeWithSignature(
                 "checkGate(uint16[],address[],uint256[],uint256,uint256)",
                 apys, targets, targetAllocs,
-                uint256(1),   // spoofed tvl=1 collapses the hard ceiling to ~0
+                uint256(1),   // spoofed tvl=1 -- would have collapsed the hard ceiling to ~0
                 uint256(0)
             )
         );
-        require(ok, "checkGate call unexpectedly failed");
-        (bool gateOk, ) = abi.decode(ret, (bool, int256));
-        assertTrue(gateOk, "sanity: mandate fired and the (spoofed) gate unconditionally passed");
-
-        assertGt(
+        assertFalse(ok, "FIXED: unprivileged checkGate() must now revert");
+        assertEq(bytes4(ret), Unauthorized.selector);
+        assertEq(
             vault.lastRelCapMandateTs(address(adapter1)), 0,
-            "VULNERABLE: an unprivileged, unrelated caller started a real mandate cooldown against a healthy adapter"
+            "FIXED: no mandate cooldown was started -- adapter1 is untouched"
         );
 
-        // Downstream: the adapter is now fully ineligible for new capital,
-        // even though nothing about its actual health or exposure changed.
+        // Capital deployment for adapter1 is unaffected -- it was never locked
+        // out (the mandate cooldown check in _checkAdapterEligibility() only
+        // excludes an adapter when lastRelCapMandateTs > 0, confirmed above
+        // it's still 0). deployIdle() runs normally with no eligibility skip.
         usdc.mint(address(vault), 50_000e6);
-        uint256 posBefore = vault.positionAssets(address(adapter1));
         vm.warp(block.timestamp + vault.minSecondsBetweenDeployIdle() + 1);
         vm.prank(keeper);
         (bool okDeploy, ) = address(vault).call(abi.encodeWithSignature("deployIdle()"));
         require(okDeploy, "deployIdle() call unexpectedly failed");
 
         assertEq(
-            vault.positionAssets(address(adapter1)), posBefore,
-            "VULNERABLE: adapter1 received zero new capital -- locked out of allocation by the attacker's spoofed call"
+            vault.lastRelCapMandateTs(address(adapter1)), 0,
+            "sanity: still no mandate cooldown after a normal keeper-driven deployIdle() cycle"
         );
-
-        // The attacker can repeat this call right before each cooldown
-        // window expires to keep the adapter starved indefinitely, for the
-        // cost of gas alone.
     }
 }
