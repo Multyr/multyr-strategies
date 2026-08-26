@@ -7,7 +7,7 @@ import {
     StrategyStorageLayout,
     DepositModeNotSet
 } from "./StrategyStorageLayout.sol";
-import { ILendingAdapter } from "../interfaces/ILendingAdapter.sol";
+import { ILendingAdapter, IAdapterEmergency } from "../interfaces/ILendingAdapter.sol";
 
 /// @title StrategyAdapterOpsModule — Adapter deposit/failure operations
 /// @notice Delegatecall module extracted from StrategyScoringModule for size limit.
@@ -29,8 +29,12 @@ contract StrategyAdapterOpsModule is StrategyStorageLayout {
     }
 
     /// @notice Safe adapter deposit with failure handling + gas EMA recording.
+    /// @dev CORE_ROLE (deposit/withdraw best-effort redeploy) or KEEPER_ROLE
+    ///      (harvest/deployIdle/rebalance) — msg.sender is preserved through
+    ///      the whole delegatecall chain, so this authorizes every legitimate
+    ///      top-level caller while closing the unauthenticated fallback path.
     function safeAdapterDeposit(address adapter, uint256 amount)
-        external onlyDelegateCall returns (bool)
+        external onlyDelegateCall onlyKeeperOrCoreOrRevert returns (bool)
     {
         if (amount == 0) return true;
         if (!depositModeKnown[adapter]) revert DepositModeNotSet();
@@ -46,7 +50,20 @@ contract StrategyAdapterOpsModule is StrategyStorageLayout {
                 return true;
             } catch (bytes memory reason) {
                 emit AdapterDepositFailed(adapter, amount, reason);
-                emit AdapterFundsStranded(adapter, amount);
+                // Non-atomic PUSH failure mode: `amount` was already
+                // transferred to the adapter above and deposit() then
+                // reverted, so it's sitting as untracked idle balance at the
+                // adapter. Best-effort auto-recovery: immediately try to
+                // sweep it back to the vault so it stays tracked/idle instead
+                // of silently stranded until a manual admin sweep. This is
+                // best-effort by design — if the adapter's own
+                // sweepIdleAssetToVault() also reverts (e.g. same underlying
+                // failure condition), AdapterFundsStranded is still emitted
+                // for off-chain alerting and manual recovery remains available.
+                try IAdapterEmergency(adapter).sweepIdleAssetToVault() {
+                } catch {
+                    emit AdapterFundsStranded(adapter, amount);
+                }
                 // Audit HIGH 1.3 — unify failure handling: gradual decay on BOTH
                 // push and pull deposit paths (was immediate-quarantine on push).
                 if (countFailure) _recordAdapterFailure(adapter);
@@ -71,7 +88,8 @@ contract StrategyAdapterOpsModule is StrategyStorageLayout {
     }
 
     /// @notice Strict deposit (reverts on failure). Called via delegatecall.
-    function adapterDeposit(address adapter, uint256 amount) external onlyDelegateCall {
+    /// @dev CORE_ROLE (normal deposit() path, bestEffort=false) or KEEPER_ROLE.
+    function adapterDeposit(address adapter, uint256 amount) external onlyDelegateCall onlyKeeperOrCoreOrRevert {
         if (amount == 0) return;
         if (!depositModeKnown[adapter]) revert DepositModeNotSet();
 
@@ -86,12 +104,15 @@ contract StrategyAdapterOpsModule is StrategyStorageLayout {
     }
 
     /// @notice Record adapter failure with temporal decay. Called via delegatecall.
-    function recordAdapterFailure(address adapter) external onlyDelegateCall {
+    /// @dev KEEPER_ROLE only — the sole legitimate caller is the rebalance
+    ///      plan's withdraw try/catch (executeRebalanceStep(), KEEPER-gated).
+    function recordAdapterFailure(address adapter) external onlyDelegateCall onlyRoleOrRevert(KEEPER_ROLE) {
         _recordAdapterFailure(adapter);
     }
 
     /// @notice Record adapter success (gradual decrement). Called via delegatecall.
-    function recordAdapterSuccess(address adapter) external onlyDelegateCall {
+    /// @dev KEEPER_ROLE only — see recordAdapterFailure.
+    function recordAdapterSuccess(address adapter) external onlyDelegateCall onlyRoleOrRevert(KEEPER_ROLE) {
         _recordAdapterSuccess(adapter);
     }
 
@@ -137,7 +158,8 @@ contract StrategyAdapterOpsModule is StrategyStorageLayout {
     // ═══════════════════════════════════════════════════════════════════════
 
     /// @notice Record withdraw gas for EMA (called by ScoringModule after withdraw)
-    function recordWithdrawGas(address adapter, uint256 gasUsed) external onlyDelegateCall {
+    /// @dev KEEPER_ROLE only.
+    function recordWithdrawGas(address adapter, uint256 gasUsed) external onlyDelegateCall onlyRoleOrRevert(KEEPER_ROLE) {
         _updateGasEma(adapter, gasUsed, false);
     }
 
@@ -169,7 +191,9 @@ contract StrategyAdapterOpsModule is StrategyStorageLayout {
 
     /// @notice Sync positionAssets from live adapter balances. Called via delegatecall.
     ///         force=true: bypass cooldown (rebalance). force=false: respect cooldown (deployIdle).
-    function syncPositionAssets(bool force) external onlyDelegateCall {
+    /// @dev KEEPER_ROLE only — legitimate callers are deployIdle() and
+    ///      computeInputsForPlan() (reached via prepareRebalance()), both KEEPER-gated.
+    function syncPositionAssets(bool force) external onlyDelegateCall onlyRoleOrRevert(KEEPER_ROLE) {
         if (!force && lastSyncTs != 0
             && block.timestamp < uint256(lastSyncTs) + minSecondsBetweenSync) return;
 
@@ -226,7 +250,9 @@ contract StrategyAdapterOpsModule is StrategyStorageLayout {
     // ── Liquidity realization (F-SIZE-02) ────────────────────────────────────
 
     /// @notice Two-pass pro-rata withdrawal from adapters. Called via delegatecall from vault.
-    function executeRealizeLiquidity(uint256 amountNeeded) external onlyDelegateCall {
+    /// @dev CORE_ROLE (withdraw()'s internal shortfall realization) or KEEPER_ROLE
+    ///      (the realizeLiquidity() wrapper's own onlyKeeperOrCore gate).
+    function executeRealizeLiquidity(uint256 amountNeeded) external onlyDelegateCall onlyKeeperOrCoreOrRevert {
         uint256 tvl = _tvl();
         if (tvl < 1) return;
         uint256 totalRealized = 0;

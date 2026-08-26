@@ -84,13 +84,18 @@ contract StrategyRebalanceGateModule is StrategyStorageLayout {
     /// @notice Gate check called by ScoringModule._prepareRebalanceInternal() via delegatecall.
     /// @dev    Receives pre-computed scoring data. Runs all P0-P3 checks.
     ///         `emitOnMandate=true` because this is the action path (non-view).
+    ///         KEEPER_ROLE only — the sole legitimate caller is
+    ///         prepareRebalance() (KEEPER-gated). Unlike canRebalance() (a
+    ///         read-only STATICCALL path with emitOnMandate=false), this path
+    ///         can WRITE `lastRelCapMandateTs`, so caller-supplied `tvl`/
+    ///         `enabledAdapters` must not be reachable unauthenticated.
     function checkGate(
         uint16[] calldata apyBpsArray,
         address[] calldata enabledAdapters,
         uint256[] calldata targetAllocs,
         uint256 tvl,
         uint256 moved
-    ) external onlyDelegateCall returns (bool ok, int256 netBenefitBps) {
+    ) external onlyDelegateCall onlyRoleOrRevert(KEEPER_ROLE) returns (bool ok, int256 netBenefitBps) {
         return _fullGateCheck(apyBpsArray, enabledAdapters, targetAllocs, tvl, moved, true);
     }
 

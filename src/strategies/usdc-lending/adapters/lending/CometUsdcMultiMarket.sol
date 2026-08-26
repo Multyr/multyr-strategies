@@ -449,9 +449,17 @@ contract CometUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
     }
 
     // ----------- Internal: Market Helpers -----------
+    /// @dev Guarded: a bricked/paused market reports 0 assets rather than
+    ///      reverting -- callers (withdraw()'s per-market loop, totalAssets())
+    ///      then correctly treat it as having nothing available, instead of
+    ///      the whole call reverting because of one broken market.
     function _assetsOn(uint256 idx) internal view returns (uint256) {
         Market storage m = mkts[idx];
-        return IComet(m.comet).balanceOf(address(this));
+        try IComet(m.comet).balanceOf(address(this)) returns (uint256 bal) {
+            return bal;
+        } catch {
+            return 0;
+        }
     }
 
     function _withdrawableOn(uint256 idx) internal view returns (uint256) {
@@ -461,14 +469,26 @@ contract CometUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
         return assets < usdcAvail ? assets : usdcAvail;
     }
 
+    /// @dev Guarded: a single paused/deprecated Comet market must not brick
+    ///      scoring/sorting (and therefore deposit()/withdraw()) for every
+    ///      other healthy market on this adapter. A failing market reports
+    ///      APY=0, which sorts it last for deposits and first for withdrawal
+    ///      attempts (harmless -- _withdrawableOn/_assetsOn are separately
+    ///      guarded below and simply skip it if it can't report a balance).
     function _getAPYBps(address comet) internal view returns (uint16) {
-        uint256 util = IComet(comet).getUtilization(); // 1e18
-        uint256 ratePerSec = IComet(comet).getSupplyRate(util); // 1e18
-        uint256 aprWad = ratePerSec * 31_536_000; // 365*24*60*60
-        uint256 bps = (aprWad * 10000) / 1e18;
-        // casting to uint16 is safe because overflow is checked with ternary
-        // forge-lint: disable-next-line(unsafe-typecast)
-        return bps > type(uint16).max ? type(uint16).max : uint16(bps);
+        try IComet(comet).getUtilization() returns (uint256 util) {
+            try IComet(comet).getSupplyRate(util) returns (uint256 ratePerSec) {
+                uint256 aprWad = ratePerSec * 31_536_000; // 365*24*60*60
+                uint256 bps = (aprWad * 10000) / 1e18;
+                // casting to uint16 is safe because overflow is checked with ternary
+                // forge-lint: disable-next-line(unsafe-typecast)
+                return bps > type(uint16).max ? type(uint16).max : uint16(bps);
+            } catch {
+                return 0;
+            }
+        } catch {
+            return 0;
+        }
     }
 
     // ----------- Lifecycle: Deposit/Withdraw (No-custody) -----------

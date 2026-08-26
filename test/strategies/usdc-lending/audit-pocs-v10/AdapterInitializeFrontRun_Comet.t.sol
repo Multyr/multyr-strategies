@@ -2,58 +2,37 @@
 pragma solidity ^0.8.28;
 
 /**
- * FINDING: The exact same front-runnable `initialize()` pattern shown against
- *          StrategyBootstrapper in BootstrapperFrontRun_AdapterHijack.t.sol
- *          is NOT an isolated case -- it is how the shipped deploy script
- *          (script/DeployUsdcLendingStrategy.s.sol) deploys EVERY SINGLE
- *          lending adapter. Grep of that script:
+ * FINDING (FIXED at the deploy-script level): The front-runnable
+ *          `initialize()` pattern shown against StrategyBootstrapper in
+ *          BootstrapperFrontRun_AdapterHijack.t.sol was not an isolated
+ *          case -- the shipped deploy script used the same
+ *          `new X(); x.initialize(...)` two-transaction pattern for EVERY
+ *          one of the 7 lending adapters. Each adapter's `initialize()`
+ *          grants `admin_` DEFAULT_ADMIN_ROLE + PARAM_ROLE and records
+ *          `vault_` for the `onlyVault` gate (e.g.
+ *          CometUsdcMultiMarket.sol:173-196) -- whoever's `initialize()`
+ *          call is mined first wins.
  *
- *              aave.initialize(..., cfg.deployer, address(result.strategy), ...);        (line 341)
- *              MorphoUsdcMultiMarketAdapter morph = new MorphoUsdcMultiMarketAdapter();   (346) morph.initialize(...)          (347)
- *              CometUsdcMultiMarketAdapter cmt = new CometUsdcMultiMarketAdapter();       (352) cmt.initialize(...)            (353)
- *              EulerUsdcMultiMarketAdapter euler = new EulerUsdcMultiMarketAdapter();     (364) euler.initialize(...)          (365)
- *              DolomiteUsdcMultiMarketAdapter dolo = new DolomiteUsdcMultiMarketAdapter();(379) dolo.initialize(...)           (380)
- *              FluidUsdcMultiMarketAdapter fluid = new FluidUsdcMultiMarketAdapter();     (385) fluid.initialize(...)          (386)
- *              VenusUsdcMultiMarketAdapter venus = new VenusUsdcMultiMarketAdapter();     (391) venus.initialize(...)          (392)
+ * SEVERITY: HIGH-CRITICAL at deployment time (was).
  *
- * Every adapter is deploy-then-initialize as TWO SEPARATE on-chain
- * transactions (Comet demonstrated here; the identical `new X(); X.initialize(...)`
- * two-step appears for all 7 adapters). Each adapter's `initialize()` grants
- * `admin_` DEFAULT_ADMIN_ROLE + PARAM_ROLE on that specific adapter contract
- * and records `vault_` for the `onlyVault` gate (e.g.
- * CometUsdcMultiMarket.sol:173-196). Whoever's `initialize()` call is mined
- * first wins.
+ * FIX: `script/DeployUsdcLendingStrategy.s.sol` now deploys all 7 adapters
+ * (and the bootstrapper) via `AdapterFactory.deployAndInit()`, which bundles
+ * CREATE2-deploy and `initialize()` into a single atomic transaction. The
+ * adapter contracts themselves are unchanged (this is inherent to the
+ * non-proxy Initializable pattern) -- safety comes entirely from always
+ * deploying atomically via the factory, never via a raw `new X()` followed
+ * by a separate `initialize()` call.
  *
- * The codebase already contains the correct fix for exactly this problem --
- * `src/strategies/usdc-lending/factory/AdapterFactory.sol` bundles CREATE2
- * deploy + initialize into one atomic transaction specifically "to eliminate
- * the front-run window between deploy and initialize" (its own docstring) --
- * but `DeployUsdcLendingStrategy.s.sol`, the actual script used to deploy the
- * strategy, does not use it for any of the 7 adapters or the bootstrapper.
- *
- * SEVERITY: HIGH-CRITICAL at deployment time. An attacker front-running any
- *           one adapter's `initialize()` call can: (a) set `admin_`/`vault_`
- *           to attacker-controlled addresses, taking DEFAULT_ADMIN_ROLE +
- *           PARAM_ROLE on that adapter and pointing its `onlyVault` gate away
- *           from the real strategy, permanently bricking that specific,
- *           deterministically-addressed adapter contract for the legitimate
- *           deployment (its real `initialize()` call reverts thereafter --
- *           denial of service on that market for the life of the deployment,
- *           since the adapter address was likely already referenced/predicted
- *           elsewhere in the deploy sequence); or (b), depending on downstream
- *           wiring assumptions, potentially worse if anything trusts the
- *           adapter's address as "the real Aave/Comet/etc. market" before
- *           verifying who actually holds its roles.
- *
- * This PoC reproduces the front-run against the Comet adapter specifically
- * (reusing the existing MockComet/MockUSDCComet/SimpleProtocolRegistry test
- * infrastructure), but the vulnerability is systemic across all 7 adapters.
+ * Test 1 (kept from the original PoC) still reproduces the front-run against
+ * the RAW pattern, to document why it must never be used. Test 2 proves the
+ * actual fix: the same attack attempted against the factory-based flow fails.
  */
 
 import { Test, console2 } from "forge-std/Test.sol";
 import {
     CometUsdcMultiMarketAdapter
 } from "../../../../src/strategies/usdc-lending/adapters/lending/CometUsdcMultiMarket.sol";
+import { AdapterFactory } from "../../../../src/strategies/usdc-lending/factory/AdapterFactory.sol";
 import { SimpleProtocolRegistry } from "../../../helpers/SimpleProtocolRegistry.sol";
 import { MockUSDCComet, MockComet } from "../adapters/CometUsdcMultiMarketAdapter.t.sol";
 
@@ -62,7 +41,7 @@ contract AdapterInitializeFrontRun_Comet_PoC is Test {
     address attacker = address(0xBAD);    // holds no role anywhere, front-runs the mempool
     address realStrategy = address(0x51A7E617);
 
-    function test_POC_attacker_frontruns_comet_adapter_initialize() public {
+    function test_POC_1_raw_new_then_initialize_pattern_is_still_frontrunnable() public {
         MockUSDCComet usdc = new MockUSDCComet();
         MockComet comet1 = new MockComet(address(usdc));
 
@@ -107,5 +86,49 @@ contract AdapterInitializeFrontRun_Comet_PoC is Test {
         vm.prank(deployer);
         vm.expectRevert(bytes("Initializable: contract is already initialized"));
         cmt.initialize(address(usdc), deployer, realStrategy, 10_000_000e6, address(registry));
+    }
+
+    /// @notice Test 2: the FIXED deploy-script pattern for adapters --
+    ///         AdapterFactory.deployAndInit(), exactly as
+    ///         script/DeployUsdcLendingStrategy.s.sol's Phase 1.5 now does
+    ///         for all 7 adapters.
+    function test_POC_2_AdapterFactory_deployAndInit_is_not_frontrunnable() public {
+        MockUSDCComet usdc = new MockUSDCComet();
+        MockComet comet1 = new MockComet(address(usdc));
+        SimpleProtocolRegistry registry = new SimpleProtocolRegistry();
+        registry.addVault(
+            SimpleProtocolRegistry.ProtocolType.COMPOUND_V3,
+            address(comet1), "MockComet1", 10000, 100_000_000e6
+        );
+
+        vm.startPrank(deployer);
+        AdapterFactory factory = new AdapterFactory(deployer);
+
+        bytes32 salt = keccak256("comet-salt");
+        address predicted = factory.computeAddress(type(CometUsdcMultiMarketAdapter).creationCode, salt);
+        assertEq(predicted.code.length, 0, "sanity: no attacker target exists before the atomic deploy");
+
+        address cmt = factory.deployAndInit(
+            type(CometUsdcMultiMarketAdapter).creationCode,
+            salt,
+            abi.encodeCall(
+                CometUsdcMultiMarketAdapter.initialize,
+                (address(usdc), deployer, realStrategy, 10_000_000e6, address(registry))
+            )
+        );
+        vm.stopPrank();
+
+        assertEq(cmt, predicted, "address prediction still matches (CREATE2-deterministic)");
+        CometUsdcMultiMarketAdapter deployed = CometUsdcMultiMarketAdapter(payable(cmt));
+        assertTrue(deployed.hasRole(deployed.DEFAULT_ADMIN_ROLE(), deployer), "FIXED: legitimate deployer holds admin");
+        assertEq(deployed.vault(), realStrategy, "FIXED: onlyVault correctly points at the real strategy");
+
+        // The same front-run attempt now finds an already-initialized
+        // contract -- nothing to hijack.
+        vm.prank(attacker);
+        vm.expectRevert(bytes("Initializable: contract is already initialized"));
+        deployed.initialize(address(usdc), attacker, attacker, 0, address(0));
+
+        assertFalse(deployed.hasRole(deployed.DEFAULT_ADMIN_ROLE(), attacker));
     }
 }

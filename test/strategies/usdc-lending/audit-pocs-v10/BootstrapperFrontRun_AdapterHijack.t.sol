@@ -2,47 +2,36 @@
 pragma solidity ^0.8.28;
 
 /**
- * FINDING: StrategyBootstrapper.initialize() has no access control beyond
- *          OpenZeppelin's `initializer` one-shot guard. `deployer` is now a
- *          caller-supplied parameter (no longer `msg.sender` captured in an
- *          immutable constructor as in the pre-V10 design), and the actual
- *          shipped deploy script (script/DeployUsdcLendingStrategy.s.sol:
- *          291-292) deploys the bootstrapper and initializes it as TWO
- *          SEPARATE on-chain transactions:
+ * FINDING (FIXED at the deploy-script level): `StrategyBootstrapper.initialize()`
+ *          has no access control beyond OpenZeppelin's `initializer` one-shot
+ *          guard -- `deployer` is a caller-supplied parameter, and whoever's
+ *          `initialize()` call is mined FIRST wins. The contract itself is
+ *          unchanged (that's inherent to the non-proxy Initializable pattern
+ *          used across all V10 adapters); what was fixed is that
+ *          `script/DeployUsdcLendingStrategy.s.sol` no longer deploys the
+ *          bootstrapper (or any of the 7 adapters) as two separate
+ *          transactions. It now calls `AdapterFactory.deployAndInit()`,
+ *          which bundles CREATE2-deploy and `initialize()` into a single
+ *          atomic transaction -- there is no longer a window on-chain where
+ *          an uninitialized bootstrapper/adapter sits exposed.
  *
- *              StrategyBootstrapper boot = new StrategyBootstrapper();   // tx N
- *              boot.initialize(payable(address(result.strategy)), cfg.deployer);  // tx N+1
+ * SEVERITY: CRITICAL (was, for the shipped deploy flow).
  *
- *          Between these two transactions, `boot` exists on-chain,
- *          uninitialized, and its `initialize()` function is public and
- *          callable by anyone. Whoever's `initialize()` call is mined FIRST
- *          wins — the `initializer` modifier only prevents a SECOND call, it
- *          does not check who the first caller is.
- *
- * SEVERITY: CRITICAL. The vault's constructor already grants BOOTSTRAP_ROLE
- *           to the bootstrapper's (predicted/precomputed) address BEFORE
- *           `initialize()` is ever called — so the race is purely over who
- *           gets to set `deployer` in storage, not over the role grant
- *           itself. Whoever wins becomes the only address that can call
- *           `bootstrap(adapters[])`. Since `whitelistAdapter()`
- *           (StrategySettingsModule.sol:426-434) accepts BOOTSTRAP_ROLE (not
- *           just DEFAULT_ADMIN_ROLE) specifically so the bootstrapper can
- *           self-whitelist adapters, an attacker who wins the race can
- *           register and enable ARBITRARY, attacker-controlled adapters as
- *           trusted strategy adapters, then the one-shot BOOTSTRAP_ROLE is
- *           permanently renounced — irreversibly locking out legitimate
- *           governance from ever registering the intended adapter set via
- *           this path. At minimum (if the attacker doesn't also call
- *           `bootstrap()`), it silently DoSes the real deployment: the
- *           legitimate operator's `initialize()` call reverts.
- *
- * This PoC reproduces the exact two-transaction sequence from the shipped
- * deploy script and shows an attacker winning the race between them.
+ * Test 1 below (kept from the original PoC) still reproduces the two-
+ * transaction footgun against the RAW pattern (`new X(); x.initialize(...)`)
+ * to document exactly why that pattern must never be used for this contract
+ * -- it is not, and cannot be, "fixed" at the `StrategyBootstrapper` contract
+ * level alone; safety depends on always deploying atomically.
+ * Test 2 proves the ACTUAL fix: reproducing the deploy script's real
+ * `AdapterFactory.deployAndInit()` call and showing the identical front-run
+ * attempt fails, because deploy+init happen in one call with no window for
+ * anything else to land in between.
  */
 
 import { Test, console2 } from "forge-std/Test.sol";
 import { UsdcMultiLendingVault } from "../../../../src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol";
 import { StrategyBootstrapper } from "../../../../src/strategies/usdc-lending/StrategyBootstrapper.sol";
+import { AdapterFactory } from "../../../../src/strategies/usdc-lending/factory/AdapterFactory.sol";
 import { StrategyParamsModule } from "../../../../src/strategies/usdc-lending/controller/StrategyParamsModule.sol";
 import { StrategyAdapterOpsModule } from "../../../../src/strategies/usdc-lending/controller/StrategyAdapterOpsModule.sol";
 import { StrategyScoringModule } from "../../../../src/strategies/usdc-lending/controller/StrategyScoringModule.sol";
@@ -102,8 +91,11 @@ contract BootstrapperFrontRun_PoC is Test {
         });
     }
 
-    function test_POC_attacker_frontruns_bootstrapper_initialize_and_hijacks_adapter_set() public {
-        // --- Replicate DeployUsdcLendingStrategy.s.sol Phase 1.1-1.2 exactly ---
+    /// @notice Test 1: the RAW `new X(); x.initialize(...)` pattern is still
+    ///         exploitable -- this is why it must never be used, not proof
+    ///         the underlying issue is unfixed.
+    function test_POC_1_raw_new_then_initialize_pattern_is_still_frontrunnable() public {
+        // --- Replicate the OLD (pre-fix) two-transaction pattern exactly ---
 
         StrategyParamsModule paramsModule = new StrategyParamsModule(ARBITRUM_USDC, core);
         StrategyAdapterOpsModule adapterOpsMod = new StrategyAdapterOpsModule(
@@ -175,5 +167,58 @@ contract BootstrapperFrontRun_PoC is Test {
             vault.hasRole(vault.BOOTSTRAP_ROLE(), address(boot)),
             "BOOTSTRAP_ROLE permanently renounced -- legitimate governance can NEVER use this one-shot path again"
         );
+    }
+
+    /// @notice Test 2: the FIXED deploy-script pattern -- AdapterFactory
+    ///         atomically bundles CREATE2-deploy + initialize() into one
+    ///         transaction, exactly as script/DeployUsdcLendingStrategy.s.sol
+    ///         now does. There is no window for an attacker's initialize()
+    ///         call to land in between.
+    function test_POC_2_AdapterFactory_deployAndInit_is_not_frontrunnable() public {
+        StrategyParamsModule paramsModule = new StrategyParamsModule(ARBITRUM_USDC, core);
+        StrategyAdapterOpsModule adapterOpsMod = new StrategyAdapterOpsModule(
+            ARBITRUM_USDC, core, address(paramsModule), address(0), address(0)
+        );
+        StrategyScoringModule scoringMod = new StrategyScoringModule(
+            ARBITRUM_USDC, core, address(paramsModule), address(0), address(adapterOpsMod)
+        );
+        StrategyRebalanceGateModule gateMod = new StrategyRebalanceGateModule(
+            ARBITRUM_USDC, core, address(paramsModule), address(scoringMod), address(adapterOpsMod)
+        );
+
+        vm.startPrank(deployer);
+        AdapterFactory factory = new AdapterFactory(deployer); // deployer gets DEPLOYER_ROLE
+
+        bytes32 salt = keccak256("bootstrapper-salt");
+        address predictedBootstrapper = factory.computeAddress(type(StrategyBootstrapper).creationCode, salt);
+        assertEq(predictedBootstrapper.code.length, 0, "sanity: nothing deployed there yet -- no attacker target exists");
+
+        vault = new UsdcMultiLendingVault(
+            ARBITRUM_USDC, core, router, rootTimelock, guardian,
+            predictedBootstrapper,
+            address(paramsModule), address(scoringMod), address(adapterOpsMod), address(gateMod),
+            _defaultParams()
+        );
+
+        // Single atomic call: CREATE2-deploy + initialize(deployer) happen
+        // together. An attacker cannot insert a call between them -- there is
+        // no "between" on-chain, it's one transaction.
+        address bootstrapperAddr = factory.deployAndInit(
+            type(StrategyBootstrapper).creationCode,
+            salt,
+            abi.encodeCall(StrategyBootstrapper.initialize, (payable(address(vault)), deployer))
+        );
+        vm.stopPrank();
+
+        assertEq(bootstrapperAddr, predictedBootstrapper, "address prediction still matches (CREATE2-deterministic)");
+        assertEq(StrategyBootstrapper(bootstrapperAddr).deployer(), deployer, "FIXED: deployer is correctly set to the legitimate operator");
+
+        // An attacker trying the exact same front-run now finds the contract
+        // already initialized -- their call simply reverts, nothing to hijack.
+        vm.prank(attacker);
+        vm.expectRevert(bytes("Initializable: contract is already initialized"));
+        StrategyBootstrapper(bootstrapperAddr).initialize(payable(address(vault)), attacker);
+
+        assertEq(StrategyBootstrapper(bootstrapperAddr).deployer(), deployer, "still the legitimate deployer, unchanged");
     }
 }

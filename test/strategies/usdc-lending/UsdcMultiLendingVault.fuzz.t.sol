@@ -556,6 +556,11 @@ contract UsdcMultiLendingVault_Fuzz_Parameters is UsdcMultiLendingVaultFuzzBase 
         uint256 gasCost
     ) public {
         gasCost = bound(gasCost, 0, 1000e6); // Max 1000 USDC
+        // Bound: setGateParams now enforces minNetBenefitBps/slippageBps/spreadBps
+        // <= 10000 (bps sanity -- previously unbounded, could exceed 100%).
+        minNetBenefitBps = uint16(bound(minNetBenefitBps, 0, 10000));
+        slippageBps = uint16(bound(slippageBps, 0, 10000));
+        spreadBps = uint16(bound(spreadBps, 0, 10000));
 
         vm.prank(paramSetter);
         StrategySettingsModule(address(vault)).setGateParams(horizonDays, minNetBenefitBps, slippageBps, spreadBps, gasCost);

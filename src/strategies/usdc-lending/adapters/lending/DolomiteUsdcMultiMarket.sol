@@ -880,9 +880,20 @@ contract DolomiteUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reent
 
         // Liquidity: availableLiquidity / (availableLiquidity + allocOnMarket), scaled to 0..10000
         uint256 alloc = _assetsOn(idx);
-        uint256 liq = m.mtype == MarketType.ERC4626
-            ? IERC20(asset).balanceOf(m.addr)
-            : IDolomiteLike(m.addr).availableLiquidity(asset);
+        uint256 liq;
+        if (m.mtype == MarketType.ERC4626) {
+            liq = IERC20(asset).balanceOf(m.addr);
+        } else {
+            // Guarded external call: a single reverting/paused Dolomite pool must
+            // not brick scoring for every other healthy market. A failure here is
+            // treated as zero available liquidity for this market (score naturally
+            // drops toward 0), not a revert of the whole deposit()/optimize() call.
+            try IDolomiteLike(m.addr).availableLiquidity(asset) returns (uint256 l) {
+                liq = l;
+            } catch {
+                return 0;
+            }
+        }
         uint16 liqBps = (liq + alloc < 1) ? 0 : uint16((liq * 10000) / (liq + alloc)); // slither: incorrect-equality - use < 1 instead of == 0
 
         // Risk: 10000 - riskScoreBps (higher = riskier)

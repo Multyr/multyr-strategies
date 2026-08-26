@@ -106,6 +106,9 @@ contract StrategySettingsModule is StrategyStorageLayout {
         uint16 _withdrawalSpreadBpsEstimate,
         uint256 _gasCostUSDC
     ) external onlyRoleOrRevert(PARAM_ROLE) paramsNotFinalized {
+        if (_gateMinNetBenefitBps > 10000) revert ParamOutOfRange();
+        if (_slippageBpsEstimate > 10000) revert ParamOutOfRange();
+        if (_withdrawalSpreadBpsEstimate > 10000) revert ParamOutOfRange();
         gateHorizonDays = _gateHorizonDays;
         gateMinNetBenefitBps = _gateMinNetBenefitBps;
         slippageBpsEstimate = _slippageBpsEstimate;
@@ -160,16 +163,24 @@ contract StrategySettingsModule is StrategyStorageLayout {
         onlyRoleOrRevert(PARAM_ROLE)
     {
         if (!(_minSecondsBetweenHarvests >= 3600 && _minSecondsBetweenHarvests <= 604800)) revert ParamOutOfRange(); // "range: 1h-7d"
+        if (_harvestThresholdBps > 10000) revert ParamOutOfRange();
         harvestThresholdBps = _harvestThresholdBps;
         minSecondsBetweenHarvests = _minSecondsBetweenHarvests;
         emit HarvestParamsUpdated(_harvestThresholdBps, _minSecondsBetweenHarvests);
     }
 
+    /// @dev Bound: <= 100_000e6 (100K USDC). Unlike every sibling setter in this
+    ///      file, this previously had NO bound -- PARAM_ROLE could set
+    ///      dustTolerance = type(uint256).max and finalizeParameters() would lock
+    ///      it in permanently, silently neutralizing NoCashInvariant (I-ADAPTER-01)
+    ///      forever. 100K USDC is generous headroom above any dust threshold that
+    ///      would ever be intentional, while still bounding the invariant.
     function setDustTolerance(uint256 _dustTolerance)
         external
         onlyRoleOrRevert(PARAM_ROLE)
         paramsNotFinalized
     {
+        if (_dustTolerance > 100_000e6) revert ParamOutOfRange();
         dustTolerance = _dustTolerance;
         emit DustToleranceUpdated(_dustTolerance);
     }
@@ -190,6 +201,7 @@ contract StrategySettingsModule is StrategyStorageLayout {
         onlyRoleOrRevert(PARAM_ROLE)
         paramsNotFinalized
     {
+        if (_maxIdleAfterDepositBps > 10000) revert ParamOutOfRange();
         maxIdleAfterDepositBps = _maxIdleAfterDepositBps;
         emit MaxIdleAfterDepositBpsUpdated(_maxIdleAfterDepositBps);
     }
@@ -199,6 +211,7 @@ contract StrategySettingsModule is StrategyStorageLayout {
         onlyRoleOrRevert(PARAM_ROLE)
         paramsNotFinalized
     {
+        if (_maxIdleBootstrapBps > 10000) revert ParamOutOfRange();
         maxIdleBootstrapBps = _maxIdleBootstrapBps;
         emit BootstrapIdleParamsUpdated(_maxIdleBootstrapBps);
     }
@@ -208,6 +221,7 @@ contract StrategySettingsModule is StrategyStorageLayout {
         onlyRoleOrRevert(PARAM_ROLE)
         paramsNotFinalized
     {
+        if (_degradedViewThresholdBps > 10000) revert ParamOutOfRange();
         degradedViewThresholdBps = _degradedViewThresholdBps;
         emit DegradedViewThresholdBpsUpdated(_degradedViewThresholdBps);
     }

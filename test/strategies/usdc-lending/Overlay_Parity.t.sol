@@ -259,13 +259,19 @@ contract Overlay_Parity is UsdcMultiLendingVaultTestBase {
         assertEq(abi.decode(ret, (uint16)), 10000, "T1: must always return 10000");
     }
 
-    function test_parity_T1_with_ceiling_still_10000() public {
+    // Fix: F-SCORING-INV2 (audit Wave 2) -- a set governance ceiling (a
+    // deliberate emergency conservatism lever) DOES apply in T1, in both
+    // StrategyAllocCalcModule (the real allocation engine) and
+    // StrategyScoringModule (the public getter, I-ALLOC-06 overlay parity).
+    // Only an UNSET ceiling (0 = sentinel for "no constraint") preserves the
+    // 100% T1 short-circuit -- see test_parity_T1_short_circuit_no_overlays_applied.
+    function test_parity_T1_respects_set_global_ceiling() public {
         _setGlobalCeiling(3000);
         (bool ok, bytes memory ret) = address(vault).staticcall(
             abi.encodeWithSignature("effectiveAbsCapBps(address)", address(adapterA))
         );
         require(ok);
-        assertEq(abi.decode(ret, (uint16)), 10000, "T1 ignores global ceiling");
+        assertEq(abi.decode(ret, (uint16)), 3000, "T1 must respect a set global governance ceiling");
         _clearGlobalCeiling();
     }
 
@@ -374,19 +380,27 @@ contract Overlay_Parity is UsdcMultiLendingVaultTestBase {
     /// @notice A-F-13 T1 regression: short-circuit must survive in BOTH paths.
     ///         Worst-case overlay state: riskScore=10000, failures=7, liqBps=100.
     ///         Both ScoringModule (external) and AllocCalcModule (internal) must return 10000.
-    function test_AUDIT_FINDING_13_T1_short_circuit_preserved_in_both_paths() public {
+    // Fix: F-SCORING-INV2 (audit Wave 2) -- T1 short-circuits the risk/
+    // failure/liquidity OVERLAYS (structural design: no diversification
+    // choice to constrain in single-adapter mode), but a SET global
+    // governance ceiling is a distinct, deliberate emergency lever and must
+    // still apply. Both StrategyAllocCalcModule and StrategyScoringModule
+    // agree on this (I-ALLOC-06 overlay parity) -- verified below with a
+    // ceiling set AND with overlays maxed out, to prove the overlays really
+    // are ignored while the ceiling really is respected.
+    function test_AUDIT_FINDING_13_T1_overlays_shortcircuit_but_ceiling_applies_in_both_paths() public {
         // T1 state: vault is empty (TVL=0 < 25K) → dMax=1
         _setRiskScore(address(adapterA), 10000);
         _setFailures(address(adapterA), 7);
         _setLiquidityCache(address(adapterA), 100);
-        _setGlobalCeiling(3000); // ceiling would incorrectly reduce if applied
+        _setGlobalCeiling(3000); // must apply despite maxed-out overlays
 
         (bool ok, bytes memory ret) = address(vault).staticcall(
             abi.encodeWithSignature("effectiveAbsCapBps(address)", address(adapterA))
         );
         require(ok, "T1 staticcall failed");
         uint16 actual = abi.decode(ret, (uint16));
-        assertEq(actual, 10000, "T1 must short-circuit to 10000 -- overlays and ceiling must not apply");
+        assertEq(actual, 3000, "T1 overlays are ignored but the set ceiling must still apply");
 
         _clearGlobalCeiling();
         _setFailures(address(adapterA), 0);

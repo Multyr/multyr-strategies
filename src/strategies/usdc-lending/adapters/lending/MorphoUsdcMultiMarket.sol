@@ -221,6 +221,10 @@ contract MorphoUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentra
     // ===== Registry management (PARAM_ROLE) =====
     function addMarket(address market) external onlyParam {
         require(market != address(0), "zero");
+        // Loop counters in getBestMarket()/getRebalancePlan()/sortMarketsByAPY()
+        // are uint8; a 256th market would wrap the counter to 0 and infinite-loop
+        // (OOG). Cap the registry well below that.
+        require(mkts.length < 255, "too many markets");
         require(IERC4626Like(market).asset() == underlying, "wrong asset");
         mkts.push(Market({ addr: market, enabled: true, flagged: false, riskScoreBps: BPS_DENOM }));
         principal.push(0);
