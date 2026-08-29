@@ -170,8 +170,8 @@ contract StrategyParamsModule is StrategyStorageLayout {
                     // Phase 1.5: snapshot OLD value before overwrite, but only once per window.
                     // Skip first-time (cachedExternalTVL==0) — no baseline to compare against.
                     uint64 snapshotAge = uint64(block.timestamp) - lastExtTVLSnapshotTs[adapter];
-                    if (cachedExternalTVL[adapter] > 0 && snapshotAge >= EXT_TVL_PANIC_WINDOW_SEC) {
-                        lastExtTVLSnapshot[adapter]   = cachedExternalTVL[adapter];
+                    if (prev > 0 && snapshotAge >= EXT_TVL_PANIC_WINDOW_SEC) {
+                        lastExtTVLSnapshot[adapter]   = prev;
                         lastExtTVLSnapshotTs[adapter] = uint64(block.timestamp);
                     }
                     cachedExternalTVL[adapter] = tvl;
@@ -298,29 +298,22 @@ contract StrategyParamsModule is StrategyStorageLayout {
     // This is best-effort explainability — NOT the canonical economic logic source.
     // See: src/strategies/usdc-lending/lens/StrategyExplainabilityLens.sol
 
-    /// @dev Mirror of StrategyScoringModule.effectiveMaxAdaptersPerAllocation
-    function _effectiveMaxAdapters(uint256 tvl) internal view returns (uint16) {
-        uint16 staticMax = maxAdaptersPerAllocation;
-        uint16 dynamicMax;
-        if (tvl < 150_000e6) dynamicMax = 2;
-        else if (tvl < 650_000e6) dynamicMax = 3;
-        else if (tvl < 3_000_000e6) dynamicMax = 4;
-        else dynamicMax = 5;
-        return (staticMax > 0 && staticMax < dynamicMax) ? staticMax : dynamicMax;
-    }
-
-    function effectiveMinNewAdapterSeed() external view returns (uint256) {
-        return _effectiveMinNewAdapterSeed(_tvl());
-    }
-
-    function _effectiveMinNewAdapterSeed(uint256 tvl) internal view returns (uint256) {
-        uint256 staticSeed = minNewAdapterSeed;
-        uint256 dynamicSeed;
-        if (tvl < 1_000_000e6) dynamicSeed = 10_000e6;
-        else if (tvl < 10_000_000e6) dynamicSeed = 50_000e6;
-        else dynamicSeed = (tvl * 200) / 1e4;
-        return staticSeed > dynamicSeed ? staticSeed : dynamicSeed;
-    }
+    // NOTE (cleanup): _effectiveMaxAdapters(uint256) and
+    // effectiveMinNewAdapterSeed()/_effectiveMinNewAdapterSeed(uint256) were
+    // removed from this module. Both were unreachable dead code: the vault's
+    // fallback() dispatches to StrategyScoringModule (mods[0]) before
+    // StrategyParamsModule (mods[4]), and StrategyScoringModule already
+    // implements effectiveMinNewAdapterSeed() with the identical selector, so
+    // it always wins the dispatch -- this module's copy could never execute
+    // via the vault. Worse, _effectiveMaxAdapters(uint256) had STALE tier
+    // thresholds (150K/650K/3M) predating the AUDIT-FINDING-1 fix that
+    // corrected them to 25K/250K/1M/5M in StrategyScoringModule/
+    // StrategyAllocCalcModule -- leaving it in place risked a future edit
+    // mistakenly wiring up the stale copy. See test/strategies/usdc-lending/
+    // Dynamic_Seed.t.sol and Scoring_Model.t.sol, which exercise the live
+    // StrategyScoringModule implementation via `StrategyParamsModule(address(vault))
+    // .effectiveMinNewAdapterSeed()` -- the cast is only for ABI encoding;
+    // dispatch still resolves to ScoringModule.
 
     /// @dev Internal mirror of UsdcLendingStrategy.isBootstrapActive() — used inside delegatecall.
     function _isBootstrapActive() internal view returns (bool) {

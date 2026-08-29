@@ -337,7 +337,7 @@ contract StrategyRebalancePlanModule is StrategyStorageLayout {
         _resetRebalanceBackoff();
 
         uint256 idle = ASSET.balanceOf(address(this));
-        uint256 threshold = _idleDeployThresholdLocal();
+        uint256 threshold = _idleDeployThresholdLocal(idle);
         // Force deploy if idle is very high (2x threshold)
         if (idle > threshold * 2) {
             // Auto-redeploy via ScoringModule (preserves all cap/ramp invariants).
@@ -519,11 +519,14 @@ contract StrategyRebalancePlanModule is StrategyStorageLayout {
 
     /// @dev Local copy of ScoringModule._idleDeployThreshold(). Used only in
     ///      _finalizePlan when deciding whether to trigger auto-redeploy.
-    function _idleDeployThresholdLocal() internal view returns (uint256) {
+    ///      Gas: `idle`-accepting variant avoids re-fetching ASSET.balanceOf
+    ///      when the caller (._finalizePlan) already has it -- see
+    ///      StrategyScoringModule._idleDeployThreshold(uint256) for the same pattern.
+    function _idleDeployThresholdLocal(uint256 idle) internal view returns (uint256) {
         uint256 _dust = dustTolerance;
         uint32 _liqStaleness = liquidityStalenessSeconds;
+        uint256 n = adapters.length;
         if (_liqStaleness > 0) {
-            uint256 n = adapters.length;
             for (uint256 i = 0; i < n;) {
                 address a = adapters[i];
                 if (enabled[a] && cachedLiquidityTs[a] > 0
@@ -533,7 +536,12 @@ contract StrategyRebalancePlanModule is StrategyStorageLayout {
                 unchecked { ++i; }
             }
         }
-        uint256 tvlBased = (_tvlLocal() * 5) / 1e4;
+        uint256 sum = idle;
+        for (uint256 i = 0; i < n;) {
+            sum += positionAssets[adapters[i]];
+            unchecked { ++i; }
+        }
+        uint256 tvlBased = (sum * 5) / 1e4;
         uint256 maxCap = 50_000e6;
         if (tvlBased > maxCap) tvlBased = maxCap;
         return tvlBased > _dust ? tvlBased : _dust;

@@ -120,9 +120,10 @@ contract StrategyAdapterOpsModule is StrategyStorageLayout {
 
     function _recordAdapterFailure(address adapter) internal {
         if (quarantined[adapter]) return;
+        uint64 lastFailTs = adapterLastFailureTs[adapter];
         if (
-            failureDecaySeconds > 0 && adapterLastFailureTs[adapter] > 0
-                && block.timestamp - adapterLastFailureTs[adapter] > failureDecaySeconds
+            failureDecaySeconds > 0 && lastFailTs > 0
+                && block.timestamp - lastFailTs > failureDecaySeconds
         ) {
             adapterConsecutiveFailures[adapter] = 0;
         }

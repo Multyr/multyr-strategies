@@ -328,7 +328,12 @@ contract CometUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
     }
 
     function harvest(address receiver) external override nonReentrant onlyVault returns (uint256 realized) {
-        if (rewardToken == address(0) || rewardsController == address(0)) return 0;
+        // Gas: cache both once -- neither has a setter reachable from within
+        // this call, and each was otherwise re-read from storage up to ~10x
+        // (rewardToken) / ~6x (swapHelper) across this function.
+        address rewardToken_ = rewardToken;
+        address swapHelper_ = swapHelper;
+        if (rewardToken_ == address(0) || rewardsController == address(0)) return 0;
         // (1) Claim COMP — graceful (M2): never propagate revert
         // Iterate enabled markets and claim from each (single rewardToken across all markets)
         uint256 nMkt = mkts.length;
@@ -338,30 +343,30 @@ contract CometUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
             }
             unchecked { ++i; }
         }
-        uint256 bal = IERC20(rewardToken).balanceOf(address(this));
+        uint256 bal = IERC20(rewardToken_).balanceOf(address(this));
         if (bal > 0) emit RewardsClaimed(bal);
         if (bal == 0) return 0;
-        if (swapHelper == address(0)) {
-            emit SwapDeferred(rewardToken, bal, "no-helper");
+        if (swapHelper_ == address(0)) {
+            emit SwapDeferred(rewardToken_, bal, "no-helper");
             return 0;
         }
         // (2) M1 pre-flight: defer if oracle stale (no LINK burn on doomed swap)
         bool ok;
-        try IRewardSwapHelperComet(swapHelper).canSwap(rewardToken) returns (bool v) { ok = v; } catch { ok = false; }
+        try IRewardSwapHelperComet(swapHelper_).canSwap(rewardToken_) returns (bool v) { ok = v; } catch { ok = false; }
         if (!ok) {
-            emit SwapDeferred(rewardToken, bal, "oracle-stale");
+            emit SwapDeferred(rewardToken_, bal, "oracle-stale");
             return 0;
         }
         // (3) M2 swap — approve, attempt, reset approval regardless of outcome
-        IERC20(rewardToken).forceApprove(swapHelper, 0);
-        IERC20(rewardToken).forceApprove(swapHelper, bal);
-        try IRewardSwapHelperComet(swapHelper).swapToUSDC(rewardToken, bal, receiver) returns (uint256 out) {
+        IERC20(rewardToken_).forceApprove(swapHelper_, 0);
+        IERC20(rewardToken_).forceApprove(swapHelper_, bal);
+        try IRewardSwapHelperComet(swapHelper_).swapToUSDC(rewardToken_, bal, receiver) returns (uint256 out) {
             realized = out;
-            emit HarvestExecuted(rewardToken, bal, out, receiver);
+            emit HarvestExecuted(rewardToken_, bal, out, receiver);
         } catch {
-            emit SwapDeferred(rewardToken, bal, "swap-revert");
+            emit SwapDeferred(rewardToken_, bal, "swap-revert");
         }
-        IERC20(rewardToken).forceApprove(swapHelper, 0);
+        IERC20(rewardToken_).forceApprove(swapHelper_, 0);
         return realized;
     }
 
@@ -499,10 +504,14 @@ contract CometUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
         Market storage m = mkts[target];
         require(m.enabled && !m.flagged, "noMkt");
 
+        // Gas: cache the target market's address once -- `m` is a storage
+        // pointer, so each `m.comet` access is its own SLOAD; `comet_` was
+        // otherwise read 3x for one unchanged value.
+        address comet_ = m.comet;
         IERC20(underlying).safeTransferFrom(msg.sender, address(this), assets);
-        _approveMarket(m.comet, assets);
-        IComet(m.comet).supply(underlying, assets);
-        _revokeMarketApproval(m.comet);
+        _approveMarket(comet_, assets);
+        IComet(comet_).supply(underlying, assets);
+        _revokeMarketApproval(comet_);
 
         principal[target] += assets;
         principalTotal += assets;

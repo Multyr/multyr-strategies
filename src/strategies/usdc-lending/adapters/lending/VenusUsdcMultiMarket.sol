@@ -153,17 +153,6 @@ contract VenusUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
     //  INTERNAL HELPERS
     // ═══════════════════════════════════════════════════════════
 
-    /// @notice Sets just-in-time approval for exact amount
-    /// @dev Prevents unlimited protocol exposure if Venus is compromised
-    function _approveVToken(uint256 amount) internal {
-        IERC20(underlying).forceApprove(vToken, amount);
-    }
-
-    /// @notice Resets vToken approval to zero
-    function _revokeVTokenApproval() internal {
-        IERC20(underlying).forceApprove(vToken, 0);
-    }
-
     /// @notice Converts vToken balance to underlying using stored exchange rate.
     /// @dev Uses exchangeRateStored() (view-safe, does NOT accrue interest).
     ///      Conservative bias: understates NAV by at most 1 block of Venus interest
@@ -239,18 +228,24 @@ contract VenusUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
         require(assets > 0, "ZERO_ASSETS");
         if (capacity > 0) require(totalAssets() + assets <= capacity, "CAP");
 
+        // Gas: cache `underlying`/`vToken` locally -- both set once in
+        // initialize() with no setter, avoids re-reading storage across the
+        // transferFrom/approve/mint/revoke sequence below.
+        address underlying_ = underlying;
+        address vToken_ = vToken;
+
         // PULL pattern: transfer USDC from strategy to adapter
-        IERC20(underlying).safeTransferFrom(msg.sender, address(this), assets);
+        IERC20(underlying_).safeTransferFrom(msg.sender, address(this), assets);
 
         // Just-in-time approval
-        _approveVToken(assets);
+        IERC20(underlying_).forceApprove(vToken_, assets);
 
         // Venus mint: returns 0 on success
-        uint256 err = IVToken(vToken).mint(assets);
+        uint256 err = IVToken(vToken_).mint(assets);
         require(err == 0, "Venus:mint failed");
 
         // Revoke approval
-        _revokeVTokenApproval();
+        IERC20(underlying_).forceApprove(vToken_, 0);
 
         emit Supplied(assets);
     }

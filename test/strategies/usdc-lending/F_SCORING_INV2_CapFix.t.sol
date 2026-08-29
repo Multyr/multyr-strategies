@@ -61,11 +61,11 @@ contract AllocCalcHarness is StrategyAllocCalcModule {
     constructor(address usdc_, address core_) StrategyAllocCalcModule(usdc_, core_) {}
 
     function exposedEffectiveAbsCapBps(address adapter) external view returns (uint256) {
-        return _effectiveAbsCapBps(adapter);
+        return _effectiveAbsCapBps(adapter, _tvl());
     }
 
     function exposedEffectiveMaxAdapters() external view returns (uint16) {
-        return _effectiveMaxAdapters();
+        return _effectiveMaxAdapters(_tvl());
     }
 
     function setAdapterMaxExposureBps(uint16 bps) external {

@@ -59,4 +59,47 @@ library StrategyConfigLib {
         if (extTVL < 250_000_000e6)  return CONFIDENCE_HIGH;
         return CONFIDENCE_VHIGH;
     }
+
+    // ── Cap-engine overlays ──────────────────────────────────────────────────
+    // Single source of truth for the four-layer cap engine's overlay
+    // multipliers (docs/TIER_MODEL.md §4). Previously hand-duplicated,
+    // byte-for-byte, between StrategyScoringModule and StrategyAllocCalcModule
+    // -- exactly the class of divergence that caused AUDIT-FINDING-13 and the
+    // F-SCORING-INV2 regression (a fix landing in only one copy). Parametrized
+    // (not storage-reading) so every caller shares one logic path regardless
+    // of how it sources the raw values.
+
+    /// @dev S3 RISK_OVERLAY -- reduces cap by riskScoreBps/2, max 50% reduction.
+    ///      Stale scores (past `staleness`, if set) are treated as 0 (no penalty).
+    function riskOverlay(uint256 score, uint32 staleness, uint64 updatedAt) internal view returns (uint16) {
+        if (score == 0) return 10000;
+        if (staleness > 0 && updatedAt > 0 && block.timestamp - updatedAt > staleness) return 10000;
+        uint256 penalty = score / 2;
+        return penalty >= 10000 ? 0 : uint16(10000 - penalty);
+    }
+
+    /// @dev S3 FAILURE_OVERLAY -- reduces cap by 15% per consecutive failure, floors at 0.
+    function failureOverlay(uint256 failures) internal pure returns (uint16) {
+        if (failures == 0) return 10000;
+        uint256 penalty = failures * 1500;
+        return penalty >= 10000 ? 0 : uint16(10000 - penalty);
+    }
+
+    /// @dev S5 LIQUIDITY_OVERLAY -- tiered cap reduction based on withdrawable liquidity ratio.
+    function liquidityOverlay(uint256 liqBps) internal pure returns (uint16) {
+        if (liqBps >= 8000) return 10000;
+        if (liqBps >= 5000) return 9000;
+        if (liqBps >= 2500) return 7500;
+        return 6000;
+    }
+
+    /// @dev Cached liquidity ratio with staleness fallback to DEFAULT_LIQ_BPS.
+    ///      `cached == 0` means "never cached" (distinct from a measured-zero
+    ///      liquidity observation, which callers store as 1 -- see
+    ///      StrategyParamsModule._pokeLiquidity).
+    function cachedLiq(uint16 cached, uint32 staleness, uint64 cachedTs) internal view returns (uint256) {
+        if (cached == 0) return DEFAULT_LIQ_BPS;
+        if (staleness > 0 && cachedTs > 0 && block.timestamp - cachedTs > staleness) return DEFAULT_LIQ_BPS;
+        return uint256(cached);
+    }
 }
