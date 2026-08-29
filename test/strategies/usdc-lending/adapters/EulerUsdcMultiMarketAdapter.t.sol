@@ -326,6 +326,57 @@ contract EulerAdapter_Test is Test {
     }
 
     // ═══════════════════════════════════════════════════════════════════════
+    // EDGE CASES — dust deposits, all-markets-disabled
+    // ═══════════════════════════════════════════════════════════════════════
+
+    function test_deposit_reverts_when_all_markets_disabled() public {
+        // vault1 is the only market (loaded in setUp) — disable it.
+        adapter.toggleMarket(0, false, false);
+        usdc.mint(vault, 100e6);
+        vm.prank(vault);
+        usdc.transfer(address(adapter), 100e6);
+        vm.prank(vault);
+        vm.expectRevert(bytes("Deposit failed - no market with sufficient capacity"));
+        adapter.deposit(100e6);
+    }
+
+    // NOTE: unlike Dolomite's withdraw() (which explicitly skips `!enabled`
+    // markets), Euler's withdraw() iterates ALL markets by underlying balance
+    // and liquidity only -- `enabled`/`flagged` only gate new deposits, not
+    // withdrawals. This is intentional (funds must remain recoverable even
+    // from a market an operator has disabled) but easy to assume symmetric
+    // with Dolomite, so it's asserted explicitly here.
+    function test_withdraw_still_succeeds_from_disabled_market() public {
+        _pushDeposit(500e6);
+        adapter.toggleMarket(0, false, false); // disable AFTER funds are in
+
+        uint256 balBefore = usdc.balanceOf(vault);
+        vm.prank(vault);
+        uint256 got = adapter.withdraw(500e6, vault);
+        assertEq(got, 500e6, "disabled market must still be withdrawable");
+        assertEq(usdc.balanceOf(vault) - balBefore, 500e6);
+    }
+
+    function test_deposit_1wei_dust_succeeds() public {
+        usdc.mint(vault, 1);
+        vm.prank(vault);
+        usdc.transfer(address(adapter), 1);
+        vm.prank(vault);
+        adapter.deposit(1);
+        assertEq(adapter.totalAssets(), 1);
+        assertEq(vault1.balanceOf(address(adapter)), 1);
+    }
+
+    function test_withdraw_1wei_dust_succeeds() public {
+        _pushDeposit(1);
+        uint256 balBefore = usdc.balanceOf(vault);
+        vm.prank(vault);
+        uint256 got = adapter.withdraw(1, vault);
+        assertEq(got, 1);
+        assertEq(usdc.balanceOf(vault) - balBefore, 1);
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
     // LIFECYCLE: WITHDRAW
     // ═══════════════════════════════════════════════════════════════════════
 

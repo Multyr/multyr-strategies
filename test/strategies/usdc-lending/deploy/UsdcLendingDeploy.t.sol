@@ -38,6 +38,92 @@ address constant PERMIT2_UNIVERSAL = 0x000000000022D473030F116dDEE9F6B43aC78BA3;
 contract UsdcLendingDeploy_Test is Test {
 
     // ─────────────────────────────────────────────────────────────────────────
+    // 5-7. Base / Polygon / Ethereum — placeholder chain configs
+    // ─────────────────────────────────────────────────────────────────────────
+    // These three configs are not yet wired to any deploy path (the deploy
+    // script currently hard-requires block.chainid == 42161 / Arbitrum-only),
+    // and are explicitly documented as "TBD -- fill before deploy" in-source.
+    // These tests lock in that intentional placeholder state: the fields that
+    // ARE meant to be live today (usdc/aavePool/aaveAUsdc/permit2/deploySalt)
+    // must be correct, and the fields that are NOT yet filled must still read
+    // as address(0) -- so an accidental partial-fill (e.g. someone sets
+    // fluidFUsdc but forgets governanceMultisig) shows up as a failing test
+    // instead of shipping silently.
+    // ─────────────────────────────────────────────────────────────────────────
+
+    function test_deploy_base_config_is_placeholder() public pure {
+        UsdcLendingChainConfig memory cfg = UsdcLendingConfigBase.get();
+
+        assertEq(cfg.usdc, 0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913, "Base USDC mismatch");
+        assertEq(cfg.aavePool, 0xA238Dd80C259a72e81d7e4664a9801593F98d1c5, "Base Aave pool mismatch");
+        assertEq(cfg.aaveAUsdc, 0x4e65fE4DbA92790696d040ac24Aa414708F5c0AB, "Base aUSDC mismatch");
+        assertEq(cfg.permit2, PERMIT2_UNIVERSAL, "Base Permit2 mismatch");
+        assertNotEq(cfg.deploySalt, bytes32(0), "Base deploySalt must be non-zero");
+
+        // Not yet filled -- deploy must not proceed on Base until these are set.
+        assertEq(cfg.cometUsdcV3, address(0), "Base Comet is TBD");
+        assertEq(cfg.dolomiteDUsdc, address(0), "Dolomite not on Base");
+        assertEq(cfg.fluidFUsdc, address(0), "Base Fluid is TBD");
+        assertEq(cfg.morphoVault1, address(0), "Base Morpho is TBD");
+        assertEq(cfg.venusVToken, address(0), "Venus not on Base");
+        assertEq(cfg.venusBlocksPerYear, 0, "Venus disabled on Base");
+        assertEq(cfg.governanceMultisig, address(0), "Base governance multisig not yet set");
+    }
+
+    function test_deploy_polygon_config_is_placeholder() public pure {
+        UsdcLendingChainConfig memory cfg = UsdcLendingConfigPolygon.get();
+
+        assertEq(cfg.usdc, 0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359, "Polygon USDC mismatch");
+        assertEq(cfg.aavePool, 0x794a61358D6845594F94dc1DB02A252b5b4814aD, "Polygon Aave pool mismatch");
+        assertEq(cfg.cometUsdcV3, 0xF25212E676D1F7F89Cd72fFEe66158f541246445, "Polygon Comet mismatch");
+        assertEq(cfg.permit2, PERMIT2_UNIVERSAL, "Polygon Permit2 mismatch");
+        assertNotEq(cfg.deploySalt, bytes32(0), "Polygon deploySalt must be non-zero");
+
+        assertEq(cfg.dolomiteDUsdc, address(0), "Dolomite not on Polygon");
+        assertEq(cfg.fluidFUsdc, address(0), "Polygon Fluid is TBD");
+        assertEq(cfg.morphoVault1, address(0), "Polygon Morpho is TBD");
+        assertEq(cfg.venusVToken, address(0), "Venus not on Polygon PoS");
+        assertEq(cfg.venusBlocksPerYear, 0, "Venus disabled on Polygon");
+        assertEq(cfg.governanceMultisig, address(0), "Polygon governance multisig not yet set");
+    }
+
+    function test_deploy_ethereum_config_is_placeholder() public pure {
+        UsdcLendingChainConfig memory cfg = UsdcLendingConfigEthereum.get();
+
+        assertEq(cfg.usdc, 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48, "Ethereum USDC mismatch");
+        assertEq(cfg.aavePool, 0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2, "Ethereum Aave pool mismatch");
+        assertEq(cfg.cometUsdcV3, 0xc3d688B66703497DAA19211EEdff47f25384cdc3, "Ethereum Comet mismatch");
+        assertEq(cfg.permit2, PERMIT2_UNIVERSAL, "Ethereum Permit2 mismatch");
+        assertNotEq(cfg.deploySalt, bytes32(0), "Ethereum deploySalt must be non-zero");
+
+        assertEq(cfg.dolomiteDUsdc, address(0), "Dolomite not on Ethereum");
+        assertEq(cfg.fluidFUsdc, address(0), "Ethereum Fluid is TBD");
+        assertEq(cfg.morphoVault1, address(0), "Ethereum Morpho is TBD");
+        assertEq(cfg.venusVToken, address(0), "Venus not on Ethereum");
+        assertEq(cfg.venusBlocksPerYear, 0, "Venus disabled on Ethereum");
+        assertEq(cfg.governanceMultisig, address(0), "Ethereum governance multisig not yet set");
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // 8. Cross-chain sanity: every live-token chain must have a distinct USDC
+    //    and a distinct deploySalt from every other configured chain, and every
+    //    config's governanceMultisig is currently address(0) everywhere --
+    //    including Arbitrum, the one chain the deploy script can actually
+    //    target today. Deliberately not gated on-chain (see script's own
+    //    `cfg.timelock` / TIMELOCK_ADDRESS check, which IS enforced before the
+    //    admin-role handoff) -- this test exists so that gap stays visible
+    //    rather than silently assumed fixed by a future change.
+    // ─────────────────────────────────────────────────────────────────────────
+
+    function test_governanceMultisig_unset_across_all_configs() public pure {
+        assertEq(UsdcLendingConfigArbitrum.get().governanceMultisig, address(0));
+        assertEq(UsdcLendingConfigOptimism.get().governanceMultisig, address(0));
+        assertEq(UsdcLendingConfigBase.get().governanceMultisig, address(0));
+        assertEq(UsdcLendingConfigPolygon.get().governanceMultisig, address(0));
+        assertEq(UsdcLendingConfigEthereum.get().governanceMultisig, address(0));
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
     // 1. test_deploy_arbitrum_config
     // ─────────────────────────────────────────────────────────────────────────
 

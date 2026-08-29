@@ -190,7 +190,7 @@ contract Dynamic_Seed is Test {
 
         _coreDeposit(50_000e6); // TVL = 50k → T2 (<250K)
 
-        uint256 seed = StrategyParamsModule(address(vault)).effectiveMinNewAdapterSeed();
+        uint256 seed = StrategyScoringModule(address(vault)).effectiveMinNewAdapterSeed();
         assertEq(seed, 100e6, "low TVL seed should be 100 USDC (T2 band)");
     }
 
@@ -202,7 +202,7 @@ contract Dynamic_Seed is Test {
 
         _coreDeposit(2_000_000e6); // TVL = 2M → T4 (1M-5M)
 
-        uint256 seed = StrategyParamsModule(address(vault)).effectiveMinNewAdapterSeed();
+        uint256 seed = StrategyScoringModule(address(vault)).effectiveMinNewAdapterSeed();
         assertEq(seed, 5_000e6, "mid TVL seed should be 5K USDC (T4 band)");
     }
 
@@ -214,7 +214,7 @@ contract Dynamic_Seed is Test {
 
         _coreDeposit(20_000_000e6); // TVL = 20M → T5 (5M-25M)
 
-        uint256 seed = StrategyParamsModule(address(vault)).effectiveMinNewAdapterSeed();
+        uint256 seed = StrategyScoringModule(address(vault)).effectiveMinNewAdapterSeed();
         assertEq(seed, 25_000e6, "high TVL seed should be 25K USDC (T5 band)");
     }
 
@@ -230,7 +230,7 @@ contract Dynamic_Seed is Test {
 
         _coreDeposit(50_000e6); // TVL = 50k → dynamic = 10k, static = 100k
 
-        uint256 seed = StrategyParamsModule(address(vault)).effectiveMinNewAdapterSeed();
+        uint256 seed = StrategyScoringModule(address(vault)).effectiveMinNewAdapterSeed();
         assertEq(seed, 100_000e6, "static floor should override when higher");
     }
 
@@ -246,7 +246,7 @@ contract Dynamic_Seed is Test {
 
         _coreDeposit(50_000e6); // TVL = 50k → T2 → dynamic = 100 USDC, static = 5K → static wins
 
-        uint256 seed = StrategyParamsModule(address(vault)).effectiveMinNewAdapterSeed();
+        uint256 seed = StrategyScoringModule(address(vault)).effectiveMinNewAdapterSeed();
         assertEq(seed, 5_000e6, "static floor should be used when higher than dynamic band");
     }
 

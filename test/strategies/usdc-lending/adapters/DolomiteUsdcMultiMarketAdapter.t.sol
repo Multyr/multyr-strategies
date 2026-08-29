@@ -434,6 +434,63 @@ contract DolomiteAdapter_Test is Test {
     }
 
     // ═══════════════════════════════════════════════════════════════════════
+    // EDGE CASES — dust deposits, all-markets-disabled
+    // ═══════════════════════════════════════════════════════════════════════
+
+    function test_deposit_reverts_when_all_markets_disabled() public {
+        // pool1 is the only market (loaded from registry) — disable it.
+        vm.prank(admin);
+        adapter.toggleMarket(0, false);
+        _mintAndApprove(vault, 100e6);
+        vm.prank(vault);
+        vm.expectRevert(bytes("no enabled market"));
+        adapter.deposit(100e6);
+    }
+
+    // NOTE: _assetsOn() deliberately returns 0 for a disabled market (Audit #2
+    // P0.5 -- don't trust a live balance read on a market flagged untrusted),
+    // so totalAssets() reports 0 while the market is disabled even though the
+    // funds are neither lost nor withdrawn -- they reappear once re-enabled.
+    function test_withdraw_returns_zero_when_all_markets_disabled_despite_balance() public {
+        _mintAndApprove(vault, 500e6);
+        vm.prank(vault);
+        adapter.deposit(500e6); // → pool1 (active)
+
+        vm.prank(admin);
+        adapter.toggleMarket(0, false); // disable the only market holding funds
+
+        vm.prank(vault);
+        uint256 got = adapter.withdraw(500e6, vault);
+        assertEq(got, 0, "disabled market must be skipped, not drained");
+        assertEq(adapter.totalAssets(), 0, "disabled market's assets are hidden, not queried, while disabled");
+
+        vm.prank(admin);
+        adapter.toggleMarket(0, true); // re-enable
+        assertEq(adapter.totalAssets(), 500e6, "funds reappear once the market is trusted again -- not lost");
+    }
+
+    function test_deposit_1wei_dust_succeeds() public {
+        _mintAndApprove(vault, 1);
+        vm.prank(vault);
+        adapter.deposit(1);
+        assertEq(adapter.totalAssets(), 1);
+        assertEq(pool1.balanceOf(address(adapter)), 1);
+    }
+
+    function test_withdraw_1wei_dust_succeeds() public {
+        _mintAndApprove(vault, 1);
+        vm.prank(vault);
+        adapter.deposit(1);
+
+        uint256 vaultBalBefore = usdc.balanceOf(vault);
+        vm.prank(vault);
+        uint256 got = adapter.withdraw(1, vault);
+        assertEq(got, 1);
+        assertEq(usdc.balanceOf(vault) - vaultBalBefore, 1);
+        assertEq(adapter.totalAssets(), 0);
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
     // MULTI-MARKET ROUTING (toggle/flag)
     // ═══════════════════════════════════════════════════════════════════════
 
