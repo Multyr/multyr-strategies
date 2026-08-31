@@ -44,7 +44,7 @@ The strategy interacts with **7 lending adapters** across 5 protocols:
 | Core system deployed | `multyr-core/script/DeployCoreSystem.s.sol:202` | `VAULT_ADDRESS`, `STRATEGY_ROUTER_ADDRESS`, `BUFFER_MANAGER_ADDRESS`, `HEALTH_REGISTRY_ADDRESS` from its output |
 | Timelock deployed | `multyr-deployment/script/DeployTimelock.s.sol:30` | `TIMELOCK_ADDRESS` — for `DO_SEAL=true` |
 | Deployer has ≥0.001 USDC | Euler Permit2 dust | `multyr-strategies/script/DeployUsdcLendingStrategy.s.sol:393-400` — transfered to Euler adapter before `initializeMarkets()` |
-| Deployer EOA | `DEPLOYER_PRIVATE_KEY` env var | Must own `DEFAULT_ADMIN_ROLE` on CoreVault and StrategyRouter |
+| Deployer EOA | `DEPLOYER_PRIVATE_KEY` env var | Must be `owner` on CoreVault and StrategyRouter -- neither uses AccessControl/`hasRole` (CoreVault is a Diamond-lite thin proxy with a plain two-step `owner()`/`pendingOwner()`/`acceptOwnership()`; calling `hasRole()` on it reverts `ModuleNotSet()`) |
 | Arbitrum archive RPC | `RPC_URL` | Block confirmation times matter for broadcast |
 
 ---
@@ -514,7 +514,7 @@ Both conditions must be true before seal succeeds. These are set during the core
 
 Source: `multyr-strategies/script/DeployUsdcLendingStrategy.s.sol`, `_defaultParams()`
 
-31-field struct initialized with production defaults:
+32-field struct initialized with production defaults:
 
 | Parameter | Value | Note |
 |---|---|---|

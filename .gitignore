@@ -4,6 +4,10 @@ out/
 broadcast/*/
 !broadcast/
 !broadcast/**/dry-run/
+# Address-book JSON written directly into broadcast/ (not a per-script
+# subdirectory forge creates itself) -- e.g. STRATEGY_OUTPUT_JSON's default
+# broadcast/strategy-addresses.json, and fork tests' own artifacts.
+broadcast/*.json
 
 # Environment
 .env

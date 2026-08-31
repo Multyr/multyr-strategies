@@ -12,7 +12,9 @@
 #
 # Prerequisites (not checked by this script):
 #   - Core system already deployed (multyr-core/script/DeployCoreSystem.s.sol)
-#   - Deployer EOA holds DEFAULT_ADMIN_ROLE on CoreVault and StrategyRouter
+#   - Deployer EOA is `owner` on CoreVault and StrategyRouter (neither uses
+#     AccessControl/hasRole -- CoreVault reverts ModuleNotSet() if you call
+#     hasRole() on it; use owner()/pendingOwner() instead)
 #   - Deployer EOA holds >= 0.001 USDC (Euler Permit2 init dust)
 # ══════════════════════════════════════════════════════════════════════════
 

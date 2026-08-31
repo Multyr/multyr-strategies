@@ -611,6 +611,18 @@ contract DeployUsdcLendingStrategy is Script {
     ///         reads as CONFIDENCE_ZERO ("< 100K -- NO ALLOCATION") -- every adapter is
     ///         ineligible for allocation and the first real deposit reverts with
     ///         BootstrapIdleTooHigh() (idle stays ~100% of TVL, nothing can be placed).
+    ///
+    ///         pokeExternalTVL() wraps each adapter's externalMarketTVL() call in an
+    ///         EMPTY try/catch (StrategyParamsModule.sol) -- a reverting adapter is
+    ///         silently skipped, so a low-level `.call()` succeeding here proves only
+    ///         that the loop ran, not that any cache was actually populated. This
+    ///         function therefore asserts the OUTCOME directly: cachedExternalTVLTs
+    ///         must be nonzero for every adapter after poking. Because that check runs
+    ///         during forge script's SIMULATION, a bad outcome reverts before ANYTHING
+    ///         broadcasts -- the grantRole below never reaches the chain, so there is no
+    ///         window where a partially-broadcast run (RPC drop, on-chain revert from
+    ///         state drift vs. simulation) could leave KEEPER_ROLE stuck on the deployer.
+    ///
     ///         Confirmed against a live Arbitrum fork:
     ///         test/strategies/usdc-lending/fork/DeployAndDepositReadiness.fork.t.sol
     ///         Both pokeExternalTVL/pokeLiquidityBatch are KEEPER_ROLE-gated, and the
@@ -636,8 +648,24 @@ contract DeployUsdcLendingStrategy is Script {
         );
         require(okLiq, "pokeLiquidityBatch failed");
 
+        address[7] memory adapters = [
+            result.aaveAdapter,
+            result.morphoAdapter,
+            result.cometAdapter,
+            result.eulerAdapter,
+            result.dolomiteAdapter,
+            result.fluidAdapter,
+            result.venusAdapter
+        ];
+        for (uint256 i = 0; i < adapters.length; i++) {
+            require(
+                result.strategy.cachedExternalTVLTs(adapters[i]) != 0,
+                "pokeExternalTVL did not populate cache for an adapter -- deposit would revert (BootstrapIdleTooHigh)"
+            );
+        }
+
         result.strategy.revokeRole(KEEPER_ROLE, cfg.deployer);
-        console.log("[2.6] External TVL + liquidity poked for all adapters (deployer KEEPER_ROLE revoked after)");
+        console.log("[2.6] External TVL + liquidity poked AND VERIFIED for all adapters (deployer KEEPER_ROLE revoked after)");
     }
 
     // ─── Phase 3: Automation + PARAM_ROLE grants ─────────────────────────────

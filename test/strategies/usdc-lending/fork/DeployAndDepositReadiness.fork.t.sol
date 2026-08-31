@@ -28,7 +28,6 @@ pragma solidity 0.8.28;
 // ═══════════════════════════════════════════════════════════════════════════
 
 import { Test, console2 } from "forge-std/Test.sol";
-import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 import { DeployUsdcLendingStrategy } from "../../../../script/DeployUsdcLendingStrategy.s.sol";
 import { UsdcMultiLendingVault } from "../../../../src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol";
