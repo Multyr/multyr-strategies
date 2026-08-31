@@ -695,16 +695,21 @@ contract DolomiteUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reent
 
         uint256 idx = _pickTargetIndex();
         Market storage m = mkts[idx];
+        // Gas: `m` is a storage pointer -- each `.addr`/`.mtype` access is its
+        // own SLOAD. Nothing writes m.addr/m.mtype before line "principal[idx]
+        // += assets" below, so caching is exact.
+        address mktAddr = m.addr;
+        MarketType mtype_ = m.mtype;
 
-        _approveMarket(m.addr, assets);
-        if (m.mtype == MarketType.ERC4626) {
+        _approveMarket(mktAddr, assets);
+        if (mtype_ == MarketType.ERC4626) {
             // slither: unused-return - capture return value
-            uint256 sharesMinted = IERC4626Like(m.addr).deposit(assets, address(this));
+            uint256 sharesMinted = IERC4626Like(mktAddr).deposit(assets, address(this));
             require(sharesMinted > 0, "Dolomite: deposit returned 0 shares");
         } else {
-            IDolomiteLike(m.addr).supply(asset, assets);
+            IDolomiteLike(mktAddr).supply(asset, assets);
         }
-        _revokeMarketApproval(m.addr);
+        _revokeMarketApproval(mktAddr);
 
         principal[idx] += assets;
         principalTotal += assets;
@@ -712,7 +717,7 @@ contract DolomiteUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reent
         // casting to uint8 is safe because overflow is checked above
         // forge-lint: disable-next-line(unsafe-typecast)
         activeIdx = uint8(idx);
-        emit Supplied(assets, m.addr);
+        emit Supplied(assets, mktAddr);
     }
 
     function withdraw(
@@ -880,9 +885,20 @@ contract DolomiteUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reent
 
         // Liquidity: availableLiquidity / (availableLiquidity + allocOnMarket), scaled to 0..10000
         uint256 alloc = _assetsOn(idx);
-        uint256 liq = m.mtype == MarketType.ERC4626
-            ? IERC20(asset).balanceOf(m.addr)
-            : IDolomiteLike(m.addr).availableLiquidity(asset);
+        uint256 liq;
+        if (m.mtype == MarketType.ERC4626) {
+            liq = IERC20(asset).balanceOf(m.addr);
+        } else {
+            // Guarded external call: a single reverting/paused Dolomite pool must
+            // not brick scoring for every other healthy market. A failure here is
+            // treated as zero available liquidity for this market (score naturally
+            // drops toward 0), not a revert of the whole deposit()/optimize() call.
+            try IDolomiteLike(m.addr).availableLiquidity(asset) returns (uint256 l) {
+                liq = l;
+            } catch {
+                return 0;
+            }
+        }
         uint16 liqBps = (liq + alloc < 1) ? 0 : uint16((liq * 10000) / (liq + alloc)); // slither: incorrect-equality - use < 1 instead of == 0
 
         // Risk: 10000 - riskScoreBps (higher = riskier)

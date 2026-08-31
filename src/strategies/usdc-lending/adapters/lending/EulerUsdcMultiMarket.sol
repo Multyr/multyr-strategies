@@ -559,30 +559,37 @@ contract EulerUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
         if (!found) return false;
         require(mkts[targetIdx].enabled && !mkts[targetIdx].flagged, "target not allowed");
 
+        // Gas: `mkts[targetIdx].addr` was re-read from storage up to 13x in
+        // this function (each `mkts[targetIdx].addr` recomputes the array's
+        // keccak-derived slot + a fresh SLOAD). Nothing in this function --
+        // including _pokeMarket(targetIdx), which only reads market state --
+        // writes mkts[targetIdx].addr, so caching it once is exact.
+        address mktAddr = mkts[targetIdx].addr;
+
         // Fix 2: Clamp deposit to market's available capacity
-        uint256 maxDep = IEulerUsdcMarket(mkts[targetIdx].addr).maxDeposit(address(this));
+        uint256 maxDep = IEulerUsdcMarket(mktAddr).maxDeposit(address(this));
         uint256 amountToDeposit = assets;
         if (amountToDeposit > maxDep) {
             amountToDeposit = maxDep;
-            emit DepositCapped(mkts[targetIdx].addr, assets, amountToDeposit);
+            emit DepositCapped(mktAddr, assets, amountToDeposit);
         }
         if (amountToDeposit == 0) return false;
 
         // Ensure Permit2 internal allowance + standard approval
-        _ensurePermit2(mkts[targetIdx].addr);
-        _approveMarket(mkts[targetIdx].addr, amountToDeposit);
+        _ensurePermit2(mktAddr);
+        _approveMarket(mktAddr, amountToDeposit);
 
         // Try deposit
-        try IEulerUsdcMarket(mkts[targetIdx].addr).deposit(amountToDeposit, address(this)) returns (
+        try IEulerUsdcMarket(mktAddr).deposit(amountToDeposit, address(this)) returns (
             uint256 sharesMinted
         ) {
             if (sharesMinted < 1) { } // slither: intentionally empty
-            _revokeMarketApproval(mkts[targetIdx].addr);
+            _revokeMarketApproval(mktAddr);
 
             // Update accounting
             principal[targetIdx] += amountToDeposit;
             principalTotal += amountToDeposit;
-            emit Deposited(mkts[targetIdx].addr, amountToDeposit);
+            emit Deposited(mktAddr, amountToDeposit);
 
             // If we capped and have remaining, try next market
             uint256 remaining = assets - amountToDeposit;
@@ -595,28 +602,28 @@ contract EulerUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
             return true;
         } catch {
             // Fix 3: Retry fallback — try poke first, then next market
-            _revokeMarketApproval(mkts[targetIdx].addr);
+            _revokeMarketApproval(mktAddr);
 
             bool poked = _pokeMarket(targetIdx);
             if (poked) {
                 // Retry same market after poke
-                _approveMarket(mkts[targetIdx].addr, amountToDeposit);
-                try IEulerUsdcMarket(mkts[targetIdx].addr).deposit(amountToDeposit, address(this)) returns (
+                _approveMarket(mktAddr, amountToDeposit);
+                try IEulerUsdcMarket(mktAddr).deposit(amountToDeposit, address(this)) returns (
                     uint256 retryShares
                 ) {
                     if (retryShares < 1) { } // slither: intentionally empty
-                    _revokeMarketApproval(mkts[targetIdx].addr);
+                    _revokeMarketApproval(mktAddr);
                     principal[targetIdx] += amountToDeposit;
                     principalTotal += amountToDeposit;
-                    emit Deposited(mkts[targetIdx].addr, amountToDeposit);
+                    emit Deposited(mktAddr, amountToDeposit);
                     return true;
                 } catch {
-                    _revokeMarketApproval(mkts[targetIdx].addr);
+                    _revokeMarketApproval(mktAddr);
                 }
             }
 
             // Fallback to next best market
-            emit MarketSelectionFallback(mkts[targetIdx].addr, address(0));
+            emit MarketSelectionFallback(mktAddr, address(0));
             return _tryDepositToMarket(assets, targetIdx + 1);
         }
     }

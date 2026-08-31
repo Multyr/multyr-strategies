@@ -471,9 +471,14 @@ contract UsdcMultiLendingVault is StrategyStorageLayout {
         ASSET.safeTransfer(receiver, assets);
         withdrawn = assets;
 
-        // Best-effort re-deploy: user path must not revert for broken adapter
-        if (idleCash() > dustTolerance) {
-            _delegateToScoring(abi.encodeWithSelector(bytes4(keccak256("deployIdleToAdapters(uint256,bool)")), idleCash(), true));
+        // Best-effort re-deploy: user path must not revert for broken adapter.
+        // idle - assets (not another idleCash() call): USDC has no transfer
+        // fee/rebase, so the post-transfer balance is exactly derivable from
+        // the pre-transfer `idle` local, saving 2 redundant external
+        // ASSET.balanceOf calls on every withdrawal that leaves idle > dust.
+        uint256 idleAfter = idle - assets;
+        if (idleAfter > dustTolerance) {
+            _delegateToScoring(abi.encodeWithSelector(bytes4(keccak256("deployIdleToAdapters(uint256,bool)")), idleAfter, true));
         }
     }
 
@@ -507,8 +512,11 @@ contract UsdcMultiLendingVault is StrategyStorageLayout {
         ASSET.safeTransfer(receiver, assets);
         withdrawn = assets;
 
-        if (idleCash() > dustTolerance) {
-            _delegateToScoring(abi.encodeWithSelector(bytes4(keccak256("deployIdleToAdapters(uint256,bool)")), idleCash(), true));
+        // See the 2-arg withdraw() above for why this avoids a second
+        // idleCash() external call.
+        uint256 idleAfter = idle - assets;
+        if (idleAfter > dustTolerance) {
+            _delegateToScoring(abi.encodeWithSelector(bytes4(keccak256("deployIdleToAdapters(uint256,bool)")), idleAfter, true));
         }
     }
 
@@ -705,9 +713,10 @@ contract UsdcMultiLendingVault is StrategyStorageLayout {
     ///      V9.1: NO depositsDisabled cascade. Skip if already quarantined.
     function _recordAdapterFailure(address adapter) internal {
         if (quarantined[adapter]) return;
+        uint64 lastFailTs = adapterLastFailureTs[adapter];
         if (
-            failureDecaySeconds > 0 && adapterLastFailureTs[adapter] > 0
-                && block.timestamp - adapterLastFailureTs[adapter] > failureDecaySeconds
+            failureDecaySeconds > 0 && lastFailTs > 0
+                && block.timestamp - lastFailTs > failureDecaySeconds
         ) {
             adapterConsecutiveFailures[adapter] = 0;
         }

@@ -6,6 +6,7 @@ import {
     Overflow,
     GateNotMet
 } from "./StrategyStorageLayout.sol";
+import { StrategyConfigLib } from "../lib/StrategyConfigLib.sol";
 
 import { IERC20Metadata } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 
@@ -84,13 +85,18 @@ contract StrategyRebalanceGateModule is StrategyStorageLayout {
     /// @notice Gate check called by ScoringModule._prepareRebalanceInternal() via delegatecall.
     /// @dev    Receives pre-computed scoring data. Runs all P0-P3 checks.
     ///         `emitOnMandate=true` because this is the action path (non-view).
+    ///         KEEPER_ROLE only — the sole legitimate caller is
+    ///         prepareRebalance() (KEEPER-gated). Unlike canRebalance() (a
+    ///         read-only STATICCALL path with emitOnMandate=false), this path
+    ///         can WRITE `lastRelCapMandateTs`, so caller-supplied `tvl`/
+    ///         `enabledAdapters` must not be reachable unauthenticated.
     function checkGate(
         uint16[] calldata apyBpsArray,
         address[] calldata enabledAdapters,
         uint256[] calldata targetAllocs,
         uint256 tvl,
         uint256 moved
-    ) external onlyDelegateCall returns (bool ok, int256 netBenefitBps) {
+    ) external onlyDelegateCall onlyRoleOrRevert(KEEPER_ROLE) returns (bool ok, int256 netBenefitBps) {
         return _fullGateCheck(apyBpsArray, enabledAdapters, targetAllocs, tvl, moved, true);
     }
 
@@ -441,19 +447,12 @@ contract StrategyRebalanceGateModule is StrategyStorageLayout {
         }
     }
 
-    /// @dev Local copy of the rel-cap band logic (mirrors
-    ///      StrategyScoringModule._effectiveRelativeCapBps). Kept here to avoid
-    ///      a cross-module delegatecall just to read a pure function.
+    /// @dev Delegates to StrategyConfigLib (single source of truth, shared
+    ///      with StrategyStorageLayout._effectiveRelativeCapBps). Previously
+    ///      an independent hand-copy of the same band table -- StrategyConfigLib
+    ///      functions are `internal` (compiler-inlined, no deployed library
+    ///      address), so there was never actually a delegatecall to avoid.
     function _gateRelativeCapBps(uint256 extTVL) internal pure returns (uint16) {
-        if (extTVL < 100_000e6) return 0;
-        if (extTVL < 500_000e6) return 200;
-        if (extTVL < 1_000_000e6) return 500;
-        if (extTVL < 2_000_000e6) return 800;
-        if (extTVL < 3_000_000e6) return 1000;
-        if (extTVL < 10_000_000e6) return 1200;
-        if (extTVL < 25_000_000e6) return 1500;
-        if (extTVL < 50_000_000e6) return 1800;
-        if (extTVL < 250_000_000e6) return 2000;
-        return 2500;
+        return StrategyConfigLib.effectiveRelativeCapBps(extTVL);
     }
 }

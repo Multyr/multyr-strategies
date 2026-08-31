@@ -545,6 +545,20 @@ contract StrategyStorageLayout is AccessControl, Pausable, ReentrancyGuard {
         _;
     }
 
+    /// @dev Shared with delegatecall modules (StrategyStorageLayout is the common
+    ///      base for all of them) so fund-movement entry points reachable via the
+    ///      vault's fallback dispatcher can be gated the same way the vault-level
+    ///      `onlyKeeperOrCore` modifier gates its own functions. msg.sender is
+    ///      preserved unchanged through every nested delegatecall in the chain, so
+    ///      this correctly authorizes both CORE_ROLE-triggered (deposit/withdraw)
+    ///      and KEEPER_ROLE-triggered (harvest/deployIdle/rebalance) call paths.
+    modifier onlyKeeperOrCoreOrRevert() {
+        if (!hasRole(KEEPER_ROLE, msg.sender) && !hasRole(CORE_ROLE, msg.sender)) {
+            revert Unauthorized();
+        }
+        _;
+    }
+
     // ── Constructor (only sets immutables) ──────────────────────────────────
 
     constructor(address asset_, address _core, address _paramsModule, address _scoringModule, address _adapterOpsModule) {

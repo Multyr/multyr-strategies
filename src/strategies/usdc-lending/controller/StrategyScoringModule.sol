@@ -10,6 +10,7 @@ pragma solidity 0.8.28;
 
 import { IERC20Metadata } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import { StrategyConfigLib } from "../lib/StrategyConfigLib.sol";
 
 import {
     StrategyStorageLayout,
@@ -99,7 +100,10 @@ contract StrategyScoringModule is StrategyStorageLayout {
     ///           4. scoring pipeline: compute → normalize → target allocs
     ///           5. aggregate APYs + normalized scores + moved
     ///         The plan module consumes these, runs gate check and builds actions.
-    function computeInputsForPlan() external onlyDelegateCall returns (
+    /// @dev KEEPER_ROLE only — the sole legitimate caller is prepareRebalance()
+    ///      (KEEPER-gated); this forces a position sync, so it must not be
+    ///      reachable unauthenticated.
+    function computeInputsForPlan() external onlyDelegateCall onlyRoleOrRevert(KEEPER_ROLE) returns (
         address[] memory enabledList,
         uint256[] memory targetAllocs,
         uint256[] memory normScores,
@@ -135,7 +139,7 @@ contract StrategyScoringModule is StrategyStorageLayout {
             revert DeployIdleCooldown();
         }
         uint256 idle = idleCash();
-        uint256 threshold = _idleDeployThreshold(); // snapshot — not recalculated after sync
+        uint256 threshold = _idleDeployThreshold(idle); // snapshot — not recalculated after sync
         if (idle <= threshold) return;
         // V9.1 CTO: conditional sync before allocation (respects cooldown)
         _syncPositionAssets(false);
@@ -166,7 +170,9 @@ contract StrategyScoringModule is StrategyStorageLayout {
     /// @notice Deploy idle to adapters — external entry point for delegatecall from strategy.
     /// @dev    Was _deployIdleToAdapters(uint256, bool) internal in UsdcLendingStrategy.
     ///         Made external with onlyDelegateCall for module extraction.
-    function deployIdleToAdapters(uint256 amount, bool bestEffort) external onlyDelegateCall {
+    ///         CORE_ROLE (deposit/withdraw) or KEEPER_ROLE (harvest/deployIdle/
+    ///         rebalance finalize) — see onlyKeeperOrCoreOrRevert doc.
+    function deployIdleToAdapters(uint256 amount, bool bestEffort) external onlyDelegateCall onlyKeeperOrCoreOrRevert {
         _deployIdleToAdapters(amount, bestEffort);
     }
 
@@ -251,9 +257,17 @@ contract StrategyScoringModule is StrategyStorageLayout {
     function effectiveAbsCapBps(address adapter) public view onlyDelegateCall returns (uint16) {
         uint16 dMax = effectiveMaxAdaptersPerAllocation();
         if (dMax == 0) return 0;
-        // T1: single-adapter mode = intentional 100% concentration by design.
-        // Global ceiling does not apply — there is no diversification choice to constrain.
-        if (dMax == 1) return 10000;
+        // T1: single-adapter mode. Governance ceiling (adapterMaxExposureBps) still
+        // respected if set. Sentinel preservation: globalCeiling == 0 = no constraint
+        // -> returns 10000 (100% TVL allowed = original T1 behavior).
+        // Fix: F-SCORING-INV2 (audit Wave 2) -- mirrors StrategyAllocCalcModule
+        // ._effectiveAbsCapBps() exactly (I-ALLOC-06 overlay parity). Before this
+        // fix, this getter still returned the stale 10000 while AllocCalcModule
+        // enforced the governance ceiling for real -- a live parity regression.
+        if (dMax == 1) {
+            uint16 t1Ceiling = adapterMaxExposureBps;
+            return t1Ceiling > 0 ? t1Ceiling : 10000;
+        }
         // Layer 1: STRUCTURAL_BASE — ceil(11000 / dMax), floor 2500, ceiling 10000
         uint256 cap = (11000 + uint256(dMax) - 1) / uint256(dMax);
         if (cap > 10000) cap = 10000;
@@ -274,42 +288,29 @@ contract StrategyScoringModule is StrategyStorageLayout {
         return uint16(cap);
     }
 
-    // A-F-13 fix: activate overlays — mirrors StrategyAllocCalcModule._riskOverlay/
-    // _failureOverlay/_liquidityOverlay exactly. Parity enforced by Overlay_Parity.t.sol.
+    // A-F-13 fix: activate overlays — delegates to StrategyConfigLib (single
+    // source of truth shared with StrategyAllocCalcModule; previously two
+    // independent hand-copies, the exact divergence class that caused
+    // AUDIT-FINDING-13 and the F-SCORING-INV2 regression). Parity enforced by
+    // Overlay_Parity.t.sol.
     function _riskOverlay(address adapter) internal view returns (uint16) {
-        uint256 score = riskScoreBps[adapter];
-        if (score == 0) return 10000;
-        uint32 staleness = riskScoreStalenessSeconds;
-        uint64 updatedAt = lastRiskScoreUpdateTs[adapter];
-        if (staleness > 0 && updatedAt > 0 && block.timestamp - updatedAt > staleness) return 10000;
-        uint256 penalty = score / 2;
-        return penalty >= 10000 ? 0 : uint16(10000 - penalty);
+        return StrategyConfigLib.riskOverlay(
+            riskScoreBps[adapter], riskScoreStalenessSeconds, lastRiskScoreUpdateTs[adapter]
+        );
     }
 
     function _failureOverlay(address adapter) internal view returns (uint16) {
-        uint256 failures = adapterConsecutiveFailures[adapter];
-        if (failures == 0) return 10000;
-        uint256 penalty = failures * 1500;
-        return penalty >= 10000 ? 0 : uint16(10000 - penalty);
+        return StrategyConfigLib.failureOverlay(adapterConsecutiveFailures[adapter]);
     }
 
     function _liquidityOverlay(address adapter) internal view returns (uint16) {
-        uint256 liq = _cachedLiq(adapter);
-        if (liq >= 8000) return 10000;
-        if (liq >= 5000) return 9000;
-        if (liq >= 2500) return 7500;
-        return 6000;
+        return StrategyConfigLib.liquidityOverlay(_cachedLiq(adapter));
     }
 
     function _cachedLiq(address adapter) internal view returns (uint256) {
-        uint16 cached = cachedLiquidityBps[adapter];
-        if (cached == 0) return DEFAULT_LIQ_BPS;
-        uint32 _staleness = liquidityStalenessSeconds;
-        if (_staleness > 0 && cachedLiquidityTs[adapter] > 0
-            && block.timestamp - cachedLiquidityTs[adapter] > _staleness) {
-            return DEFAULT_LIQ_BPS;
-        }
-        return uint256(cached);
+        return StrategyConfigLib.cachedLiq(
+            cachedLiquidityBps[adapter], liquidityStalenessSeconds, cachedLiquidityTs[adapter]
+        );
     }
 
     // ── DegradedMode detection (Phase 1 — MAJORITY_INELIGIBLE + FAILURE_VELOCITY) ─
@@ -420,8 +421,6 @@ contract StrategyScoringModule is StrategyStorageLayout {
 
     bytes4 private constant SAFE_DEPOSIT_SEL = bytes4(keccak256("safeAdapterDeposit(address,uint256)"));
     bytes4 private constant ADAPTER_DEPOSIT_SEL = bytes4(keccak256("adapterDeposit(address,uint256)"));
-    bytes4 private constant RECORD_FAILURE_SEL = bytes4(keccak256("recordAdapterFailure(address)"));
-    bytes4 private constant RECORD_SUCCESS_SEL = bytes4(keccak256("recordAdapterSuccess(address)"));
 
     // ── SafetyOverflowModule delegatecall selectors (F-SIZE-01) ────────────────────
 
@@ -583,26 +582,22 @@ contract StrategyScoringModule is StrategyStorageLayout {
         }
     }
 
-    function _recordAdapterFailure(address adapter) internal {
-        (bool ok,) = adapterOpsModule.delegatecall(
-            abi.encodeWithSelector(RECORD_FAILURE_SEL, adapter)
-        );
-        require(ok, "AdapterOps call failed");
-    }
-
-    function _recordAdapterSuccess(address adapter) internal {
-        (bool ok,) = adapterOpsModule.delegatecall(
-            abi.encodeWithSelector(RECORD_SUCCESS_SEL, adapter)
-        );
-        require(ok, "AdapterOps call failed");
-    }
 
     /// @dev Idle deploy threshold: max(dustTolerance, TVL * 5 bps). Cap at 50K USDC.
     function _idleDeployThreshold() internal view returns (uint256) {
+        return _idleDeployThreshold(idleCash());
+    }
+
+    /// @dev Gas: `idle`-accepting variant so callers that already hold a
+    ///      fresh `idleCash()` value (e.g. deployIdle()) don't pay for a
+    ///      second, redundant ASSET.balanceOf call inside _tvl(). Computes
+    ///      the exact same value as the zero-arg version (idle + sum of
+    ///      positionAssets == _tvl()), just without re-fetching idle.
+    function _idleDeployThreshold(uint256 idle) internal view returns (uint256) {
         uint256 _dust = dustTolerance;
         uint32 _liqStaleness = liquidityStalenessSeconds;
+        uint256 n = adapters.length;
         if (_liqStaleness > 0) {
-            uint256 n = adapters.length;
             for (uint256 i = 0; i < n;) {
                 address a = adapters[i];
                 if (enabled[a] && cachedLiquidityTs[a] > 0
@@ -612,7 +607,12 @@ contract StrategyScoringModule is StrategyStorageLayout {
                 unchecked { ++i; }
             }
         }
-        uint256 tvlBased = (_tvl() * 5) / 1e4;
+        uint256 sum = idle;
+        for (uint256 i = 0; i < n;) {
+            sum += positionAssets[adapters[i]];
+            unchecked { ++i; }
+        }
+        uint256 tvlBased = (sum * 5) / 1e4;
         uint256 maxCap = 50_000e6;
         if (tvlBased > maxCap) tvlBased = maxCap;
         return tvlBased > _dust ? tvlBased : _dust;

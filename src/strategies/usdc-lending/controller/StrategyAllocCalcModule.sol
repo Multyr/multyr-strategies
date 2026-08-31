@@ -14,6 +14,7 @@ pragma solidity 0.8.28;
 
 import { IERC20Metadata } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import { StrategyConfigLib } from "../lib/StrategyConfigLib.sol";
 
 import {
     StrategyStorageLayout,
@@ -274,7 +275,7 @@ contract StrategyAllocCalcModule is StrategyStorageLayout {
             // intentionally NOT honoured here — opportunistic allocation must
             // not target above the regular cap; only the safety-overflow path
             // can push above it.
-            uint256 maxExp = (_effectiveAbsCapBps(adapter) * tvl) / 1e4;
+            uint256 maxExp = (_effectiveAbsCapBps(adapter, tvl) * tvl) / 1e4;
             uint256 raw = (scores[i].score * tvl) / totalScore;
             uint256 capped = raw > maxExp ? (maxExp * safetyMult) / 10_000 : raw;
 
@@ -330,7 +331,7 @@ contract StrategyAllocCalcModule is StrategyStorageLayout {
         uint256 tvl = _tvl();
         uint256 n = scores.length;
         uint256 _dust = dustTolerance;
-        uint16 maxAdapters = _effectiveMaxAdapters();
+        uint16 maxAdapters = _effectiveMaxAdapters(tvl);
 
         selected = new address[](n);
         uint256[] memory selScores = new uint256[](n);
@@ -371,7 +372,7 @@ contract StrategyAllocCalcModule is StrategyStorageLayout {
         uint256 conf = _tvlConfidence(adapter);
         if (conf == CONFIDENCE_ZERO) return (false, 0);
         uint256 current = positionAssets[adapter];
-        uint256 maxExp = (_effectiveAbsCapBps(adapter) * tvl) / 1e4;
+        uint256 maxExp = (_effectiveAbsCapBps(adapter, tvl) * tvl) / 1e4;
         if (current >= maxExp) return (false, 0);
         uint256 headroom = maxExp - current;
         {
@@ -390,7 +391,7 @@ contract StrategyAllocCalcModule is StrategyStorageLayout {
             bool inRamp = block.timestamp < adapterActivatedAt[adapter] + newAdapterRampDuration;
             bool seasoned = isSeasoned[adapter];
             bool rampForDustNeeded = (current <= _dust) && !seasoned;
-            bool isNew = (inRamp && current < _effectiveMinSeed()) || rampForDustNeeded;
+            bool isNew = (inRamp && current < _effectiveMinSeed(tvl)) || rampForDustNeeded;
             if (isNew) {
                 uint256 rawLimit = (uint256(newAdapterRampBps) * tvl) / 1e4;
                 if (rawLimit < headroom) headroom = rawLimit;
@@ -463,8 +464,13 @@ contract StrategyAllocCalcModule is StrategyStorageLayout {
 
     // ── Inlined cap/seed helpers (mirrors ScoringModule — same storage context) ─
 
-    function _effectiveMaxAdapters() internal view returns (uint16) {
-        uint256 tvl = _tvl();
+    // Gas: takes tvl as a parameter instead of recomputing it internally --
+    // every call site in this file already has `tvl` in scope (same view
+    // call, no intervening state mutation), so the old zero-arg version's
+    // internal _tvl() call (external ASSET.balanceOf + a full loop over
+    // positionAssets) was pure redundant work, paid up to MAX_ADAPTERS times
+    // per deployIdle()/prepareRebalance() cycle.
+    function _effectiveMaxAdapters(uint256 tvl) internal view returns (uint16) {
         uint16 staticMax = maxAdaptersPerAllocation;
         uint16 dynamicMax;
         if (tvl < 25_000e6) dynamicMax = 1;
@@ -475,8 +481,8 @@ contract StrategyAllocCalcModule is StrategyStorageLayout {
         return (staticMax > 0 && staticMax < dynamicMax) ? staticMax : dynamicMax;
     }
 
-    function _effectiveAbsCapBps(address adapter) internal view returns (uint256) {
-        uint16 dMax = _effectiveMaxAdapters();
+    function _effectiveAbsCapBps(address adapter, uint256 tvl) internal view returns (uint256) {
+        uint16 dMax = _effectiveMaxAdapters(tvl);
         if (dMax == 0) return 0;
         // T1: single-adapter mode. Governance ceiling (adapterMaxExposureBps) still
         // respected if set. Sentinel preservation: globalCeiling == 0 = no constraint
@@ -500,41 +506,25 @@ contract StrategyAllocCalcModule is StrategyStorageLayout {
         return cap;
     }
 
-    // S4: RISK_OVERLAY — reduces cap by riskScoreBps/2, max 50% reduction.
-    // TIER_MODEL.md §4.2: multiplier = max(0, 10000 - riskScoreBps/2)
-    // Stale scores (past riskScoreStalenessSeconds) treated as 0 (no penalty).
+    // S4/S3/S5 overlays — delegate to StrategyConfigLib (single source of
+    // truth shared with StrategyScoringModule; previously two independent
+    // hand-copies, the exact divergence class that caused AUDIT-FINDING-13
+    // and the F-SCORING-INV2 regression). See docs/TIER_MODEL.md §4.2-4.4.
     function _riskOverlay(address adapter) internal view returns (uint16) {
-        uint256 score = riskScoreBps[adapter];
-        if (score == 0) return 10000;
-        uint32 staleness = riskScoreStalenessSeconds;
-        uint64 updatedAt = lastRiskScoreUpdateTs[adapter];
-        if (staleness > 0 && updatedAt > 0 && block.timestamp - updatedAt > staleness) return 10000;
-        uint256 penalty = score / 2;
-        return penalty >= 10000 ? 0 : uint16(10000 - penalty);
+        return StrategyConfigLib.riskOverlay(
+            riskScoreBps[adapter], riskScoreStalenessSeconds, lastRiskScoreUpdateTs[adapter]
+        );
     }
 
-    // S3: FAILURE_OVERLAY — reduces cap by 15% per consecutive failure, floors at 0.
-    // Uses adapterConsecutiveFailures (auto-reset by AdapterOpsModule after failureDecaySeconds).
-    // TIER_MODEL.md §4.3: multiplier = max(0, 10000 - failures × 1500)
     function _failureOverlay(address adapter) internal view returns (uint16) {
-        uint256 failures = adapterConsecutiveFailures[adapter];
-        if (failures == 0) return 10000;
-        uint256 penalty = failures * 1500;
-        return penalty >= 10000 ? 0 : uint16(10000 - penalty);
+        return StrategyConfigLib.failureOverlay(adapterConsecutiveFailures[adapter]);
     }
 
-    // S5: LIQUIDITY_OVERLAY — tiered cap reduction based on withdrawable liquidity ratio.
-    // TIER_MODEL.md §4.4: ≥8000→10000, 5000-7999→9000, 2500-4999→7500, <2500→6000
     function _liquidityOverlay(address adapter) internal view returns (uint16) {
-        uint256 liq = _cachedLiq(adapter);
-        if (liq >= 8000) return 10000;
-        if (liq >= 5000) return 9000;
-        if (liq >= 2500) return 7500;
-        return 6000;
+        return StrategyConfigLib.liquidityOverlay(_cachedLiq(adapter));
     }
 
-    function _effectiveMinSeed() internal view returns (uint256) {
-        uint256 tvl = _tvl();
+    function _effectiveMinSeed(uint256 tvl) internal view returns (uint256) {
         uint256 staticSeed = minNewAdapterSeed;
         uint256 dynamicSeed;
         if (tvl < 250_000e6) dynamicSeed = 100e6;
@@ -548,14 +538,9 @@ contract StrategyAllocCalcModule is StrategyStorageLayout {
     // ── Liquidity cache helper ───────────────────────────────────────────────
 
     function _cachedLiq(address adapter) internal view returns (uint256) {
-        uint16 cached = cachedLiquidityBps[adapter];
-        if (cached == 0) return DEFAULT_LIQ_BPS;
-        uint32 _staleness = liquidityStalenessSeconds;
-        if (_staleness > 0 && cachedLiquidityTs[adapter] > 0
-            && block.timestamp - cachedLiquidityTs[adapter] > _staleness) {
-            return DEFAULT_LIQ_BPS;
-        }
-        return uint256(cached);
+        return StrategyConfigLib.cachedLiq(
+            cachedLiquidityBps[adapter], liquidityStalenessSeconds, cachedLiquidityTs[adapter]
+        );
     }
 
     function isBootstrapActive() public view returns (bool) {

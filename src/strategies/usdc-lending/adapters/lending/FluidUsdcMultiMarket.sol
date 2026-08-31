@@ -121,18 +121,6 @@ contract FluidUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
         lastSnapshotTs = uint64(block.timestamp);
     }
 
-    // ===== Internal Helpers =====
-
-    /// @dev Just-in-time approval for exact amount (security best practice)
-    function _approveFToken(uint256 amount) internal {
-        IERC20(asset).forceApprove(address(fToken), amount);
-    }
-
-    /// @dev Revoke approval after operation
-    function _revokeFTokenApproval() internal {
-        IERC20(asset).forceApprove(address(fToken), 0);
-    }
-
     // ===== ILendingAdapter: Metadata =====
 
     function name() external pure override returns (string memory) {
@@ -179,17 +167,23 @@ contract FluidUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
         require(assets > 0, "ZERO_ASSETS");
         if (capacity > 0) require(totalAssets() + assets <= capacity, "CAP");
 
+        // Gas: cache `asset`/`fToken` locally -- both set once in initialize()
+        // with no setter, avoids re-reading storage across the
+        // transferFrom/approve/deposit/revoke sequence below.
+        address asset_ = asset;
+        IERC4626 fToken_ = fToken;
+
         // Pull USDC from strategy
-        IERC20(asset).safeTransferFrom(msg.sender, address(this), assets);
+        IERC20(asset_).safeTransferFrom(msg.sender, address(this), assets);
 
         // Just-in-time approval
-        _approveFToken(assets);
+        IERC20(asset_).forceApprove(address(fToken_), assets);
 
         // Deposit into Fluid fToken
-        uint256 shares = fToken.deposit(assets, address(this));
+        uint256 shares = fToken_.deposit(assets, address(this));
 
         // Revoke approval
-        _revokeFTokenApproval();
+        IERC20(asset_).forceApprove(address(fToken_), 0);
 
         emit Deposited(assets, shares);
     }
@@ -213,19 +207,22 @@ contract FluidUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
         uint256 want = assets > maxOut ? maxOut : assets;
         if (want == 0) return 0;
 
+        // Gas: cache `asset` locally -- set once in initialize(), no setter.
+        IERC20 assetToken = IERC20(asset);
+
         // Record balance before to measure actual received
-        uint256 balBefore = IERC20(asset).balanceOf(address(this));
+        uint256 balBefore = assetToken.balanceOf(address(this));
 
         // Withdraw from fToken to this adapter
         fToken.withdraw(want, address(this), address(this));
 
         // Measure actual received (Fluid may have small differences)
-        uint256 balAfter = IERC20(asset).balanceOf(address(this));
+        uint256 balAfter = assetToken.balanceOf(address(this));
         withdrawn = balAfter - balBefore;
 
         // Transfer actual received to vault
         if (withdrawn > 0) {
-            IERC20(asset).safeTransfer(vault, withdrawn);
+            assetToken.safeTransfer(vault, withdrawn);
         }
 
         emit Withdrawn(withdrawn, vault);

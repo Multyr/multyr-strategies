@@ -175,19 +175,6 @@ contract AaveV3USDCAdapter is ILendingAdapter, AccessControl, ReentrancyGuard, I
         _grantRole(VAULT_ROLE, vault_);
     }
 
-    // --- INTERNAL HELPERS ---
-
-    /// @notice Sets just-in-time approval for exact amount
-    /// @dev Prevents unlimited protocol exposure if Aave pool is compromised
-    function _approvePool(uint256 amount) internal {
-        IERC20(asset).forceApprove(address(pool), amount);
-    }
-
-    /// @notice Resets pool approval to zero
-    function _revokePoolApproval() internal {
-        IERC20(asset).forceApprove(address(pool), 0);
-    }
-
     // --- ILendingAdapter: Metadata ---
     function name() external pure override returns (string memory) {
         return "AaveV3_USDC_Adapter_Arbitrum";
@@ -231,15 +218,22 @@ contract AaveV3USDCAdapter is ILendingAdapter, AccessControl, ReentrancyGuard, I
         require(assets > 0, "ZERO_ASSETS");
         if (maxCap > 0) require(totalAssets() + assets <= maxCap, "CAP");
 
-        IERC20(asset).safeTransferFrom(msg.sender, address(this), assets);
+        // Gas: cache `asset`/`pool` locally -- both are set once in
+        // initialize() with no setter, so they cannot change mid-call. Avoids
+        // repeated warm SLOADs across the transferFrom/approve/supply/revoke
+        // sequence below.
+        address asset_ = asset;
+        IPool pool_ = pool;
+
+        IERC20(asset_).safeTransferFrom(msg.sender, address(this), assets);
 
         // Just-in-time approval for exact amount (security best practice)
-        _approvePool(assets);
+        IERC20(asset_).forceApprove(address(pool_), assets);
 
-        pool.supply(asset, assets, address(this), 0);
+        pool_.supply(asset_, assets, address(this), 0);
 
         // Revoke approval after operation
-        _revokePoolApproval();
+        IERC20(asset_).forceApprove(address(pool_), 0);
 
         emit Supplied(assets);
     }
@@ -260,8 +254,9 @@ contract AaveV3USDCAdapter is ILendingAdapter, AccessControl, ReentrancyGuard, I
         uint256 maxOut = withdrawableAssets();
         if (want > maxOut) want = maxOut;
 
-        withdrawn = pool.withdraw(asset, want, vault); // Always to vault
-        emit Withdrawn(withdrawn, vault);
+        address vault_ = vault; // read once, used twice below
+        withdrawn = pool.withdraw(asset, want, vault_); // Always to vault
+        emit Withdrawn(withdrawn, vault_);
     }
 
     // --- ILendingAdapter: Yield ---
