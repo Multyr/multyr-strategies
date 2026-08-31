@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.28;
+pragma solidity 0.8.28;
 
 // OpenZeppelin imports
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import { IERC20Metadata } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 import { ReentrancyGuard } from "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import { Initializable } from "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
 
 /// @notice Minimal interface for protocol registry
@@ -70,7 +71,7 @@ interface IPermit2Allowance {
     function approve(address token, address spender, uint160 amount, uint48 expiration) external;
 }
 
-contract EulerUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, ReentrancyGuard {
+contract EulerUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, ReentrancyGuard, Initializable {
     using SafeERC20 for IERC20Metadata;
 
     // --- STRUCTS & STORAGE ---
@@ -90,9 +91,10 @@ contract EulerUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
     uint48 internal constant PERMIT2_MIN_TTL = uint48(1 days);
     uint48 internal constant PERMIT2_TTL = uint48(365 days * 10); // 10y — safe for EVK
 
-    IERC20Metadata public immutable USDC;
-    address public immutable vault;
-    IProtocolRegistry public immutable registry; // Optional registry (address(0) if not used)
+    // --- V10 Storage (was immutable in V9.x; logically immutable post-initialize) ---
+    IERC20Metadata public USDC;
+    address public vault;
+    IProtocolRegistry public registry; // Optional registry (address(0) if not used)
 
     Market[] internal mkts; // Dynamic array - can grow with Registry updates
     uint256[] internal principal; // principal[i]: USDC (6 decimals)
@@ -148,14 +150,19 @@ contract EulerUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
 
     // --- CONSTRUCTOR ---
 
-    constructor(
+
+    /// @notice One-shot initialization called atomically by AdapterFactory.
+    /// @dev _admin is explicit because msg.sender in initialize() = AdapterFactory, not deployer.
+    function initialize(
         address _vault,
         address _usdc,
-        address[] memory _markets, // FIXED: Dynamic array for Registry compatibility
-        address _registry // NEW: Optional registry address
-    ) {
+        address[] memory _markets,
+        address _registry,
+        address _admin
+    ) external initializer {
         require(_vault != address(0), "vault zero");
         require(_usdc != address(0), "usdc zero");
+        require(_admin != address(0), "admin zero");
 
         USDC = IERC20Metadata(_usdc);
         vault = _vault;
@@ -172,12 +179,12 @@ contract EulerUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
             principal.push(0);
         }
 
-        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
-        _grantRole(PARAM_ROLE, msg.sender);
+        _grantRole(DEFAULT_ADMIN_ROLE, _admin);
+        _grantRole(PARAM_ROLE, _admin);
 
         // Approve Permit2 for Euler EVK vaults (one-time unlimited approval)
-        // Euler vaults use Permit2 internally during deposit() — this is REQUIRED.
-        USDC.safeApprove(PERMIT2, type(uint256).max);
+        // Euler vaults use Permit2 internally during deposit() -- this is REQUIRED.
+        USDC.forceApprove(PERMIT2, type(uint256).max);
 
         // Auto-load from registry if available (will replace constructor markets)
         if (_registry != address(0)) {

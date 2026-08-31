@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.28;
+pragma solidity 0.8.28;
 
 import { Test } from "forge-std/Test.sol";
 import {
@@ -160,6 +160,10 @@ contract MultiCycleStabilityTest is UsdcMultiLendingVaultTestBase {
     /// @notice C3a: After each deployIdle call, idle must return to <= dustTolerance.
     ///         Verified across 20 cycles with new deposits each time.
     function test_C3a_idleAlwaysDeployedAfterCycle() public {
+        // Pre-deposit to T3 TVL so dMax=3 for all loop iterations (F-SCORING-INV2: T1 cap=50% otherwise)
+        _coreDeposit(250_000e6);
+        _warpAndDeployIdle(); // deploy pre-deposit
+
         // Make smaller repeated deposits that accumulate idle
         for (uint256 i = 0; i < 20; i++) {
             // Add 10K USDC

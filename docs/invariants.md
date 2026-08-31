@@ -551,6 +551,119 @@ Example: `AaveV3USDCAdapter.deposit()` at
 
 ---
 
+---
+
+## P0.7 Safety Adapter Cap Tier invariants
+
+P0.7 extends the V9.1 invariant set with 8 safety-tier guarantees. The full Echidna
+campaign covers 15 invariants (I01–I12 + 3 Wave 2 additions) — see
+`docs/audit/verification/ECHIDNA_RESULTS_SUMMARY.md` for the 1M-sequence baseline evidence.
+Each invariant has at least one of (Halmos symbolic proof, Echidna
+stateful fuzz, unit test) verification.
+
+### S-01 Safety hard ceiling discipline
+
+For every safety adapter `i`:
+`positionAssets[i] <= fbCeiling_i x (1 + capDriftToleranceBps/1e4) + 2 wei`
+
+Verification:
+- Halmos `check_safetyAdapterBelowFallbackCeilingNoMandate` (P1)
+- Halmos `check_overflowCannotExceedFallbackCap` (P3)
+- Echidna `echidna_I03b_position_within_hard_ceiling` (1M sequences)
+
+### S-02 Mandate completeness
+
+If `positionAssets[i] > hardCeiling_i` for any safety adapter, the
+cap-drift mandate is detectable on the next rebalance check.
+
+Verification:
+- Halmos `check_nonSafetyAdapterNeverUsesFallbackCap` (P2)
+- Echidna `echidna_I03c_above_hard_implies_mandate`
+
+### S-03 Safety tranche preservation (most critical)
+
+If a safety adapter has `normalTarget_i < currentPosition_i <=
+fallbackCeiling_i`, the next rebalance does NOT reduce
+`currentPosition_i` to `normalTarget_i`. Position is preserved within
+the tolerance band.
+
+Verification:
+- Halmos `check_validSafetyTrancheNotUnwound` (P4) — symbolic
+  verification of preserve-tranche logic
+
+### S-04 Non-safety adapter uses normal caps
+
+For any non-safety adapter, the cap drift gate uses only the normal
+abs/rel cap path; the safety fallback caps never apply.
+
+Verification:
+- Halmos P2 (shared with S-02)
+
+### S-05 Cooldown semantic (re-deploy only)
+
+After a cap-drift mandate fires on adapter `i`, `deployIdle` skips `i`
+until `lastRelCapMandateTs[i] + mandateRedeployCooldownSeconds` has
+elapsed. The cooldown does NOT prevent future mandates from firing on `i`.
+
+Verification:
+- Echidna `echidna_I04_normal_adapter_cooldown_blocks_deploy`
+- Echidna `echidna_I05_safety_adapter_not_blocked_by_cooldown`
+
+### S-06 Promotion clears cooldown (H-03 fix)
+
+Promoting a non-safety adapter to safety
+(`addSafetyFallbackAdapter(adapter, abs, rel)`) clears any prior
+`lastRelCapMandateTs[adapter]` cooldown stamp. This prevents an
+adversarial governance path where a recently-mandated adapter could be
+promoted to safety to bypass its cooldown.
+
+Verification:
+- Halmos `check_cooldown_clear_idempotency` (P6)
+- Echidna `echidna_I10_promotion_clears_cooldown` (1M sequences)
+- Forge unit `test_D1f_10_promotion_clears_active_cooldown`
+  (`CapDriftMandate.t.sol`)
+
+### S-07 Quarantine blocks safety promotion (L-01 fix)
+
+`addSafetyFallbackAdapter` reverts if the adapter is currently
+quarantined.
+
+Verification:
+- Forge unit `test_D1f_09_quarantined_adapter_promotion_reverts`
+  (`CapDriftMandate.t.sol`)
+
+### S-08 Legacy non-regression
+
+When `safetyFallbackAdapters.length == 0`, the system behaves identically
+to pre-P0.7 baseline. No P0.7 storage write occurs on any code path
+when safety is unconfigured.
+
+Verification:
+- Echidna `echidna_I12_legacy_when_disabled`
+- Existing V9.1 unit test suite (1555+ tests) passes unchanged (2,354 total post Wave 1+2)
+
+## Cross-reference: arithmetic safety
+
+Two additional Halmos properties guard P0.7-specific arithmetic:
+
+### S-arith-01 Ceiling arithmetic no overflow
+
+The full ceiling computation chain
+(`(capBps x tvl x (1e4 + tolBps)) / 1e4^2`) does not overflow up to
+1T USDC TVL stress bounds.
+
+Verification: Halmos `check_ceiling_arithmetic_no_overflow` (P5).
+
+### S-arith-02 Storage slot 78 packing
+
+Compiler-determined packing of capDriftToleranceBps + maxIdleBps +
+targetSafetyMarginBps + mandateRedeployCooldownSeconds in slot 78
+matches the declared layout (80 bits, 4 fields, offsets 0/2/4/6 bytes).
+
+Verification: Forge test `StorageLayoutP07.t.sol` TC01a-e (5 tests via
+`forge inspect`).
+
+
 ## Summary Table
 
 | ID | Domain | Invariant | Severity if violated |

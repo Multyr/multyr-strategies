@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.28;
+pragma solidity 0.8.28;
 
 // --- OpenZeppelin imports ---
 import { SafeERC20, IERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
 import { ReentrancyGuard } from "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import { Initializable } from "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 
 // --- Aave v3 minimal interfaces ---
 interface IPool {
@@ -82,17 +83,19 @@ interface ISwapHelper {
     function swapToUSDC(address token, uint256 amountIn, address receiver) external returns (uint256);
 }
 
-contract AaveV3USDCAdapter is ILendingAdapter, AccessControl, ReentrancyGuard {
+contract AaveV3USDCAdapter is ILendingAdapter, AccessControl, ReentrancyGuard, Initializable {
     using SafeERC20 for IERC20;
 
     // --- Roles ---
     bytes32 public constant VAULT_ROLE = keccak256("VAULT_ROLE");
 
-    // --- Immutable Storage ---
-    address public immutable asset; // USDC token
-    IPool public immutable pool; // Aave v3 Pool
-    address public immutable aToken; // aUSDC v3
-    address public immutable vault; // Authorized Strategy Vault
+    // --- V10 Storage (was immutable in V9.x; logically immutable post-initialize) ---
+    // V10 BREAKING CHANGE: storage variables enable byte-identical multi-chain deployment.
+    // Set ONCE in initialize() and never reassigned (no setter functions exist).
+    address public asset; // USDC token
+    IPool public pool; // Aave v3 Pool
+    address public aToken; // aUSDC v3
+    address public vault; // Authorized Strategy Vault
 
     // --- Configurable Storage ---
     uint256 public maxCap; // Deposit cap (0 = unlimited)
@@ -143,15 +146,19 @@ contract AaveV3USDCAdapter is ILendingAdapter, AccessControl, ReentrancyGuard {
         _;
     }
 
-    // --- Constructor ---
-    constructor(
+    // --- V10 Constructor (locked) ---
+
+    // --- V10 Initialization (one-shot, gated by OZ initializer modifier) ---
+    /// @notice One-shot initialization called atomically by AdapterFactory.
+    /// @dev Reverts on second call via OZ initializer modifier.
+    function initialize(
         address asset_,
         address pool_,
         address aToken_,
         address admin_,
         address vault_,
         uint256 maxCap_
-    ) {
+    ) external initializer {
         require(
             asset_ != address(0) && pool_ != address(0) && aToken_ != address(0)
                 && admin_ != address(0) && vault_ != address(0),
@@ -211,9 +218,11 @@ contract AaveV3USDCAdapter is ILendingAdapter, AccessControl, ReentrancyGuard {
     }
 
     function withdrawableAssets() public view override returns (uint256) {
-        // Conservative: min(aToken balance, pool liquidity)
+        // Conservative: min(aToken balance, pool liquidity).
+        // In Aave V3, USDC is held by the aToken contract (not the Pool proxy),
+        // so liquidity must be checked against aToken's underlying balance.
         uint256 bal = IAToken(aToken).balanceOf(address(this));
-        uint256 liq = IERC20(asset).balanceOf(address(pool));
+        uint256 liq = IERC20(asset).balanceOf(aToken);
         return bal < liq ? bal : liq;
     }
 

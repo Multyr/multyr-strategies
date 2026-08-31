@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.28;
+pragma solidity 0.8.28;
 
 // ===== OpenZeppelin imports =====
 import { SafeERC20, IERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
 import { ReentrancyGuard } from "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import { Initializable } from "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 
 // ===== ILendingAdapter interface (Euler pattern) =====
 interface ILendingAdapter {
@@ -55,7 +56,7 @@ interface IProtocolRegistry {
 }
 
 // ===== Adapter contract =====
-contract MorphoUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, ReentrancyGuard {
+contract MorphoUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, ReentrancyGuard, Initializable {
     using SafeERC20 for IERC20;
 
     // ===== Roles =====
@@ -71,9 +72,10 @@ contract MorphoUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentra
     uint64 public constant PPS_SNAP_TTL = uint64(2 days);
 
     // ===== State: Addresses =====
-    address public immutable override underlying; // USDC
-    address public immutable vault; // Strategy Vault
-    IProtocolRegistry public immutable registry; // Optional registry (address(0) if not used)
+    // --- V10 Storage (was immutable in V9.x; logically immutable post-initialize) ---
+    address public override underlying; // USDC
+    address public vault; // Strategy Vault
+    IProtocolRegistry public registry; // Optional registry (address(0) if not used)
 
     // ===== Market registry =====
     struct Market {
@@ -165,13 +167,15 @@ contract MorphoUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentra
     }
 
     // ===== Constructor =====
-    constructor(
+
+    /// @notice One-shot initialization called atomically by AdapterFactory.
+    function initialize(
         address usdc_,
         address admin_,
         address vault_,
         uint256 capacity_,
-        address registry_ // Optional: address(0) to skip registry
-    ) {
+        address registry_
+    ) external initializer {
         require(usdc_ != address(0) && admin_ != address(0) && vault_ != address(0), "zero");
         underlying = usdc_;
         vault = vault_;

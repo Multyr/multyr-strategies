@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.28;
+pragma solidity 0.8.28;
 
 import { Test, console2 } from "forge-std/Test.sol";
 import {
@@ -19,6 +19,7 @@ import { StrategyRebalanceGateModule } from "../../../src/strategies/usdc-lendin
 import { StrategyRebalancePlanModule } from "../../../src/strategies/usdc-lending/controller/StrategyRebalancePlanModule.sol";
 import { ILendingAdapter } from "../../../src/strategies/usdc-lending/interfaces/ILendingAdapter.sol";
 import { ScoringMockAdapter } from "./Scoring_Model.t.sol";
+import { StrategySafetyOverflowModule } from "../../../src/strategies/usdc-lending/controller/StrategySafetyOverflowModule.sol";
 
 /// @title Rebalance Engine V10 Tests — P0-P3 + parity
 /// @notice Validates: gas EMA, hysteresis, coordination, regime, and zero-default parity
@@ -122,6 +123,11 @@ contract RebalanceEngineV10_Test is Test {
         StrategyAllocCalcModule _allocCalcMod0 = new StrategyAllocCalcModule(ARBITRUM_USDC, core);
         vm.prank(admin);
         vault.setAllocCalcModule(address(_allocCalcMod0));
+        StrategySafetyOverflowModule _overflowMod = new StrategySafetyOverflowModule(
+            ARBITRUM_USDC, core, address(0), address(0), address(adapterOpsMod)
+        );
+        vm.prank(admin);
+        StrategySettingsModule(address(vault)).setSafetyOverflowModule(address(_overflowMod));
 
         // Register and enable adapters
         vm.startPrank(admin);

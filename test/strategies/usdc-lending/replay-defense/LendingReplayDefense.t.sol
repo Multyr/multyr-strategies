@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.28;
+pragma solidity 0.8.28;
 
 /// @title Replay-attack defense regression tests
 /// @notice Phase 4 Step 4.7 — verifies adapters/helper resist 10 known patterns.
@@ -194,7 +194,13 @@ contract LendingReplayDefenseTest is Test {
         uni = new MockUniV3Router(address(usdc));
         camelot = new MockCamelotV3Router(address(usdc));
 
-        helper = new RewardSwapHelper(address(usdc), admin, address(uni), address(camelot));
+        helper = new RewardSwapHelper();
+        helper.initialize(address(usdc), admin, address(uni), address(camelot));
+
+        // Grant KEEPER_ROLE to alice — she is the authorized keeper/adapter in these RA tests
+        bytes32 keeperRole = keccak256("KEEPER_ROLE");
+        vm.prank(admin);
+        helper.grantRole(keeperRole, alice);
 
         feed.set(60e8, block.timestamp);
         vm.prank(admin);

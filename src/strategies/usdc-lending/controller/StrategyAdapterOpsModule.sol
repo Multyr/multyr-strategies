@@ -162,4 +162,149 @@ contract StrategyAdapterOpsModule is StrategyStorageLayout {
         }
         emit GasEmaUpdated(adapter, updated, isDeposit);
     }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // Position sync (extracted from StrategyScoringModule, F-SIZE-01)
+    // ═══════════════════════════════════════════════════════════════════════
+
+    /// @notice Sync positionAssets from live adapter balances. Called via delegatecall.
+    ///         force=true: bypass cooldown (rebalance). force=false: respect cooldown (deployIdle).
+    function syncPositionAssets(bool force) external onlyDelegateCall {
+        if (!force && lastSyncTs != 0
+            && block.timestamp < uint256(lastSyncTs) + minSecondsBetweenSync) return;
+
+        address[] storage _adapters = adapters;
+        uint256 n = _adapters.length;
+        uint256 totalDrift = 0;
+        bool hasNegative = false;
+        uint256 _dust = dustTolerance;
+
+        for (uint256 i = 0; i < n;) {
+            address adapter = _adapters[i];
+            if (enabled[adapter] || positionAssets[adapter] > 0) {
+                uint256 oldPos = positionAssets[adapter];
+                uint256 actual = _safeTotalAssets(adapter);
+                if (actual == 0 && oldPos > 0) {
+                    emit PositionSyncSkippedSuspicious(adapter, oldPos, actual);
+                    unchecked { ++i; }
+                    continue;
+                }
+                if (oldPos > 0 && actual > oldPos * 3) {
+                    emit PositionSyncSkippedSuspicious(adapter, oldPos, actual);
+                    unchecked { ++i; }
+                    continue;
+                }
+                uint256 diff = actual > oldPos ? actual - oldPos : oldPos - actual;
+                if (actual < oldPos) hasNegative = true;
+                unchecked { totalDrift += diff; }
+                if (diff >= _dust) {
+                    positionAssets[adapter] = actual;
+                    emit PositionAssetsSynced(adapter, oldPos, actual);
+                }
+            }
+            unchecked { ++i; }
+        }
+
+        lastSyncTs = uint64(block.timestamp);
+        if (totalDrift > 0) emit DriftMeasured(totalDrift, hasNegative);
+
+        uint32 _liqStaleness = liquidityStalenessSeconds;
+        if (_liqStaleness > 0) {
+            for (uint256 j = 0; j < n;) {
+                address a = _adapters[j];
+                if (enabled[a] && cachedLiquidityTs[a] > 0) {
+                    uint256 age = block.timestamp - cachedLiquidityTs[a];
+                    if (age > _liqStaleness) {
+                        emit LiquidityCacheStale(a, age);
+                    }
+                }
+                unchecked { ++j; }
+            }
+        }
+    }
+
+    // ── Liquidity realization (F-SIZE-02) ────────────────────────────────────
+
+    /// @notice Two-pass pro-rata withdrawal from adapters. Called via delegatecall from vault.
+    function executeRealizeLiquidity(uint256 amountNeeded) external onlyDelegateCall {
+        uint256 tvl = _tvl();
+        if (tvl < 1) return;
+        uint256 totalRealized = 0;
+        uint256 n = adapters.length;
+        for (uint8 pass = 0; pass < 2 && totalRealized < amountNeeded; ++pass) {
+            uint256 need = amountNeeded - totalRealized;
+            for (uint256 i = 0; i < n && totalRealized < amountNeeded; ++i) {
+                address a = adapters[i];
+                if (!enabled[a]) continue;
+                if (pass == 1 && quarantined[a]) continue;
+                uint256 pos = positionAssets[a];
+                if (pos < 1) continue;
+                uint256 w = pass == 0 ? (need * pos) / tvl : need;
+                if (w > pos) w = pos;
+                if (w < 1) continue;
+                try ILendingAdapter(a).withdraw(w, address(this)) returns (uint256 got) {
+                    positionAssets[a] -= got;
+                    totalRealized += got;
+                    _recordAdapterSuccess(a);
+                } catch (bytes memory reason) {
+                    emit AdapterWithdrawFailed(a, w, reason);
+                    _recordAdapterFailure(a);
+                }
+            }
+        }
+        if (totalRealized < amountNeeded) emit WithdrawalShortfall(amountNeeded, totalRealized);
+        emit LiquidityRealized(amountNeeded, totalRealized);
+    }
+
+    // ── View diagnostics (F-SIZE-02) ─────────────────────────────────────────
+
+    /// @notice Weighted average liquidity readiness across enabled adapters.
+    function liquidityReadinessBps() external view onlyDelegateCall returns (uint16) {
+        uint256 totalWeight = 0;
+        uint256 weightedLiq = 0;
+        uint256 n = adapters.length;
+        for (uint256 i = 0; i < n;) {
+            address a = adapters[i];
+            if (enabled[a] && !quarantined[a]) {
+                uint256 pos = positionAssets[a];
+                uint16 liq = cachedLiquidityBps[a];
+                if (liq == 0) liq = 5000;
+                weightedLiq += pos * liq;
+                totalWeight += pos;
+            }
+            unchecked { ++i; }
+        }
+        if (totalWeight == 0) return 10000;
+        uint256 result = weightedLiq / totalWeight;
+        return result > 10000 ? uint16(10000) : uint16(result);
+    }
+
+    /// @notice Rebalance penalty: higher = capital should not move.
+    function rebalancePenaltyBps() external view onlyDelegateCall returns (uint16) {
+        if (rebalancePlanPhase > 0) return 5000;
+        if (lastRebalanceTs == 0) return 0;
+        uint256 elapsed = block.timestamp - lastRebalanceTs;
+        uint256 cooldown = minSecondsBetweenRebalances;
+        if (cooldown == 0) return 0;
+        if (elapsed >= cooldown) return 0;
+        return uint16((2000 * (cooldown - elapsed)) / cooldown);
+    }
+
+    /// @notice Returns harvest readiness and harvestable sum.
+    function canHarvest() external view onlyDelegateCall returns (bool ok, uint256 sumHarvestable, uint64 sinceLastHarvest) {
+        uint256 n = adapters.length;
+        for (uint256 i = 0; i < n;) {
+            address adapter = adapters[i];
+            if (enabled[adapter]) {
+                try ILendingAdapter(adapter).harvestableProfit() returns (uint256 profit) {
+                    sumHarvestable += profit;
+                } catch { }
+            }
+            unchecked { ++i; }
+        }
+        uint256 tvl = _tvl();
+        ok = (sumHarvestable > 0 && sumHarvestable >= (harvestThresholdBps * tvl) / 1e4)
+            || (minSecondsBetweenHarvests > 0 && block.timestamp - lastHarvestTs >= minSecondsBetweenHarvests);
+        sinceLastHarvest = uint64(block.timestamp - lastHarvestTs);
+    }
 }

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.28;
+pragma solidity 0.8.28;
 
 /// @title Halmos Invariant 3 — Withdrawal Queue FIFO / No Double-Claim
 /// @notice Symbolic execution proof: a queue entry, once claimed, cannot be claimed again.

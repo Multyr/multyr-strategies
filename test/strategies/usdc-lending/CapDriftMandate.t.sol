@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.28;
+pragma solidity 0.8.28;
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // CapDriftMandate.t.sol -- P0.4 (2026-04-24) cap drift mandate bypass
@@ -21,13 +21,13 @@ pragma solidity ^0.8.28;
 //   (`overCapRiskPremiumBps`) continues to weight the benefit calc.
 //
 // Test matrix (D1a / D1b / D1c):
-//   D1a  — normal operation: no adapter exceeds the hard ceiling after a
+//   D1a  -- normal operation: no adapter exceeds the hard ceiling after a
 //          deposit + deploy + keep cycle. Mandate never fires.
-//   D1b  — forced over-ceiling: iterative yield pushes adapter above
+//   D1b  -- forced over-ceiling: iterative yield pushes adapter above
 //          hardCeiling. canRebalance returns ok=true with netBenefitBps=0
 //          (mandate fired). Executing the plan brings the adapter back
 //          within maxExp.
-//   D1c  — drift within tolerance: stdstore lands the position precisely
+//   D1c  -- drift within tolerance: stdstore lands the position precisely
 //          above maxExp but below hardCeiling. Mandate does NOT fire.
 //
 // Plus setter tests:
@@ -61,6 +61,7 @@ import {
 } from "../../../src/strategies/usdc-lending/controller/StrategyRebalancePlanModule.sol";
 import { MockUSDC } from "./UsdcMultiLendingVault.t.sol";
 import { ScoringMockAdapter } from "./Scoring_Model.t.sol";
+import { StrategySafetyOverflowModule } from "../../../src/strategies/usdc-lending/controller/StrategySafetyOverflowModule.sol";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Shared base: deploy 3 mock adapters + seeded vault.
@@ -185,6 +186,11 @@ abstract contract CapDriftBase is Test {
         StrategyAllocCalcModule _allocCalcMod0 = new StrategyAllocCalcModule(ARBITRUM_USDC, core);
         vm.prank(admin);
         vault.setAllocCalcModule(address(_allocCalcMod0));
+        StrategySafetyOverflowModule _overflowMod = new StrategySafetyOverflowModule(
+            ARBITRUM_USDC, core, address(0), address(0), address(adapterOpsMod)
+        );
+        vm.prank(admin);
+        StrategySettingsModule(address(vault)).setSafetyOverflowModule(address(_overflowMod));
 
         vm.startPrank(admin);
         address(vault).call(abi.encodeWithSignature("whitelistAdapter(address,bool)", address(adapterA), true));
@@ -233,7 +239,7 @@ abstract contract CapDriftBase is Test {
     /// @dev Push adapterC above the hardCeiling via iterative at-most-2x yield
     ///      doublings. Each step stays safely under the sync-time 3x
     ///      suspicious-movement skip guard. Reverts with a descriptive message
-    ///      if five rounds do not suffice — this would indicate a test setup
+    ///      if five rounds do not suffice -- this would indicate a test setup
     ///      drift, not a production bug.
     function _forceAdapterCOverCeiling() internal {
         for (uint256 i = 0; i < 6; i++) {
@@ -352,7 +358,7 @@ contract CapDriftSetter_Test is CapDriftBase {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// D1a — Normal operation: no adapter exceeds the hard ceiling after a
+// D1a -- Normal operation: no adapter exceeds the hard ceiling after a
 //       deposit + deploy cycle. Mandate never fires.
 // ═══════════════════════════════════════════════════════════════════════════════
 
@@ -390,7 +396,7 @@ contract CapDrift_D1a_NormalOperation is CapDriftBase {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// D1b — Forced over-ceiling: mandate fires, plan divests, adapter back in cap.
+// D1b -- Forced over-ceiling: mandate fires, plan divests, adapter back in cap.
 // ═══════════════════════════════════════════════════════════════════════════════
 
 contract CapDrift_D1b_ForcedOverCeiling is CapDriftBase {
@@ -444,7 +450,7 @@ contract CapDrift_D1b_ForcedOverCeiling is CapDriftBase {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// D1c — Drift within tolerance: mandate does NOT fire, gate falls through.
+// D1c -- Drift within tolerance: mandate does NOT fire, gate falls through.
 // ═══════════════════════════════════════════════════════════════════════════════
 
 contract CapDrift_D1c_WithinTolerance is CapDriftBase {
@@ -499,12 +505,12 @@ contract CapDrift_D1c_WithinTolerance is CapDriftBase {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// D1d (P0.5 — 2026-04-25) — Relative cap drift mandate.
+// D1d (P0.5 -- 2026-04-25) -- Relative cap drift mandate.
 // ───────────────────────────────────────────────────────────────────────────────
 // Symmetric companion of D1b, exercising the rel cap branch of
 // `_checkCapDriftMandate` introduced in P0.5. Setup uses a SHALLOW external
 // market (extTVL just above the CONFIDENCE_ZERO floor) so that the relative
-// cap is the binding constraint — the absolute cap stays well above the
+// cap is the binding constraint -- the absolute cap stays well above the
 // position throughout. With the new behaviour:
 //   1) `_targetAllocations` now clamps to the tighter rel cap.
 //   2) The plan generates a withdraw of (curr - relCap).
@@ -526,7 +532,7 @@ contract CapDrift_D1d_RelCapDriftMandate is CapDriftBase {
 
         // Shrink adapterC's external market to a SMALL band so the rel cap
         // is the binding constraint (well below the absolute cap).
-        adapterC.setExtMarketTVL(800_000e6); // 800K → dyn rel cap band 5% = 40K
+        adapterC.setExtMarketTVL(800_000e6); // 800K -> dyn rel cap band 5% = 40K
         vm.prank(keeper);
         StrategyParamsModule(address(vault)).pokeExternalTVL();
 
@@ -547,7 +553,7 @@ contract CapDrift_D1d_RelCapDriftMandate is CapDriftBase {
     }
 
     /// @dev Push adapterC above the rel hard ceiling using stdstore +
-    ///      matching mock state. Relies on extTVL band → 500 bps cap.
+    ///      matching mock state. Relies on extTVL band -> 500 bps cap.
     function _forceAdapterCOverRelCeiling() internal {
         StdStorage storage s = stdstore;
 
@@ -621,5 +627,644 @@ contract CapDrift_D1d_RelCapDriftMandate is CapDriftBase {
         if (ok) {
             assertGt(nb, 0, "mandate disabled: ok=true must be earned via benefit");
         }
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// D1f (P0.7 -- 2026-06-11) -- Safety Adapter Cap Tier.
+// ───────────────────────────────────────────────────────────────────────────────
+// Architectural design ratified after 10 backtest sweep iterations on real
+// Arbitrum data (2024-01-01 -> 2026-05-31). Final iter-3b setpoint:
+//   TWR USD 5.62% vs Aave standalone 5.37% (+25 bps), Sharpe 0.729 vs 0.33.
+//
+// Test harness uses _baseParams.adapterMaxExposureBps = 5000 (50%). Safety
+// adapter is configured with fallback caps at 7000 (70%) for both abs and
+// rel -- meaningfully above the normal cap, so we can exercise positions in
+// the band (5000, 7000] without colliding with the normal mandate.
+//
+// Tolerance = 250 bps -> normal hardCeiling = 50% × 1.025 = 51.25% of TVL,
+// safety hardCeiling = 70% × 1.025 = 71.75% of TVL.
+//
+// Refs: docs/SAFETY_ADAPTER_TIER.md, memory.md sessione 13,
+//       commits 8e846a9..1019d3a (P0.7 S1.1-S1.4).
+// ═══════════════════════════════════════════════════════════════════════════════
+
+contract CapDrift_D1f_SafetyAdapterCapTier is CapDriftBase {
+    using stdStorage for StdStorage;
+
+    // Mirrored from spec defaults for clarity in assertions.
+    uint16 constant SAFETY_FB_ABS_BPS = 7000; // 70% TVL
+    uint16 constant SAFETY_FB_REL_BPS = 7000; // 70% extTVL
+    uint16 constant CAPDRIFT_TOL_BPS  = 250;  // 2.5%
+    uint16 constant MAX_IDLE_BPS      = 500;  // 5% TVL
+    uint32 constant MANDATE_COOLDOWN  = 3 days;
+
+    function setUp() public {
+        _deploy();
+        vm.startPrank(admin);
+        StrategySettingsModule(address(vault)).setCapDriftTolerance(CAPDRIFT_TOL_BPS);
+        // Configure adapterA as the sole safety fallback. extTVL is already
+        // 500_000_000e6 (deep) in CapDriftBase so the dynamic rel cap is at
+        // its 2500-bps ceiling band; the fallback rel cap of 7000 makes it
+        // non-binding for this suite.
+        StrategySettingsModule(address(vault)).addSafetyFallbackAdapter(
+            address(adapterA), SAFETY_FB_ABS_BPS, SAFETY_FB_REL_BPS
+        );
+        StrategySettingsModule(address(vault)).setMaxIdleBps(MAX_IDLE_BPS);
+        StrategySettingsModule(address(vault)).setMandateRedeployCooldown(MANDATE_COOLDOWN);
+        StrategySettingsModule(address(vault)).setTargetSafetyMargin(300); // 3%
+        vm.stopPrank();
+        _seedVault(1_000_000e6);
+    }
+
+    // ── Local helpers ──────────────────────────────────────────────────────
+
+    /// @dev Force `adapter`'s `positionAssets` and the mock's deposited state
+    ///      to `target`. Used to construct precise pre-conditions for cap
+    ///      arithmetic. Does NOT touch other adapters.
+    function _forcePosition(ScoringMockAdapter adapter, uint256 target) internal {
+        uint256 currentBal = usdc.balanceOf(address(adapter));
+        if (target > currentBal) usdc.mint(address(adapter), target - currentBal);
+        adapter.setDeposited(target);
+        stdstore.target(address(vault))
+            .sig("positionAssets(address)")
+            .with_key(address(adapter))
+            .checked_write(target);
+    }
+
+    /// @dev Returns true if the prepared rebalance plan contains a WITHDRAW
+    ///      action targeting `adapter`. High bit of rebalancePlanAmounts[i]
+    ///      encodes isDeposit (1 = deposit, 0 = withdraw) per
+    ///      StrategyStorageLayout.sol commentary.
+    function _planHasWithdrawFor(address adapter) internal view returns (bool) {
+        uint8 total = vault.rebalancePlanTotalActions();
+        for (uint8 i = 0; i < total; i++) {
+            address a = vault.rebalancePlanAdapters(i);
+            uint256 amt = vault.rebalancePlanAmounts(i);
+            bool isWithdraw = (amt >> 255) == 0;
+            if (a == adapter && isWithdraw) return true;
+        }
+        return false;
+    }
+
+    /// @dev Drains the prepared plan to phase 0 (up to 10 steps as a safety).
+    function _drainPlan() internal {
+        for (uint256 i = 0; i < 10; ++i) {
+            if (vault.rebalancePlanPhase() == 0) break;
+            vm.prank(keeper);
+            StrategyRebalancePlanModule(address(vault)).executeRebalanceStep();
+        }
+    }
+
+    /// @dev Force `adapter`'s position so that, POST-force, it represents
+    ///      exactly `percentBps / 1e4` of the NEW total TVL.
+    /// @dev Closed-form: solving target / (T_others + target) = pct gives
+    ///        target = T_others × pct / (1e4 - pct)
+    ///      where T_others is current TVL minus the adapter's pre-force position.
+    ///      Naive `_totalTvl() * pct / 1e4` would undercount because forcing
+    ///      the position also inflates the denominator.
+    function _forcePctOfNewTvl(ScoringMockAdapter adapter, uint16 percentBps) internal {
+        require(percentBps > 0 && percentBps < 10_000, "_forcePctOfNewTvl: pct out of range");
+        uint256 tvlOthers = _totalTvl() - vault.positionAssets(address(adapter));
+        uint256 target = (tvlOthers * uint256(percentBps)) / (10_000 - uint256(percentBps));
+        _forcePosition(adapter, target);
+    }
+
+    // ── Tests ──────────────────────────────────────────────────────────────
+
+    /// @notice (01) Safety adapter above NORMAL cap but below FALLBACK ceiling:
+    ///         mandate does not fire because the gate honours fbAbsCap for it.
+    function test_D1f_01_mandate_uses_fallback_cap_for_safety_adapter() public {
+        // 65% of NEW TVL: above normal hardCeiling (~51.25%), below fallback hardCeiling (~71.75%).
+        _forcePctOfNewTvl(adapterA, 6500);
+
+        vm.warp(block.timestamp + 22000);
+        (bool ok, , int256 nb) =
+            StrategyRebalanceGateModule(address(vault)).canRebalance();
+
+        // Forbidden outcome: ok=true && nb==0 (that is the mandate fingerprint).
+        // Allowed: ok=false, or ok=true with positive nb (legitimate APY-driven move).
+        if (ok) {
+            assertGt(nb, 0, "safety adapter in tranche: ok=true must reflect APY benefit, not mandate");
+        }
+    }
+
+    /// @notice (02) Non-safety adapter above normal hard ceiling: mandate MUST
+    ///         fire with the nb=0 protection signature.
+    function test_D1f_02_mandate_uses_normal_cap_for_normal_adapter() public {
+        // 55% of NEW TVL: above normal hardCeiling (~51.25%).
+        _forcePctOfNewTvl(adapterB, 5500);
+
+        vm.warp(block.timestamp + 22000);
+        (bool ok, , int256 nb) =
+            StrategyRebalanceGateModule(address(vault)).canRebalance();
+
+        assertTrue(ok, "non-safety over-cap MUST mandate-fire (ok=true)");
+        assertEq(nb, int256(0), "mandate signals nb=0 (protection, not APY)");
+    }
+
+    /// @notice (03) Excess idle is routed to the safety adapter via the
+    ///         overflow path and is bounded by the fallback ceiling.
+    function test_D1f_03_overflow_routes_to_safety_adapter() public {
+        // Saturate non-safety adapters at their NORMAL absolute cap so the
+        // regular allocator leaves a meaningful idle surplus that must flow
+        // through the overflow path.
+        uint256 tvl = _totalTvl();
+        uint256 normalCapAmt = (tvl * 5000) / 10_000;
+        _forcePosition(adapterB, normalCapAmt);
+        _forcePosition(adapterC, normalCapAmt);
+
+        // Mint extra USDC into the vault to create an idle surplus that is
+        // strictly above maxIdleBps × tvl.
+        uint256 extraIdle = 200_000e6;
+        usdc.mint(address(vault), extraIdle);
+
+        uint256 idleBefore = usdc.balanceOf(address(vault));
+        uint256 posABefore = vault.positionAssets(address(adapterA));
+
+        // _seedVault's deposit already triggered an auto-deploy that stamped
+        // lastDeployIdleTs; warp past minSecondsBetweenDeployIdle (300s) so the
+        // explicit deployIdle() call is not rejected with DeployIdleCooldown.
+        vm.warp(block.timestamp + 301);
+
+        vm.prank(keeper);
+        StrategyScoringModule(address(vault)).deployIdle();
+
+        uint256 idleAfter = usdc.balanceOf(address(vault));
+        uint256 posAAfter = vault.positionAssets(address(adapterA));
+
+        // The overflow path must have moved at least SOME idle into the safety
+        // adapter. We do not assert the exact target -- the regular plan may
+        // also touch adapterA before overflow kicks in -- but the post-state
+        // must be strictly closer to the desired equilibrium.
+        assertLt(idleAfter, idleBefore, "deployIdle must have reduced idle");
+        assertGt(posAAfter, posABefore, "safety adapter must have absorbed overflow");
+
+        // Final position must NEVER exceed the fallback ceiling.
+        uint256 tvlAfter = _totalTvl();
+        uint256 fbCeiling = (uint256(SAFETY_FB_ABS_BPS) * tvlAfter) / 10_000;
+        assertLe(posAAfter, fbCeiling, "safety adapter capped at fallback ceiling");
+    }
+
+    /// @notice (04) When the mandate fires on a SAFETY adapter (pushed past
+    ///         its fallback ceiling), the cooldown timestamp is NOT set.
+    ///         By design, safety adapters never enter cooldown -- the overflow
+    ///         path is their only deposit channel and it self-regulates via
+    ///         fbCeiling - current.
+    function test_D1f_04_safety_adapter_never_in_cooldown() public {
+        // Push adapterA above the safety hardCeiling (~71.75% of new TVL).
+        _forcePctOfNewTvl(adapterA, 7500);
+        vm.warp(block.timestamp + 22000);
+
+        vm.prank(keeper);
+        try StrategyRebalancePlanModule(address(vault)).prepareRebalance() {} catch {}
+
+        assertEq(
+            vault.lastRelCapMandateTs(address(adapterA)), 0,
+            "safety adapter MUST NOT have cooldown timestamp set"
+        );
+    }
+
+    /// @notice (05) When the mandate fires on a NON-safety adapter, cooldown
+    ///         is set and a subsequent deployIdle skips that adapter for the
+    ///         configured duration.
+    function test_D1f_05_normal_adapter_cooldown_blocks_redeploy() public {
+        _forcePctOfNewTvl(adapterB, 5500);
+        vm.warp(block.timestamp + 22000);
+
+        vm.prank(keeper);
+        StrategyRebalancePlanModule(address(vault)).prepareRebalance();
+        _drainPlan();
+
+        // Cooldown ts must have been stamped on the mandate-action path.
+        uint64 cdTs = vault.lastRelCapMandateTs(address(adapterB));
+        assertGt(cdTs, 0, "cooldown timestamp must be set on mandate hit");
+
+        // Reset adapterB to a deposit-eligible position (well below cap) and
+        // then run deployIdle: cooldown filter must keep adapterB out of the
+        // selected set even though it has plenty of headroom.
+        _forcePctOfNewTvl(adapterB, 1000); // 10%
+        uint256 posBBefore = vault.positionAssets(address(adapterB));
+
+        // Mint surplus idle so deployIdle has something to allocate.
+        usdc.mint(address(vault), 50_000e6);
+
+        // _drainPlan executed actions that updated lastDeployIdleTs indirectly?
+        // No -- only deposit/withdraw + adapter deposit calls. But the rebalance
+        // path may have stamped lastRebalanceTs. Warp to be safe.
+        vm.warp(block.timestamp + 301);
+
+        vm.prank(keeper);
+        StrategyScoringModule(address(vault)).deployIdle();
+
+        // Within the cooldown window, adapterB must not have received any deposit.
+        assertEq(
+            vault.positionAssets(address(adapterB)), posBBefore,
+            "adapterB in cooldown must NOT receive deposits"
+        );
+    }
+
+    /// @notice (06) "Preserve safety tranche" -- when the mandate fires on a
+    ///         non-safety adapter, the prepared plan must withdraw from THAT
+    ///         adapter, not from a safety adapter legitimately sitting in its
+    ///         overflow tranche.
+    function test_D1f_06_valid_safety_tranche_preserved() public {
+        // adapterA at 65% (legitimate safety tranche, below fallback ceiling 70%).
+        _forcePctOfNewTvl(adapterA, 6500);
+        // adapterB above normal hard ceiling: mandate target.
+        _forcePctOfNewTvl(adapterB, 5500);
+
+        vm.warp(block.timestamp + 22000);
+        vm.prank(keeper);
+        StrategyRebalancePlanModule(address(vault)).prepareRebalance();
+
+        bool aWithdraw = _planHasWithdrawFor(address(adapterA));
+        bool bWithdraw = _planHasWithdrawFor(address(adapterB));
+
+        assertFalse(aWithdraw, "safety tranche MUST NOT be unwound by the mandate plan");
+        assertTrue(bWithdraw, "mandate target (adapterB) MUST be withdrawn");
+    }
+
+    /// @notice (07) Removing an adapter from the safety list immediately
+    ///         restores normal-cap mandate semantics on it.
+    function test_D1f_07_remove_safety_restores_normal_caps() public {
+        // Place adapterA at 65% NEW TVL (allowed while it is safety: in tranche).
+        _forcePctOfNewTvl(adapterA, 6500);
+
+        // Remove safety status.
+        vm.prank(admin);
+        StrategySettingsModule(address(vault)).removeSafetyFallbackAdapter(address(adapterA));
+
+        // Position is now far above the NORMAL hardCeiling (~51.25%).
+        vm.warp(block.timestamp + 22000);
+        (bool ok, , int256 nb) =
+            StrategyRebalanceGateModule(address(vault)).canRebalance();
+
+        assertTrue(ok, "post-removal: mandate MUST fire on adapterA");
+        assertEq(nb, int256(0), "post-removal: mandate signature nb=0");
+    }
+
+    /// @notice (08) Dual-anchor production setpoint -- primary safety venue
+    ///         (Aave-like adapterA) fills toward its 50% fallback cap FIRST,
+    ///         then secondary (Compound-like adapterB at 40% caps) absorbs
+    ///         residual overflow. Verifies safetyFallbackAdapters[0] = Aave,
+    ///         [1] = Compound ordering and the per-adapter cap honour.
+    function test_D1f_08_dual_safety_priority_aave_before_compound() public {
+        // Add a second safety venue (adapterB) with the production
+        // conservative-tier caps. Note adapterA is already configured at
+        // 7000/7000 by setUp; here we test ORDERING + per-adapter ceiling
+        // honour, not the production cap values themselves.
+        vm.prank(admin);
+        StrategySettingsModule(address(vault)).addSafetyFallbackAdapter(
+            address(adapterB), 4000, 4000
+        );
+
+        // List ordering: primary (Aave-like adapterA) at index 0, secondary
+        // (Compound-like adapterB) at index 1. This is the priority order in
+        // which _executeSafetyOverflow iterates.
+        assertEq(
+            vault.safetyFallbackAdapters(0), address(adapterA),
+            "safetyFallbackAdapters[0] must be the primary (adapterA)"
+        );
+        assertEq(
+            vault.safetyFallbackAdapters(1), address(adapterB),
+            "safetyFallbackAdapters[1] must be the secondary (adapterB)"
+        );
+        assertEq(
+            StrategySettingsModule(address(vault)).safetyFallbackAdaptersLength(), 2,
+            "length must reflect dual-anchor config"
+        );
+
+        // Force a known starting position: 30% on each safety adapter,
+        // leaving meaningful headroom (adapterA up to 70% fallback cap,
+        // adapterB up to 40% fallback cap).
+        _forcePctOfNewTvl(adapterA, 3000);
+        _forcePctOfNewTvl(adapterB, 3000);
+
+        uint256 posABefore = vault.positionAssets(address(adapterA));
+        uint256 posBBefore = vault.positionAssets(address(adapterB));
+
+        // Mint enough surplus idle that the overflow path must engage on
+        // BOTH safety adapters to absorb it. 60% of TVL guarantees we
+        // exhaust adapterA's ~40% remaining headroom before reaching B.
+        usdc.mint(address(vault), (_totalTvl() * 6000) / 10_000);
+
+        // Past deployIdle cooldown.
+        vm.warp(block.timestamp + 301);
+        vm.prank(keeper);
+        StrategyScoringModule(address(vault)).deployIdle();
+
+        uint256 posAAfter = vault.positionAssets(address(adapterA));
+        uint256 posBAfter = vault.positionAssets(address(adapterB));
+        uint256 tvlAfter = _totalTvl();
+
+        // Both safety adapters must have absorbed overflow.
+        assertGt(posAAfter, posABefore, "primary safety must have absorbed overflow");
+        assertGt(posBAfter, posBBefore, "secondary safety must have absorbed residual overflow");
+
+        // Per-adapter ceiling honoured: A capped at 7000 bps × tvlAfter,
+        // B capped at 4000 bps × tvlAfter (the values set by setUp / this test).
+        uint256 fbACeiling = (uint256(SAFETY_FB_ABS_BPS) * tvlAfter) / 10_000;
+        uint256 fbBCeiling = (uint256(4000) * tvlAfter) / 10_000;
+        assertLe(posAAfter, fbACeiling, "primary must not exceed its fallback abs ceiling");
+        assertLe(posBAfter, fbBCeiling, "secondary must not exceed its fallback abs ceiling");
+
+        // Priority ordering enforcement: the primary must have absorbed
+        // STRICTLY more than the secondary (it was filled first). This is
+        // the architectural invariant the iteration order in
+        // _executeSafetyOverflow encodes.
+        uint256 deltaA = posAAfter - posABefore;
+        uint256 deltaB = posBAfter - posBBefore;
+        assertGe(deltaA, deltaB, "primary delta must be >= secondary delta (priority filled first)");
+    }
+
+    /// @notice (09) L-01 fix verification: a quarantined adapter cannot be
+    ///         promoted to the safety tier. The setter must revert with
+    ///         InvalidAdapter, leaving the safety configuration untouched.
+    function test_D1f_09_quarantined_adapter_promotion_reverts() public {
+        // adapterC is non-safety in this harness. Force it into quarantine
+        // by writing the quarantined[adapter] mapping directly (mocking the
+        // adapter-failure path which would otherwise require N consecutive
+        // operational failures).
+        stdstore.target(address(vault)).sig("quarantined(address)")
+            .with_key(address(adapterC)).checked_write(true);
+        assertTrue(vault.quarantined(address(adapterC)), "setup: adapterC quarantined");
+
+        vm.prank(admin);
+        vm.expectRevert(); // InvalidAdapter -- quarantined branch
+        StrategySettingsModule(address(vault)).addSafetyFallbackAdapter(
+            address(adapterC), 5000, 5000
+        );
+
+        // Confirm safety set was NOT mutated by the failed call.
+        (uint16 absC, uint16 relC) = vault.safetyFallback(address(adapterC));
+        assertEq(absC, 0, "quarantined adapter must not become safety (absCap)");
+        assertEq(relC, 0, "quarantined adapter must not become safety (relCap)");
+    }
+
+    /// @notice (10) H-03 fix verification: promoting an adapter to safety
+    ///         clears any dormant rel-cap mandate cooldown and emits the
+    ///         observability event. Subsequent demotion does NOT reactivate
+    ///         the cooldown (the storage slot is permanently zeroed).
+    function test_D1f_10_promotion_clears_active_cooldown() public {
+        address adapter = address(adapterC); // non-safety, opportunistic
+
+        // Force a mandate cooldown timestamp on adapterC (simulating a prior
+        // mandate event that stamped lastRelCapMandateTs).
+        uint64 fakeTs = uint64(block.timestamp);
+        stdstore.target(address(vault)).sig("lastRelCapMandateTs(address)")
+            .with_key(adapter).checked_write(uint256(fakeTs));
+        assertEq(vault.lastRelCapMandateTs(adapter), fakeTs, "setup: cooldown timestamp set");
+
+        // Promote to safety. Must clear cooldown and emit the lifecycle event.
+        vm.prank(admin);
+        vm.expectEmit(true, true, false, true);
+        emit RelCapMandateCooldownCleared(adapter, admin, fakeTs);
+        StrategySettingsModule(address(vault)).addSafetyFallbackAdapter(
+            adapter, 4000, 4000
+        );
+
+        // Post-promotion: timestamp must be zeroed.
+        assertEq(
+            vault.lastRelCapMandateTs(adapter), 0,
+            "cooldown timestamp MUST be cleared on promotion"
+        );
+
+        // Demotion: cooldown must NOT reactivate retroactively. This is the
+        // crux of the H-03 attack vector that the fix removes.
+        vm.prank(admin);
+        StrategySettingsModule(address(vault)).removeSafetyFallbackAdapter(adapter);
+        assertEq(
+            vault.lastRelCapMandateTs(adapter), 0,
+            "post-demotion: cooldown MUST stay cleared (no retroactive reactivation)"
+        );
+    }
+
+    // Re-declare the event so vm.expectEmit can match it. Must match the
+    // signature in StrategyStorageLayout.sol bit-for-bit.
+    event RelCapMandateCooldownCleared(address indexed adapter, address indexed clearedBy, uint64 priorTs);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// CapDrift_D1f_SafetyOverflowMargin
+// ─────────────────────────────────────────────────────────────────────────────
+// Verifies Wave 1 item 13/15: _executeSafetyOverflow must apply
+// targetSafetyMarginBps symmetrically with _targetAllocations, so that
+// post-deposit yield accrual does not push positionAssets above fbCeiling and
+// break the "preserve safety tranche" clause (current <= fbCeiling) in
+// _targetAllocations. Fix: fbCeilingNet = fbCeiling * safetyMult / 10_000.
+// ═══════════════════════════════════════════════════════════════════════════════
+
+contract CapDrift_D1f_SafetyOverflowMargin is CapDrift_D1f_SafetyAdapterCapTier {
+
+    // ── helpers ───────────────────────────────────────────────────────────────
+
+    /// @dev Compute fbCeiling and fbCeilingNet for adapterA from current TVL.
+    ///      Both are fixed inside _executeSafetyOverflow (tvl snapped at entry).
+    ///      Because TVL is conserved across overflow (no funds created/destroyed),
+    ///      computing them from the post-call TVL is equivalent.
+    function _fbCeilingsForA()
+        internal view returns (uint256 fbCeiling, uint256 fbCeilingNet)
+    {
+        uint256 tvl = _totalTvl();
+        fbCeiling    = (uint256(SAFETY_FB_ABS_BPS) * tvl) / 10_000;
+        uint256 marginBps = StrategyParamsModule(address(vault)).targetSafetyMarginBps();
+        fbCeilingNet = (fbCeiling * (10_000 - marginBps)) / 10_000;
+    }
+
+    /// @dev Isolate the overflow path: block all normal scoring by setting
+    ///      maxCap=0 on every adapter, then zero out all recorded positions
+    ///      so the full vault balance is available as idle surplus for the
+    ///      overflow path alone.
+    function _isolateOverflow() internal {
+        adapterA.setMaxCap(0);
+        adapterB.setMaxCap(0);
+        adapterC.setMaxCap(0);
+        _forcePosition(adapterA, 0);
+        _forcePosition(adapterB, 0);
+        _forcePosition(adapterC, 0);
+    }
+
+    // ── SM01 ──────────────────────────────────────────────────────────────────
+
+    /// @notice SM01 -- overflow deposits to fbCeilingNet, NOT to fbCeiling.
+    ///
+    ///   Without fix: overflow fills to fbCeiling -> positionAssets[A] == fbCeiling
+    ///                -> assertion `< fbCeiling` FAILS.
+    ///   With fix:    overflow fills to fbCeilingNet < fbCeiling -> PASSES.
+    ///
+    ///   Setup: all adapters blocked from normal scoring; 5M idle surplus
+    ///   (>> fbCeilingNet) forces saturation of A in the overflow loop.
+    function test_SM01_overflow_respects_target_margin() public {
+        _isolateOverflow();
+        usdc.mint(address(vault), 5_000_000e6);
+
+        vm.warp(block.timestamp + 301);
+        vm.prank(keeper);
+        StrategyScoringModule(address(vault)).deployIdle();
+
+        (uint256 fbCeiling, uint256 fbCeilingNet) = _fbCeilingsForA();
+        uint256 posA = vault.positionAssets(address(adapterA));
+
+        // Primary (discriminating): strict inequality proves margin is applied.
+        // Without the fix posA == fbCeiling and this fails.
+        assertLt(posA, fbCeiling, "SM01: overflow must stop below fbCeiling (margin not applied)");
+
+        // Secondary: position must not exceed fbCeilingNet (+ dust rounding).
+        assertLe(
+            posA,
+            fbCeilingNet + vault.dustTolerance(),
+            "SM01: overflow must not exceed fbCeilingNet"
+        );
+
+        // Sanity: something was actually deposited (surplus exceeded fbCeilingNet).
+        assertGt(posA, 0, "SM01: at least some surplus must have been routed to A");
+    }
+
+    // ── SM02 ──────────────────────────────────────────────────────────────────
+
+    /// @notice SM02 -- yield within the margin gap (fbCeilingNet..fbCeiling) keeps
+    ///         the "preserve safety tranche" clause active at the next rebalance.
+    ///
+    ///   The margin buys headroom: overflow stops at fbCeilingNet, leaving room
+    ///   for up to marginBps% yield before current > fbCeiling would break the
+    ///   preserve-tranche guard in _targetAllocations.
+    ///
+    ///   With fix: A at fbCeiling-1 -> current <= fbCeiling -> tranche preserved.
+    ///   Without fix (A at fbCeiling): yield -> A > fbCeiling -> NOT preserved.
+    function test_SM02_yield_within_margin_preserves_safety_tranche() public {
+        (uint256 fbCeiling, uint256 fbCeilingNet) = _fbCeilingsForA();
+
+        // (1) Simulate overflow having deposited A to fbCeilingNet.
+        _forcePosition(adapterA, fbCeilingNet);
+
+        // (2) Simulate yield accrual pushing A toward fbCeiling but still within
+        //     it -- exactly the headroom the margin is designed to accommodate.
+        //     fbCeiling - 1 is strictly within the permitted [fbCeilingNet, fbCeiling] window.
+        _forcePosition(adapterA, fbCeiling - 1);
+
+        // (3) Trigger a mandate rebalance on adapterB (above its hard ceiling)
+        //     so that prepareRebalance actually produces a plan.
+        _forcePctOfNewTvl(adapterB, 5500); // above normalHardCeiling ~51.25%
+        vm.warp(block.timestamp + 22000);
+
+        vm.prank(keeper);
+        StrategyRebalancePlanModule(address(vault)).prepareRebalance();
+
+        // (4) Preserve-tranche clause: current(A) <= fbCeiling -> A held at current.
+        //     The plan must NOT include a withdraw from adapterA.
+        assertFalse(
+            _planHasWithdrawFor(address(adapterA)),
+            "SM02: safety tranche must be preserved (A within fbCeiling after yield)"
+        );
+    }
+
+    // ── SM03 ──────────────────────────────────────────────────────────────────
+
+    /// @notice SM03 -- fuzz: for any surplus amount, overflow never exceeds fbCeilingNet.
+    ///
+    ///   Exercises SM01's core invariant across a range of surplus sizes.
+    ///   Lower bound (500K) is chosen so the surplus exceeds fbCeilingNet
+    ///   in the TVL regimes that arise with the forced-zero adapter layout --
+    ///   this ensures saturation and makes the test discriminating.
+    function testFuzz_SM03_overflow_bounded_by_fbCeilingNet(uint256 extraIdle) public {
+        extraIdle = bound(extraIdle, 500_000e6, 10_000_000e6);
+
+        _isolateOverflow();
+        usdc.mint(address(vault), extraIdle);
+
+        vm.warp(block.timestamp + 301);
+        vm.prank(keeper);
+        StrategyScoringModule(address(vault)).deployIdle();
+
+        (uint256 fbCeiling, uint256 fbCeilingNet) = _fbCeilingsForA();
+        uint256 posA = vault.positionAssets(address(adapterA));
+        uint256 dust = vault.dustTolerance();
+
+        // Must not exceed fbCeilingNet (rounding tolerance = dustTolerance).
+        assertLe(
+            posA,
+            fbCeilingNet + dust,
+            "SM03: overflow must not exceed fbCeilingNet for any surplus size"
+        );
+        // fbCeiling must be strictly greater (sanity: the fix actually reduces headroom).
+        assertLt(fbCeilingNet, fbCeiling, "SM03: fbCeilingNet < fbCeiling (margin > 0)");
+    }
+
+    // ── SM04 ──────────────────────────────────────────────────────────────────
+
+    /// @notice SM04 -- zero margin: overflow fills to full fbCeiling (non-regression).
+    ///
+    ///   When targetSafetyMarginBps == 0, safetyMult == 10_000 and
+    ///   fbCeilingNet == fbCeiling exactly. The overflow loop must behave as
+    ///   before the fix (fill to fbCeiling). This guards against under-deployment
+    ///   regressions for protocols that set margin=0 intentionally.
+    function test_SM04_zero_margin_deposits_to_full_fbCeiling() public {
+        vm.prank(admin);
+        StrategySettingsModule(address(vault)).setTargetSafetyMargin(0);
+
+        _isolateOverflow();
+        usdc.mint(address(vault), 5_000_000e6);
+
+        vm.warp(block.timestamp + 301);
+        vm.prank(keeper);
+        StrategyScoringModule(address(vault)).deployIdle();
+
+        uint256 tvl = _totalTvl(); // conserved
+        uint256 fbCeiling = (uint256(SAFETY_FB_ABS_BPS) * tvl) / 10_000;
+        uint256 posA = vault.positionAssets(address(adapterA));
+        uint256 dust = vault.dustTolerance();
+
+        // With margin=0, fbCeilingNet == fbCeiling: A must reach (and not exceed) fbCeiling.
+        assertLe(posA, fbCeiling,             "SM04: zero margin -- must not exceed fbCeiling");
+        assertGe(posA, fbCeiling - dust,      "SM04: zero margin -- must reach full fbCeiling");
+    }
+
+    // ── SM05 ──────────────────────────────────────────────────────────────────
+
+    /// @notice SM05 -- when adapter is already at fbCeilingNet, overflow skips it.
+    ///
+    ///   Uses margin=2000 (20%, governance max). With A pre-filled above the
+    ///   resulting fbCeilingNet, the overflow loop must find current >= fbCeilingNet
+    ///   and continue past A without depositing. This tests the `continue` branch
+    ///   of the eligibility check and proves the fix does not over-deposit when A
+    ///   is already at or above its margin-adjusted ceiling.
+    function test_SM05_high_margin_skips_adapter_at_fbCeilingNet() public {
+        // Use governance-maximum margin (2000 bps = 20%).
+        // safetyMult = 8000 -> fbCeilingNet = 80% × fbCeiling = 80% × 70% TVL = 56% TVL.
+        vm.prank(admin);
+        StrategySettingsModule(address(vault)).setTargetSafetyMargin(2000);
+
+        // Force B and C to zero (they participate in no-normal-score path).
+        adapterB.setMaxCap(0); adapterC.setMaxCap(0);
+        _forcePosition(adapterB, 0); _forcePosition(adapterC, 0);
+
+        // Pre-fill A above fbCeilingNet for any TVL that arises after the mint.
+        // setUp's _seedVault deploys nothing (all adapters have maxCap=0 by
+        // default), so vault retains the full 1M USDC from the seed. After mint:
+        //   vault USDC = 1M (seed) + 200K (mint) = 1.2M
+        //   TVL = posA + 1.2M
+        //   fbCeilingNet (margin=2000) = 56% x TVL = 56% x (posA + 1.2M)
+        // For posA >= fbCeilingNet:
+        //   posA x 0.44 >= 0.672M  ->  posA >= 1.527M.  Use 2M.
+        //   TVL = 2M + 1.2M = 3.2M
+        //   fbCeiling    = 70% x 3.2M = 2.24M
+        //   fbCeilingNet = 80% x 2.24M = 1.792M
+        //   posA (2M) > fbCeilingNet (1.792M) -> overflow skips A.
+        adapterA.setMaxCap(0);
+        _forcePosition(adapterA, 2_000_000e6);
+
+        usdc.mint(address(vault), 200_000e6);
+
+        vm.warp(block.timestamp + 301);
+        vm.prank(keeper);
+        StrategyScoringModule(address(vault)).deployIdle();
+
+        // A must not have received any additional overflow deposits.
+        assertEq(
+            vault.positionAssets(address(adapterA)),
+            2_000_000e6,
+            "SM05: overflow must skip adapter already at or above fbCeilingNet"
+        );
     }
 }

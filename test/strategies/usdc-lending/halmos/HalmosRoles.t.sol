@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.28;
+pragma solidity 0.8.28;
 
 /// @title Halmos Invariant 2 — Role Mapping Consistency (No Privilege Escalation)
 /// @notice Symbolic execution proof: only authorized roles can call privileged functions.

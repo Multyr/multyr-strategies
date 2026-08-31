@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.28;
+pragma solidity 0.8.28;
 
 import { Test } from "forge-std/Test.sol";
 import {
@@ -221,14 +221,8 @@ contract CometAdapter_Test is Test {
             100_000_000e6
         );
 
-        vm.prank(admin);
-        adapter = new CometUsdcMultiMarketAdapter(
-            address(usdc),
-            admin,
-            vault,
-            10_000_000e6, // capacity
-            address(registry)
-        );
+        adapter = new CometUsdcMultiMarketAdapter();
+        adapter.initialize(address(usdc), admin, vault, 10_000_000e6, address(registry));
     }
 
     function _addMarket(MockComet c) internal {
@@ -260,28 +254,32 @@ contract CometAdapter_Test is Test {
     function test_constructor_reverts_zero_usdc() public {
         SimpleProtocolRegistry r = new SimpleProtocolRegistry();
         r.addVault(SimpleProtocolRegistry.ProtocolType.COMPOUND_V3, address(comet1), "M", 10000, 100_000_000e6);
+        CometUsdcMultiMarketAdapter _tmp = new CometUsdcMultiMarketAdapter();
         vm.expectRevert(bytes("zero"));
-        new CometUsdcMultiMarketAdapter(address(0), admin, vault, 0, address(r));
+        _tmp.initialize(address(0), admin, vault, 0, address(r));
     }
 
     function test_constructor_reverts_zero_admin() public {
         SimpleProtocolRegistry r = new SimpleProtocolRegistry();
         r.addVault(SimpleProtocolRegistry.ProtocolType.COMPOUND_V3, address(comet1), "M", 10000, 100_000_000e6);
+        CometUsdcMultiMarketAdapter _tmp = new CometUsdcMultiMarketAdapter();
         vm.expectRevert(bytes("zero"));
-        new CometUsdcMultiMarketAdapter(address(usdc), address(0), vault, 0, address(r));
+        _tmp.initialize(address(usdc), address(0), vault, 0, address(r));
     }
 
     function test_constructor_reverts_zero_vault() public {
         SimpleProtocolRegistry r = new SimpleProtocolRegistry();
         r.addVault(SimpleProtocolRegistry.ProtocolType.COMPOUND_V3, address(comet1), "M", 10000, 100_000_000e6);
+        CometUsdcMultiMarketAdapter _tmp = new CometUsdcMultiMarketAdapter();
         vm.expectRevert(bytes("zero"));
-        new CometUsdcMultiMarketAdapter(address(usdc), admin, address(0), 0, address(r));
+        _tmp.initialize(address(usdc), admin, address(0), 0, address(r));
     }
 
     function test_constructor_reverts_no_markets() public {
         SimpleProtocolRegistry empty = new SimpleProtocolRegistry();
+        CometUsdcMultiMarketAdapter _tmp = new CometUsdcMultiMarketAdapter();
         vm.expectRevert(bytes("CometAdapter: no markets - registry required or use addMarket"));
-        new CometUsdcMultiMarketAdapter(address(usdc), admin, vault, 0, address(empty));
+        _tmp.initialize(address(usdc), admin, vault, 0, address(empty));
     }
 
     function test_constructor_loads_from_registry() public view {

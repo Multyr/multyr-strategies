@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.28;
+pragma solidity 0.8.28;
 
 import { ILendingAdapter } from "../interfaces/ILendingAdapter.sol";
+import { StrategyConfigLib } from "../lib/StrategyConfigLib.sol";
 
 /// @title StrategyExplainabilityLens — Read-only external explainability for UsdcLendingStrategy
 /// @notice Standalone periphery contract. Reads strategy state via public getters and adapter
@@ -13,21 +14,6 @@ import { ILendingAdapter } from "../interfaces/ILendingAdapter.sol";
 ///         This separation is intentional for audit cleanliness.
 contract StrategyExplainabilityLens {
 
-    // ═══════════════════════════════════════════════════════════════════
-    // CONSTANTS (mirrored from StrategyStorageLayout)
-    // ═══════════════════════════════════════════════════════════════════
-
-    uint256 constant DEFAULT_STABILITY_BPS = 7000;
-    uint256 constant DEFAULT_RISK_BPS = 7000;
-    uint256 constant DEFAULT_LIQ_BPS = 5000;
-
-    uint256 constant CONFIDENCE_ZERO  = 0;
-    uint256 constant CONFIDENCE_MICRO = 3000;
-    uint256 constant CONFIDENCE_SMALL = 5000;
-    uint256 constant CONFIDENCE_LOW   = 7000;
-    uint256 constant CONFIDENCE_MED   = 8500;
-    uint256 constant CONFIDENCE_HIGH  = 9500;
-    uint256 constant CONFIDENCE_VHIGH = 10000;
 
     // ═══════════════════════════════════════════════════════════════════
     // IMMUTABLES
@@ -68,6 +54,22 @@ contract StrategyExplainabilityLens {
         NotSelected
     }
 
+    /// @dev Context struct to reduce stack depth in explainAllocation (Yul viaIR).
+    struct _AllocContext {
+        uint16 adapterMaxExposureBps;
+        uint16 relExpBpsOverride;
+        uint256 tvl;
+        uint16 effectiveMaxAdapters;
+    }
+
+    /// @dev Return bundle for _runPhase1Selection — single ptr vs 4 separate return slots (Yul viaIR).
+    struct _Phase1Result {
+        address[] selected;
+        uint256[] selectedScores;
+        uint256[] headrooms;
+        uint256 selCount;
+    }
+
     // ═══════════════════════════════════════════════════════════════════
     // EXPLAINABILITY VIEWS
     // ═══════════════════════════════════════════════════════════════════
@@ -96,12 +98,12 @@ contract StrategyExplainabilityLens {
         liqBps = _clampLiq(adapter);
 
         uint256 riskScore = strategy.riskScoreBps(adapter);
-        uint256 baseRisk = riskScore > 0 ? (10000 - riskScore) : DEFAULT_RISK_BPS;
+        uint256 baseRisk = riskScore > 0 ? (10000 - riskScore) : StrategyConfigLib.DEFAULT_RISK_BPS;
         confidenceBps = _tvlConfidence(adapter);
         riskBps = (baseRisk * confidenceBps) / 1e4;
 
         stabilityBps = strategy.stabilityEMA(adapter);
-        if (stabilityBps < 1) stabilityBps = DEFAULT_STABILITY_BPS;
+        if (stabilityBps < 1) stabilityBps = StrategyConfigLib.DEFAULT_STABILITY_BPS;
 
         // FIX P1.L6: _decayedIncentive deleted; P0.L1A forces wIncentive=0 in scoring.
         // Lens reflects actual scoring contribution which is 0 until P0.L1B reward pipeline.
@@ -126,85 +128,102 @@ contract StrategyExplainabilityLens {
         returns (AdapterAllocationInfo[] memory infos, uint256 tvl, uint16 effectiveMaxAdapters)
     {
         address[] memory enabledList = _enabledAdapters();
-        uint256 n = enabledList.length;
         tvl = strategy.totalAssets();
-        uint16 _adapterMaxExposureBps = strategy.adapterMaxExposureBps();
-        uint16 _relExpBpsOverride = strategy.maxRelativeExposureBps();
-
-        // Compute scores
-        uint16[] memory rawAPYs = new uint16[](n);
-        uint16 maxAPY = 0;
-        for (uint256 i = 0; i < n; ++i) {
-            try ILendingAdapter(enabledList[i]).currentAPYBps() returns (uint16 a) {
-                rawAPYs[i] = a;
-            } catch { rawAPYs[i] = 0; }
-            if (rawAPYs[i] > maxAPY) maxAPY = rawAPYs[i];
-        }
-
-        uint256[] memory normScores = _computeNormScores(enabledList, rawAPYs, maxAPY);
-
-        // Sort indices by score descending
-        uint256[] memory order = _sortDescending(normScores, n);
-
         effectiveMaxAdapters = _effectiveMaxAdapters(tvl);
-
-        // Build output
+        _AllocContext memory ctx = _AllocContext({
+            adapterMaxExposureBps: strategy.adapterMaxExposureBps(),
+            relExpBpsOverride: strategy.maxRelativeExposureBps(),
+            tvl: tvl,
+            effectiveMaxAdapters: effectiveMaxAdapters
+        });
+        uint256 n = enabledList.length;
+        (uint256[] memory normScores, uint256[] memory order) = _fetchNormScoresAndOrder(enabledList, n);
         infos = new AdapterAllocationInfo[](n);
-        address[] memory selected = new address[](n);
-        uint256[] memory selectedScores = new uint256[](n);
-        uint256[] memory headrooms = new uint256[](n);
-        uint256 selCount = 0;
 
+        _Phase1Result memory p1 = _runPhase1Selection(enabledList, normScores, order, ctx, infos);
+
+        _runPhase2Alloc(amountToAllocate, p1.selCount, p1.selectedScores, p1.headrooms, infos, p1.selected, n);
+    }
+
+    /// @dev Phase 1: score-ranked selection into infos[]. Extracted to reduce Yul stack depth.
+    function _runPhase1Selection(
+        address[] memory enabledList,
+        uint256[] memory normScores,
+        uint256[] memory order,
+        _AllocContext memory ctx,
+        AdapterAllocationInfo[] memory infos
+    ) internal view returns (_Phase1Result memory r) {
+        uint256 n = enabledList.length;
+        r.selected = new address[](n);
+        r.selectedScores = new uint256[](n);
+        r.headrooms = new uint256[](n);
+        r.selCount = 0;
         for (uint256 i = 0; i < n; ++i) {
             uint256 idx = order[i];
             address adapter = enabledList[idx];
-
             (infos[i], ) = _evaluateAdapter(
-                adapter, normScores[idx], tvl, _adapterMaxExposureBps, _relExpBpsOverride, selCount, effectiveMaxAdapters
+                adapter, normScores[idx], ctx.tvl, ctx.adapterMaxExposureBps, ctx.relExpBpsOverride, r.selCount, ctx.effectiveMaxAdapters
             );
-
             if (infos[i].skipReason == SkipReason.None) {
-                selected[selCount] = adapter;
-                selectedScores[selCount] = normScores[idx];
-                headrooms[selCount] = infos[i].headroom;
-                selCount++;
+                r.selected[r.selCount] = adapter;
+                r.selectedScores[r.selCount] = normScores[idx];
+                r.headrooms[r.selCount] = infos[i].headroom;
+                r.selCount++;
             }
         }
+    }
 
-        // Phase 2: proportional allocation
-        if (selCount > 0 && amountToAllocate > 0) {
-            uint256[] memory targets = new uint256[](selCount);
-            uint256 remaining = amountToAllocate;
-            bool[] memory clamped = new bool[](selCount);
-            uint256 _dust = strategy.dustTolerance();
-
-            for (uint256 pass = 0; pass < 3 && remaining > _dust; ++pass) {
-                uint256 sSum = 0;
-                for (uint256 j = 0; j < selCount; ++j) {
-                    if (!clamped[j]) sSum += selectedScores[j];
-                }
-                if (sSum < 1) break;
-                uint256 distributed = 0;
-                for (uint256 j = 0; j < selCount; ++j) {
-                    if (clamped[j]) continue;
-                    uint256 target = (remaining * selectedScores[j]) / sSum;
-                    if (target > headrooms[j]) {
-                        target = headrooms[j];
-                        clamped[j] = true;
-                    }
-                    targets[j] += target;
-                    distributed += target;
-                }
-                remaining -= distributed;
+    /// @dev Phase 2: write targets into infos[].targetAlloc. Extracted to reduce Yul stack depth.
+    function _runPhase2Alloc(
+        uint256 amountToAllocate,
+        uint256 selCount,
+        uint256[] memory selectedScores,
+        uint256[] memory headrooms,
+        AdapterAllocationInfo[] memory infos,
+        address[] memory selected,
+        uint256 n
+    ) internal view {
+        if (selCount == 0 || amountToAllocate == 0) return;
+        uint256[] memory targets = _computeTargets(amountToAllocate, selCount, selectedScores, headrooms);
+        uint256 selIdx = 0;
+        for (uint256 i = 0; i < n && selIdx < selCount; ++i) {
+            if (infos[i].skipReason == SkipReason.None && infos[i].adapter == selected[selIdx]) {
+                infos[i].targetAlloc = targets[selIdx];
+                selIdx++;
             }
+        }
+    }
 
-            uint256 selIdx = 0;
-            for (uint256 i = 0; i < n && selIdx < selCount; ++i) {
-                if (infos[i].skipReason == SkipReason.None && infos[i].adapter == selected[selIdx]) {
-                    infos[i].targetAlloc = targets[selIdx];
-                    selIdx++;
-                }
+    /// @dev 3-pass proportional cap allocation. Extracted to reduce _runPhase2Alloc Yul stack depth.
+    function _computeTargets(
+        uint256 amountToAllocate,
+        uint256 selCount,
+        uint256[] memory selectedScores,
+        uint256[] memory headrooms
+    ) internal view returns (uint256[] memory targets) {
+        targets = new uint256[](selCount);
+        uint256 remaining = amountToAllocate;
+        bool[] memory clamped = new bool[](selCount);
+        uint256 _dust = strategy.dustTolerance();
+
+        for (uint256 pass = 0; pass < 3 && remaining > _dust; ++pass) {
+            uint256 sSum = 0;
+            for (uint256 j = 0; j < selCount; ++j) {
+                if (!clamped[j]) sSum += selectedScores[j];
             }
+            if (sSum < 1) break;
+            uint256 distributed = 0;
+            for (uint256 j = 0; j < selCount; ++j) {
+                if (clamped[j]) continue;
+                uint256 target = (remaining * selectedScores[j]) / sSum;
+                if (target > headrooms[j]) {
+                    target = headrooms[j];
+                    clamped[j] = true;
+                }
+                targets[j] += target;
+                distributed += target;
+            }
+            remaining -= distributed;
         }
     }
 
@@ -263,7 +282,7 @@ contract StrategyExplainabilityLens {
 
         if (selCount >= maxAdapters) { info.skipReason = SkipReason.NotSelected; return (info, false); }
         if (strategy.flagged(adapter)) { info.skipReason = SkipReason.Flagged; return (info, false); }
-        if (conf == CONFIDENCE_ZERO) { info.skipReason = SkipReason.LowConfidence; return (info, false); }
+        if (conf == StrategyConfigLib.CONFIDENCE_ZERO) { info.skipReason = SkipReason.LowConfidence; return (info, false); }
         if (current >= maxExp) { info.skipReason = SkipReason.OverMaxCap; return (info, false); }
 
         uint256 headroom = maxExp - current;
@@ -313,44 +332,29 @@ contract StrategyExplainabilityLens {
     function _clampLiq(address adapter) internal view returns (uint256) {
         uint256 tot;
         try ILendingAdapter(adapter).totalAssets() returns (uint256 t) { tot = t; }
-        catch { return DEFAULT_LIQ_BPS; }
+        catch { return StrategyConfigLib.DEFAULT_LIQ_BPS; }
         if (tot <= strategy.dustTolerance()) return 10000;
         uint256 wa;
         try ILendingAdapter(adapter).withdrawableAssets() returns (uint256 w) { wa = w; }
-        catch { return DEFAULT_LIQ_BPS; }
+        catch { return StrategyConfigLib.DEFAULT_LIQ_BPS; }
         uint256 liq = (wa * 1e4) / tot;
         return liq > 10000 ? 10000 : liq;
     }
 
+    // HIGH-LENS-03 fix: aligned to core 3-state semantic via StrategyConfigLib.
+    // Previous impl had two divergences: (1) checked staleness before cacheTs==0,
+    // returning StrategyConfigLib.CONFIDENCE_MICRO instead of StrategyConfigLib.CONFIDENCE_ZERO when cacheTs==0;
+    // (2) returned StrategyConfigLib.CONFIDENCE_MICRO for extTVL==0, core returns StrategyConfigLib.CONFIDENCE_ZERO.
     function _tvlConfidence(address adapter) internal view returns (uint256) {
-        uint256 extTVL = strategy.cachedExternalTVL(adapter);
-        uint32 staleness = strategy.externalTVLStalenessSeconds();
-        if (staleness > 0 && strategy.cachedExternalTVLTs(adapter) > 0) {
-            if (block.timestamp - strategy.cachedExternalTVLTs(adapter) > staleness) {
-                return CONFIDENCE_MICRO;
-            }
-        }
-        if (extTVL < 1) return CONFIDENCE_MICRO;
-        if (extTVL < 100_000e6) return CONFIDENCE_ZERO;
-        if (extTVL < 500_000e6) return CONFIDENCE_MICRO;
-        if (extTVL < 2_000_000e6) return CONFIDENCE_SMALL;
-        if (extTVL < 10_000_000e6) return CONFIDENCE_LOW;
-        if (extTVL < 50_000_000e6) return CONFIDENCE_MED;
-        if (extTVL < 250_000_000e6) return CONFIDENCE_HIGH;
-        return CONFIDENCE_VHIGH;
+        return StrategyConfigLib.tvlConfidence(
+            strategy.cachedExternalTVL(adapter),
+            strategy.cachedExternalTVLTs(adapter),
+            strategy.externalTVLStalenessSeconds()
+        );
     }
 
     function _effectiveRelativeCapBps(uint256 extTVL) internal pure returns (uint16) {
-        if (extTVL < 100_000e6) return 0;
-        if (extTVL < 500_000e6) return 200;
-        if (extTVL < 1_000_000e6) return 500;
-        if (extTVL < 2_000_000e6) return 800;
-        if (extTVL < 3_000_000e6) return 1000;
-        if (extTVL < 10_000_000e6) return 1200;
-        if (extTVL < 25_000_000e6) return 1500;
-        if (extTVL < 50_000_000e6) return 1800;
-        if (extTVL < 250_000_000e6) return 2000;
-        return 2500;
+        return StrategyConfigLib.effectiveRelativeCapBps(extTVL);
     }
 
     // FIX P1.L6: _decayedIncentive deleted (P0.L1A forces wIncentive=0).
@@ -392,11 +396,11 @@ contract StrategyExplainabilityLens {
             uint256 apyNorm = maxAPY > 0 ? (uint256(rawAPYs[i]) * 1e4) / maxAPY : 0;
             uint256 liq = _clampLiq(adapter);
             uint256 riskScore = strategy.riskScoreBps(adapter);
-            uint256 risk = riskScore > 0 ? (10000 - riskScore) : DEFAULT_RISK_BPS;
+            uint256 risk = riskScore > 0 ? (10000 - riskScore) : StrategyConfigLib.DEFAULT_RISK_BPS;
             uint256 conf = _tvlConfidence(adapter);
             risk = (risk * conf) / 1e4;
             uint256 stab = strategy.stabilityEMA(adapter);
-            if (stab < 1) stab = DEFAULT_STABILITY_BPS;
+            if (stab < 1) stab = StrategyConfigLib.DEFAULT_STABILITY_BPS;
             // FIX P1.L6: _decayedIncentive deleted post-P0.L1A.
             uint16 inc = 0;
             rawScores[i] = uint256(wA) * apyNorm + uint256(wL) * liq + uint256(wR) * risk
@@ -414,6 +418,24 @@ contract StrategyExplainabilityLens {
             for (uint256 i = 0; i < n; ++i) norm[i] = eq;
         }
         return norm;
+    }
+
+    /// @dev Fetches raw APYs, computes norm scores, and sort order.
+    ///      Extracted to reduce explainAllocation Yul stack depth (viaIR minimum).
+    function _fetchNormScoresAndOrder(address[] memory enabledList, uint256 n)
+        internal view
+        returns (uint256[] memory normScores, uint256[] memory order)
+    {
+        uint16[] memory rawAPYs = new uint16[](n);
+        uint16 maxAPY = 0;
+        for (uint256 i = 0; i < n; ++i) {
+            try ILendingAdapter(enabledList[i]).currentAPYBps() returns (uint16 a) {
+                rawAPYs[i] = a;
+            } catch { rawAPYs[i] = 0; }
+            if (rawAPYs[i] > maxAPY) maxAPY = rawAPYs[i];
+        }
+        normScores = _computeNormScores(enabledList, rawAPYs, maxAPY);
+        order = _sortDescending(normScores, n);
     }
 
     function _sortDescending(uint256[] memory scores, uint256 n)

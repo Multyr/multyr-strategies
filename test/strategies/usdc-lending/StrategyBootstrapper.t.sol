@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.28;
+pragma solidity 0.8.28;
 
 import { Test } from "forge-std/Test.sol";
 import {
@@ -28,6 +28,7 @@ import { StrategyAllocCalcModule } from "../../../src/strategies/usdc-lending/co
 import {
     ILendingAdapter
 } from "../../../src/strategies/usdc-lending/interfaces/ILendingAdapter.sol";
+import { StrategySafetyOverflowModule } from "../../../src/strategies/usdc-lending/controller/StrategySafetyOverflowModule.sol";
 
 // ============================================================================
 // MINIMAL MOCKS
@@ -199,12 +200,17 @@ contract StrategyBootstrapperTestBase is Test {
         StrategyAllocCalcModule _allocCalcMod0 = new StrategyAllocCalcModule(ARBITRUM_USDC, core);
         vm.prank(admin);
         vault.setAllocCalcModule(address(_allocCalcMod0));
+        StrategySafetyOverflowModule _overflowMod = new StrategySafetyOverflowModule(
+            ARBITRUM_USDC, core, address(0), address(0), address(adapterOpsMod)
+        );
+        vm.prank(admin);
+        StrategySettingsModule(address(vault)).setSafetyOverflowModule(address(_overflowMod));
     }
 
     /// @dev Deploy a bootstrapper from deployer address, grant it BOOTSTRAP_ROLE
     function _deployBootstrapper() internal returns (StrategyBootstrapper bs) {
-        vm.prank(deployer);
-        bs = new StrategyBootstrapper(payable(address(vault)));
+        bs = new StrategyBootstrapper();
+        bs.initialize(payable(address(vault)), deployer);
         vm.prank(admin);
         vault.grantRole(BOOTSTRAP_ROLE, address(bs));
     }
@@ -216,26 +222,27 @@ contract StrategyBootstrapperTestBase is Test {
 
 contract StrategyBootstrapperConstructorTest is StrategyBootstrapperTestBase {
     function test_constructor_setsStrategy() public {
-        vm.prank(deployer);
-        StrategyBootstrapper bs = new StrategyBootstrapper(payable(address(vault)));
+        StrategyBootstrapper bs = new StrategyBootstrapper();
+        bs.initialize(payable(address(vault)), deployer);
         assertEq(address(bs.strategy()), address(vault));
     }
 
     function test_constructor_setsDeployer() public {
-        vm.prank(deployer);
-        StrategyBootstrapper bs = new StrategyBootstrapper(payable(address(vault)));
+        StrategyBootstrapper bs = new StrategyBootstrapper();
+        bs.initialize(payable(address(vault)), deployer);
         assertEq(bs.deployer(), deployer);
     }
 
     function test_constructor_usedIsFalse() public {
-        vm.prank(deployer);
-        StrategyBootstrapper bs = new StrategyBootstrapper(payable(address(vault)));
+        StrategyBootstrapper bs = new StrategyBootstrapper();
+        bs.initialize(payable(address(vault)), deployer);
         assertFalse(bs.used());
     }
 
     function test_constructor_revertsOnZeroAddress() public {
+        StrategyBootstrapper _tmp = new StrategyBootstrapper();
         vm.expectRevert(StrategyBootstrapper.ZeroAddress.selector);
-        new StrategyBootstrapper(payable(address(0)));
+        _tmp.initialize(payable(address(0)), deployer);
     }
 }
 
@@ -403,8 +410,8 @@ contract StrategyBootstrapperViewTest is StrategyBootstrapperTestBase {
 
     function test_hasBootstrapRole_falseWithoutRoleGrant() public {
         // Bootstrapper deployed but BOOTSTRAP_ROLE never granted
-        vm.prank(deployer);
-        StrategyBootstrapper bs = new StrategyBootstrapper(payable(address(vault)));
+        StrategyBootstrapper bs = new StrategyBootstrapper();
+        bs.initialize(payable(address(vault)), deployer);
         assertFalse(bs.hasBootstrapRole());
     }
 }

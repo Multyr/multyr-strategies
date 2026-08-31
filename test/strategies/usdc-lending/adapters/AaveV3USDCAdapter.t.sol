@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.28;
+pragma solidity 0.8.28;
 
 import { Test } from "forge-std/Test.sol";
 import { AaveV3USDCAdapter } from "../../../../src/strategies/usdc-lending/adapters/lending/AaveV3USDCmarket.sol";
@@ -77,6 +77,12 @@ contract MockAToken {
         balanceOf[from] -= amount;
         _supply -= amount;
     }
+
+    // Transfer USDC held by this aToken contract to a recipient (called by pool on withdraw).
+    // In real Aave V3, aToken holds the underlying and releases it during pool.withdraw().
+    function transferUsdcTo(address to, uint256 amount) external {
+        MockUSDCAave(underlyingAsset).transfer(to, amount);
+    }
 }
 
 /// @dev Mock Aave V3 Pool — controllable rate + cash + revert flag for getReserveData
@@ -96,8 +102,8 @@ contract MockAavePool {
 
     function supply(address _asset, uint256 amount, address onBehalfOf, uint16 /*ref*/) external {
         require(_asset == asset, "wrong asset");
-        // pull underlying from msg.sender (adapter)
-        MockUSDCAave(asset).transferFrom(msg.sender, address(this), amount);
+        // pull underlying from msg.sender (adapter) → route to aToken (mirrors real Aave V3)
+        MockUSDCAave(asset).transferFrom(msg.sender, aToken, amount);
         // mint aToken 1:1 to onBehalfOf
         MockAToken(aToken).poolMint(onBehalfOf, amount);
     }
@@ -108,7 +114,7 @@ contract MockAavePool {
         uint256 actualAmount = amount;
         // Aave cap: cannot exceed aToken bal. We assume amount valid (test controls).
         MockAToken(aToken).poolBurn(msg.sender, actualAmount);
-        MockUSDCAave(asset).transfer(to, actualAmount);
+        MockAToken(aToken).transferUsdcTo(to, actualAmount); // aToken holds USDC in real Aave V3
         return actualAmount;
     }
 
@@ -198,14 +204,8 @@ contract AaveV3USDCAdapterTest is Test {
         pool = new MockAavePool(address(usdc), address(aToken));
         rateProvider = new MockAaveRateProvider();
 
-        adapter = new AaveV3USDCAdapter(
-            address(usdc),
-            address(pool),
-            address(aToken),
-            admin,
-            vault,
-            0 // unlimited cap
-        );
+        adapter = new AaveV3USDCAdapter();
+        adapter.initialize(address(usdc), address(pool), address(aToken), admin, vault, 0);
     }
 
     function _deposit(uint256 amount) internal {
@@ -221,35 +221,41 @@ contract AaveV3USDCAdapterTest is Test {
     // ═══════════════════════════════════════════════════════════════════════
 
     function test_constructor_revertsOnZeroAsset() public {
+        AaveV3USDCAdapter _tmp = new AaveV3USDCAdapter();
         vm.expectRevert(bytes("zero"));
-        new AaveV3USDCAdapter(address(0), address(pool), address(aToken), admin, vault, 0);
+        _tmp.initialize(address(0), address(pool), address(aToken), admin, vault, 0);
     }
 
     function test_constructor_revertsOnZeroPool() public {
+        AaveV3USDCAdapter _tmp = new AaveV3USDCAdapter();
         vm.expectRevert(bytes("zero"));
-        new AaveV3USDCAdapter(address(usdc), address(0), address(aToken), admin, vault, 0);
+        _tmp.initialize(address(usdc), address(0), address(aToken), admin, vault, 0);
     }
 
     function test_constructor_revertsOnZeroAToken() public {
+        AaveV3USDCAdapter _tmp = new AaveV3USDCAdapter();
         vm.expectRevert(bytes("zero"));
-        new AaveV3USDCAdapter(address(usdc), address(pool), address(0), admin, vault, 0);
+        _tmp.initialize(address(usdc), address(pool), address(0), admin, vault, 0);
     }
 
     function test_constructor_revertsOnZeroAdmin() public {
+        AaveV3USDCAdapter _tmp = new AaveV3USDCAdapter();
         vm.expectRevert(bytes("zero"));
-        new AaveV3USDCAdapter(address(usdc), address(pool), address(aToken), address(0), vault, 0);
+        _tmp.initialize(address(usdc), address(pool), address(aToken), address(0), vault, 0);
     }
 
     function test_constructor_revertsOnZeroVault() public {
+        AaveV3USDCAdapter _tmp = new AaveV3USDCAdapter();
         vm.expectRevert(bytes("zero"));
-        new AaveV3USDCAdapter(address(usdc), address(pool), address(aToken), admin, address(0), 0);
+        _tmp.initialize(address(usdc), address(pool), address(aToken), admin, address(0), 0);
     }
 
     function test_constructor_revertsOnATokenAssetMismatch() public {
         MockUSDCAave other = new MockUSDCAave();
         MockAToken mismatched = new MockAToken(address(other));
+        AaveV3USDCAdapter _tmp = new AaveV3USDCAdapter();
         vm.expectRevert(bytes("aToken/asset mismatch"));
-        new AaveV3USDCAdapter(address(usdc), address(pool), address(mismatched), admin, vault, 0);
+        _tmp.initialize(address(usdc), address(pool), address(mismatched), admin, vault, 0);
     }
 
     function test_constructor_setsState() public view {
@@ -303,10 +309,10 @@ contract AaveV3USDCAdapterTest is Test {
 
     function test_withdrawableAssets_boundedByPoolLiquidity() public {
         _deposit(1000e6);
-        // pool has 1000e6 USDC after deposit; aToken bal = 1000e6
-        // simulate pool drain: send some USDC out of pool
-        vm.prank(address(pool));
-        usdc.transfer(alice, 700e6); // pool now has 300e6
+        // aToken holds 1000e6 USDC after deposit (real Aave V3 behavior modeled by mock)
+        // simulate aToken drain: send some USDC out of aToken
+        vm.prank(address(aToken));
+        usdc.transfer(alice, 700e6); // aToken now has 300e6
         assertEq(adapter.withdrawableAssets(), 300e6);
     }
 
@@ -324,7 +330,7 @@ contract AaveV3USDCAdapterTest is Test {
         _deposit(1000e6);
         assertEq(usdc.balanceOf(vault), 0);
         assertEq(adapter.investedAssets(), 1000e6);
-        assertEq(usdc.balanceOf(address(pool)), 1000e6);
+        assertEq(usdc.balanceOf(address(aToken)), 1000e6); // aToken holds USDC (not pool proxy)
     }
 
     function test_deposit_revertsOnZeroAmount() public {
@@ -343,9 +349,8 @@ contract AaveV3USDCAdapterTest is Test {
     }
 
     function test_deposit_respectsMaxCap() public {
-        adapter = new AaveV3USDCAdapter(
-            address(usdc), address(pool), address(aToken), admin, vault, 500e6
-        );
+        adapter = new AaveV3USDCAdapter();
+        adapter.initialize(address(usdc), address(pool), address(aToken), admin, vault, 500e6);
         usdc.mint(vault, 600e6);
         vm.startPrank(vault);
         usdc.approve(address(adapter), 600e6);
@@ -386,8 +391,8 @@ contract AaveV3USDCAdapterTest is Test {
 
     function test_withdraw_clampedByPoolLiquidity() public {
         _deposit(1000e6);
-        // drain pool to 200e6
-        vm.prank(address(pool));
+        // drain aToken to 200e6 (aToken holds USDC in real Aave V3 / this mock)
+        vm.prank(address(aToken));
         usdc.transfer(alice, 800e6);
 
         vm.prank(vault);

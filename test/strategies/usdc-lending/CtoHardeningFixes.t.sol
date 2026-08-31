@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.28;
+pragma solidity 0.8.28;
 
 import { Test, console2 } from "forge-std/Test.sol";
 import {
@@ -243,7 +243,7 @@ contract CtoHardeningFixes is UsdcMultiLendingVaultTestBase {
         _addAndEnable(adapter2);
 
         // Deposit during bootstrap so adapters are no longer "new" (neverUsed=false)
-        _coreDeposit(100e6);
+        _coreDeposit(50_000e6); // T2 TVL (dMax=2): 2 adapters x 50% cap = 100% deploy
 
         // Exit bootstrap for normal-mode test
         vm.prank(admin);
@@ -280,7 +280,7 @@ contract CtoHardeningFixes is UsdcMultiLendingVaultTestBase {
         _addAndEnable(adapter2);
 
         // Deposit during bootstrap so adapters are no longer "new" (neverUsed=false)
-        _coreDeposit(100e6);
+        _coreDeposit(50_000e6); // T2 TVL (dMax=2): 2 adapters x 50% cap = 100% deploy
 
         // Exit bootstrap
         vm.prank(admin);
@@ -341,14 +341,14 @@ contract CtoHardeningFixes is UsdcMultiLendingVaultTestBase {
         _addAndEnable(adapter2);
 
         // First deposit — bootstrap, best-effort. Both adapters get capital.
-        _coreDeposit(1000e6);
+        _coreDeposit(50_000e6); // T2 TVL (dMax=2): 2 adapters primed; idle~16K < maxIdleBootstrap 25K
 
         // Break adapter1 for second deposit
         adapter1.setDepositReverts(true);
 
         // Small second deposit. tvlAfter includes all previous capital.
-        // maxIdle = 50% * tvlAfter (which is ~1000e6 + 10e6) = ~505e6
-        // Only the small deposit might fail to deploy → idle should be small
+        // maxIdle = 50% * tvlAfter (which is ~50_000e6 + 10e6) ~= 25_005e6
+        // idle = ~16K + 10 = ~16.01K << 25K maxIdleBootstrap -- OK
         _coreDeposit(10e6);
         // Should succeed because idle << 50% of tvlAfter
     }

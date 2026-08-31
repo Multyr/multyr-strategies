@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.28;
+pragma solidity 0.8.28;
 
 /// @title Halmos Invariant 1 — Conservation of Funds
 /// @notice Symbolic execution proof: after deposit(a) + deposit(b),

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.28;
+pragma solidity 0.8.28;
 
 import { Test } from "forge-std/Test.sol";
 import {
@@ -75,7 +75,7 @@ contract GasLoopSafety is UsdcMultiLendingVaultTestBase {
         // Allow higher adapter count for stress test
         vm.startPrank(admin);
         StrategySettingsModule(address(vault)).setRebalanceParams(
-            8, 2, 50, 21600, 80, 2500, 8000
+            8, 2, 50, 21600, 80, 2500, 5000
         );
         StrategySettingsModule(address(vault)).exitBootstrapMode();
         StrategySettingsModule(address(vault)).setMaxRelativeExposureBps(1000);

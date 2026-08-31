@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.28;
+pragma solidity 0.8.28;
 
 import { Test, console2 } from "forge-std/Test.sol";
 import { StrategyExplainabilityLens } from "../../../src/strategies/usdc-lending/lens/StrategyExplainabilityLens.sol";
@@ -25,6 +25,7 @@ import { StrategyAdapterOpsModule } from "../../../src/strategies/usdc-lending/c
 import {
     ILendingAdapter
 } from "../../../src/strategies/usdc-lending/interfaces/ILendingAdapter.sol";
+import { StrategySafetyOverflowModule } from "../../../src/strategies/usdc-lending/controller/StrategySafetyOverflowModule.sol";
 
 // ============================================================================
 // MOCK: Adapter with independent totalAssets / withdrawableAssets control
@@ -231,6 +232,11 @@ contract Scoring_Model is Test {
         StrategyAllocCalcModule _allocCalcMod0 = new StrategyAllocCalcModule(ARBITRUM_USDC, core);
         vm.prank(admin);
         vault.setAllocCalcModule(address(_allocCalcMod0));
+        StrategySafetyOverflowModule _overflowMod = new StrategySafetyOverflowModule(
+            ARBITRUM_USDC, core, address(0), address(0), address(adapterOpsMod)
+        );
+        vm.prank(admin);
+        StrategySettingsModule(address(vault)).setSafetyOverflowModule(address(_overflowMod));
 
         // Set vault on adapters
         adapterA.setVault(address(vault));
@@ -1114,23 +1120,22 @@ contract LensInternalsTest is Scoring_Model {
         assertTrue(found, "adapterA must appear in infos");
     }
 
-    // AUDIT-FINDING-8 regression: prevent re-introduction of T1 ceiling bug.
-    // Before fix: effectiveAbsCapBps applied adapterMaxExposureBps (default 50%) even at T1
-    // (dMax=1), causing 50% of TVL to stay idle in early-stage. After fix: T1 short-circuits
-    // to 10000 (100%) before any ceiling or overlays, preserving intentional-concentration design.
-    function test_AUDIT_FINDING_8_T1_ignores_global_ceiling() public {
+    // AUDIT-FINDING-8 regression guard (updated by F-SCORING-INV2, Wave 2).
+    // The OLD behavior (T1 short-circuits to 10000, bypassing adapterMaxExposureBps) was
+    // itself the bug. F-SCORING-INV2 fixed it: at T1 (dMax=1), _effectiveAbsCapBps now
+    // returns adapterMaxExposureBps if set, so governance ceilings are always enforced.
+    // This test now verifies the CORRECT post-fix behavior: ceiling IS respected at T1.
+    function test_AUDIT_FINDING_8_T1_respects_global_ceiling() public {
         _addAndEnable(adapterA);
         _addAndEnable(adapterB);
 
-        // Set global ceiling to 50% (5000 bps) — tighter than the ramp limit (80%).
-        // At T2+, this would cap posA at 50% of TVL. At T1, effectiveAbsCapBps
-        // short-circuits to 10000 (100%), so the ceiling is never applied.
-        // With ramp=8000 (80%), posA = 800 USDC. Ceiling of 50% would give 500 USDC.
-        // posA=800 > 500 proves the T1 short-circuit bypassed the global ceiling.
+        // Set global ceiling to 30% (3000 bps). At T1 post-fix, cap = adapterMaxExposureBps = 3000.
+        // newAdapterRampBps = 5000 (50%) — ramp=50% > cap=30% -> cap wins.
+        // posA = 30% * 1000 USDC = 300 USDC exactly.
         vm.prank(admin);
-        StrategySettingsModule(address(vault)).setRebalanceParams(5, 2, 50, 21600, 80, 5000, 8000);
+        StrategySettingsModule(address(vault)).setRebalanceParams(5, 2, 50, 21600, 80, 3000, 5000);
 
-        // maxIdleAfterDepositBps raised to 100% — ramp leaves ~20% idle, which is expected
+        // maxIdleAfterDepositBps raised to 100% — 70% stays idle, expected at T1 with 30% cap
         vm.prank(admin);
         StrategySettingsModule(address(vault)).setMaxIdleAfterDepositBps(10000);
 
@@ -1140,11 +1145,11 @@ contract LensInternalsTest is Scoring_Model {
         uint256 posA = vault.positionAssets(address(adapterA));
         uint256 posB = vault.positionAssets(address(adapterB));
 
-        // posA=800 (ramp-limited at 80%) > 500 (ceiling at 50%) — T1 bypasses global ceiling
-        assertGt(posA, 500e6, "T1: posA exceeds 50%-ceiling - global ceiling bypassed at T1");
+        // F-SCORING-INV2: ceiling 30% enforced at T1. posA = 30% * 1000 = 300 USDC.
+        assertEq(posA, 300e6, "T1: posA at 30% ceiling -- governance cap enforced at T1");
 
-        // adapter B not selected (dMax=1 — single-adapter mode)
-        assertEq(posB, 0, "T1: only top adapter selected");
+        // adapter B not selected (dMax=1 -- single-adapter mode)
+        assertEq(posB, 0, "T1: only top adapter selected (dMax=1)");
     }
 
     // ============================================================================

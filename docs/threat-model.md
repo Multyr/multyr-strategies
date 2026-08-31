@@ -449,6 +449,75 @@ on guaranteed-failure transactions:
 
 ---
 
+---
+
+## P0.7 Safety Adapter Cap Tier — additional threat model
+
+P0.7 introduces three new threat surfaces beyond the V9.1 baseline.
+Each is mitigated by code-level fix + formal verification + targeted
+unit test.
+
+### T-P07-1 Cooldown bypass via governance promotion (H-03)
+
+**Threat**: Adversarial governance promotes a recently-mandated adapter
+to safety tier, bypassing its `mandateRedeployCooldownSeconds` block
+window. Idle cash flows back to the recovering adapter before the
+cooldown has elapsed.
+
+**Mitigation**: `addSafetyFallbackAdapter` clears
+`lastRelCapMandateTs[adapter]` upon promotion. The promotion is logged
+via `RelCapMandateCooldownCleared(adapter, clearedBy, priorTs)` event
+for governance transparency.
+
+**Verification**: Halmos P6 (`check_cooldown_clear_idempotency`) +
+Echidna I10 + unit test in `CapDriftMandate.t.sol`.
+
+### T-P07-2 Quarantined adapter promotion (L-01)
+
+**Threat**: Adversarial governance promotes an adapter currently in
+quarantine state to the safety tier, exposing the protocol to a known-bad
+adapter as priority-ordered overflow destination.
+
+**Mitigation**: `addSafetyFallbackAdapter` reverts with `InvalidAdapter()`
+if the target adapter has `quarantined[adapter] == true`.
+
+**Verification**: Forge unit `test_D1f_09_quarantined_adapter_promotion_reverts`.
+
+### T-P07-3 Storage slot collision across delegate-call modules
+
+**Threat**: The seven controller modules share the storage layout via
+delegate-call. A storage slot mismatch between modules would corrupt
+the P0.7 packed slot 78 (capDrift/maxIdle/margin/cooldown), affecting
+every governance call and rebalance gate decision.
+
+**Mitigation**: `StrategyStorageLayout` is the single source of truth.
+Every controller module inherits `StrategyStorageLayout`. Slot offsets
+are empirically verified via `forge inspect` in CI.
+
+**Verification**: `StorageLayoutP07.t.sol` TC01a-e (5 tests cross-check
+slot offsets across 6 P0.7-aware modules).
+
+## External dependency assumptions (P0.7-specific)
+
+The dual-anchor safety architecture explicitly depends on:
+
+- **Aave V3 Pool** (Arbitrum: `0x794a61358D6845594F94dc1DB02A252b5b4814aD`)
+  operating per published Aave V3 spec with non-rebasing aToken value
+  guarantee for supply/withdraw.
+- **Compound III Comet USDC**
+  (Arbitrum: `0x9c4ec768c28520B50860ea7a15bd7213a9fF58bf`) operating per
+  published Compound III spec.
+
+If either safety adapter is quarantined or fails simultaneously,
+overflow capital remains as idle cash subject to `maxIdleBps` ceiling.
+This degraded mode is by design (no auto-fallback to an unvetted adapter
+under governance control).
+
+Per-protocol failure-mode tests:
+- `V92_AdversarialScenarios::test_E2E_adapter_quarantine_during_overflow`
+- `V92_AdversarialScenarios::test_E2E_failed_adapter_callback`
+
+
 ## Summary
 
 ```mermaid
@@ -555,3 +624,100 @@ graph TB
 2. `Pausable` inheritance is present in `StrategyStorageLayout` but no `whenNotPaused`
    modifier usage was observed in key deposit/withdraw paths during code review. Verify
    that `Pausable` is wired to the correct functions.
+
+---
+
+## V10.0 Refactor — additional threat model
+
+V10.0 introduces a storage+initialize pattern for all adapter addresses,
+replacing the V9.x constructor-immutable pattern. This refactor introduces
+three new threat surfaces, each mitigated by design choice + formal
+verification + targeted unit test.
+
+### T-V10-1 — Front-run initialization
+
+**Threat**: An attacker observes the deployment transaction of an adapter
+contract in the mempool. Between deployment confirmation and the
+legitimate `initialize()` call, the attacker calls `initialize(maliciousArgs)`
+first. The legitimate caller's subsequent `initialize()` reverts via
+OZ Initializable's one-shot enforcement, leaving the adapter under
+attacker control with attacker-supplied addresses (e.g., a malicious
+"Aave Pool" contract).
+
+**Mitigation**: `AdapterFactory.deployAndInit()` bundles deployment and
+initialization into a single transaction. Attacker has no observable
+window between deploy and init — both are atomic. Factory `deployAndInit()`
+is gated by `DEPLOYER_ROLE` (Timelock multisig in production), so only
+authorized governance can deploy adapters.
+
+**Reference**: Sherlock rova #414 documents the unguarded init pattern
+as a valid Medium-to-High finding ($30K-$100K reward bracket).
+
+**Verification**:
+- Foundry unit test `test_deployment_atomicity_no_uninitialized_window`
+- Slither `--detect unprotected-upgrade` returns 0 findings on adapters
+- Manual review: adapter constructor is empty (no `_disableInitializers()` —
+  intentional for non-proxy factory pattern, see V10_DESIGN_RATIONALE §1)
+
+### T-V10-2 — Re-initialization via inheritance bypass
+
+**Threat**: A subtle bug in the adapter's inheritance chain (`__X_init`
+calls) could allow the inherited `initializer` modifier to be bypassed
+if parent initializers are not called in correct linearized C3 order.
+
+**Mitigation**: V10 adapters use a flat inheritance hierarchy
+(ILendingAdapter + AccessControl + ReentrancyGuard + Initializable).
+AccessControl and ReentrancyGuard from OZ 5.x have explicit `__X_init`
+functions. Each adapter's `initialize()` calls each parent init exactly once.
+
+**Verification**:
+- Slither `--detect incorrect-modifier` returns 0 findings
+- Foundry test `test_initialize_revertsOn_secondCall` per adapter
+- AdapterFactory.t.sol F-02, F-03 (14 factory invariant tests)
+
+### T-V10-3 — Storage slot collision after immutable removal
+
+**Threat**: Removing `immutable` keyword from address fields changes the
+storage layout. If the strategy controller (delegatecall architecture)
+or any shared base contract changes slot assignments, P0.7 packed fields
+(slot 78: capDriftToleranceBps, maxIdleBps, targetSafetyMarginBps,
+mandateRedeployCooldownSeconds; slots 79-81: safetyFallbackAdapters,
+safetyFallback, lastRelCapMandateTs) could be overwritten.
+
+**Mitigation**:
+- Adapter contracts do NOT share storage layout with the strategy
+  controller. They are independent contract instances with separate storage.
+- V10 refactor was strictly limited to adapter contracts; controller modules
+  have zero V10 changes.
+- Storage layout consistency tests (`StorageLayoutP07.t.sol` +
+  `StorageLayoutV10Adapters.t.sol`) verify P0.7 slot 78-81 offsets and
+  adapter slot offsets via `vm.store()`/`vm.load()`. Re-run post-V10 with
+  identical P0.7 results.
+
+**Verification**:
+- `StorageLayoutP07.t.sol` TC01a-e: 5/5 PASS post-V10
+- `StorageLayoutV10Adapters.t.sol`: 45/45 PASS (V10 Phase 4)
+- `forge inspect <Adapter> storageLayout` snapshots in STORAGE/snapshots/
+
+## V10.0 Re-init attack surface (consolidated)
+
+The OpenZeppelin `Initializable` pattern (5.x) ensures:
+- `initialize()` can only be called when `_initialized < 1` (uninitialized)
+- Post-call, `_initialized = 1` and any future call reverts with
+  `InvalidInitialization()`
+
+The AdapterFactory pattern eliminates the residual front-run window.
+Verification: 14 factory tests in AdapterFactory.t.sol covering
+F-01..F-08 invariants + reinit protection + cross-chain determinism.
+
+## V10.0 External dependency assumptions (additions)
+
+The AdapterFactory itself has no external dependencies beyond OpenZeppelin
+AccessControl. The factory is the single chain-specific contract in V10
+deployment (admin = chain-specific multisig); all 7 adapters are
+byte-identical across chains by design.
+
+External dependencies unchanged from V9.2:
+- Aave V3 Pool, Compound III Comet, Dolomite Margin, Euler V2 Vault,
+  Fluid fUSDC, Morpho Blue, Venus vToken: per-chain addresses passed at
+  `initialize()` time, not hardcoded.

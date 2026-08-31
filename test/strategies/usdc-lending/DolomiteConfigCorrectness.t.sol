@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.28;
+pragma solidity 0.8.28;
 
 import { Test } from "forge-std/Test.sol";
 import {
@@ -165,13 +165,8 @@ contract DolomiteConfigCorrectnessTest is Test {
         // The constructor requires mkts.length > 0, so we use a registry
         MockDolomiteRegistry registry = new MockDolomiteRegistry(address(usdc), address(poolMarket));
 
-        adapter = new DolomiteUsdcMultiMarketAdapter(
-            address(usdc),
-            admin,
-            vaultAddr,
-            0, // no capacity limit
-            address(registry)
-        );
+        adapter = new DolomiteUsdcMultiMarketAdapter();
+        adapter.initialize(address(usdc), admin, vaultAddr, 0, address(registry));
     }
 
     // -----------------------------------------------------------------------

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.28;
+pragma solidity 0.8.28;
 
 import { Test } from "forge-std/Test.sol";
 import { RewardSwapHelper } from "../../../../src/strategies/usdc-lending/swap/RewardSwapHelper.sol";
@@ -141,12 +141,14 @@ contract RewardSwapHelperTest is Test {
         uniRouter = new MockUniswapV3Router(address(usdc));
         camelotRouter = new MockCamelotV3Router(address(usdc));
 
-        helper = new RewardSwapHelper(
-            address(usdc),
-            admin,
-            address(uniRouter),
-            address(camelotRouter)
-        );
+        helper = new RewardSwapHelper();
+        helper.initialize(address(usdc), admin, address(uniRouter), address(camelotRouter));
+
+        // Grant KEEPER_ROLE to alice — she acts as the adapter/keeper in swap tests
+        // Note: store the hash before vm.prank to avoid consuming the prank on the view call
+        bytes32 keeperRole = keccak256("KEEPER_ROLE");
+        vm.prank(admin);
+        helper.grantRole(keeperRole, alice);
 
         // Default config for COMP: $60, slippage 1%, maxAge 25h (1h buffer over 24h heartbeat)
         feed.set(60e8, block.timestamp);
@@ -173,25 +175,27 @@ contract RewardSwapHelperTest is Test {
     // ═══════════════════════════════════════════════════════════════════════
 
     function test_constructor_revertsOnZeroUsdc() public {
+        RewardSwapHelper _tmp = new RewardSwapHelper();
         vm.expectRevert(RewardSwapHelper.ZeroAddress.selector);
-        new RewardSwapHelper(address(0), admin, address(uniRouter), address(camelotRouter));
+        _tmp.initialize(address(0), admin, address(uniRouter), address(camelotRouter));
     }
 
     function test_constructor_revertsOnZeroAdmin() public {
+        RewardSwapHelper _tmp = new RewardSwapHelper();
         vm.expectRevert(RewardSwapHelper.ZeroAddress.selector);
-        new RewardSwapHelper(address(usdc), address(0), address(uniRouter), address(camelotRouter));
+        _tmp.initialize(address(usdc), address(0), address(uniRouter), address(camelotRouter));
     }
 
     function test_constructor_revertsOnZeroUniRouter() public {
+        RewardSwapHelper _tmp = new RewardSwapHelper();
         vm.expectRevert(RewardSwapHelper.ZeroAddress.selector);
-        new RewardSwapHelper(address(usdc), admin, address(0), address(camelotRouter));
+        _tmp.initialize(address(usdc), admin, address(0), address(camelotRouter));
     }
 
     function test_constructor_camelotZeroAllowed() public {
         // Camelot is optional — address(0) is OK
-        RewardSwapHelper h = new RewardSwapHelper(
-            address(usdc), admin, address(uniRouter), address(0)
-        );
+        RewardSwapHelper h = new RewardSwapHelper();
+        h.initialize(address(usdc), admin, address(uniRouter), address(0));
         assertEq(h.camelotV3Router(), address(0));
     }
 
@@ -224,8 +228,9 @@ contract RewardSwapHelperTest is Test {
     }
 
     function test_setRewardConfig_acceptsSlippageAtCap() public {
+        // Cap tightened to 500 bps (5%) by HIGH-R1
         vm.prank(admin);
-        helper.setRewardConfig(address(comp), address(feed), 8, 18, 3600, uniPath, camelotPath, 1000);
+        helper.setRewardConfig(address(comp), address(feed), 8, 18, 3600, uniPath, camelotPath, 500);
         // No revert
     }
 
@@ -639,5 +644,54 @@ contract RewardSwapHelperTest is Test {
         // Refresh feed
         feed.set(60e8, block.timestamp);
         assertTrue(helper.canSwap(address(comp)));
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// HIGH-R1 + HIGH-R2 — tighter slippage cap + KEEPER_ROLE access control
+// ═══════════════════════════════════════════════════════════════════════════
+
+contract RewardSwapHelper_R1R2_Test is RewardSwapHelperTest {
+
+    // ── R1: boundary test — 501 bps now exceeds the 500 bps cap ──────────
+    function test_setRewardConfig_revertsOnSlippage_501_above_new_cap() public {
+        vm.prank(admin);
+        vm.expectRevert(abi.encodeWithSelector(RewardSwapHelper.SlippageTooHigh.selector, uint16(501)));
+        helper.setRewardConfig(address(comp), address(feed), 8, 18, 3600, uniPath, camelotPath, 501);
+    }
+
+    // ── R1: boundary test — exactly 500 bps is accepted ──────────────────
+    function test_setRewardConfig_accepts_exactly_500_bps() public {
+        vm.prank(admin);
+        helper.setRewardConfig(address(comp), address(feed), 8, 18, 3600, uniPath, camelotPath, 500);
+        (,,,,,, uint16 bps, bool enabled) = helper.configs(address(comp));
+        assertEq(bps, 500, "500 bps accepted and stored");
+        assertTrue(enabled);
+    }
+
+    // ── R2: unauthorized caller cannot call swapToUSDC ───────────────────
+    // Validates that KEEPER_ROLE is enforced — non-role EOA reverts even with
+    // valid token approval and enabled config.
+    function test_swapToUSDC_reverts_without_keeper_role() public {
+        address stranger = address(0xBAD);
+        comp.mint(stranger, 10e18);
+        vm.prank(stranger);
+        comp.approve(address(helper), 10e18);
+        uniRouter.setOutAmount(594e6);
+
+        vm.prank(stranger);
+        vm.expectRevert(); // AccessControl: missing role
+        helper.swapToUSDC(address(comp), 10e18, stranger);
+    }
+
+    // ── R2: keeper (alice, granted KEEPER_ROLE in setUp) can call swapToUSDC ─
+    function test_swapToUSDC_succeeds_with_keeper_role() public {
+        uniRouter.setOutAmount(595e6);
+        _seedCallerWithComp(alice, 10e18);
+
+        vm.prank(alice);
+        uint256 out = helper.swapToUSDC(address(comp), 10e18, core);
+        assertEq(out, 595e6, "keeper swap succeeds");
+        assertEq(usdc.balanceOf(core), 595e6);
     }
 }

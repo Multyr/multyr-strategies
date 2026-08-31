@@ -1,7 +1,7 @@
 # USDC Lending Strategy — Audit Scope
 
 **Version**: 1.0.0 — code-first, audit-grade citations
-**Repository**: `vault-usdc2` → target `Multyr/multyr-strategies` (public, BUSL-1.1)
+**Repository**: `Multyr/multyr-strategies` (public, BUSL-1.1)
 **Commit**: b15aeb63
 
 ---
@@ -13,7 +13,7 @@ on Arbitrum One. It deploys depositor USDC across up to 7 lending protocol adapt
 (Aave V3, Compound III, Dolomite, Euler V2, Fluid, Morpho, Venus) via a keeper-driven
 scoring and rebalancing system.
 
-**23 Solidity files, 11,974 lines total** are in scope for the primary audit.
+**25 Solidity files, 12,678 lines total** are in scope for the primary audit (Wave 1+2 additions: StrategySafetyOverflowModule, StrategyConfigLib).
 
 The strategy is **not upgradeable**. No proxy pattern. No EIP-1967, no UUPS, no
 Transparent. Immutable contract addresses. Governance changes flow through a Timelock
@@ -36,6 +36,7 @@ Transparent. Immutable contract addresses. Governance changes flow through a Tim
 | `controller/StrategySettingsModule.sol` | 513 | `StrategySettingsModule` | HIGH |
 | `controller/StrategyParamsModule.sol` | 314 | `StrategyParamsModule` | MEDIUM |
 | `controller/StrategyAdapterOpsModule.sol` | 165 | `StrategyAdapterOpsModule` | HIGH |
+| `controller/StrategySafetyOverflowModule.sol` | 180 | `StrategySafetyOverflowModule` | HIGH |
 
 All 9 controller files share storage via inherited `StrategyStorageLayout`. Modules
 are dispatched via delegatecall from `UsdcMultiLendingVault.fallback()` at
@@ -96,18 +97,29 @@ Chainlink-anchored reward swap with Uniswap V3 → Camelot V3 fallback. MEV-resi
 `StrategyBootstrapper` is used once at deploy-time; `StrategyExplainabilityLens` is
 read-only (view-only, no state mutations).
 
-### 2.8 Line Count Summary
+### 2.8 Libraries
+
+| File | Lines | Contract | Priority |
+|------|-------|----------|---------|
+| `lib/StrategyConfigLib.sol` | 62 | `StrategyConfigLib` | LOW |
+
+Pure library inlined at compile time. Single source of truth for parameter reads shared across lens files and module boundaries. Deploys as 3 B stub (inline = no runtime overhead).
+
+### 2.9 Line Count Summary
 
 | Category | Files | Lines |
 |----------|-------|-------|
-| Controller (core) | 9 | 4,807 |
+| Controller (core) | 10 | 4,987 |
 | Adapters (lending) | 7 | 5,349 |
 | Rate providers | 2 | 86 |
 | Automation | 1 | 641 |
 | Interfaces | 1 | 54 |
 | Swap | 1 | 411 |
+| Libraries | 1 | 62 |
 | Periphery | 2 | 626 |
-| **Total** | **23** | **11,974** |
+| **Total** | **25** | **12,216** |
+
+*Note: Line counts reflect Wave 1+2 refactoring. StrategyScoringModule and UsdcMultiLendingVault shrank (F-SIZE-01/02 extraction); StrategySafetyOverflowModule and StrategyConfigLib are new.*
 
 ---
 
@@ -252,6 +264,34 @@ not set). This is a deployment-sequence invariant, not a code bug.
 
 ---
 
+---
+
+## 4a. P0.7 audit-critical surface
+
+The following files are modified by P0.7 and constitute the P0.7 audit
+critical surface. Auditors should pay particular attention to these:
+
+| File | LOC | Why critical |
+|---|---:|---|
+| `controller/StrategySettingsModule.sol` | 655 | Safety adapter setters (H-03 + L-01 fixes) |
+| `controller/StrategyRebalancePlanModule.sol` | 561 | `_executeSafetyOverflow` execution |
+| `controller/StrategyRebalanceGateModule.sol` | 459 | Cap drift mandate detection |
+| `controller/StrategyParamsModule.sol` | 314 | Keeper-facing pokes |
+| `controller/StrategyStorageLayout.sol` | 692 | Slots 78-81 P0.7 declarations |
+| `controller/StrategyAllocCalcModule.sol` | 545 | Preserve-safety-tranche target computation |
+| `lens/StrategyExplainabilityLens.sol` | 535 | Read-only explainability (S2.4-bis refactored) |
+
+Total P0.7 critical surface: 3,761 LOC, ~31.4% of the 11,974 V9.1 audit scope baseline.
+
+### Coverage on P0.7 surface (diff coverage)
+
+- Line coverage: 97.3% (179/184 instrumented lines)
+- Branch coverage: 84% (42/50 audit-surface branches, excluding 4 lens
+  view-only branches documented as exempt)
+- See pre-submission package (security@multyr.fi) for full
+  COVERAGE_BREAKDOWN_PER_FILE.md
+
+
 ## 5. Dependencies
 
 ### 5.1 OpenZeppelin Contracts
@@ -360,6 +400,24 @@ symbolic execution configuration).
 
 ---
 
+### P0.7-specific waivers
+
+- `lens/StrategyExplainabilityLens.sol` — 4 view-only branches exempt
+  from coverage (read-only, no state mutation, off-chain observability).
+  Pre-S2.4-bis the file could not be instrumented under `--ir-minimum`
+  due to Yul stack-too-deep; post-refactor it is instrumentable and
+  6/10 branches are covered.
+- `lib/multyr-core/src/core/modules/QueueModule.sol` — external library
+  dependency, out of `multyr-strategies` audit scope. Stack-too-deep
+  without `--ir-minimum` is upstream library issue, addressed in
+  separate `multyr-core` audit perimeter.
+- 9 defensive guards in `_executeSafetyOverflow` are exercised
+  indirectly via 398k main-path hits during Echidna 1M-sequence
+  campaign. Direct unit tests for 6 of these are deferred due to mock
+  complexity; 3 are explicitly tested in `P07NegativePathsScoring.t.sol`.
+  Full rationale in pre-submission DEFENSIVE_GUARDS.md (available via
+  security@multyr.fi).
+
 ## 8. Audit Checklist
 
 High-priority items for auditors, based on prior internal review findings:
@@ -406,7 +464,7 @@ the raw size measurement.
 `foundry.toml` at repo root. Relevant settings:
 - `via_ir = true` — IR-based optimization, enables DCE (dead code elimination)
 - `optimizer_runs = 200` — standard runs for deployment size vs gas balance
-- `solc = "0.8.28"` (controller); `0.8.24` (rate providers, ILendingAdapter)
+- `solc = "0.8.28"` (all 25 files — floating pragmas pinned to exact 0.8.28 in Wave 1+2)
 
 ---
 
@@ -452,7 +510,7 @@ the raw size measurement.
 **Code reference commit**: b15aeb63 (pierdev, post CITATIONS-FIX merge)
 
 **Sources used**:
-- All 23 files in `src/strategies/usdc-lending/` (11,974 lines total, per `wc -l`)
+- All 25 files in `src/strategies/usdc-lending/` (12,678 lines total, per `wc -l` excluding `factory/`)
 - `docs/_runbooks/RUNBOOK-DOCS-CONSOLIDATE-01b.md` — scope definitions
 - `docs/strategies/multiply/BUGS_FOUND.md` — cross-reference for finding IDs
 

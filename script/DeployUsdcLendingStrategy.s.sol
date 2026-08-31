@@ -1,10 +1,14 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.28;
+pragma solidity 0.8.28;
 
 import { Script } from "forge-std/Script.sol";
 import { console } from "forge-std/console.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
+
+// Chain config
+import { UsdcLendingChainConfig } from "@multyr-strategies/strategies/usdc-lending/config/UsdcLendingChainConfig.sol";
+import { UsdcLendingConfigArbitrum } from "@multyr-strategies/strategies/usdc-lending/config/UsdcLendingConfigArbitrum.sol";
 
 // Core — type references only
 import { CoreVault } from "@multyr-core/core/CoreVault.sol";
@@ -110,31 +114,7 @@ import { SimpleProtocolRegistry } from "../test/helpers/SimpleProtocolRegistry.s
  * @custom:chain-id 42161
  */
 contract DeployUsdcLendingStrategy is Script {
-    // ─── Arbitrum One constants ───────────────────────────────────────────────
-
-    address constant USDC        = 0xaf88d065e77c8cC2239327C5EDb3A432268e5831;
-    address constant AAVE_POOL   = 0x794a61358D6845594F94dc1DB02A252b5b4814aD;
-    address constant AAVE_AUSDC  = 0x724dc807b04555b71ed48a6896b6F41593b8C637;
-
-    // Euler vaults (4 markets)
-    address constant EULER_VAULT_1 = 0x6aFB8d3F6D4A34e9cB2f217317f4dc8e05Aa673b;
-    address constant EULER_VAULT_2 = 0x44C10DA836d2aBe881b77bbB0b3DCE5f85C0C1Cc;
-    address constant EULER_VAULT_3 = 0x05d28A86E057364F6ad1a88944297E58Fc6160b3;
-    address constant EULER_VAULT_4 = 0x0a1eCC5Fe8C9be3C809844fcBe615B46A869b899;
-
-    // Morpho vaults (5 markets added to registry)
-    address constant MORPHO_VAULT_1 = 0x7e97fa6893871A2751B5fE961978DCCb2c201E65;
-    address constant MORPHO_VAULT_2 = 0x4B6F1C9E5d470b97181786b26da0d0945A7cf027;
-    address constant MORPHO_VAULT_4 = 0x5c0C306Aaa9F877de636f4d5822cA9F2E81563BA;
-    address constant MORPHO_VAULT_6 = 0x7c574174DA4b2be3f705c6244B4BfA0815a8B3Ed;
-    address constant MORPHO_VAULT_8 = 0x36b69949d60d06ECcC14DE0Ae63f4E00cc2cd8B9;
-
-    address constant COMET_USDC_V3 = 0x9c4ec768c28520B50860ea7a15bd7213a9fF58bf;
-    address constant DOLOMITE_dUSDC = 0x444868B6e8079ac2c55eea115250f92C2b2c4D14;
-    address constant FLUID_FUSDC    = 0x1A996cb54bb95462040408C06122D45D6Cdb6096;
-    address constant VENUS_VTOKEN   = 0x7D8609f8da70fF9027E9bc5229Af4F6727662707;
-
-    uint256 constant DEFAULT_ADAPTER_CAPACITY = 50_000_000e6; // 50M USDC
+        uint256 constant DEFAULT_ADAPTER_CAPACITY = 50_000_000e6; // 50M USDC
 
     // ─── Deployment result ───────────────────────────────────────────────────
 
@@ -202,16 +182,17 @@ contract DeployUsdcLendingStrategy is Script {
     function run() external returns (DeploymentResult memory result) {
         require(block.chainid == 42161, "WRONG_CHAIN: DeployUsdcLendingStrategy is Arbitrum-only");
 
+        UsdcLendingChainConfig memory chainCfg = UsdcLendingConfigArbitrum.get();
         DeployConfig memory cfg = _loadConfig();
 
         vm.startBroadcast(cfg.deployerPk);
 
-        result = _phase1_deployModulesAndStrategy(cfg);
+        result = _phase1_deployModulesAndStrategy(cfg, chainCfg);
         if (cfg.deployAdapters) {
-            result = _phase1_5_deployAdapters(cfg, result);
+            result = _phase1_5_deployAdapters(cfg, result, chainCfg);
             result = _phase1_6_deployRateProviders(cfg, result);
         }
-        result = _phase1_7_deployOptionalModules(cfg, result);
+        result = _phase1_7_deployOptionalModules(cfg, result, chainCfg);
         _phase2_wireStrategy(cfg, result);
         if (cfg.deployAdapters) {
             _phase2_5_bootstrap(cfg, result);
@@ -241,7 +222,7 @@ contract DeployUsdcLendingStrategy is Script {
 
     // ─── Phase 1: Deploy modules + strategy ──────────────────────────────────
 
-    function _phase1_deployModulesAndStrategy(DeployConfig memory cfg)
+    function _phase1_deployModulesAndStrategy(DeployConfig memory cfg, UsdcLendingChainConfig memory chainCfg)
         internal
         returns (DeploymentResult memory result)
     {
@@ -261,14 +242,14 @@ contract DeployUsdcLendingStrategy is Script {
         address predictedBootstrap = vm.computeCreateAddress(cfg.deployer, n + 5);
 
         // 1.0a ParamsModule
-        StrategyParamsModule params = new StrategyParamsModule(USDC, cfg.vault);
+        StrategyParamsModule params = new StrategyParamsModule(chainCfg.usdc, cfg.vault);
         result.paramsModule = address(params);
         require(result.paramsModule == predictedParams, "ParamsModule address mismatch");
         console.log("[1.0a] StrategyParamsModule:", result.paramsModule);
 
         // 1.0b ScoringModule
         StrategyScoringModule scoring = new StrategyScoringModule(
-            USDC, cfg.vault, result.paramsModule, address(0), predictedOps
+            chainCfg.usdc, cfg.vault, result.paramsModule, address(0), predictedOps
         );
         result.scoringModule = address(scoring);
         require(result.scoringModule == predictedScoring, "ScoringModule address mismatch");
@@ -276,7 +257,7 @@ contract DeployUsdcLendingStrategy is Script {
 
         // 1.0c AdapterOpsModule
         StrategyAdapterOpsModule ops = new StrategyAdapterOpsModule(
-            USDC, cfg.vault, result.paramsModule, address(0), address(0)
+            chainCfg.usdc, cfg.vault, result.paramsModule, address(0), address(0)
         );
         result.adapterOpsModule = address(ops);
         require(result.adapterOpsModule == predictedOps, "AdapterOpsModule address mismatch");
@@ -284,7 +265,7 @@ contract DeployUsdcLendingStrategy is Script {
 
         // 1.0d RebalanceGateModule
         StrategyRebalanceGateModule gate = new StrategyRebalanceGateModule(
-            USDC, cfg.vault, result.paramsModule, result.scoringModule, result.adapterOpsModule
+            chainCfg.usdc, cfg.vault, result.paramsModule, result.scoringModule, result.adapterOpsModule
         );
         result.rebalanceGateModule = address(gate);
         require(result.rebalanceGateModule == predictedGate, "GateModule address mismatch");
@@ -293,7 +274,7 @@ contract DeployUsdcLendingStrategy is Script {
         // 1.1 UsdcMultiLendingVault (assembly CREATE to control nonce)
         UsdcMultiLendingVault.StrategyInitParams memory p = _defaultParams();
         bytes memory args = abi.encode(
-            USDC, cfg.vault, cfg.strategyRouter, cfg.deployer, cfg.guardian,
+            chainCfg.usdc, cfg.vault, cfg.strategyRouter, cfg.deployer, cfg.guardian,
             predictedBootstrap,
             result.paramsModule, result.scoringModule, result.adapterOpsModule,
             result.rebalanceGateModule, p
@@ -307,7 +288,8 @@ contract DeployUsdcLendingStrategy is Script {
         console.log("[1.1] UsdcMultiLendingVault:", address(result.strategy));
 
         // 1.2 StrategyBootstrapper (INTERNAL — one-shot, no separate script)
-        StrategyBootstrapper boot = new StrategyBootstrapper(payable(address(result.strategy)));
+        StrategyBootstrapper boot = new StrategyBootstrapper();
+        boot.initialize(payable(address(result.strategy)), cfg.deployer);
         result.bootstrapper = address(boot);
         require(result.bootstrapper == predictedBootstrap, "Bootstrapper address mismatch");
         require(
@@ -325,7 +307,7 @@ contract DeployUsdcLendingStrategy is Script {
 
     // ─── Phase 1.5: Deploy 7 lending adapters ────────────────────────────────
 
-    function _phase1_5_deployAdapters(DeployConfig memory cfg, DeploymentResult memory result)
+    function _phase1_5_deployAdapters(DeployConfig memory cfg, DeploymentResult memory result, UsdcLendingChainConfig memory chainCfg)
         internal
         returns (DeploymentResult memory)
     {
@@ -335,46 +317,40 @@ contract DeployUsdcLendingStrategy is Script {
         console.log("[1.5.1] SimpleProtocolRegistry:", result.protocolRegistry);
 
         // Morpho markets (5)
-        reg.addVault(SimpleProtocolRegistry.ProtocolType.MORPHO, MORPHO_VAULT_1, "Gauntlet USDC Core", 300, 5_000_000e6);
-        reg.addVault(SimpleProtocolRegistry.ProtocolType.MORPHO, MORPHO_VAULT_2, "Hyperithm USDC Apex", 350, 2_000_000e6);
-        reg.addVault(SimpleProtocolRegistry.ProtocolType.MORPHO, MORPHO_VAULT_4, "Steakhouse HY USDC", 400, 25_000_000e6);
-        reg.addVault(SimpleProtocolRegistry.ProtocolType.MORPHO, MORPHO_VAULT_6, "Gauntlet USDC Prime", 300, 10_000_000e6);
-        reg.addVault(SimpleProtocolRegistry.ProtocolType.MORPHO, MORPHO_VAULT_8, "Yearn Degen USDC", 500, 1_000_000e6);
+        reg.addVault(SimpleProtocolRegistry.ProtocolType.MORPHO, chainCfg.morphoVault1, "Gauntlet USDC Core", 300, 5_000_000e6);
+        reg.addVault(SimpleProtocolRegistry.ProtocolType.MORPHO, chainCfg.morphoVault2, "Hyperithm USDC Apex", 350, 2_000_000e6);
+        reg.addVault(SimpleProtocolRegistry.ProtocolType.MORPHO, chainCfg.morphoVault4, "Steakhouse HY USDC", 400, 25_000_000e6);
+        reg.addVault(SimpleProtocolRegistry.ProtocolType.MORPHO, chainCfg.morphoVault6, "Gauntlet USDC Prime", 300, 10_000_000e6);
+        reg.addVault(SimpleProtocolRegistry.ProtocolType.MORPHO, chainCfg.morphoVault8, "Yearn Degen USDC", 500, 1_000_000e6);
 
         // Comet (Compound III) — 1 market
-        reg.addVault(SimpleProtocolRegistry.ProtocolType.COMPOUND_V3, COMET_USDC_V3, "Compound III USDC", 200, 10_000_000e6);
+        reg.addVault(SimpleProtocolRegistry.ProtocolType.COMPOUND_V3, chainCfg.cometUsdcV3, "Compound III USDC", 200, 10_000_000e6);
 
         // Euler vaults (4)
-        reg.addVault(SimpleProtocolRegistry.ProtocolType.EULER_V2, EULER_VAULT_1, "Euler USDC 1", 300, 5_000_000e6);
-        reg.addVault(SimpleProtocolRegistry.ProtocolType.EULER_V2, EULER_VAULT_2, "Euler USDC 2", 300, 5_000_000e6);
-        reg.addVault(SimpleProtocolRegistry.ProtocolType.EULER_V2, EULER_VAULT_3, "Euler USDC 3", 350, 3_000_000e6);
-        reg.addVault(SimpleProtocolRegistry.ProtocolType.EULER_V2, EULER_VAULT_4, "Euler USDC 4", 350, 3_000_000e6);
+        reg.addVault(SimpleProtocolRegistry.ProtocolType.EULER_V2, chainCfg.eulerVault1, "Euler USDC 1", 300, 5_000_000e6);
+        reg.addVault(SimpleProtocolRegistry.ProtocolType.EULER_V2, chainCfg.eulerVault2, "Euler USDC 2", 300, 5_000_000e6);
+        reg.addVault(SimpleProtocolRegistry.ProtocolType.EULER_V2, chainCfg.eulerVault3, "Euler USDC 3", 350, 3_000_000e6);
+        reg.addVault(SimpleProtocolRegistry.ProtocolType.EULER_V2, chainCfg.eulerVault4, "Euler USDC 4", 350, 3_000_000e6);
 
         // Dolomite — 1 market
-        reg.addVault(SimpleProtocolRegistry.ProtocolType.DOLOMITE, DOLOMITE_dUSDC, "Dolomite dUSDC", 300, 5_000_000e6);
+        reg.addVault(SimpleProtocolRegistry.ProtocolType.DOLOMITE, chainCfg.dolomiteDUsdc, "Dolomite dUSDC", 300, 5_000_000e6);
         console.log("[1.5.2] Registry configured (5 Morpho + 1 Comet + 4 Euler + 1 Dolomite)");
 
         // 1.5.3 Aave (single market — no registry needed)
-        AaveV3USDCAdapter aave = new AaveV3USDCAdapter(
-            USDC, AAVE_POOL, AAVE_AUSDC, cfg.deployer,
-            address(result.strategy), DEFAULT_ADAPTER_CAPACITY
-        );
+        AaveV3USDCAdapter aave = new AaveV3USDCAdapter();
+        aave.initialize(chainCfg.usdc, chainCfg.aavePool, chainCfg.aaveAUsdc, cfg.deployer, address(result.strategy), DEFAULT_ADAPTER_CAPACITY);
         result.aaveAdapter = address(aave);
         console.log("[1.5.3] AaveV3USDCAdapter:", result.aaveAdapter);
 
         // 1.5.4 Morpho
-        MorphoUsdcMultiMarketAdapter morph = new MorphoUsdcMultiMarketAdapter(
-            USDC, cfg.deployer, address(result.strategy),
-            DEFAULT_ADAPTER_CAPACITY, result.protocolRegistry
-        );
+        MorphoUsdcMultiMarketAdapter morph = new MorphoUsdcMultiMarketAdapter();
+        morph.initialize(chainCfg.usdc, cfg.deployer, address(result.strategy), DEFAULT_ADAPTER_CAPACITY, result.protocolRegistry);
         result.morphoAdapter = address(morph);
         console.log("[1.5.4] MorphoAdapter:", result.morphoAdapter);
 
         // 1.5.5 Comet
-        CometUsdcMultiMarketAdapter cmt = new CometUsdcMultiMarketAdapter(
-            USDC, cfg.deployer, address(result.strategy),
-            DEFAULT_ADAPTER_CAPACITY, result.protocolRegistry
-        );
+        CometUsdcMultiMarketAdapter cmt = new CometUsdcMultiMarketAdapter();
+        cmt.initialize(chainCfg.usdc, cfg.deployer, address(result.strategy), DEFAULT_ADAPTER_CAPACITY, result.protocolRegistry);
         result.cometAdapter = address(cmt);
         console.log("[1.5.5] CometAdapter:", result.cometAdapter);
 
@@ -383,44 +359,37 @@ contract DeployUsdcLendingStrategy is Script {
         //   USDC dust transferred to adapter → initializeMarkets() → THEN role transfer in Phase 3.5.
         //   Without this, first strategy deposit to Euler silently fails or quarantines the adapter.
         address[] memory eulerMarkets = new address[](4);
-        eulerMarkets[0] = EULER_VAULT_1; eulerMarkets[1] = EULER_VAULT_2;
-        eulerMarkets[2] = EULER_VAULT_3; eulerMarkets[3] = EULER_VAULT_4;
-        EulerUsdcMultiMarketAdapter euler = new EulerUsdcMultiMarketAdapter(
-            address(result.strategy), USDC, eulerMarkets, result.protocolRegistry
-        );
+        eulerMarkets[0] = chainCfg.eulerVault1; eulerMarkets[1] = chainCfg.eulerVault2;
+        eulerMarkets[2] = chainCfg.eulerVault3; eulerMarkets[3] = chainCfg.eulerVault4;
+        EulerUsdcMultiMarketAdapter euler = new EulerUsdcMultiMarketAdapter();
+        euler.initialize(address(result.strategy), chainCfg.usdc, eulerMarkets, result.protocolRegistry, cfg.deployer);
         result.eulerAdapter = address(euler);
         {
             uint256 EULER_DUST = 1000; // 0.001 USDC for Permit2 setup
             require(
-                IERC20(USDC).balanceOf(cfg.deployer) >= EULER_DUST,
+                IERC20(chainCfg.usdc).balanceOf(cfg.deployer) >= EULER_DUST,
                 "DEPLOY: insufficient USDC for Euler Permit2 dust (need 0.001 USDC)"
             );
-            IERC20(USDC).transfer(address(euler), EULER_DUST);
+            IERC20(chainCfg.usdc).transfer(address(euler), EULER_DUST);
             euler.initializeMarkets();
         }
         console.log("[1.5.6] EulerAdapter:", result.eulerAdapter, "(initializeMarkets done)");
 
         // 1.5.7 Dolomite
-        DolomiteUsdcMultiMarketAdapter dolo = new DolomiteUsdcMultiMarketAdapter(
-            USDC, cfg.deployer, address(result.strategy),
-            DEFAULT_ADAPTER_CAPACITY, result.protocolRegistry
-        );
+        DolomiteUsdcMultiMarketAdapter dolo = new DolomiteUsdcMultiMarketAdapter();
+        dolo.initialize(chainCfg.usdc, cfg.deployer, address(result.strategy), DEFAULT_ADAPTER_CAPACITY, result.protocolRegistry);
         result.dolomiteAdapter = address(dolo);
         console.log("[1.5.7] DolomiteAdapter:", result.dolomiteAdapter);
 
         // 1.5.8 Fluid
-        FluidUsdcMultiMarketAdapter fluid = new FluidUsdcMultiMarketAdapter(
-            USDC, cfg.deployer, address(result.strategy),
-            DEFAULT_ADAPTER_CAPACITY, FLUID_FUSDC
-        );
+        FluidUsdcMultiMarketAdapter fluid = new FluidUsdcMultiMarketAdapter();
+        fluid.initialize(chainCfg.usdc, cfg.deployer, address(result.strategy), DEFAULT_ADAPTER_CAPACITY, chainCfg.fluidFUsdc);
         result.fluidAdapter = address(fluid);
         console.log("[1.5.8] FluidAdapter:", result.fluidAdapter);
 
         // 1.5.9 Venus
-        VenusUsdcMultiMarketAdapter venus = new VenusUsdcMultiMarketAdapter(
-            USDC, cfg.deployer, address(result.strategy),
-            DEFAULT_ADAPTER_CAPACITY, VENUS_VTOKEN
-        );
+        VenusUsdcMultiMarketAdapter venus = new VenusUsdcMultiMarketAdapter();
+        venus.initialize(chainCfg.usdc, cfg.deployer, address(result.strategy), DEFAULT_ADAPTER_CAPACITY, chainCfg.venusVToken, chainCfg.venusBlocksPerYear);
         result.venusAdapter = address(venus);
         console.log("[1.5.9] VenusAdapter:", result.venusAdapter);
         console.log("  [OK] 7 lending adapters deployed");
@@ -461,23 +430,23 @@ contract DeployUsdcLendingStrategy is Script {
 
     // ─── Phase 1.7: Optional modules (MUST run before Phase 2.5 bootstrap) ───
 
-    function _phase1_7_deployOptionalModules(DeployConfig memory cfg, DeploymentResult memory result)
+    function _phase1_7_deployOptionalModules(DeployConfig memory cfg, DeploymentResult memory result, UsdcLendingChainConfig memory chainCfg)
         internal
         returns (DeploymentResult memory)
     {
         UsdcMultiLendingVault strat = result.strategy;
 
         // SettingsModule — only needs (asset, vault) since it doesn't delegatecall scoring
-        StrategySettingsModule settings = new StrategySettingsModule(USDC, cfg.vault);
+        StrategySettingsModule settings = new StrategySettingsModule(chainCfg.usdc, cfg.vault);
         result.settingsModule = address(settings);
         console.log("[1.7.1] StrategySettingsModule:", result.settingsModule);
 
-        StrategyAllocCalcModule allocCalc = new StrategyAllocCalcModule(USDC, address(strat));
+        StrategyAllocCalcModule allocCalc = new StrategyAllocCalcModule(chainCfg.usdc, address(strat));
         result.allocCalcModule = address(allocCalc);
         console.log("[1.7.2] StrategyAllocCalcModule:", result.allocCalcModule);
 
         StrategyRebalancePlanModule planMod = new StrategyRebalancePlanModule(
-            USDC, address(strat),
+            chainCfg.usdc, address(strat),
             result.paramsModule, result.scoringModule, result.adapterOpsModule
         );
         result.rebalancePlanModule = address(planMod);

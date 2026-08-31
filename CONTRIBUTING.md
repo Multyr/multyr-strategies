@@ -57,7 +57,7 @@ test: add AaveAdapter fork test for oracle staleness
 ## Scope Notes
 
 This repo contains production-ready public strategies only. Development strategies
-(Multiply, PT-Multiply) live in the private `multyr-strategies-dev` repo. Do not
+(Multiply, PT-Multiply) live in private development repositories. Do not
 add in-development or experimental code to this repo.
 
 ## License

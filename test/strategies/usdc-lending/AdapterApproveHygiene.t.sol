@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.28;
+pragma solidity 0.8.28;
 
 import { Test } from "forge-std/Test.sol";
 import {
@@ -122,14 +122,10 @@ contract AdapterApproveHygieneTest is Test {
         address[] memory markets = new address[](1);
         markets[0] = address(market);
 
-        adapter = new EulerUsdcMultiMarketAdapter(
-            vaultAddr,
-            address(usdc),
-            markets,
-            address(0) // no registry
-        );
+        adapter = new EulerUsdcMultiMarketAdapter();
+        adapter.initialize(vaultAddr, address(usdc), markets, address(0), address(this));
 
-        // Grant admin roles
+        // Grant admin roles to explicit admin address (address(this) is initial admin from initialize)
         adapter.grantRole(adapter.DEFAULT_ADMIN_ROLE(), admin);
         adapter.grantRole(adapter.PARAM_ROLE(), admin);
     }

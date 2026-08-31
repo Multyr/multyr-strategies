@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.28;
+pragma solidity 0.8.28;
 
 import { Test, Vm, console2 } from "forge-std/Test.sol";
 import {
@@ -29,6 +29,7 @@ import {
 import { StrategyRebalancePlanModule } from "../../../src/strategies/usdc-lending/controller/StrategyRebalancePlanModule.sol";
 import { ParamOutOfRange } from "../../../src/strategies/usdc-lending/controller/StrategyStorageLayout.sol";
 import { StrategyBootstrapper } from "../../../src/strategies/usdc-lending/StrategyBootstrapper.sol";
+import { StrategySafetyOverflowModule } from "../../../src/strategies/usdc-lending/controller/StrategySafetyOverflowModule.sol";
 
 // ============================================================================
 // MOCK CONTRACTS
@@ -97,6 +98,7 @@ contract MockLendingAdapter is ILendingAdapter {
     bool public maxCapacityReverts;
     uint256 public extMarketTVL;
     uint16 public liquidityBpsMock = 10000; // default: 100% liquid
+    uint16 public partialDepositBps = 10000; // 100% = accept full amount; <10000 = partial
 
     constructor(address _underlying) {
         underlying_ = _underlying;
@@ -170,6 +172,14 @@ contract MockLendingAdapter is ILendingAdapter {
         liquidityBpsMock = _bps;
     }
 
+    function setPartialDepositBps(uint16 _bps) external {
+        partialDepositBps = _bps;
+    }
+
+    function setDeposited(uint256 _deposited) external {
+        deposited = _deposited;
+    }
+
     function name() external pure override returns (string memory) {
         return "MockAdapter";
     }
@@ -190,14 +200,17 @@ contract MockLendingAdapter is ILendingAdapter {
 
     function deposit(uint256 assets) external override {
         require(!depositReverts, "deposit reverts");
+        uint256 accepted = (assets * partialDepositBps) / 10000;
         if (pullMode) {
-            // Pull mode: adapter calls transferFrom
-            MockUSDC(underlying_).transferFrom(msg.sender, address(this), assets);
+            // Pull mode: adapter calls transferFrom for accepted portion only
+            MockUSDC(underlying_).transferFrom(msg.sender, address(this), accepted);
         } else {
-            // Push mode: funds already transferred to adapter
-            require(MockUSDC(underlying_).balanceOf(address(this)) >= assets, "not enough");
+            // Push mode: funds already transferred; return excess to sender
+            require(MockUSDC(underlying_).balanceOf(address(this)) >= accepted, "not enough");
+            uint256 excess = assets - accepted;
+            if (excess > 0) MockUSDC(underlying_).transfer(msg.sender, excess);
         }
-        deposited += assets;
+        deposited += accepted;
     }
 
     function withdraw(uint256 assets, address receiver) external override returns (uint256) {
@@ -379,6 +392,11 @@ contract UsdcMultiLendingVaultTestBase is Test {
         StrategyAllocCalcModule _allocCalcMod0 = new StrategyAllocCalcModule(ARBITRUM_USDC, core);
         vm.prank(admin);
         vault.setAllocCalcModule(address(_allocCalcMod0));
+        StrategySafetyOverflowModule _overflowMod = new StrategySafetyOverflowModule(
+            ARBITRUM_USDC, core, address(0), address(0), address(adapterOpsMod)
+        );
+        vm.prank(admin);
+        StrategySettingsModule(address(vault)).setSafetyOverflowModule(address(_overflowMod));
 
         // Grant additional PARAM_ROLE to paramSetter for testing
         vm.prank(admin);
@@ -919,7 +937,7 @@ contract UsdcMultiLendingVault_ParamSetters_Test is UsdcMultiLendingVaultTestBas
 
     function test_setRebalanceParams_updates_values() public {
         vm.prank(paramSetter);
-        StrategySettingsModule(address(vault)).setRebalanceParams(4, 3, 100, 43200, 100, 6000, 600);
+        StrategySettingsModule(address(vault)).setRebalanceParams(4, 3, 100, 43200, 100, 5000, 600);
 
         assertEq(vault.maxAdaptersPerAllocation(), 4);
         assertEq(vault.minAdaptersActive(), 3);
@@ -937,6 +955,31 @@ contract UsdcMultiLendingVault_ParamSetters_Test is UsdcMultiLendingVaultTestBas
         vm.expectRevert(MinAdaptersTooLow.selector);
         vm.prank(paramSetter);
         StrategySettingsModule(address(vault)).setRebalanceParams(1, 2, 50, 21600, 80, 5000, 500);
+    }
+
+    // C-03: bounds on previously-unbounded params
+    function test_setRebalanceParams_reverts_driftTolerance_too_high() public {
+        vm.expectRevert(ParamOutOfRange.selector);
+        vm.prank(paramSetter);
+        StrategySettingsModule(address(vault)).setRebalanceParams(3, 2, 50, 21600, 2001, 5000, 500);
+    }
+
+    function test_setRebalanceParams_reverts_adapterMaxExposure_too_high() public {
+        vm.expectRevert(ParamOutOfRange.selector);
+        vm.prank(paramSetter);
+        StrategySettingsModule(address(vault)).setRebalanceParams(3, 2, 50, 21600, 80, 5001, 500);
+    }
+
+    function test_setRebalanceParams_reverts_newAdapterRamp_too_high() public {
+        vm.expectRevert(ParamOutOfRange.selector);
+        vm.prank(paramSetter);
+        StrategySettingsModule(address(vault)).setRebalanceParams(3, 2, 50, 21600, 80, 5000, 5001);
+    }
+
+    function test_setRebalanceParams_reverts_rebalanceMinMove_too_high() public {
+        vm.expectRevert(ParamOutOfRange.selector);
+        vm.prank(paramSetter);
+        StrategySettingsModule(address(vault)).setRebalanceParams(3, 2, 5001, 21600, 80, 5000, 500);
     }
 
     function test_setHarvestParams_updates_values() public {
@@ -1243,10 +1286,10 @@ contract UsdcMultiLendingVault_Deposit_Test is UsdcMultiLendingVaultTestBase {
 
     function test_deposit_deploys_to_adapters() public {
         _setupAdaptersForRebalance();
-        _mintAndTransferToVault(core, 1000e6);
+        _mintAndTransferToVault(core, 250_000e6);
 
         vm.prank(core);
-        vault.deposit(1000e6);
+        vault.deposit(250_000e6);
 
         // Funds should be deployed to adapters (not left as idle)
         assertLe(vault.idleCash(), vault.dustTolerance());
@@ -1336,10 +1379,10 @@ contract UsdcMultiLendingVault_Withdraw_Test is UsdcMultiLendingVaultTestBase {
         super.setUp();
         _setupAdaptersForRebalance();
 
-        // Deposit 1000 USDC
-        _mintAndTransferToVault(core, 1000e6);
+        // Deposit 250_000 USDC (T3 TVL: dMax=3, all 3 adapters allocatable, idle~=0)
+        _mintAndTransferToVault(core, 250_000e6);
         vm.prank(core);
-        vault.deposit(1000e6);
+        vault.deposit(250_000e6);
     }
 
     function test_withdraw_sends_to_receiver() public {
@@ -1390,18 +1433,18 @@ contract UsdcMultiLendingVault_Withdraw_Test is UsdcMultiLendingVaultTestBase {
     function test_withdraw_caps_to_available() public {
         // Try to withdraw more than available
         vm.prank(core);
-        uint256 withdrawn = vault.withdraw(2000e6, core);
+        uint256 withdrawn = vault.withdraw(500_000e6, core); // 2x deposit to cap at available
 
         // Should only get what's available
-        assertLe(withdrawn, 1000e6);
+        assertLe(withdrawn, 250_000e6);
     }
 
     function test_withdraw_full_amount() public {
         vm.prank(core);
-        uint256 withdrawn = vault.withdraw(1000e6, core);
+        uint256 withdrawn = vault.withdraw(250_000e6, core);
 
-        assertEq(withdrawn, 1000e6);
-        assertEq(usdc.balanceOf(core), 1000e6);
+        assertEq(withdrawn, 250_000e6);
+        assertEq(usdc.balanceOf(core), 250_000e6);
     }
 
     function test_withdraw_redeploys_excess_idle() public {
@@ -1422,10 +1465,10 @@ contract UsdcMultiLendingVault_Harvest_Test is UsdcMultiLendingVaultTestBase {
         super.setUp();
         _setupAdaptersForRebalance();
 
-        // Deposit 1000 USDC
-        _mintAndTransferToVault(core, 1000e6);
+        // Deposit 250_000 USDC (T3 TVL: dMax=3, idle~=0 after deploy)
+        _mintAndTransferToVault(core, 250_000e6);
         vm.prank(core);
-        vault.deposit(1000e6);
+        vault.deposit(250_000e6);
     }
 
     function test_harvest_collects_from_adapters() public {
@@ -1791,9 +1834,9 @@ contract UsdcMultiLendingVault_Views_Test is UsdcMultiLendingVaultTestBase {
         super.setUp();
         _setupAdaptersForRebalance();
 
-        _mintAndTransferToVault(core, 1000e6);
+        _mintAndTransferToVault(core, 250_000e6);
         vm.prank(core);
-        vault.deposit(1000e6);
+        vault.deposit(250_000e6);
     }
 
     function test_asset_returns_usdc() public view {
@@ -1801,11 +1844,11 @@ contract UsdcMultiLendingVault_Views_Test is UsdcMultiLendingVaultTestBase {
     }
 
     function test_totalAssets_includes_adapters() public view {
-        assertEq(vault.totalAssets(), 1000e6);
+        assertEq(vault.totalAssets(), 250_000e6);
     }
 
     function test_withdrawableAssets_returns_sum() public view {
-        assertEq(vault.withdrawableAssets(), 1000e6);
+        assertEq(vault.withdrawableAssets(), 250_000e6);
     }
 
     function test_positions_returns_all_adapters() public view {
@@ -1826,7 +1869,7 @@ contract UsdcMultiLendingVault_Views_Test is UsdcMultiLendingVaultTestBase {
         assertFalse(vault.hasIdleCash());
     }
 
-    function test_canHarvest_returns_status() public view {
+    function test_canHarvest_returns_status() public {
         (bool ok, uint256 sumHarvestable, uint64 sinceLastHarvest) = vault.canHarvest();
         assertFalse(ok); // No harvestable profit and recent harvest
         assertEq(sumHarvestable, 0);
@@ -2000,20 +2043,20 @@ contract UsdcMultiLendingVault_NoCashInvariant_Test is UsdcMultiLendingVaultTest
     function test_deposit_enforces_noCash() public {
         // With enabled adapters, deposit should work and leave no idle
         _setupAdaptersForRebalance();
-        _mintAndTransferToVault(core, 1000e6);
+        _mintAndTransferToVault(core, 250_000e6);
 
         vm.prank(core);
-        vault.deposit(1000e6);
+        vault.deposit(250_000e6);
 
         assertLe(vault.idleCash(), vault.dustTolerance());
     }
 
     function test_harvest_enforces_noCash() public {
         _setupAdaptersForRebalance();
-        _mintAndTransferToVault(core, 1000e6);
+        _mintAndTransferToVault(core, 250_000e6);
 
         vm.prank(core);
-        vault.deposit(1000e6);
+        vault.deposit(250_000e6);
 
         adapter1.setHarvestable(100e6);
 
@@ -2404,9 +2447,9 @@ contract UsdcMultiLendingVault_MutationKiller_Test is UsdcMultiLendingVaultTestB
     // ---- _realizeLiquidity tests (L533, L577-584) ----
 
     function test_realizeLiquidity_calculates_pro_rata() public {
-        _mintAndTransferToVault(core, 1000e6);
+        _mintAndTransferToVault(core, 250_000e6);
         vm.prank(core);
-        vault.deposit(1000e6);
+        vault.deposit(250_000e6);
 
         uint256 pos1Before = vault.positionAssets(address(adapter1));
         uint256 pos2Before = vault.positionAssets(address(adapter2));
@@ -2626,13 +2669,13 @@ contract UsdcMultiLendingVault_MutationKiller_Test is UsdcMultiLendingVaultTestB
 
     function test_maxExposure_limits_allocation() public {
         // Use default params (50% exposure, 34% ramp) - allows full deployment with 3 adapters
-        _mintAndTransferToVault(core, 1000e6);
+        _mintAndTransferToVault(core, 250_000e6);
         vm.prank(core);
-        vault.deposit(1000e6);
+        vault.deposit(250_000e6);
 
         // Verify funds were deployed (tests that exposure calculation works)
         uint256 tvl = vault.totalAssets();
-        assertEq(tvl, 1000e6);
+        assertEq(tvl, 250_000e6);
 
         // All funds should be allocated across adapters (idle <= dust)
         assertLe(vault.idleCash(), vault.dustTolerance());
@@ -2864,7 +2907,7 @@ contract S21_CoordinationHooksTest is UsdcMultiLendingVaultTestBase {
     }
 
     // GAP: liquidityReadinessBps not asserted at zero-position state
-    function test_liquidityReadinessBps_tenThousandWithNoAdapters() public view {
+    function test_liquidityReadinessBps_tenThousandWithNoAdapters() public {
         assertEq(vault.liquidityReadinessBps(), 10000, "no adapters => fully liquid");
     }
 
@@ -3245,7 +3288,8 @@ contract S22_BootstrapperTest is UsdcMultiLendingVaultTestBase {
 
         // planMod/settingsMod/allocCalcMod deployed AFTER b to preserve nonce ordering.
         // v=currentNonce+0, b=currentNonce+1. Modules go after the require check.
-        b = new StrategyBootstrapper(payable(address(v)));  // currentNonce+1 (as predicted)
+        b = new StrategyBootstrapper();  // currentNonce+1 (as predicted)
+        b.initialize(payable(address(v)), address(this));
         require(address(b) == predictedB, "nonce prediction off");
 
         StrategyRebalancePlanModule planMod = new StrategyRebalancePlanModule(

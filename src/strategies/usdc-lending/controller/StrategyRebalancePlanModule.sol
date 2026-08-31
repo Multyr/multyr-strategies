@@ -298,7 +298,15 @@ contract StrategyRebalancePlanModule is StrategyStorageLayout {
                 if (amount > idle) amount = idle;
                 if (amount > 0) {
                     bool ok = _safeAdapterDepositViaOps(adapter, amount);
-                    if (ok) positionAssets[adapter] += amount;
+                    if (ok) {
+                        // Use balance delta — adapter may accept less than planned
+                        // (capacity reached, protocol cap, etc.).
+                        uint256 actualDeposited = idle - ASSET.balanceOf(address(this));
+                        positionAssets[adapter] += actualDeposited;
+                        if (actualDeposited < amount) {
+                            emit RebalanceDepositPartial(adapter, amount, actualDeposited);
+                        }
+                    }
                 }
             } else {
                 try ILendingAdapter(adapter).withdraw(amount, address(this)) returns (uint256 withdrawn) {

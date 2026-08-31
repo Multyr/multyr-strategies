@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.28;
+pragma solidity 0.8.28;
 
 // ===== OpenZeppelin imports =====
 import { SafeERC20, IERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
 import { ReentrancyGuard } from "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import { Initializable } from "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 
 // ===== Minimal ERC-4626 interface for Fluid fToken =====
 interface IERC4626 {
@@ -46,16 +47,17 @@ interface ILendingAdapter {
 /// @dev Single-market initially; can be extended to multi-market pattern later.
 ///      PULL mode: adapter calls transferFrom() to pull USDC from strategy during deposit().
 ///      APY: PPS-snapshot-based (pokeAPYSnapshots stores share price, currentAPYBps computes delta).
-contract FluidUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, ReentrancyGuard {
+contract FluidUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, ReentrancyGuard, Initializable {
     using SafeERC20 for IERC20;
 
     // ===== Roles =====
     bytes32 public constant PARAM_ROLE = keccak256("PARAM_ROLE");
 
     // ===== Immutable Storage =====
-    address public immutable asset;       // USDC
-    address public immutable vault;       // Strategy vault
-    IERC4626 public immutable fToken;     // Fluid fUSDC
+    // --- V10 Storage (was immutable in V9.x; logically immutable post-initialize) ---
+    address public asset;       // USDC
+    address public vault;       // Strategy vault
+    IERC4626 public fToken;     // Fluid fUSDC
 
     // ===== Configurable Storage =====
     uint256 public capacity;              // Deposit cap (0 = unlimited)
@@ -90,13 +92,15 @@ contract FluidUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
     }
 
     // ===== Constructor =====
-    constructor(
+
+    /// @notice One-shot initialization called atomically by AdapterFactory.
+    function initialize(
         address usdc_,
         address admin_,
         address vault_,
         uint256 capacity_,
         address fToken_
-    ) {
+    ) external initializer {
         require(
             usdc_ != address(0) && admin_ != address(0)
                 && vault_ != address(0) && fToken_ != address(0),

@@ -1,0 +1,398 @@
+{
+    "exitcode": 0,
+    "test_results": {
+        "test/strategies/usdc-lending/halmos/HalmosSafetyAdapterCapTier.t.sol:HalmosSafetyAdapterCapTier": [
+            {
+                "name": "check_P2c_govbound_abs4000(uint16,uint64,uint64)",
+                "exitcode": 0,
+                "num_models": 0,
+                "models": [],
+                "num_paths": [
+                    17,
+                    4,
+                    0
+                ],
+                "time": [
+                    1.3314940999844112,
+                    0.09729700000025332,
+                    1.2341929999529384
+                ],
+                "num_bounded_loops": 0
+            },
+            {
+                "name": "check_P2c_govbound_abs5000(uint16,uint64,uint64)",
+                "exitcode": 0,
+                "num_models": 0,
+                "models": [],
+                "num_paths": [
+                    17,
+                    4,
+                    0
+                ],
+                "time": [
+                    2.368609800003469,
+                    0.08699370000977069,
+                    2.281612300022971
+                ],
+                "num_bounded_loops": 0
+            },
+            {
+                "name": "check_P2c_govbound_abs6000(uint16,uint64,uint64)",
+                "exitcode": 0,
+                "num_models": 0,
+                "models": [],
+                "num_paths": [
+                    17,
+                    4,
+                    0
+                ],
+                "time": [
+                    4.125037099991459,
+                    0.08878679998451844,
+                    4.036246299976483
+                ],
+                "num_bounded_loops": 0
+            },
+            {
+                "name": "check_P2c_govbound_abs7500(uint16,uint64,uint64)",
+                "exitcode": 0,
+                "num_models": 0,
+                "models": [],
+                "num_paths": [
+                    17,
+                    4,
+                    0
+                ],
+                "time": [
+                    8.863012799993157,
+                    0.0927631999948062,
+                    8.770245599967893
+                ],
+                "num_bounded_loops": 0
+            },
+            {
+                "name": "check_P2c_govbound_abs8000(uint16,uint64,uint64)",
+                "exitcode": 0,
+                "num_models": 0,
+                "models": [],
+                "num_paths": [
+                    9,
+                    4,
+                    0
+                ],
+                "time": [
+                    0.05679420003434643,
+                    0.05677399999694899,
+                    1.6600009985268116e-05
+                ],
+                "num_bounded_loops": 0
+            },
+            {
+                "name": "check_P3a_mandate_monotone_fb4000_n4000_tol0(uint64)",
+                "exitcode": 0,
+                "num_models": 0,
+                "models": [],
+                "num_paths": [
+                    4,
+                    1,
+                    0
+                ],
+                "time": [
+                    0.03131659998325631,
+                    0.03129870002157986,
+                    1.5199999324977398e-05
+                ],
+                "num_bounded_loops": 0
+            },
+            {
+                "name": "check_P3a_mandate_monotone_fb6000_n4000_tol500(uint64)",
+                "exitcode": 0,
+                "num_models": 0,
+                "models": [],
+                "num_paths": [
+                    7,
+                    1,
+                    0
+                ],
+                "time": [
+                    12.799720100010745,
+                    0.049489400000311434,
+                    12.75022769998759
+                ],
+                "num_bounded_loops": 0
+            },
+            {
+                "name": "check_P3a_mandate_monotone_fb7500_n6000_tol0(uint64)",
+                "exitcode": 0,
+                "num_models": 0,
+                "models": [],
+                "num_paths": [
+                    7,
+                    1,
+                    0
+                ],
+                "time": [
+                    15.564968699996825,
+                    0.0599000999936834,
+                    15.505065799981821
+                ],
+                "num_bounded_loops": 0
+            },
+            {
+                "name": "check_P3a_mandate_monotone_fb8000_n4000_tol0(uint64)",
+                "exitcode": 0,
+                "num_models": 0,
+                "models": [],
+                "num_paths": [
+                    7,
+                    1,
+                    0
+                ],
+                "time": [
+                    7.715113100013696,
+                    0.05357479996746406,
+                    7.661534900020342
+                ],
+                "num_bounded_loops": 0
+            },
+            {
+                "name": "check_P3a_mandate_monotone_fb8000_n4000_tol1000(uint64)",
+                "exitcode": 0,
+                "num_models": 0,
+                "models": [],
+                "num_paths": [
+                    7,
+                    1,
+                    0
+                ],
+                "time": [
+                    7.5610823999741115,
+                    0.06557279999833554,
+                    7.495506099949125
+                ],
+                "num_bounded_loops": 0
+            },
+            {
+                "name": "check_P3a_mandate_monotone_fb8000_n8000_tol500(uint64)",
+                "exitcode": 0,
+                "num_models": 0,
+                "models": [],
+                "num_paths": [
+                    4,
+                    1,
+                    0
+                ],
+                "time": [
+                    0.035441999963950366,
+                    0.03542480000760406,
+                    1.309998333454132e-05
+                ],
+                "num_bounded_loops": 0
+            },
+            {
+                "name": "check_P3b_safety_fire_implies_normal_fire_fb4000_n4000_tol0(uint64,uint64)",
+                "exitcode": 0,
+                "num_models": 0,
+                "models": [],
+                "num_paths": [
+                    6,
+                    2,
+                    0
+                ],
+                "time": [
+                    0.0317837999900803,
+                    0.031764700019266456,
+                    1.669995253905654e-05
+                ],
+                "num_bounded_loops": 0
+            },
+            {
+                "name": "check_P3b_safety_fire_implies_normal_fire_fb6000_n4000_tol500(uint64,uint64)",
+                "exitcode": 0,
+                "num_models": 0,
+                "models": [],
+                "num_paths": [
+                    9,
+                    2,
+                    0
+                ],
+                "time": [
+                    9.18790890002856,
+                    0.047875899996142834,
+                    9.14003040001262
+                ],
+                "num_bounded_loops": 0
+            },
+            {
+                "name": "check_P3b_safety_fire_implies_normal_fire_fb7500_n6000_tol0(uint64,uint64)",
+                "exitcode": 0,
+                "num_models": 0,
+                "models": [],
+                "num_paths": [
+                    9,
+                    2,
+                    0
+                ],
+                "time": [
+                    15.73673790000612,
+                    0.07477350003318861,
+                    15.661961300007533
+                ],
+                "num_bounded_loops": 0
+            },
+            {
+                "name": "check_P3b_safety_fire_implies_normal_fire_fb8000_n4000_tol0(uint64,uint64)",
+                "exitcode": 0,
+                "num_models": 0,
+                "models": [],
+                "num_paths": [
+                    9,
+                    2,
+                    0
+                ],
+                "time": [
+                    8.868091900018044,
+                    0.05587839998770505,
+                    8.812202300003264
+                ],
+                "num_bounded_loops": 0
+            },
+            {
+                "name": "check_P3b_safety_fire_implies_normal_fire_fb8000_n4000_tol1000(uint64,uint64)",
+                "exitcode": 0,
+                "num_models": 0,
+                "models": [],
+                "num_paths": [
+                    9,
+                    2,
+                    0
+                ],
+                "time": [
+                    7.9111583000048995,
+                    0.061804500001017004,
+                    7.849350699980278
+                ],
+                "num_bounded_loops": 0
+            },
+            {
+                "name": "check_P3b_safety_fire_implies_normal_fire_fb8000_n8000_tol500(uint64,uint64)",
+                "exitcode": 0,
+                "num_models": 0,
+                "models": [],
+                "num_paths": [
+                    6,
+                    2,
+                    0
+                ],
+                "time": [
+                    0.032653899979777634,
+                    0.03263049997622147,
+                    2.0499981474131346e-05
+                ],
+                "num_bounded_loops": 0
+            },
+            {
+                "name": "check_fbCeiling_le_abs_ceiling(uint16,uint16,uint64,uint64)",
+                "exitcode": 0,
+                "num_models": 0,
+                "models": [],
+                "num_paths": [
+                    11,
+                    4,
+                    0
+                ],
+                "time": [
+                    0.14589529996737838,
+                    0.0728637000429444,
+                    0.0730286999605596
+                ],
+                "num_bounded_loops": 0
+            },
+            {
+                "name": "check_fbCeiling_le_rel_ceiling_when_active(uint16,uint16,uint64,uint64)",
+                "exitcode": 0,
+                "num_models": 0,
+                "models": [],
+                "num_paths": [
+                    8,
+                    2,
+                    0
+                ],
+                "time": [
+                    0.055182899988722056,
+                    0.055163799959700555,
+                    1.6400008462369442e-05
+                ],
+                "num_bounded_loops": 0
+            },
+            {
+                "name": "check_overflow_never_exceeds_fallback_ceiling(uint16,uint16,uint64,uint64,uint64,uint64)",
+                "exitcode": 0,
+                "num_models": 0,
+                "models": [],
+                "num_paths": [
+                    32,
+                    12,
+                    0
+                ],
+                "time": [
+                    0.4889778000069782,
+                    0.28263430000515655,
+                    0.2063404999789782
+                ],
+                "num_bounded_loops": 0
+            },
+            {
+                "name": "check_overflow_self_regulates_no_overshoot(uint16,uint16,uint64,uint64,uint64,uint64)",
+                "exitcode": 0,
+                "num_models": 0,
+                "models": [],
+                "num_paths": [
+                    30,
+                    12,
+                    0
+                ],
+                "time": [
+                    0.32862400001613423,
+                    0.25120860000606626,
+                    0.07741240004543215
+                ],
+                "num_bounded_loops": 0
+            },
+            {
+                "name": "check_preserve_safety_tranche_no_unwind(uint16,uint16,uint64,uint64,uint64,uint64)",
+                "exitcode": 0,
+                "num_models": 0,
+                "models": [],
+                "num_paths": [
+                    22,
+                    12,
+                    0
+                ],
+                "time": [
+                    0.15937559999292716,
+                    0.15935500001069158,
+                    1.7799960914999247e-05
+                ],
+                "num_bounded_loops": 0
+            },
+            {
+                "name": "check_safety_disabled_equals_legacy(uint16,uint64,uint16)",
+                "exitcode": 0,
+                "num_models": 0,
+                "models": [],
+                "num_paths": [
+                    6,
+                    1,
+                    0
+                ],
+                "time": [
+                    0.03708179999375716,
+                    0.037063099967781454,
+                    1.6400008462369442e-05
+                ],
+                "num_bounded_loops": 0
+            }
+        ]
+    }
+}

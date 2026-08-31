@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.28;
+pragma solidity 0.8.28;
 
 import { Test, console2 } from "forge-std/Test.sol";
 import { StrategyExplainabilityLens } from "../../../src/strategies/usdc-lending/lens/StrategyExplainabilityLens.sol";
@@ -20,6 +20,7 @@ import {
 import { StrategyAdapterOpsModule } from "../../../src/strategies/usdc-lending/controller/StrategyAdapterOpsModule.sol";
 import { StrategyRebalanceGateModule } from "../../../src/strategies/usdc-lending/controller/StrategyRebalanceGateModule.sol";
 import { StrategyRebalancePlanModule } from "../../../src/strategies/usdc-lending/controller/StrategyRebalancePlanModule.sol";
+import { StrategySafetyOverflowModule } from "../../../src/strategies/usdc-lending/controller/StrategySafetyOverflowModule.sol";
 
 // ============================================================================
 // MOCK CONTRACTS (Shared with unit tests)
@@ -319,6 +320,11 @@ contract UsdcMultiLendingVaultFuzzBase is Test {
         StrategyAllocCalcModule _allocCalcMod0 = new StrategyAllocCalcModule(ARBITRUM_USDC, core);
         vm.prank(admin);
         vault.setAllocCalcModule(address(_allocCalcMod0));
+        StrategySafetyOverflowModule _overflowMod = new StrategySafetyOverflowModule(
+            ARBITRUM_USDC, core, address(0), address(0), address(adapterOpsMod)
+        );
+        vm.prank(admin);
+        StrategySettingsModule(address(vault)).setSafetyOverflowModule(address(_overflowMod));
 
         vm.startPrank(admin);
         vault.grantRole(PARAM_ROLE, paramSetter);
@@ -526,11 +532,11 @@ contract UsdcMultiLendingVault_Fuzz_Parameters is UsdcMultiLendingVaultFuzzBase 
     ) public {
         maxAdapters = uint16(bound(maxAdapters, 2, 100));
         minAdapters = uint16(bound(minAdapters, 2, maxAdapters));
-        minMoveBps = uint16(bound(minMoveBps, 1, 10000));
+        minMoveBps = uint16(bound(minMoveBps, 1, 5000));         // C-03: max 50%
         minSeconds = uint32(bound(minSeconds, 3600, 604800)); // range: 1h-7d
-        driftBps = uint16(bound(driftBps, 1, 10000));
-        maxExposureBps = uint16(bound(maxExposureBps, 1, 10000));
-        rampBps = uint16(bound(rampBps, 1, 10000));
+        driftBps = uint16(bound(driftBps, 1, 2000));             // C-03: max 20%
+        maxExposureBps = uint16(bound(maxExposureBps, 1, 5000)); // C-03: max 50%
+        rampBps = uint16(bound(rampBps, 1, 5000));               // C-03: max 50%
 
         vm.prank(paramSetter);
         StrategySettingsModule(address(vault)).setRebalanceParams(
@@ -884,6 +890,7 @@ contract UsdcMultiLendingVault_Fuzz_AccessControl is UsdcMultiLendingVaultFuzzBa
     /// @notice Fuzz: random addresses cannot call privileged functions
     function testFuzz_deposit_onlyCore(address caller) public {
         vm.assume(caller != core);
+        vm.assume(caller != router); // router also holds CORE_ROLE
 
         _mintAndApprove(caller, 1000e6);
 

@@ -260,18 +260,54 @@ contract StrategyAllocCalcModule is StrategyStorageLayout {
         }
         if (totalScore < 1) return allocs;
         uint16 maxRelGov = maxRelativeExposureBps;
-        for (uint256 i = 0; i < n;) {
-            uint256 maxExp = (_effectiveAbsCapBps(scores[i].adapter) * tvl) / 1e4;
-            uint256 raw = (scores[i].score * tvl) / totalScore;
-            uint256 capped = raw > maxExp ? maxExp : raw;
 
-            uint256 extTVL = cachedExternalTVL[scores[i].adapter];
+        // P0.7 (2026-06-11) — conditional safety margin applied ONLY when a cap
+        // binds. Prevents the post-rebalance position from sitting exactly at
+        // the cap, which would re-trigger the mandate as soon as the external
+        // TVL fluctuated. See docs/SAFETY_ADAPTER_TIER.md.
+        uint256 marginBps = uint256(targetSafetyMarginBps);
+        uint256 safetyMult = 10_000 - marginBps;
+
+        for (uint256 i = 0; i < n;) {
+            address adapter = scores[i].adapter;
+            // Scoring path always uses NORMAL caps. The fallback caps are
+            // intentionally NOT honoured here — opportunistic allocation must
+            // not target above the regular cap; only the safety-overflow path
+            // can push above it.
+            uint256 maxExp = (_effectiveAbsCapBps(adapter) * tvl) / 1e4;
+            uint256 raw = (scores[i].score * tvl) / totalScore;
+            uint256 capped = raw > maxExp ? (maxExp * safetyMult) / 10_000 : raw;
+
+            uint256 extTVL = cachedExternalTVL[adapter];
             if (extTVL > 0) {
                 uint16 dynRel = _effectiveRelativeCapBps(extTVL);
                 uint16 effRel = (maxRelGov > 0 && maxRelGov < dynRel)
                     ? maxRelGov : dynRel;
                 uint256 relCap = (uint256(effRel) * extTVL) / 1e4;
-                if (capped > relCap) capped = relCap;
+                if (capped > relCap) capped = (relCap * safetyMult) / 10_000;
+            }
+
+            // === PRESERVE SAFETY TRANCHE (P0.7 — the critical architectural rule)
+            // For safety adapters, if the current position is between the
+            // normal scoring target and the fallback ceiling, HOLD the
+            // position. The overflow path is the ONLY mechanism that grows
+            // the safety tranche above the normal target; the rebalance plan
+            // must never unwind that legitimate tranche, otherwise the gain
+            // from routing overflow to the safety adapter is immediately
+            // given back at the next rebalance.
+            SafetyFallback memory sf = safetyFallback[adapter];
+            if (sf.absCapBps != 0) {
+                uint256 current = positionAssets[adapter];
+                if (current > capped) {
+                    uint256 fbCeiling = (uint256(sf.absCapBps) * tvl) / 1e4;
+                    if (extTVL > 0 && sf.relCapBps > 0) {
+                        uint256 fbRelCeiling = (uint256(sf.relCapBps) * extTVL) / 1e4;
+                        if (fbRelCeiling < fbCeiling) fbCeiling = fbRelCeiling;
+                    }
+                    if (current <= fbCeiling) {
+                        capped = current;
+                    }
+                }
             }
 
             allocs[i] = capped;
@@ -322,6 +358,16 @@ contract StrategyAllocCalcModule is StrategyStorageLayout {
         internal view returns (bool, uint256)
     {
         if (flagged[adapter]) return (false, 0);
+        // P0.7 (2026-06-11) — non-safety adapters in mandate cooldown are
+        // skipped for opportunistic redeploy. Safety adapters NEVER enter
+        // cooldown (the mandate path doesn't set lastRelCapMandateTs for them).
+        if (safetyFallback[adapter].absCapBps == 0) {
+            uint32 cd = mandateRedeployCooldownSeconds;
+            uint64 lastTs = lastRelCapMandateTs[adapter];
+            if (cd > 0 && lastTs > 0 && block.timestamp < lastTs + cd) {
+                return (false, 0);
+            }
+        }
         uint256 conf = _tvlConfidence(adapter);
         if (conf == CONFIDENCE_ZERO) return (false, 0);
         uint256 current = positionAssets[adapter];
@@ -398,6 +444,21 @@ contract StrategyAllocCalcModule is StrategyStorageLayout {
             }
             remaining -= distributed;
         }
+        // Residual redistribution: floor-division across selCount adapters leaves
+        // up to (selCount-1) wei unassigned per pass. After the 3-pass loop, if a
+        // sub-dust residual remains and an adapter still has headroom, assign it
+        // there rather than leaving it as idle. Prevents silent idle accumulation
+        // across repeated deployIdle calls (systematic drift).
+        if (remaining > 0 && remaining <= _dust) {
+            for (uint256 j = 0; j < selCount; ++j) {
+                if (clamped[j]) continue;
+                uint256 rem = headrooms[j] > targets[j] ? headrooms[j] - targets[j] : 0;
+                if (rem >= remaining) {
+                    targets[j] += remaining;
+                    break;
+                }
+            }
+        }
     }
 
     // ── Inlined cap/seed helpers (mirrors ScoringModule — same storage context) ─
@@ -417,7 +478,15 @@ contract StrategyAllocCalcModule is StrategyStorageLayout {
     function _effectiveAbsCapBps(address adapter) internal view returns (uint256) {
         uint16 dMax = _effectiveMaxAdapters();
         if (dMax == 0) return 0;
-        if (dMax == 1) return 10000;
+        // T1: single-adapter mode. Governance ceiling (adapterMaxExposureBps) still
+        // respected if set. Sentinel preservation: globalCeiling == 0 = no constraint
+        // -> returns 10000 (100% TVL allowed = original T1 behavior).
+        // Fix: F-SCORING-INV2 (audit Wave 2) -- ensures governance setter never silently
+        // overridden regardless of TVL.
+        if (dMax == 1) {
+            uint16 globalCeiling = adapterMaxExposureBps;
+            return globalCeiling > 0 ? uint256(globalCeiling) : 10000;
+        }
         uint256 cap = (11000 + uint256(dMax) - 1) / uint256(dMax);
         if (cap > 10000) cap = 10000;
         if (cap < 2500) cap = 2500;

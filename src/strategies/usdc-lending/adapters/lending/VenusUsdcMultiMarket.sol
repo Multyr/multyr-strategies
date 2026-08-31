@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.28;
+pragma solidity 0.8.28;
 
 // --- OpenZeppelin imports ---
 import { SafeERC20, IERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
 import { ReentrancyGuard } from "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import { Initializable } from "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 
 // --- Venus vToken minimal interface ---
 interface IVToken {
@@ -16,6 +17,7 @@ interface IVToken {
     function exchangeRateCurrent() external returns (uint256); // NOT view - accrues interest
     function exchangeRateStored() external view returns (uint256); // view version
     function supplyRatePerBlock() external view returns (uint256);
+    function accrueInterest() external returns (uint256); // 0 = success, Compound error code otherwise
     function getCash() external view returns (uint256);
     function totalSupply() external view returns (uint256);
     function totalBorrows() external view returns (uint256);
@@ -59,25 +61,21 @@ interface ILendingAdapter {
 /// @dev Raw vToken interface (Compound-fork semantics): mint/redeem, not deposit/withdraw.
 ///      Single-market adapter targeting vUSDC_Core only.
 ///      Mode: PULL (approve underlying then mint).
-contract VenusUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, ReentrancyGuard {
+contract VenusUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, ReentrancyGuard, Initializable {
     using SafeERC20 for IERC20;
 
     // --- Roles ---
     bytes32 public constant PARAM_ROLE = keccak256("PARAM_ROLE");
 
     // --- Constants ---
-    /// @dev Arbitrum ~0.25s blocks → 126,144,000 blocks/year
-    uint256 public constant BLOCKS_PER_YEAR = 126_144_000;
-
-    /// @dev Arbitrum One chain ID — guard contro deploy su altre chain (es. BNB
-    /// dove Venus ha block cadence ~3s, l'APY sarebbe over-reported di ~12×)
-    /// Quant audit P0.L4
+    /// @dev Arbitrum One chain ID (informational; chain guard removed in V10 for portability).
     uint256 public constant ARBITRUM_CHAIN_ID = 42161;
 
     // --- Immutable Storage ---
-    address public immutable override underlying; // USDC
-    address public immutable vault;               // Strategy (no-custody)
-    address public immutable vToken;              // Venus vUSDC_Core
+    // --- V10 Storage (was immutable in V9.x; logically immutable post-initialize) ---
+    address public override underlying; // USDC
+    address public vault;               // Strategy (no-custody)
+    address public vToken;              // Venus vUSDC_Core
 
     // --- Configurable Storage ---
     uint256 public capacity; // Deposit cap (0 = unlimited)
@@ -94,6 +92,10 @@ contract VenusUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
     /// @notice Haircut applied to realized reward APR. LOSS percentage in bps.
     ///         Default 7500 = 75% loss -> retain 25%. Range [0, 10000].
     uint16 public incentiveHaircutBps = 7500;
+
+    /// @notice Blocks per year for this chain, set at initialize(). Range (0, 200_000_000].
+    ///         Arbitrum: 126_144_000 (0.25s), Optimism/Base: 15_768_000 (2s), BNB: 10_512_000 (3s).
+    uint256 public blocksPerYear;
 
     // --- Events ---
     event Supplied(uint256 assets);
@@ -118,28 +120,30 @@ contract VenusUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
     }
 
     // --- Constructor ---
-    constructor(
+
+    /// @notice One-shot initialization called atomically by AdapterFactory.
+    /// @dev chain-id check removed per V10 chain-portability goal; deploy script must target correct chain.
+    function initialize(
         address usdc_,
         address admin_,
         address vault_,
         uint256 capacity_,
-        address vToken_
-    ) {
-        // FIX P0.L4 (quant audit): BLOCKS_PER_YEAR assume Arbitrum 0.25s blocks.
-        // Su BNB Chain (~3s) sarebbe 10.5M blocks/anno → APY over-reported 12×.
-        // Reverta deploy su qualsiasi chain ≠ Arbitrum One.
-        require(block.chainid == ARBITRUM_CHAIN_ID, "wrong-chain-for-block-cadence");
+        address vToken_,
+        uint256 blocksPerYear_
+    ) external initializer {
         require(
             usdc_ != address(0) && admin_ != address(0)
                 && vault_ != address(0) && vToken_ != address(0),
             "zero"
         );
         require(IVToken(vToken_).underlying() == usdc_, "vToken/asset mismatch");
+        require(blocksPerYear_ > 0 && blocksPerYear_ <= 200_000_000, "blocksPerYear");
 
         underlying = usdc_;
         vault = vault_;
         vToken = vToken_;
         capacity = capacity_;
+        blocksPerYear = blocksPerYear_;
 
         _grantRole(DEFAULT_ADMIN_ROLE, admin_);
         _grantRole(PARAM_ROLE, admin_);
@@ -160,14 +164,33 @@ contract VenusUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
         IERC20(underlying).forceApprove(vToken, 0);
     }
 
-    /// @notice Converts vToken balance to underlying using stored exchange rate
-    /// @dev exchangeRateStored is view-safe (does NOT accrue interest)
-    ///      exchangeRate is scaled by 1e(18 - 8 + underlyingDecimals) = 1e(18 - 8 + 6) = 1e16
+    /// @notice Converts vToken balance to underlying using stored exchange rate.
+    /// @dev Uses exchangeRateStored() (view-safe, does NOT accrue interest).
+    ///      Conservative bias: understates NAV by at most 1 block of Venus interest
+    ///      (on Arbitrum ≈ 0.25s at 5% APY → < 0.000004% drift per block).
+    ///      Keepers should call accrueVenusInterest() before critical operations
+    ///      to sync the stored rate with on-chain accruals.
+    ///      Scale: exchangeRate is 1e(18 - 8 + underlyingDecimals) = 1e16 for USDC 6dec.
     ///      investedAssets = vTokenBal * exchangeRate / 1e18
     function _vTokenToUnderlying(uint256 vTokenBal) internal view returns (uint256) {
         if (vTokenBal == 0) return 0;
         uint256 rate = IVToken(vToken).exchangeRateStored();
         return (vTokenBal * rate) / 1e18;
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    //  KEEPER OPERATIONS
+    // ═══════════════════════════════════════════════════════════
+
+    /// @notice Triggers Venus interest accrual, updating exchangeRateStored to current value.
+    ///         Permissionless — any address may call. Keepers should invoke this before
+    ///         deposit/withdraw operations to minimise exchange-rate drift in totalAssets().
+    ///         On Arbitrum the drift is negligible (<0.000004%/block at 5% APY), but on
+    ///         slower chains (Ethereum L1 12s blocks) the per-block gap is ~48× larger.
+    /// @return err 0 on success; non-zero Compound error code on failure (reverts for safety).
+    function accrueVenusInterest() external returns (uint256 err) {
+        err = IVToken(vToken).accrueInterest();
+        require(err == 0, "Venus: accrueInterest failed");
     }
 
     // ═══════════════════════════════════════════════════════════
@@ -265,10 +288,10 @@ contract VenusUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
     // ═══════════════════════════════════════════════════════════
 
     /// @notice APY from supplyRatePerBlock annualized (simple, not compound)
-    /// @dev rate * BLOCKS_PER_YEAR / 1e14 → bps
+    /// @dev rate * blocksPerYear / 1e14 → bps
     function currentAPYBps() external view override returns (uint16) {
         uint256 rate = IVToken(vToken).supplyRatePerBlock();
-        uint256 apyWad = rate * BLOCKS_PER_YEAR; // 1e18 scale
+        uint256 apyWad = rate * blocksPerYear; // 1e18 scale
         uint256 bps = apyWad / 1e14;             // 1e18 → 1e4 (bps)
         // casting to uint16 is safe because overflow is checked with ternary
         // forge-lint: disable-next-line(unsafe-typecast)

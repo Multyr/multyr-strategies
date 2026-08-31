@@ -537,7 +537,7 @@ No auto-unflag: governance must explicitly clear after inspecting the market sta
 
 | Constant | Value | Line | Purpose |
 |----------|-------|------|---------|
-| `BLOCKS_PER_YEAR` | 126,144,000 | L70 | Arbitrum ~0.25s block time → blocks/year |
+| `blocksPerYear` | 126,144,000 (default) | constructor param | Per-chain configurable; default = Arbitrum 0.25s blocks (C-04 fix) |
 | `ARBITRUM_CHAIN_ID` | 42161 | L75 | Chain guard: prevents deploy on BNB (3s blocks → 12× APY overreport) |
 
 The chain guard is enforced in the constructor: if `block.chainid != ARBITRUM_CHAIN_ID`,
@@ -570,15 +570,16 @@ Interface at `src/strategies/usdc-lending/adapters/lending/VenusUsdcMultiMarket.
 
 ### 8.4 APY Computation
 
-APY is computed from `supplyRatePerBlock()` and `BLOCKS_PER_YEAR`:
+APY is computed from `supplyRatePerBlock()` and `blocksPerYear`:
 ```
-apyRaw = supplyRatePerBlock × BLOCKS_PER_YEAR (1e18 base)
+apyRaw = supplyRatePerBlock × blocksPerYear (1e18 base)
 apyBps = apyRaw × 10000 / 1e18
 ```
 
-This is correct only for Arbitrum (~0.25s blocks). On BNB (~3s blocks),
-`supplyRatePerBlock()` returns BNB-cadence rates → `BLOCKS_PER_YEAR = 126,144,000`
-would produce an APY overreport of ~12×. The chain guard prevents this.
+`blocksPerYear` is a constructor parameter (default: 126,144,000 for Arbitrum). This was
+hardcoded as `BLOCKS_PER_YEAR = 126,144,000` prior to C-04; it is now configurable per chain
+to avoid 12× APY overreport on BNB (~3s blocks). The `ARBITRUM_CHAIN_ID = 42161` chain guard
+in the constructor enforces Arbitrum-only deployment on this version.
 
 ### 8.5 Reward Pipeline
 
@@ -604,7 +605,7 @@ BNB Chain would produce inflated APY readings because:
 - BNB Chain: ~3 second block time → ~10,512,000 blocks/year
 - Arbitrum: ~0.25 second block time → 126,144,000 blocks/year
 
-If `BLOCKS_PER_YEAR = 126,144,000` were applied to a BNB-cadence `supplyRatePerBlock()`:
+If `blocksPerYear = 126,144,000` (Arbitrum default) were applied to a BNB-cadence `supplyRatePerBlock()`:
 ```
 BNB ratePerBlock = APY_BNB / 10,512,000 (approx.)
 APY_reported = BNB_rate × 126,144,000 = APY_BNB × 12

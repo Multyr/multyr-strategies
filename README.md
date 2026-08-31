@@ -1,7 +1,8 @@
 # multyr-strategies
 
-> Production strategies for Multyr Protocol — USDC Lending V9.1, preparing for first
-> external audit (scheduled 2026-Q3).
+> Production strategies for Multyr Protocol — USDC Lending V10
+> (V9.2 + P0.7 + Wave 1+2 hardening), with formal verification evidence,
+> 1M Echidna campaign, and deterministic multichain build. Audit engagement pending.
 
 [![License: BUSL-1.1](https://img.shields.io/badge/License-BUSL--1.1-blue.svg)](LICENSE)
 [![Built with Foundry](https://img.shields.io/badge/Built%20with-Foundry-FFDB1C.svg)](https://getfoundry.sh)
@@ -12,8 +13,10 @@
 ## Overview
 
 `multyr-strategies` contains the production lending strategies that plug into the Multyr
-core vault (`multyr-core/CoreVault`). The sole published strategy is **USDC Lending V9.1**
-— a multi-adapter yield aggregator deployed on Arbitrum One.
+core vault (`multyr-core/CoreVault`). The sole published strategy is **USDC Lending V10**
+(V9.2 + P0.7 Safety Adapter Cap Tier + Wave 1+2 hardening) — a multi-adapter yield
+aggregator deployed on **Arbitrum One** (initial), with V10 enabling identical bytecode
+deployment on Optimism / Base / Polygon / Ethereum L1 / zkSync.
 
 The strategy accepts USDC from a `CoreAggregatorVault` and autonomously distributes capital
 across up to seven lending protocol adapters (Aave V3, Compound III, Dolomite, Euler V2,
@@ -22,9 +25,18 @@ rebalancing system.
 
 Each strategy published in this repository has completed internal pre-audit hardening before
 promotion. Strategies in development (Multiply, PT-Multiply) are kept in
-`multyr-strategies-dev` (private) until they reach the same standard (ADR-003). Publishing
+private development repositories until they reach the same standard (ADR-003). Publishing
 a strategy here is the promotion event; the public git history starts at the first clean
 commit.
+
+Version 9.2 introduces **P0.7 Safety Adapter Cap Tier**, a dual-anchor
+safety architecture where designated safety adapters (Aave V3 +
+Compound V3) receive idle-cash overflow that cannot fit in opportunistic
+venues. The mechanism is gated by per-adapter cap-drift mandates,
+per-adapter cooldown, and a four-layer cap engine that preserves the
+V9.1 invariants while extending the safety surface. Full V9.1 invariants
+remain in force; P0.7 adds eight new safety claims documented in
+docs/invariants.md.
 
 ---
 
@@ -40,14 +52,21 @@ graph TB
     Vault --> Settings[StrategySettingsModule]
     Score --> Alloc[StrategyAllocCalcModule]
     Vault --> Adapters
-    Adapters --> Aave[Aave V3]
-    Adapters --> Compound[Compound III]
+    Adapters --> Aave[Aave V3 ★]
+    Adapters --> Compound[Compound III ★]
     Adapters --> Dolomite[Dolomite Margin V9]
     Adapters --> Euler[Euler V2]
     Adapters --> Fluid[Fluid fUSDC]
     Adapters --> Morpho[Morpho Blue]
     Adapters --> Venus[Venus vUSDC]
+    Aave -.-> SafetyTier{Safety Adapter Tier P0.7}
+    Compound -.-> SafetyTier
 ```
+
+★ = safety adapter (P0.7). Safety adapters receive idle-cash overflow
+via the dual-anchor architecture when opportunistic adapters are at cap
+or in cooldown. Priority order: Aave V3 (5000/5000 bps) → Compound III
+(4000/4000 bps).
 
 The main controller (`UsdcMultiLendingVault`) is a stateless dispatcher. Functions not
 defined directly on the controller are routed to one of six delegatecall modules via the
@@ -94,6 +113,41 @@ methods, and security properties.
   Permit2 approval at construction. `initializeMarkets()` must run before admin role
   transfer; the bootstrap sequence enforces this invariant.
 
+---
+
+### P0.7 Safety Adapter Cap Tier invariants
+
+- **Safety hard ceiling discipline**: for every safety adapter `i`,
+  `positionAssets[i] <= hardCeiling_i` where
+  `hardCeiling_i = fbCeiling_i x (BPS + capDriftToleranceBps) / BPS`,
+  within +/-2 wei rounding tolerance.
+  Verified by Halmos P1+P3 (symbolic) and Echidna I03b (1M sequences).
+- **Mandate completeness**: if `positionAssets[i] > hardCeiling_i` for
+  any safety adapter, the cap-drift mandate is detectable on the next
+  rebalance check. Verified by Halmos P2 + Echidna I03c.
+- **Safety tranche preservation**: if a safety adapter has
+  `normalTarget_i < currentPosition_i <= fallbackCeiling_i`, the next
+  rebalance does NOT reduce `currentPosition_i` to `normalTarget_i`.
+  Verified by Halmos P4 (most critical preserve-tranche property).
+- **Non-safety adapter uses normal caps**: for any non-safety adapter,
+  the cap drift gate uses only the normal abs/rel cap path; safety
+  fallback caps never apply. Verified by Halmos P2.
+- **Cooldown semantic (re-deploy only)**: after a cap-drift mandate
+  fires on adapter `i`, `deployIdle` skips `i` until
+  `lastRelCapMandateTs[i] + mandateRedeployCooldownSeconds` has elapsed.
+  The cooldown does NOT prevent future mandates from firing on `i`.
+  Verified by Echidna I04+I05.
+- **Promotion clears cooldown (H-03)**: promoting a non-safety adapter
+  to safety (`addSafetyFallbackAdapter`) clears any prior
+  `lastRelCapMandateTs[i]` cooldown stamp. Verified by Halmos P6 +
+  Echidna I10.
+- **Quarantine blocks safety promotion (L-01)**: `addSafetyFallbackAdapter`
+  reverts if the adapter is currently quarantined. Verified by unit test
+  `test_D1f_09_quarantined_adapter_promotion_reverts`.
+- **Legacy non-regression**: when no safety adapters are configured,
+  the system behaves identically to pre-P0.7 baseline. Verified by
+  Echidna I12.
+
 See [`docs/invariants.md`](docs/invariants.md) for the full formal invariant set and
 [`docs/threat-model.md`](docs/threat-model.md) for the attack surface analysis.
 
@@ -109,7 +163,7 @@ See [`docs/invariants.md`](docs/invariants.md) for the full formal invariant set
 | `EulerUsdcMultiMarketAdapter` | Euler V2 (EVault) | PUSH | `interestRate()` in ray (EVault native) |
 | `FluidUsdcMultiMarketAdapter` | Fluid fUSDC | PULL | PPS snapshot delta (keeper-poked) |
 | `MorphoUsdcMultiMarketAdapter` | Morpho Blue vaults | PULL | PPS snapshot with staleness cache |
-| `VenusUsdcMultiMarketAdapter` | Venus vUSDC_Core | PULL | `supplyRatePerBlock × BLOCKS_PER_YEAR` (Arbitrum-only guard) |
+| `VenusUsdcMultiMarketAdapter` | Venus vUSDC_Core | PULL | `supplyRatePerBlock × blocksPerYear` (per-chain configurable; default 126,144,000 Arbitrum; C-04 fix) |
 
 See [`docs/adapters.md`](docs/adapters.md) for full per-adapter security properties,
 role tables, and APY computation details.
@@ -132,10 +186,23 @@ role tables, and APY computation details.
 | `LendingStrategyUpkeep` | `automation/LendingStrategyUpkeep.sol` | HIGH | Chainlink Automation keeper (harvest, poke-APY, rebalance, deploy-idle) |
 | `RewardSwapHelper` | `swap/RewardSwapHelper.sol` | HIGH | Chainlink-anchored reward swap with Uniswap V3 to Camelot V3 fallback |
 | `StrategyBootstrapper` | `StrategyBootstrapper.sol` | MEDIUM | One-shot adapter registration; BOOTSTRAP_ROLE renounced post-deploy |
+| `StrategySafetyOverflowModule` | `controller/StrategySafetyOverflowModule.sol` | HIGH | Safety overflow execution + degraded mode checks (extracted F-SIZE-01) |
 | `StrategyExplainabilityLens` | `lens/StrategyExplainabilityLens.sol` | LOW | Read-only scoring explainability (best-effort, not authoritative) |
+| `StrategyRouter` | (from multyr-core) | HIGH | Routes vault calls to correct strategy module |
+| `StrategyHealthRegistry` | `StrategyHealthRegistry.sol` | MEDIUM | Per-adapter health scores, failure tracking |
+| `StrategyConfigLib` | `lib/StrategyConfigLib.sol` | LOW | Pure library — single source of truth for parameter reads (Lens x3) |
 
-Total audit scope: 23 Solidity files, 11,974 lines. See [`docs/audit-scope.md`](docs/audit-scope.md)
-for in-scope file list and line count breakdown.
+> **P0.7 + V10 changes**: `StrategySettingsModule`, `StrategyRebalancePlanModule`,
+> `StrategyRebalanceGateModule`, `StrategyAllocCalcModule`, and
+> `StrategyStorageLayout` are extended with safety-adapter-tier semantics
+> (slots 78-81 packed: capDriftToleranceBps, maxIdleBps,
+> targetSafetyMarginBps, mandateRedeployCooldownSeconds +
+> safetyFallbackAdapters[] + safetyFallback mapping + lastRelCapMandateTs
+> mapping). `StrategyExplainabilityLens` refactored in S2.4-bis to enable
+> coverage instrumentation. See docs/audit-scope.md for line-count
+> breakdown.
+
+Total audit scope: 25 Solidity files (23 original + StrategySafetyOverflowModule + StrategyConfigLib added in V10). See [`docs/audit-scope.md`](docs/audit-scope.md) for in-scope file list and line count breakdown.
 
 ---
 
@@ -196,25 +263,35 @@ contract (`LendingStrategyUpkeep`) for post-harvest fee routing.
 | Architecture overview | `docs/overview.md` | Contract stack, module dispatch, storage layout, rebalance lifecycle |
 | Adapter reference | `docs/adapters.md` | Per-adapter deposit modes, APY methods, security properties, role tables |
 | Audit scope | `docs/audit-scope.md` | In-scope files, line counts, critical architecture notes, known waivers |
-| Formal invariants | `docs/invariants.md` | USDC conservation, RBAC, queue semantics |
+| Formal invariants | `docs/invariants.md` | Halmos (23 proofs) + Echidna (15 invariants) formal claims |
 | Threat model | `docs/threat-model.md` | Attack surface analysis, trust assumptions, out-of-scope risks |
+| V10 design rationale | `docs/v10/DESIGN_RATIONALE.md` | EIP-170 extractions, multichain portability, deterministic build |
+| Multichain playbook | `docs/v10/MULTICHAIN_PLAYBOOK.md` | Per-chain deploy guide and blocksPerYear table |
+| Audit evidence index | `docs/audit/README.md` | Halmos, Echidna 1M, sizes, Wave 1+2 fix logs |
+| Wave 1+2 summary | `docs/audit/WAVE1_2_SUMMARY.md` | Executive summary for auditor onboarding |
+| Contract sizes | `docs/audit/sizes/CONTRACT_SIZES.md` | Post-Wave 2 bytecode size table (all 25 contracts) |
 
 ---
 
 ## Audits
 
-No external audits have been completed yet. USDC Lending V9.1 has completed internal
-pre-audit hardening and the first engagement is scheduled for 2026-Q3. When third-party
-security audit reports are published, the signed PDF files will appear in [`audits/`](audits/).
+No external audits have been completed yet. USDC Lending **V10** has
+completed Wave 1+2 internal hardening: 15 code fixes (4 CRITICAL, 11 HIGH),
+23 Halmos symbolic proofs, 1,000,860-sequence Echidna campaign (15 invariants,
+0 counterexamples), 2,354 Foundry tests (0 failures), and deterministic bytecode
+build. The first external audit engagement is in progress (2026-Q3 target,
+Spearbit / Sherlock). When the signed audit report is published, the PDF will
+appear in `audits/`. See [`docs/audit/WAVE1_2_SUMMARY.md`](docs/audit/WAVE1_2_SUMMARY.md)
+for the complete pre-submission evidence package.
 
-For internal security work — hardening reports, automated tool outputs (Slither, Halmos,
-Aderyn), and self-reviews — see the `multyr-research` repository (private, available to
-qualified reviewers on request). Internal reports are not a substitute for third-party
-security review.
+For pre-engagement evidence (formal verification proofs, fuzz campaign
+results, fork test logs, backtest production validation), qualified
+reviewers can request the pre-submission package via
+security@multyr.fi.
 
 | Date | Auditor | Scope | Findings | Report |
-|---|---|---|---|---|
-| Planned 2026-Q3 | TBD | `multyr-strategies` v1.0 (USDC Lending V9.1) | — | — |
+| --------------- | ------- | ------------------------------------------------ | -------- | ------ |
+| 2026-Q3 in progress | TBD | `multyr-strategies` v1.0 (USDC Lending V10) | — | — |
 
 Bug bounty program: forthcoming (Immunefi — link to be published after first signed
 audit report).
@@ -238,7 +315,7 @@ Do not open public GitHub issues for security vulnerabilities.
 
 - [Foundry](https://book.getfoundry.sh/) `forge` >= 0.2.0
 - Git with submodule support
-- For fork tests: Arbitrum One archive RPC endpoint (`ARBITRUM_ARCHIVE_RPC_URL`)
+- For fork tests: Arbitrum One archive RPC endpoint (`ARBITRUM_RPC_URL`)
 
 ### Setup
 
@@ -254,8 +331,10 @@ forge install
 forge build
 ```
 
-Build configuration: `via_ir = true`, `optimizer_runs = 200`, Solidity `0.8.28`
-(controller and adapters); `0.8.24` (rate providers, interfaces).
+Build configuration: `via_ir = true`, `optimizer_runs = 200`, Solidity `0.8.28` pinned
+(uniform across all production files — rate providers and interfaces included).
+Deterministic build: `evm_version = "cancun"`, `bytecode_hash = "none"`, `cbor_metadata = false`.
+Byte-identical artifacts across machines and Foundry versions (given same solc 0.8.28).
 
 ### Test
 
@@ -264,16 +343,44 @@ Build configuration: `via_ir = true`, `optimizer_runs = 200`, Solidity `0.8.28`
 forge test
 
 # Fork tests against live Arbitrum state (requires RPC)
-ARBITRUM_ARCHIVE_RPC_URL=<rpc> forge test --match-path "test/fork/**"
+ARBITRUM_RPC_URL=<rpc> forge test --match-path "test/fork/**"
 
 # Halmos formal verification (symbolic execution)
 FOUNDRY_PROFILE=lending halmos
 ```
 
-Test suite baseline (branch `pierdev`, commit `b15aeb63`): ~1,100 unit tests (controller),
-~250 unit tests (adapters), ~100 integration tests, ~30 fork E2E tests, 61 overlay parity
-assertions (`AllocCalcModule` vs `ScoringModule`), and 14 Halmos symbolic proofs of USDC
-conservation, RBAC guards, and queue FIFO semantics (0 counterexamples).
+Test suite baseline (branch `feature/v10.0-storage-initialize`, current
+HEAD): **2,354 tests passing**, 0 failures, 1 skipped. Breakdown: 1,555 V9.1
+baseline + 447 P0.7 additions + 352 Wave 1+2 hardening tests (245 added
+across Wave 1+2). Formal verification: **23 Halmos symbolic proofs** with
+0 counterexamples. Stateful fuzz: **1,000,860 sequences** over **15 Echidna
+invariants** (I01–I12), 0 counterexamples in baseline 1M run. Diff coverage
+on P0.7 surface: 97.3% lines / 84% branches.
+
+---
+
+## V10.0 Storage + Initialize Refactor
+
+V10 introduces three categories of change beyond V9.2+P0.7:
+
+**1. EIP-170 safety** (Wave 2 F-SIZE-01 / F-SIZE-02)
+- `StrategyScoringModule`: 24,426 B → 21,528 B (extracted safety overflow logic)
+- `UsdcMultiLendingVault`: 24,048 B → 21,299 B (extracted realizeLiquidity + degraded checks)
+- `StrategySafetyOverflowModule` (new): 13,424 B
+- All 25 production contracts now within 23,552 B project safety rule (0 violations)
+
+**2. Multichain portability**
+- `VenusUsdcMultiMarketAdapter.blocksPerYear` per-chain configurable (C-04, was Arbitrum-hardcoded)
+- Compound III confirmed chain-agnostic (per-second rates throughout)
+- Deterministic build: `evm_version=cancun`, `bytecode_hash=none`, `cbor_metadata=false`
+- Single audit covers all chains (byte-identical bytecode via CREATE2)
+
+**3. Wave 1+2 hardening highlights**
+- H-03 + F-SCORING-01: `positionAssets` uses actual deposited (not planned) amount — 3 sites fixed
+- F-SCORING-INV2: governance `adapterMaxExposureBps` cap enforced at ALL TVL tiers (was ignored at T1)
+- HIGH-V1: Venus NAV reads preceded by `accrueVenusInterest` keeper helper
+- Lens × 3: `StrategyConfigLib` single source of truth eliminates duplicated storage reads
+- See [`docs/audit/WAVE1_2_SUMMARY.md`](docs/audit/WAVE1_2_SUMMARY.md) for full fix log
 
 ---
 
@@ -324,7 +431,7 @@ available under the **MIT License** — see
 
 See [`CONTRIBUTING.md`](CONTRIBUTING.md). This repository contains only strategies that
 have completed internal pre-audit hardening. Development work on new or in-progress
-strategies belongs in `multyr-strategies-dev` (private).
+strategies belongs in private development repositories.
 
 ---
 

@@ -258,24 +258,29 @@ contract UsdcMultiLendingVault is StrategyStorageLayout {
         externalTVLStalenessSeconds = params.externalTVLStalenessSeconds;
     }
 
+    // -- Delegatecall relay selectors (F-SIZE-02)
+    bytes4 private constant CHECK_EMIT_DEGRADED_SEL = bytes4(keccak256("checkAndEmitDegradedViews()"));
+    bytes4 private constant CHECK_DEGRADED_LOCAL_SEL = bytes4(keccak256("checkDegradedModeLocally()"));
+    bytes4 private constant REALIZE_LIQUIDITY_SEL    = bytes4(keccak256("executeRealizeLiquidity(uint256)"));
+
     /// @notice Set the StrategyRebalancePlanModule address (write-once).
     /// @dev    Architectural completion: planModule has prepareRebalance/
     ///         executeRebalanceStep/cancelRebalancePlan that vault routes via fallback.
     ///         Must be called BEFORE finalizeParameters. Set-once via require.
     function setRebalancePlanModule(address _planModule) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        require(rebalancePlanModule_addr == address(0) && _planModule != address(0), "plan-module");
+        if (rebalancePlanModule_addr != address(0) || _planModule == address(0)) revert InvalidModule();
         rebalancePlanModule_addr = _planModule;
         emit RebalancePlanModuleSet(_planModule);
     }
 
     function setSettingsModule(address _settingsModule) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        require(settingsModule_addr == address(0) && _settingsModule != address(0), "settings-module");
+        if (settingsModule_addr != address(0) || _settingsModule == address(0)) revert InvalidModule();
         settingsModule_addr = _settingsModule;
         emit SettingsModuleSet(_settingsModule);
     }
 
     function setAllocCalcModule(address _allocCalcModule) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        require(allocCalcModule_addr == address(0) && _allocCalcModule != address(0), "alloccalc-module");
+        if (allocCalcModule_addr != address(0) || _allocCalcModule == address(0)) revert InvalidModule();
         allocCalcModule_addr = _allocCalcModule;
         emit AllocCalcModuleSet(_allocCalcModule);
     }
@@ -526,40 +531,10 @@ contract UsdcMultiLendingVault is StrategyStorageLayout {
     }
 
     function _realizeLiquidity(uint256 amountNeeded) internal {
-        uint256 tvl = _tvl();
-        if (tvl < 1) return; // slither: incorrect-equality - use < 1 instead of == 0
-        uint256 totalRealized = 0;
-        uint256 n = adapters.length;
-
-        // Two-pass withdrawal: (0) pro-rata across all adapters, (1) greedy backfill from healthy
-        for (uint8 pass = 0; pass < 2 && totalRealized < amountNeeded; ++pass) {
-            uint256 need = amountNeeded - totalRealized;
-            for (uint256 i = 0; i < n && totalRealized < amountNeeded; ++i) {
-                address a = adapters[i];
-                if (!enabled[a]) continue;
-                if (pass == 1 && quarantined[a]) continue;
-                uint256 pos = positionAssets[a];
-                if (pos < 1) continue;
-                uint256 w = pass == 0 ? (need * pos) / tvl : need;
-                if (w > pos) w = pos;
-                if (w < 1) continue;
-
-                try ILendingAdapter(a).withdraw(w, address(this)) returns (uint256 got) {
-                    positionAssets[a] -= got;
-                    totalRealized += got;
-                    _recordAdapterSuccess(a);
-                } catch (bytes memory reason) {
-                    emit AdapterWithdrawFailed(a, w, reason);
-                    _recordAdapterFailure(a);
-                }
-            }
-        }
-
-        // P0.Q monitoring: emit WithdrawalShortfall when realized < requested (off-chain alerting)
-        if (totalRealized < amountNeeded) {
-            emit WithdrawalShortfall(amountNeeded, totalRealized);
-        }
-        emit LiquidityRealized(amountNeeded, totalRealized);
+        (bool ok, bytes memory ret) = adapterOpsModule.delegatecall(
+            abi.encodeWithSelector(REALIZE_LIQUIDITY_SEL, amountNeeded)
+        );
+        if (!ok && ret.length > 0) assembly { revert(add(ret, 0x20), mload(ret)) }
     }
 
     // -----------------------------
@@ -778,67 +753,26 @@ contract UsdcMultiLendingVault is StrategyStorageLayout {
     ///      from ABI return-data mismatch (e.g. adapter returns < 32 bytes → try/catch bypassed).
     // _safeTotalAssets, _safeWithdrawableAssets — inherited from StrategyStorageLayout.
 
-    /// @dev View-safe: threshold-based degraded views check. Ignores quarantined adapters.
-    function _checkDegradedAdapterViews() internal view returns (bool, uint16) {
-        uint256 n = adapters.length;
-        uint256 healthyAssets;
-        uint256 fallbackAssets;
-        for (uint256 i = 0; i < n; ++i) {
-            address a = adapters[i];
-            if (!enabled[a] || quarantined[a]) continue;
-            try ILendingAdapter(a).totalAssets() returns (uint256 val) {
-                healthyAssets += val;
-            } catch {
-                fallbackAssets += positionAssets[a];
-            }
-        }
-        uint256 total = healthyAssets + fallbackAssets;
-        if (total == 0) return (false, 0);
-        uint16 bps = uint16((fallbackAssets * 1e4) / total);
-        return (bps > degradedViewThresholdBps, bps);
-    }
-
-    /// @dev Non-view wrapper: emits telemetry when bps >= 100.
-    function _checkAndEmitDegradedViews() internal returns (bool, uint16) {
-        (bool degraded, uint16 bps) = _checkDegradedAdapterViews();
-        if (bps >= 100) emit DegradedViewsObserved(bps);
-        return (degraded, bps);
+    /// @dev Relay to StrategySafetyOverflowModule via delegatecall (F-SIZE-02).
+    function _checkAndEmitDegradedViews() internal returns (bool degraded, uint16 bps) {
+        (bool ok, bytes memory ret) = safetyOverflowModule_addr.delegatecall(
+            abi.encodeWithSelector(CHECK_EMIT_DEGRADED_SEL)
+        );
+        if (!ok || ret.length == 0) return (false, 0);
+        (degraded, bps) = abi.decode(ret, (bool, uint16));
     }
 
     // -----------------------------
     //     INTERNAL: DegradedMode detection (inline — accesses storage directly)
     // -----------------------------
 
-    /// @notice Inline degraded mode check for deposit() flow.
-    /// @dev    Returns non-empty reason string if degraded, empty string if healthy.
-    ///         Mirrors _isDegradedMode() in StrategyScoringModule but runs in vault context.
-    function _checkDegradedModeLocally() internal view returns (string memory) {
-        address[] memory _enabled = _enabledAdapters();
-        uint16 enabledCount = uint16(_enabled.length);
-        if (enabledCount == 0) return "";
-        uint16 eligibleCount = 0;
-        uint16 recentFailures = 0;
-        for (uint256 i = 0; i < _enabled.length; ) {
-            address a = _enabled[i];
-            if (!quarantined[a] && cachedLiquidityBps[a] >= 100) { unchecked { ++eligibleCount; } }
-            uint64 lastFail = adapterLastFailureTs[a];
-            if (lastFail > 0 && block.timestamp - lastFail < 1 hours) { unchecked { ++recentFailures; } }
-            unchecked { ++i; }
-        }
-        if (eligibleCount * 2 < enabledCount) return "MAJORITY_INELIGIBLE";
-        if (recentFailures >= 2) return "FAILURE_VELOCITY";
-        // Trigger 3: EXT_TVL_PANIC
-        for (uint256 i = 0; i < _enabled.length; ) {
-            address a = _enabled[i];
-            uint256 snapshot = lastExtTVLSnapshot[a];
-            uint256 current  = cachedExternalTVL[a];
-            if (snapshot > 0 && current < snapshot) {
-                uint256 dropBps = ((snapshot - current) * 10_000) / snapshot;
-                if (dropBps >= EXT_TVL_PANIC_DROP_BPS) return "EXT_TVL_PANIC";
-            }
-            unchecked { ++i; }
-        }
-        return "";
+    /// @dev Relay to StrategySafetyOverflowModule via delegatecall (F-SIZE-02).
+    function _checkDegradedModeLocally() internal returns (string memory reason) {
+        (bool ok, bytes memory ret) = safetyOverflowModule_addr.delegatecall(
+            abi.encodeWithSelector(CHECK_DEGRADED_LOCAL_SEL)
+        );
+        if (!ok || ret.length == 0) return "";
+        reason = abi.decode(ret, (string));
     }
 
     // -----------------------------
@@ -908,28 +842,16 @@ contract UsdcMultiLendingVault is StrategyStorageLayout {
     }
 
     /// @notice Returns true if harvest is possible (threshold or time).
-    function canHarvest()
-        external
-        view
-        returns (bool ok, uint256 sumHarvestable, uint64 sinceLastHarvest)
-    {
-        uint256 n = adapters.length;
-        sumHarvestable = 0;
-        for (uint256 i = 0; i < n;) {
-            address adapter = adapters[i];
-            if (enabled[adapter]) {
-                try ILendingAdapter(adapter).harvestableProfit() returns (uint256 profit) {
-                    sumHarvestable += profit;
-                } catch { }
-            }
-            unchecked {
-                ++i;
-            }
+    function canHarvest() external returns (bool, uint256, uint64) {
+        address _mod = adapterOpsModule;
+        assembly {
+            calldatacopy(0, 0, calldatasize())
+            let success := delegatecall(gas(), _mod, 0, calldatasize(), 0, 0)
+            returndatacopy(0, 0, returndatasize())
+            switch success
+            case 0 { revert(0, returndatasize()) }
+            default { return(0, returndatasize()) }
         }
-        uint256 tvl = _tvl();
-        ok = (sumHarvestable >= (harvestThresholdBps * tvl) / 1e4)
-            || (block.timestamp - lastHarvestTs >= minSecondsBetweenHarvests);
-        sinceLastHarvest = uint64(block.timestamp - lastHarvestTs);
     }
 
     // canRebalance() → delegated to StrategyScoringModule via fallback
@@ -949,37 +871,29 @@ contract UsdcMultiLendingVault is StrategyStorageLayout {
     }
 
     /// @notice Weighted average liquidity across enabled adapters (10000 = fully liquid)
-    function liquidityReadinessBps() external view returns (uint16) {
-        uint256 totalWeight = 0;
-        uint256 weightedLiq = 0;
-        uint256 n = adapters.length;
-        for (uint256 i = 0; i < n;) {
-            address a = adapters[i];
-            if (enabled[a] && !quarantined[a]) {
-                uint256 pos = positionAssets[a];
-                uint16 liq = cachedLiquidityBps[a];
-                if (liq == 0) liq = 5000; // DEFAULT_LIQ_BPS
-                weightedLiq += pos * liq;
-                totalWeight += pos;
-            }
-            unchecked { ++i; }
+    function liquidityReadinessBps() external returns (uint16) {
+        address _mod = adapterOpsModule;
+        assembly {
+            calldatacopy(0, 0, calldatasize())
+            let success := delegatecall(gas(), _mod, 0, calldatasize(), 0, 0)
+            returndatacopy(0, 0, returndatasize())
+            switch success
+            case 0 { revert(0, returndatasize()) }
+            default { return(0, returndatasize()) }
         }
-        if (totalWeight == 0) return 10000;
-        uint256 result = weightedLiq / totalWeight;
-        return result > 10000 ? uint16(10000) : uint16(result);
     }
 
     /// @notice Penalty signal: higher = "don't move capital now"
-    /// @dev 0 = idle. Scales up during/after internal rebalance (cooldown window).
-    function rebalancePenaltyBps() external view returns (uint16) {
-        if (rebalancePlanPhase > 0) return 5000; // actively rebalancing
-        if (lastRebalanceTs == 0) return 0;
-        uint256 elapsed = block.timestamp - lastRebalanceTs;
-        uint256 cooldown = minSecondsBetweenRebalances;
-        if (cooldown == 0) return 0;
-        if (elapsed >= cooldown) return 0;
-        // Linear decay from 2000 to 0 over cooldown period
-        return uint16((2000 * (cooldown - elapsed)) / cooldown);
+    function rebalancePenaltyBps() external returns (uint16) {
+        address _mod = adapterOpsModule;
+        assembly {
+            calldatacopy(0, 0, calldatasize())
+            let success := delegatecall(gas(), _mod, 0, calldatasize(), 0, 0)
+            returndatacopy(0, 0, returndatasize())
+            switch success
+            case 0 { revert(0, returndatasize()) }
+            default { return(0, returndatasize()) }
+        }
     }
 
     // ── adapterCount (needed by StrategyExplainabilityLens) ──

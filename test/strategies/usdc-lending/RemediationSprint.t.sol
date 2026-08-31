@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.28;
+pragma solidity 0.8.28;
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // RemediationSprint.t.sol -- Real-contract harness for 2026-04-22 remediation sprint
@@ -44,6 +44,7 @@ import {
 } from "../../../src/strategies/usdc-lending/controller/StrategyRebalancePlanModule.sol";
 import { MockUSDC } from "./UsdcMultiLendingVault.t.sol";
 import { ScoringMockAdapter } from "./Scoring_Model.t.sol";
+import { StrategySafetyOverflowModule } from "../../../src/strategies/usdc-lending/controller/StrategySafetyOverflowModule.sol";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Shared base: deploy harness with 3 mock adapters
@@ -159,6 +160,11 @@ abstract contract RemediationBase is Test {
         StrategyAllocCalcModule _allocCalcMod0 = new StrategyAllocCalcModule(ARBITRUM_USDC, core);
         vm.prank(admin);
         vault.setAllocCalcModule(address(_allocCalcMod0));
+        StrategySafetyOverflowModule _overflowMod = new StrategySafetyOverflowModule(
+            ARBITRUM_USDC, core, address(0), address(0), address(adapterOpsMod)
+        );
+        vm.prank(admin);
+        StrategySettingsModule(address(vault)).setSafetyOverflowModule(address(_overflowMod));
 
         // Register + enable
         vm.startPrank(admin);

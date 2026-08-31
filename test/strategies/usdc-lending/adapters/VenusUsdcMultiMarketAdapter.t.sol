@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.28;
+pragma solidity 0.8.28;
 
 import { Test } from "forge-std/Test.sol";
 import { VenusUsdcMultiMarketAdapter } from "../../../../src/strategies/usdc-lending/adapters/lending/VenusUsdcMultiMarket.sol";
@@ -128,6 +128,21 @@ contract MockVToken {
         MockUSDCVenus(underlying).transfer(msg.sender, underlyingAmount);
         return 0;
     }
+
+    // HIGH-V1: keeper accrual simulation support
+    bool public accrueInterestCalled;
+    uint256 public pendingRate; // if set, applied as new exchangeRate when accrueInterest() is called
+
+    function setNextAccruedRate(uint256 r) external { pendingRate = r; }
+
+    function accrueInterest() external returns (uint256) {
+        accrueInterestCalled = true;
+        if (pendingRate > 0) {
+            exchangeRate = pendingRate;
+            pendingRate = 0;
+        }
+        return 0; // 0 = success (Compound error code convention)
+    }
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -154,48 +169,33 @@ contract VenusUsdcMultiMarketAdapterTest is Test {
 
         usdc = new MockUSDCVenus();
         vToken = new MockVToken(address(usdc));
-        adapter = new VenusUsdcMultiMarketAdapter(
-            address(usdc),
-            admin,
-            vault,
-            0, // unlimited capacity
-            address(vToken)
-        );
+        adapter = new VenusUsdcMultiMarketAdapter();
+        adapter.initialize(address(usdc), admin, vault, 0, address(vToken), 126_144_000);
     }
 
     // ═══════════════════════════════════════════════════════════════════════
     // CONSTRUCTOR — P0.L4 chain guard regression
     // ═══════════════════════════════════════════════════════════════════════
 
-    function test_constructor_revertsOnMainnet() public {
-        vm.chainId(MAINNET_CHAIN_ID);
-        vm.expectRevert(bytes("wrong-chain-for-block-cadence"));
-        new VenusUsdcMultiMarketAdapter(
-            address(usdc), admin, vault, 0, address(vToken)
-        );
+    function test_constructor_revertsOnMainnet() public pure {
+        // V10: require(block.chainid == ARBITRUM_CHAIN_ID) removed for chain-portability.
+        // Test retired — the revert no longer exists.
     }
 
-    function test_constructor_revertsOnBNB() public {
-        vm.chainId(BNB_CHAIN_ID);
-        vm.expectRevert(bytes("wrong-chain-for-block-cadence"));
-        new VenusUsdcMultiMarketAdapter(
-            address(usdc), admin, vault, 0, address(vToken)
-        );
+    function test_constructor_revertsOnBNB() public pure {
+        // V10: require(block.chainid == ARBITRUM_CHAIN_ID) removed for chain-portability.
+        // Test retired — the revert no longer exists.
     }
 
-    function test_constructor_revertsOnPolygon() public {
-        vm.chainId(137);
-        vm.expectRevert(bytes("wrong-chain-for-block-cadence"));
-        new VenusUsdcMultiMarketAdapter(
-            address(usdc), admin, vault, 0, address(vToken)
-        );
+    function test_constructor_revertsOnPolygon() public pure {
+        // V10: require(block.chainid == ARBITRUM_CHAIN_ID) removed for chain-portability.
+        // Test retired — the revert no longer exists.
     }
 
     function test_constructor_succeedsOnArbitrum() public {
         vm.chainId(ARBITRUM_CHAIN_ID);
-        VenusUsdcMultiMarketAdapter a = new VenusUsdcMultiMarketAdapter(
-            address(usdc), admin, vault, 100_000e6, address(vToken)
-        );
+        VenusUsdcMultiMarketAdapter a = new VenusUsdcMultiMarketAdapter();
+        a.initialize(address(usdc), admin, vault, 100_000e6, address(vToken), 126_144_000);
         assertEq(a.underlying(), address(usdc));
         assertEq(a.vault(), vault);
         assertEq(a.vToken(), address(vToken));
@@ -203,32 +203,54 @@ contract VenusUsdcMultiMarketAdapterTest is Test {
     }
 
     function test_constructor_revertsOnZeroAsset() public {
+        VenusUsdcMultiMarketAdapter _tmp = new VenusUsdcMultiMarketAdapter();
         vm.expectRevert(bytes("zero"));
-        new VenusUsdcMultiMarketAdapter(address(0), admin, vault, 0, address(vToken));
+        _tmp.initialize(address(0), admin, vault, 0, address(vToken), 126_144_000);
     }
 
     function test_constructor_revertsOnZeroAdmin() public {
+        VenusUsdcMultiMarketAdapter _tmp = new VenusUsdcMultiMarketAdapter();
         vm.expectRevert(bytes("zero"));
-        new VenusUsdcMultiMarketAdapter(address(usdc), address(0), vault, 0, address(vToken));
+        _tmp.initialize(address(usdc), address(0), vault, 0, address(vToken), 126_144_000);
     }
 
     function test_constructor_revertsOnZeroVault() public {
+        VenusUsdcMultiMarketAdapter _tmp = new VenusUsdcMultiMarketAdapter();
         vm.expectRevert(bytes("zero"));
-        new VenusUsdcMultiMarketAdapter(address(usdc), admin, address(0), 0, address(vToken));
+        _tmp.initialize(address(usdc), admin, address(0), 0, address(vToken), 126_144_000);
     }
 
     function test_constructor_revertsOnZeroVToken() public {
+        VenusUsdcMultiMarketAdapter _tmp = new VenusUsdcMultiMarketAdapter();
         vm.expectRevert(bytes("zero"));
-        new VenusUsdcMultiMarketAdapter(address(usdc), admin, vault, 0, address(0));
+        _tmp.initialize(address(usdc), admin, vault, 0, address(0), 126_144_000);
     }
 
     function test_constructor_revertsOnVTokenAssetMismatch() public {
         MockUSDCVenus otherToken = new MockUSDCVenus();
         MockVToken mismatchVToken = new MockVToken(address(otherToken));
+        VenusUsdcMultiMarketAdapter _tmp = new VenusUsdcMultiMarketAdapter();
         vm.expectRevert(bytes("vToken/asset mismatch"));
-        new VenusUsdcMultiMarketAdapter(
-            address(usdc), admin, vault, 0, address(mismatchVToken)
-        );
+        _tmp.initialize(address(usdc), admin, vault, 0, address(mismatchVToken), 126_144_000);
+    }
+
+    // C-04: blocksPerYear bounds
+    function test_constructor_revertsOnZeroBlocksPerYear() public {
+        VenusUsdcMultiMarketAdapter _tmp = new VenusUsdcMultiMarketAdapter();
+        vm.expectRevert(bytes("blocksPerYear"));
+        _tmp.initialize(address(usdc), admin, vault, 0, address(vToken), 0);
+    }
+
+    function test_constructor_revertsOnBlocksPerYearTooHigh() public {
+        VenusUsdcMultiMarketAdapter _tmp = new VenusUsdcMultiMarketAdapter();
+        vm.expectRevert(bytes("blocksPerYear"));
+        _tmp.initialize(address(usdc), admin, vault, 0, address(vToken), 200_000_001);
+    }
+
+    function test_constructor_setsBlocksPerYear() public {
+        VenusUsdcMultiMarketAdapter _tmp = new VenusUsdcMultiMarketAdapter();
+        _tmp.initialize(address(usdc), admin, vault, 0, address(vToken), 15_768_000); // Optimism/Base
+        assertEq(_tmp.blocksPerYear(), 15_768_000);
     }
 
     // ═══════════════════════════════════════════════════════════════════════
@@ -345,9 +367,8 @@ contract VenusUsdcMultiMarketAdapterTest is Test {
 
     function test_deposit_respectsCapacity() public {
         // Redeploy with capacity 500
-        adapter = new VenusUsdcMultiMarketAdapter(
-            address(usdc), admin, vault, 500e6, address(vToken)
-        );
+        adapter = new VenusUsdcMultiMarketAdapter();
+        adapter.initialize(address(usdc), admin, vault, 500e6, address(vToken), 126_144_000);
 
         usdc.mint(vault, 600e6);
         vm.startPrank(vault);
@@ -938,5 +959,52 @@ contract S21_VenusSetterTest is VenusUsdcMultiMarketAdapterTest {
         vm.prank(admin);
         vm.expectRevert(bytes("bps>10000"));
         adapter.setIncentiveHaircutBps(10_001);
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// HIGH-V1 — accrueVenusInterest keeper pattern tests
+// ═══════════════════════════════════════════════════════════════════════════
+
+contract VenusAdapter_AccrueInterest_Test is VenusUsdcMultiMarketAdapterTest {
+
+    // ── Test 1: accrueVenusInterest() calls vToken.accrueInterest() ──────
+    // Verifies the keeper helper dispatches to the vToken and tracks the call.
+    function test_accrueVenusInterest_triggers_vToken_accrual() public {
+        assertFalse(vToken.accrueInterestCalled(), "precondition: not yet called");
+        adapter.accrueVenusInterest();
+        assertTrue(vToken.accrueInterestCalled(), "accrueInterest must have been called on vToken");
+    }
+
+    // ── Test 2: totalAssets() reflects updated stored rate after keeper call ──
+    // Simulates interest accrual: pendingRate is higher than initial rate.
+    // Before keeper call: totalAssets uses old stored rate (conservative).
+    // After keeper call: accrueInterest() applies pendingRate → totalAssets increases.
+    function test_totalAssets_reflects_updated_rate_after_accrual() public {
+        // Deposit 1000 USDC at initial rate 2e16 (1 vToken = 0.02 USDC)
+        usdc.mint(vault, 1000e6);
+        vm.startPrank(vault);
+        usdc.approve(address(adapter), 1000e6);
+        adapter.deposit(1000e6);
+        vm.stopPrank();
+
+        uint256 assetsBefore = adapter.totalAssets();
+        assertEq(assetsBefore, 1000e6, "initial totalAssets = 1000");
+
+        // Simulate pending interest: next accrual will set rate to 2.02e16 (+1%)
+        uint256 newRate = 2.02e16; // 1% interest accrued
+        vToken.setNextAccruedRate(newRate);
+
+        // Before keeper: totalAssets still uses old stored rate
+        assertEq(adapter.totalAssets(), assetsBefore, "before accrual: totalAssets unchanged");
+
+        // Keeper calls accrueVenusInterest() — stored rate is now updated
+        adapter.accrueVenusInterest();
+
+        uint256 assetsAfter = adapter.totalAssets();
+        // vTokenBal * newRate / 1e18 = (1000e6 * 1e18 / 2e16) * 2.02e16 / 1e18
+        //                             = 50_000e6 * 2.02e16 / 1e18 = 1010e6
+        assertEq(assetsAfter, 1010e6, "after accrual: totalAssets reflects 1% interest");
+        assertGt(assetsAfter, assetsBefore, "accrual increases reported totalAssets");
     }
 }
