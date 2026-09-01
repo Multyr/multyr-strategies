@@ -1,0 +1,102 @@
+{
+  "schemaVersion": "1.0",
+
+  "id": "multyr-earn-usdc",
+  "slug": "earn-usdc",
+
+  "name": "Multyr Earn USDC",
+  "symbol": "meUSDC",
+
+  "tagline": "Rule-based USDC lending across eligible DeFi markets.",
+  "description": "Earn yield on USDC through automated allocation across eligible DeFi lending markets, using predefined exposure limits, liquidity constraints, and risk controls. Allocations may change over time as market conditions evolve.",
+
+  "category": "lending",
+  "type": "multi-market-lending",
+  "allocationModel": "dynamic-rule-based",
+  "management": "automated",
+  "yieldSource": ["lending-interest"],
+
+  "asset": {
+    "symbol": "USDC",
+    "depositAsset": "USDC",
+    "accountingAsset": "USDC",
+    "class": "stablecoin"
+  },
+
+  "network": {
+    "name": "Arbitrum One",
+    "chainId": 42161
+  },
+
+  "principalGuaranteed": false,
+  "yieldVariable": true,
+
+  "protocols": [
+    "Aave v3",
+    "Compound v3",
+    "Fluid",
+    "Euler v2",
+    "Dolomite",
+    "Morpho Blue",
+    "Venus"
+  ],
+  "anchorProtocols": ["Aave v3", "Compound v3"],
+
+  "objective": {
+    "primary": "Generate USDC-denominated lending yield within predefined exposure, liquidity and eligibility constraints.",
+    "optimizationTarget": "rule-based allocation"
+  },
+
+  "allocation": {
+    "dynamic": true,
+    "ruleBased": true,
+    "rebalancing": "automated",
+    "idleCapitalDeployment": true,
+    "criteria": [
+      "yield",
+      "liquidity",
+      "capacity",
+      "protocol-risk",
+      "market-eligibility",
+      "exposure-limits"
+    ]
+  },
+
+  "riskControls": [
+    "market eligibility gates",
+    "per-adapter absolute exposure caps",
+    "relative exposure caps",
+    "liquidity-based allocation constraints",
+    "external-TVL confidence thresholds",
+    "adapter quarantine on repeated failure",
+    "cap-drift monitoring",
+    "forced risk-reduction rebalancing",
+    "governance-approved safety adapter tier",
+    "guardian pause"
+  ],
+
+  "riskFactors": [
+    "smart-contract",
+    "protocol",
+    "stablecoin-depeg",
+    "liquidity",
+    "oracle",
+    "governance",
+    "adapter",
+    "market"
+  ],
+
+  "disclosures": {
+    "yieldVariable": true,
+    "apyGuaranteed": false,
+    "principalGuaranteed": false,
+    "withdrawalLiquidityGuaranteed": false,
+    "strategyCanReallocate": true
+  },
+
+  "status": {
+    "lifecycle": "audit"
+  },
+
+  "tags": ["usdc", "lending", "stablecoin", "arbitrum"]
+}
