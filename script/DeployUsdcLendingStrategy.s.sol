@@ -895,7 +895,13 @@ contract DeployUsdcLendingStrategy is Script {
         string memory out = vm.serializeAddress(j, "dolomiteRateProvider", result.dolomiteRateProvider);
 
         string memory path = "broadcast/strategy-addresses.json";
-        try vm.envString("STRATEGY_OUTPUT_JSON") returns (string memory p) { path = p; } catch {}
+        // vm.envString accepts "" as valid (unlike envAddress/envBool/envUint,
+        // which reject "" and fall through to catch). A .env with a blank-but-
+        // present STRATEGY_OUTPUT_JSON= would otherwise set path = "" and
+        // vm.writeJson(out, "") reverts ("path not allowed for write").
+        try vm.envString("STRATEGY_OUTPUT_JSON") returns (string memory p) {
+            if (bytes(p).length > 0) path = p;
+        } catch {}
         vm.writeJson(out, path);
         console.log("Address book written to:", path);
     }

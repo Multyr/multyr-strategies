@@ -12,7 +12,8 @@ bytecode_hash = "none"
 cbor_metadata = false
 fs_permissions = [
   { access = "read", path = "./" },
-  { access = "read-write", path = "./broadcast" }
+  { access = "read-write", path = "./broadcast" },
+  { access = "read-write", path = "./deployments" }
 ]
 
 [fmt]
