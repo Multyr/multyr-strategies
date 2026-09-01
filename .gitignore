@@ -28,6 +28,11 @@ Thumbs.db
 # Node
 node_modules/
 
+# Python (metadata tooling)
+__pycache__/
+*.pyc
+.venv/
+
 # Forge coverage
 lcov.info
 

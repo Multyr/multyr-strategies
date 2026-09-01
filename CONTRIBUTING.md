@@ -47,6 +47,14 @@ test: add AaveAdapter fork test for oracle staleness
 - Comments in English only
 - Each new market adapter must implement the full `ILendingAdapter` interface
 
+## Strategy Metadata
+
+Every strategy has a static metadata file under `metadata/strategies/<slug>.json`
+that must validate against `metadata/schema/strategy-metadata.schema.json`. The
+`metadata-validate` CI job enforces this on every PR. Static metadata only —
+no APY/TVL/capacity/utilization/allocation figures, no risk ratings. See
+[`metadata/README.md`](metadata/README.md).
+
 ## Testing
 
 - Unit and integration tests: `forge test --no-match-path "test/fork*"`

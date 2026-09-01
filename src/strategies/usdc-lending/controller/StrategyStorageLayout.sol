@@ -104,11 +104,13 @@ contract StrategyStorageLayout is AccessControl, Pausable, ReentrancyGuard {
     bytes32 public constant CORE_ROLE = keccak256("CORE_ROLE");
     bytes32 public constant BOOTSTRAP_ROLE = keccak256("BOOTSTRAP_ROLE");
 
-    string public constant name = "USDC Multi-Lending Strategy";
-    string public constant description =
-        "Maximizes USDC yield through automated multi-protocol lending. "
-        "Funds are dynamically allocated across the most trusted protocols on Arbitrum "
-        "with optimized exposure caps and automated rebalancing for max return.";
+    // `name()` and `description` deliberately do NOT live here. This base is
+    // shared by the vault and 8 delegatecall modules; a `string public constant`
+    // getter here embeds the literal into every one of those 9 deployed
+    // contracts (it landed on StrategyScoringModule, which sits ~150 B under the
+    // EIP-170 cap). `name()` is now a `pure` function on UsdcMultiLendingVault
+    // only (IStrategy requires it); the human-readable description is served
+    // off-chain from metadata/strategies/earn-usdc.json, keyed by `metadataId`.
 
     uint64 public constant MAX_BOOTSTRAP_DURATION = uint64(30 days);
     uint64 public constant MAX_RAMP_DURATION = uint64(30 days);

@@ -794,6 +794,23 @@ contract UsdcMultiLendingVault is StrategyStorageLayout {
     //         VIEWS & DIAGNOSTICS
     // -----------------------------
 
+    /// @notice Stable identifier for this strategy's off-chain metadata document
+    ///         (metadata/strategies/earn-usdc.json, `id` field). The full
+    ///         human-readable description and taxonomy live there, not on-chain.
+    /// @dev    `string` (not bytes32) so indexers / ABI consumers read it
+    ///         directly with no null-padding trim. Declared on the vault only,
+    ///         so the getter is compiled once, not into every shared-layout
+    ///         module.
+    string public constant metadataId = "multyr-earn-usdc";
+
+    /// @notice Human-readable strategy name. Required by core's IStrategy.
+    /// @dev    `pure` (not a stored/inherited constant) so the literal is
+    ///         compiled into this contract only, not every delegatecall module
+    ///         that shares StrategyStorageLayout.
+    function name() external pure returns (string memory) {
+        return "Multyr Earn USDC";
+    }
+
     /// @notice Returns the USDC asset address.
     function asset() external view returns (address) {
         return address(ASSET);
