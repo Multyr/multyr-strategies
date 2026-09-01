@@ -11,7 +11,8 @@ evm_version = "cancun"
 bytecode_hash = "none"
 cbor_metadata = false
 fs_permissions = [
-  { access = "read", path = "./" }
+  { access = "read", path = "./" },
+  { access = "read-write", path = "./broadcast" }
 ]
 
 [fmt]

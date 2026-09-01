@@ -76,12 +76,19 @@ import { SimpleProtocolRegistry } from "../test/helpers/SimpleProtocolRegistry.s
  * Phase 2:   Wire strategy (register in router, verify CORE_ROLE, setEcosystem)
  * Phase 2.5: Bootstrap — StrategyBootstrapper.bootstrap(adapters[]) registers all adapters +
  *            renounces BOOTSTRAP_ROLE permanently (one-shot, no separate script)
+ * Phase 2.6: Poke external TVL + liquidity for all adapters (deployer briefly holds
+ *            KEEPER_ROLE, revoked immediately after). Without this every adapter reads
+ *            CONFIDENCE_ZERO and the first real deposit reverts (BootstrapIdleTooHigh).
  * Phase 3:   Deploy StrategyUpkeep + grant KEEPER_ROLE
  *            Grant PARAM_ROLE on Morpho/Dolomite/Fluid/AaveRP for poke (fails silently without)
  * Phase 3.5: Transfer adapter admin roles to timelock
  * Phase 4:   Unpause BufferManager (optional, env-gated)
  * Phase 5:   Seal + transfer ownership (optional, env-gated, DO_SEAL=true)
- * Phase 6:   Register in VaultFactory (optional, env-gated)
+ *
+ * Note: this strategy is NOT registered in VaultFactory — VaultFactory tracks
+ * CoreVault instances only (DeployCoreSystem.s.sol already registers the one
+ * relevant CoreVault during the core deploy). A strategy becomes known to the
+ * system by registering with StrategyRouter instead (Phase 2.1 above).
  *
  * ENVIRONMENT VARIABLES
  * ─────────────────────
@@ -95,10 +102,6 @@ import { SimpleProtocolRegistry } from "../test/helpers/SimpleProtocolRegistry.s
  *
  * Required if DO_SEAL=true:
  *   TIMELOCK_ADDRESS          — ROOT_TIMELOCK (final owner)
- *   GLOBAL_CONFIG_ADDRESS
- *   PRICE_ORACLE_ADDRESS
- *   VAULT_FACTORY_ADDRESS
- *   FEE_COLLECTOR_ADDRESS
  *   SELECTOR_REGISTRY_ADDRESS
  *   SYSTEM_SEALER_ADDRESS
  *
@@ -167,10 +170,6 @@ contract DeployUsdcLendingStrategy is Script {
         address guardian;
         address vetoer;
         address timelock;
-        address globalConfig;
-        address priceOracle;
-        address vaultFactory;
-        address feeCollector;
         address selectorRegistry;
         address systemSealer;
         bool deployAdapters;
@@ -198,6 +197,7 @@ contract DeployUsdcLendingStrategy is Script {
         _phase2_wireStrategy(cfg, result);
         if (cfg.deployAdapters) {
             _phase2_5_bootstrap(cfg, result);
+            _phase2_6_pokeAdapterData(cfg, result);
         }
         if (cfg.deployUpkeep) {
             result = _phase3_deployAutomation(cfg, result);
@@ -606,6 +606,68 @@ contract DeployUsdcLendingStrategy is Script {
         console.log("[2.5] Bootstrap complete - 7 adapters registered, BOOTSTRAP_ROLE renounced");
     }
 
+    /// @notice Poke external TVL + liquidity for all 7 adapters right after bootstrap.
+    /// @dev    Without this, cachedExternalTVL defaults to 0 on every adapter, which
+    ///         reads as CONFIDENCE_ZERO ("< 100K -- NO ALLOCATION") -- every adapter is
+    ///         ineligible for allocation and the first real deposit reverts with
+    ///         BootstrapIdleTooHigh() (idle stays ~100% of TVL, nothing can be placed).
+    ///
+    ///         pokeExternalTVL() wraps each adapter's externalMarketTVL() call in an
+    ///         EMPTY try/catch (StrategyParamsModule.sol) -- a reverting adapter is
+    ///         silently skipped, so a low-level `.call()` succeeding here proves only
+    ///         that the loop ran, not that any cache was actually populated. This
+    ///         function therefore asserts the OUTCOME directly: cachedExternalTVLTs
+    ///         must be nonzero for every adapter after poking. Because that check runs
+    ///         during forge script's SIMULATION, a bad outcome reverts before ANYTHING
+    ///         broadcasts -- the grantRole below never reaches the chain, so there is no
+    ///         window where a partially-broadcast run (RPC drop, on-chain revert from
+    ///         state drift vs. simulation) could leave KEEPER_ROLE stuck on the deployer.
+    ///
+    ///         Confirmed against a live Arbitrum fork:
+    ///         test/strategies/usdc-lending/fork/DeployAndDepositReadiness.fork.t.sol
+    ///         Both pokeExternalTVL/pokeLiquidityBatch are KEEPER_ROLE-gated, and the
+    ///         deployer EOA does not hold that role by default -- grant it temporarily
+    ///         (deployer still has DEFAULT_ADMIN_ROLE pre-seal) and revoke immediately
+    ///         after, so the deploy leaves no lasting KEEPER_ROLE grant on the deployer.
+    function _phase2_6_pokeAdapterData(DeployConfig memory cfg, DeploymentResult memory result)
+        internal
+    {
+        bytes32 KEEPER_ROLE = keccak256("KEEPER_ROLE");
+        bytes32 ADMIN_ROLE = result.strategy.DEFAULT_ADMIN_ROLE();
+        if (!result.strategy.hasRole(ADMIN_ROLE, cfg.deployer)) {
+            console.log("[2.6] SKIP: deployer has no admin - keeper must pokeExternalTVL/pokeLiquidityBatch manually before first deposit");
+            return;
+        }
+
+        result.strategy.grantRole(KEEPER_ROLE, cfg.deployer);
+
+        (bool okTvl,) = address(result.strategy).call(abi.encodeWithSignature("pokeExternalTVL()"));
+        require(okTvl, "pokeExternalTVL failed");
+        (bool okLiq,) = address(result.strategy).call(
+            abi.encodeWithSignature("pokeLiquidityBatch(uint256,uint256)", uint256(0), uint256(10))
+        );
+        require(okLiq, "pokeLiquidityBatch failed");
+
+        address[7] memory adapters = [
+            result.aaveAdapter,
+            result.morphoAdapter,
+            result.cometAdapter,
+            result.eulerAdapter,
+            result.dolomiteAdapter,
+            result.fluidAdapter,
+            result.venusAdapter
+        ];
+        for (uint256 i = 0; i < adapters.length; i++) {
+            require(
+                result.strategy.cachedExternalTVLTs(adapters[i]) != 0,
+                "pokeExternalTVL did not populate cache for an adapter -- deposit would revert (BootstrapIdleTooHigh)"
+            );
+        }
+
+        result.strategy.revokeRole(KEEPER_ROLE, cfg.deployer);
+        console.log("[2.6] External TVL + liquidity poked AND VERIFIED for all adapters (deployer KEEPER_ROLE revoked after)");
+    }
+
     // ─── Phase 3: Automation + PARAM_ROLE grants ─────────────────────────────
 
     function _phase3_deployAutomation(DeployConfig memory cfg, DeploymentResult memory result)
@@ -791,10 +853,6 @@ contract DeployUsdcLendingStrategy is Script {
         cfg.guardian       = vm.envAddress("GUARDIAN_ADDRESS");
 
         try vm.envAddress("TIMELOCK_ADDRESS")          returns (address a) { cfg.timelock = a; } catch {}
-        try vm.envAddress("GLOBAL_CONFIG_ADDRESS")     returns (address a) { cfg.globalConfig = a; } catch {}
-        try vm.envAddress("PRICE_ORACLE_ADDRESS")      returns (address a) { cfg.priceOracle = a; } catch {}
-        try vm.envAddress("VAULT_FACTORY_ADDRESS")     returns (address a) { cfg.vaultFactory = a; } catch {}
-        try vm.envAddress("FEE_COLLECTOR_ADDRESS")     returns (address a) { cfg.feeCollector = a; } catch {}
         try vm.envAddress("SELECTOR_REGISTRY_ADDRESS") returns (address a) { cfg.selectorRegistry = a; } catch {}
         try vm.envAddress("SYSTEM_SEALER_ADDRESS")     returns (address a) { cfg.systemSealer = a; } catch {}
         try vm.envAddress("INCENTIVES_ADDRESS")        returns (address a) { cfg.incentives = a; } catch {}

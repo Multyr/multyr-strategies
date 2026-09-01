@@ -44,7 +44,7 @@ The strategy interacts with **7 lending adapters** across 5 protocols:
 | Core system deployed | `multyr-core/script/DeployCoreSystem.s.sol:202` | `VAULT_ADDRESS`, `STRATEGY_ROUTER_ADDRESS`, `BUFFER_MANAGER_ADDRESS`, `HEALTH_REGISTRY_ADDRESS` from its output |
 | Timelock deployed | `multyr-deployment/script/DeployTimelock.s.sol:30` | `TIMELOCK_ADDRESS` — for `DO_SEAL=true` |
 | Deployer has ≥0.001 USDC | Euler Permit2 dust | `multyr-strategies/script/DeployUsdcLendingStrategy.s.sol:393-400` — transfered to Euler adapter before `initializeMarkets()` |
-| Deployer EOA | `DEPLOYER_PRIVATE_KEY` env var | Must own `DEFAULT_ADMIN_ROLE` on CoreVault and StrategyRouter |
+| Deployer EOA | `DEPLOYER_PRIVATE_KEY` env var | Must be `owner` on CoreVault and StrategyRouter -- neither uses AccessControl/`hasRole` (CoreVault is a Diamond-lite thin proxy with a plain two-step `owner()`/`pendingOwner()`/`acceptOwnership()`; calling `hasRole()` on it reverts `ModuleNotSet()`) |
 | Arbitrum archive RPC | `RPC_URL` | Block confirmation times matter for broadcast |
 
 ---
@@ -66,10 +66,6 @@ GUARDIAN_ADDRESS          # guardian multisig
 
 ```bash
 TIMELOCK_ADDRESS          # ROOT_TIMELOCK (TimelockController)
-GLOBAL_CONFIG_ADDRESS     # GlobalConfig
-PRICE_ORACLE_ADDRESS      # PriceOracleMiddleware
-VAULT_FACTORY_ADDRESS     # VaultFactory
-FEE_COLLECTOR_ADDRESS     # FeeCollector
 SELECTOR_REGISTRY_ADDRESS # SelectorRegistry
 SYSTEM_SEALER_ADDRESS     # SystemSealer
 ```
@@ -77,8 +73,8 @@ SYSTEM_SEALER_ADDRESS     # SystemSealer
 ### Optional
 
 ```bash
-INCENTIVES_ADDRESS        # default: address(0)
-VETOER_ADDRESS            # default: address(0)
+INCENTIVES_ADDRESS        # default: address(0) -- see note below
+VETOER_ADDRESS            # default: address(0) -- see note below
 DO_SEAL                   # "true" → Phase 5 runs (seal + role transfer)
 DEPLOY_UPKEEP             # default: true
 DEPLOY_LENDING_ADAPTERS   # default: true
@@ -87,7 +83,20 @@ ADAPTER_MAX_EXPOSURE_BPS  # uint16, default: 5000 (50%)
 STRATEGY_OUTPUT_JSON      # output path; default: broadcast/strategy-addresses.json
 ```
 
-Source: `multyr-strategies/script/DeployUsdcLendingStrategy.s.sol:742-768`
+> `INCENTIVES_ADDRESS`/`VETOER_ADDRESS` only take effect if `CoreVault`'s ecosystem is not
+> already configured (`setEcosystem` is idempotent, gated on `eco.bufferManager == address(0)`).
+> In the standard core-then-strategy deploy order, `DeployCoreSystem.s.sol` already calls
+> `setEcosystem` itself, so these two are no-ops in practice — set them for documentation
+> consistency with whatever the core deploy used, not because this script will apply them.
+>
+> `GLOBAL_CONFIG_ADDRESS`, `PRICE_ORACLE_ADDRESS`, `VAULT_FACTORY_ADDRESS`, and
+> `FEE_COLLECTOR_ADDRESS` were removed — they were loaded but never used. This strategy
+> does not register with `VaultFactory` (that registry tracks `CoreVault` instances only;
+> `DeployCoreSystem.s.sol` already registers the relevant `CoreVault` during the core
+> deploy). A strategy becomes known to the system via `StrategyRouter.register()` instead
+> (Phase 2.1).
+
+Source: `multyr-strategies/script/DeployUsdcLendingStrategy.s.sol`, `_loadConfig()`
 
 ---
 
@@ -111,14 +120,15 @@ Source: `multyr-strategies/script/DeployUsdcLendingStrategy.s.sol:115-135`
 
 ```mermaid
 graph TD
-    A[Phase 1: Deploy 4 core modules<br/>ParamsModule + ScoringModule + AdapterOpsModule + RebalanceGateModule] --> B
+    A[Phase 1: Deploy AdapterFactory<br/>+ 4 core modules: Params/Scoring/AdapterOps/RebalanceGate] --> B
     B[Phase 1.1: Deploy UsdcMultiLendingVault<br/>assembly CREATE nonce control] --> C
-    C[Phase 1.2: Deploy StrategyBootstrapper<br/>BOOTSTRAP_ROLE pre-granted in constructor] --> D
-    D[Phase 1.5: Deploy 7 adapters<br/>Euler: USDC dust + initializeMarkets FIRST] --> E
+    C[Phase 1.2: Deploy StrategyBootstrapper<br/>atomic CREATE2 deploy+init via AdapterFactory] --> D
+    D[Phase 1.5: Deploy 7 adapters<br/>atomic deployAndInit via AdapterFactory<br/>Euler: USDC dust + initializeMarkets FIRST] --> E
     E[Phase 1.6: Deploy 2 rate providers<br/>AaveRP + DolomiteRP, wire to adapters] --> F
     F[Phase 1.7: Deploy optional modules<br/>Settings + AllocCalc + RebalancePlan] --> G
     G[Phase 2: Wire strategy<br/>register in router + setEcosystem] --> H
-    H[Phase 2.5: Bootstrap ONE-SHOT<br/>register 7 adapters, BOOTSTRAP_ROLE renounced] --> I
+    H[Phase 2.5: Bootstrap ONE-SHOT<br/>register 7 adapters, BOOTSTRAP_ROLE renounced] --> H2
+    H2[Phase 2.6: Poke external TVL + liquidity<br/>required before first deposit will succeed] --> I
     I[Phase 3: Deploy StrategyUpkeep<br/>grant KEEPER_ROLE] --> J
     J[Phase 3.4: Grant PARAM_ROLE<br/>Morpho + Dolomite + Fluid + AaveRP] --> K
     K[Phase 3.5: Transfer adapter admin roles<br/>to Timelock] --> L
@@ -129,26 +139,48 @@ graph TD
     style D fill:#ffcccc
     style J fill:#ffcccc
     style H fill:#ffffcc
+    style H2 fill:#ffffcc
 ```
+
+> **V10 note**: adapter deployment now goes through `AdapterFactory.deployAndInit()` —
+> a CREATE2 deploy and the adapter's `initialize()` call execute atomically in one
+> transaction, closing the front-runnable window a separate `new X(); x.initialize(...)`
+> pair leaves open. `StrategyBootstrapper` is deployed the same way. See
+> `src/strategies/usdc-lending/factory/AdapterFactory.sol`.
 
 ---
 
-## Phase 1 — Deploy Core Modules + Strategy
+## Phase 1 — Deploy AdapterFactory + Core Modules + Strategy
 
-Source: `multyr-strategies/script/DeployUsdcLendingStrategy.s.sol:244-324`
+Source: `multyr-strategies/script/DeployUsdcLendingStrategy.s.sol`, `_phase1_deployModulesAndStrategy`
 
-The deploy uses **nonce pre-computation** to wire cross-module addresses before deployment:
+The deploy uses **nonce pre-computation** to wire cross-module addresses before deployment.
+`AdapterFactory` is a plain deployer-nonce CREATE at `N+0`; everything CREATE2'd through
+it afterward (the bootstrapper and all 7 adapters) is predicted via
+`factory.computeAddress(...)`, not `vm.computeCreateAddress(...)`:
 
 ```
-N+0 = StrategyParamsModule
-N+1 = StrategyScoringModule
-N+2 = StrategyAdapterOpsModule
-N+3 = StrategyRebalanceGateModule
-N+4 = UsdcMultiLendingVault     ← assembly CREATE
-N+5 = StrategyBootstrapper
+N+0 = AdapterFactory
+N+1 = StrategyParamsModule
+N+2 = StrategyScoringModule
+N+3 = StrategyAdapterOpsModule
+N+4 = StrategyRebalanceGateModule
+N+5 = UsdcMultiLendingVault     ← assembly CREATE
+      (StrategyBootstrapper is deployed via factory.deployAndInit() — a CREATE2
+       from AdapterFactory, not a deployer-nonce CREATE, so it does not consume
+       a nonce slot in this list)
 ```
 
-Source: `multyr-strategies/script/DeployUsdcLendingStrategy.s.sol:248-261`
+### 1.-1 — AdapterFactory
+
+```solidity
+AdapterFactory factory = new AdapterFactory(cfg.deployer);
+```
+
+Deployed first so its address can be used to CREATE2-predict the bootstrapper's address
+(needed for the vault constructor, which pre-grants `BOOTSTRAP_ROLE` to that predicted
+address). `cfg.deployer` receives both `DEFAULT_ADMIN_ROLE` and `DEPLOYER_ROLE` on the
+factory. Contract: `multyr-strategies/src/strategies/usdc-lending/factory/AdapterFactory.sol`.
 
 ### 1.0a — StrategyParamsModule
 
@@ -201,57 +233,62 @@ receives `BOOTSTRAP_ROLE` in the constructor before being deployed.
 
 ### 1.2 — StrategyBootstrapper
 
-Source: `multyr-strategies/script/DeployUsdcLendingStrategy.s.sol:309-317`
-Contract: `multyr-strategies/src/strategies/usdc-lending/StrategyBootstrapper.sol:30`
+Source: `multyr-strategies/script/DeployUsdcLendingStrategy.s.sol`, `_phase1_deployModulesAndStrategy`
+Contract: `multyr-strategies/src/strategies/usdc-lending/StrategyBootstrapper.sol`
 
-`BOOTSTRAP_ROLE` is granted automatically in `UsdcMultiLendingVault` constructor to the
-predicted bootstrapper address (`predictedBootstrap = vm.computeCreateAddress(deployer, N+5)`).
-The deploy asserts `hasRole(BOOTSTRAP_ROLE, bootstrapper)` immediately after deploy.
+`BOOTSTRAP_ROLE` is granted automatically in the `UsdcMultiLendingVault` constructor to the
+predicted bootstrapper address (`predictedBootstrap = factory.computeAddress(creationCode, salt)`,
+where `salt = keccak256(abi.encodePacked(chainCfg.deploySalt, "bootstrapper"))`). The bootstrapper
+itself is then deployed via `factory.deployAndInit(...)` — CREATE2 + `initialize()` atomically in
+one transaction — and the deploy asserts `hasRole(BOOTSTRAP_ROLE, bootstrapper)` immediately after.
 
 ---
 
 ## Phase 1.5 — Deploy 7 Lending Adapters
 
-Source: `multyr-strategies/script/DeployUsdcLendingStrategy.s.sol:328-428`
+Source: `multyr-strategies/script/DeployUsdcLendingStrategy.s.sol`, `_phase1_5_deployAdapters`
 
 ### SimpleProtocolRegistry
 
-Before deployers the adapters, a `SimpleProtocolRegistry` is deployed and configured with all
+Before deploying the adapters, a `SimpleProtocolRegistry` is deployed and configured with all
 market addresses:
 - 5 Morpho vaults: Gauntlet USDC Core, Hyperithm USDC Apex, Steakhouse HY USDC, Gauntlet USDC Prime, Yearn Degen USDC
 - 1 Comet (Compound III USDC V3)
 - 4 Euler V2 vaults
 - 1 Dolomite dUSDC
 
-Source: `multyr-strategies/script/DeployUsdcLendingStrategy.s.sol:332-355`
-
 ### Adapter deploy order
 
-| Step | Adapter | Constructor highlight |
-|---|---|---|
-| 1.5.3 | `AaveV3USDCAdapter` | `(USDC, AAVE_POOL, AAVE_AUSDC, deployer, strategy, capacity)` |
-| 1.5.4 | `MorphoUsdcMultiMarketAdapter` | `(USDC, deployer, strategy, capacity, registry)` |
-| 1.5.5 | `CometUsdcMultiMarketAdapter` | `(USDC, deployer, strategy, capacity, registry)` |
-| 1.5.6 | `EulerUsdcMultiMarketAdapter` | **see critical note below** |
-| 1.5.7 | `DolomiteUsdcMultiMarketAdapter` | `marketId=17, accountNumber=0` configured in Phase 1.6 |
-| 1.5.8 | `FluidUsdcMultiMarketAdapter` | `(USDC, deployer, strategy, capacity, FLUID_FUSDC)` |
-| 1.5.9 | `VenusUsdcMultiMarketAdapter` | `(USDC, deployer, strategy, capacity, VENUS_VTOKEN)` |
+Every adapter is deployed via `AdapterFactory.deployAndInit(creationCode, salt, initCalldata)` —
+CREATE2 + `initialize()` execute atomically in one transaction, closing the front-runnable window
+a separate `new X(); x.initialize(...)` pair would leave open (an unrelated caller taking
+`DEFAULT_ADMIN_ROLE`/`PARAM_ROLE` on the adapter first). Each adapter's salt is
+`keccak256(abi.encodePacked(chainCfg.deploySalt, "<name>"))`.
 
-Source: `multyr-strategies/script/DeployUsdcLendingStrategy.s.sol:357-425`
+| Step | Adapter | `initialize(...)` highlight |
+|---|---|---|
+| 1.5.3 | `AaveV3USDCAdapter` | `(usdc, aavePool, aaveAUsdc, deployer, strategy, capacity)` |
+| 1.5.4 | `MorphoUsdcMultiMarketAdapter` | `(usdc, deployer, strategy, capacity, registry)` |
+| 1.5.5 | `CometUsdcMultiMarketAdapter` | `(usdc, deployer, strategy, capacity, registry)` |
+| 1.5.6 | `EulerUsdcMultiMarketAdapter` | `(strategy, usdc, eulerMarkets[4], registry, deployer)` — **see critical note below** |
+| 1.5.7 | `DolomiteUsdcMultiMarketAdapter` | `(usdc, deployer, strategy, capacity, registry)` — `marketId=17, accountNumber=0` configured in Phase 1.6 |
+| 1.5.8 | `FluidUsdcMultiMarketAdapter` | `(usdc, deployer, strategy, capacity, fluidFUsdc)` |
+| 1.5.9 | `VenusUsdcMultiMarketAdapter` | `(usdc, deployer, strategy, capacity, venusVToken, venusBlocksPerYear)` |
 
 ### ⚠ CRITICAL — Euler `initializeMarkets()` BEFORE role transfer
 
 ```solidity
-IERC20(USDC).transfer(address(euler), EULER_DUST);  // 0.001 USDC
+IERC20(usdc).transfer(address(euler), EULER_DUST);  // 0.001 USDC
 euler.initializeMarkets();
 ```
 
-Source: `multyr-strategies/script/DeployUsdcLendingStrategy.s.sol:398-399`
-
 **v8-hotfix**: Euler uses Permit2 internal allowances. These must be initialized (via USDC dust transfer
 + `initializeMarkets()`) **before any role transfer**. Without this, the first strategy deposit to
-Euler silently fails or quarantines the adapter. This happens in Phase 1.5.6, before Phase 3.5 role
-transfers.
+Euler silently fails or quarantines the adapter. This happens right after the adapter's
+`deployAndInit()` call in Phase 1.5.6, before Phase 3.5 role transfers. Note this
+`initializeMarkets()` step is separate from — and unrelated to — the OZ `initializer` pattern that
+`deployAndInit()` already closes the front-running window on; it is its own PARAM_ROLE-gated
+post-init call, safe to run right after atomic deploy+init.
 
 ---
 
@@ -360,6 +397,35 @@ Contract: `multyr-strategies/src/strategies/usdc-lending/StrategyBootstrapper.so
 
 ---
 
+## Phase 2.6 — Poke Adapter Data (required for deposit readiness)
+
+Source: `multyr-strategies/script/DeployUsdcLendingStrategy.s.sol`, `_phase2_6_pokeAdapterData`
+
+```solidity
+result.strategy.grantRole(KEEPER_ROLE, cfg.deployer);
+strategy.pokeExternalTVL();
+strategy.pokeLiquidityBatch(0, 10);
+result.strategy.revokeRole(KEEPER_ROLE, cfg.deployer);
+```
+
+**Why this exists**: every adapter's `cachedExternalTVL` defaults to `0` right after bootstrap,
+which reads as `CONFIDENCE_ZERO` ("< 100K -- NO ALLOCATION" per `StrategyStorageLayout.sol`).
+With no adapter eligible for allocation, `deployIdleToAdapters()` can place nothing, idle stays
+at ~100% of TVL, and the **first real deposit reverts with `BootstrapIdleTooHigh()`** — the
+strategy is deployed but not deposit-ready. This was caught by running the actual deploy script
+against a live Arbitrum fork
+(`test/strategies/usdc-lending/fork/DeployAndDepositReadiness.fork.t.sol`).
+
+Both `pokeExternalTVL()`/`pokeLiquidityBatch()` are `KEEPER_ROLE`-gated and the deployer EOA
+doesn't hold that role by default, so this phase grants it temporarily (deployer still has
+`DEFAULT_ADMIN_ROLE` at this point, pre-seal) and revokes it immediately after — the deploy
+leaves no lasting `KEEPER_ROLE` grant on the deployer address.
+
+If `cfg.deployer` has no admin role at this point (e.g. a re-run after partial admin transfer),
+this phase logs a skip and a keeper must run both calls manually before the first deposit.
+
+---
+
 ## Phase 3 — Automation
 
 Source: `multyr-strategies/script/DeployUsdcLendingStrategy.s.sol:569-608`
@@ -446,7 +512,7 @@ Both conditions must be true before seal succeeds. These are set during the core
 
 ## StrategyInitParams Defaults
 
-Source: `multyr-strategies/script/DeployUsdcLendingStrategy.s.sol:701-739`
+Source: `multyr-strategies/script/DeployUsdcLendingStrategy.s.sol`, `_defaultParams()`
 
 32-field struct initialized with production defaults:
 
@@ -463,13 +529,16 @@ Source: `multyr-strategies/script/DeployUsdcLendingStrategy.s.sol:701-739`
 | `wStability` | 1000 | Stability score weight (10%) |
 | `wIncentive` | 1000 | Incentive score weight (10%) |
 | `incentiveDecayHalfLife` | 604800 | 7-day incentive half-life |
-| `adapterMaxExposureBps` | 5000 | 50% cap per adapter (overridable via env) |
+| `adapterMaxExposureBps` | 5000 | 50% cap per adapter (overridable via `ADAPTER_MAX_EXPOSURE_BPS` env) |
 | `newAdapterRampBps` | 500 | 5% ramp for new adapters |
 | `gateHorizonDays` | 30 | Gate evaluation window |
 | `gateMinNetBenefitBps` | 10 | 0.1% minimum net benefit |
 | `slippageBpsEstimate` | 2 | 0.02% slippage estimate |
+| `withdrawalSpreadBpsEstimate` | 2 | 0.02% withdrawal spread estimate |
+| `gasCostUSDC` | 1e6 | 1 USDC estimated gas cost (used in net-benefit gate math) |
 | `harvestThresholdBps` | 100 | 1% before harvest trigger |
 | `minSecondsBetweenHarvests` | 86400 | 24h harvest cooldown |
+| `dustTolerance` | 1e4 | 0.01 USDC no-cash-invariant dust allowance (bounded `<= 100_000e6` by `setDustTolerance`) |
 | `stabilityEMAPeriod` | 7 | EMA lookback days |
 | `minNewAdapterSeed` | 100,000 USDC | Minimum for new adapter |
 | `newAdapterRampDuration` | 259200 | 3-day ramp duration |
@@ -477,6 +546,7 @@ Source: `multyr-strategies/script/DeployUsdcLendingStrategy.s.sol:701-739`
 | `maxIdleBootstrapBps` | 5000 | 50% max idle during bootstrap |
 | `degradedViewThresholdBps` | 2500 | 25% trigger for DegradedMode |
 | `failureDecaySeconds` | 3600 | Failure score decay rate |
+| `minSecondsBetweenDeployIdle` | 300 | 5-minute cooldown between `deployIdle()` calls |
 | `bootstrapDuration` | 259200 | 3-day bootstrap window |
 | `maxRelativeExposureBps` | 1000 | 10% max relative exposure |
 | `externalTVLStalenessSeconds` | 100800 | 28h external TVL staleness |
@@ -560,9 +630,68 @@ These invariants must hold after every deploy. Source:
 
 ---
 
+## Quick Start
+
+```bash
+cp .env.example .env    # fill in the required addresses (see above)
+./script/deploy-usdc-lending.sh              # dry run — simulate only
+./script/deploy-usdc-lending.sh --broadcast  # actually deploy
+```
+
+`script/deploy-usdc-lending.sh` loads `.env`, validates the required variables (and the
+`DO_SEAL=true` variables if set) are present before invoking `forge script`, so a missing
+address fails fast with a clear message instead of a mid-deploy revert.
+
+---
+
+## Contract Source Verification
+
+```bash
+./script/deploy-usdc-lending.sh --broadcast --verify
+```
+
+Uses the **Etherscan V2 unified API** — one `ETHERSCAN_API_KEY` verifies contracts on any
+chain it covers, including Arbitrum (chainId 42161); no Arbiscan-specific key or
+`[etherscan]` block in `foundry.toml` is needed. This matches how `multyr-core`'s own core
+system deploy was verified (confirmed: `CoreVault` at `0x685Ec439Fc62736934FF6A74301B50173E34446b`
+is verified on Arbiscan with full source visible, using the same key convention).
+
+`deploy-usdc-lending.sh` fails fast if `--verify` is passed without `ETHERSCAN_API_KEY` set.
+Source it from `multyr-core/.env` rather than duplicating the key:
+
+```bash
+source /path/to/multyr-core/.env   # exports DEPLOYER_PRIVATE_KEY + ETHERSCAN_API_KEY
+./script/deploy-usdc-lending.sh --broadcast --verify
+```
+
+**If `--verify` fails during a real broadcast** (block explorer indexing lag is common —
+verification submission can race the transaction being indexed), re-verify any address
+after the fact with a standalone command, no redeploy needed:
+
+```bash
+forge verify-contract \
+  --chain 42161 \
+  --etherscan-api-key "$ETHERSCAN_API_KEY" \
+  <deployed_address> <path/to/Contract.sol:ContractName> \
+  --constructor-args $(cast abi-encode "constructor(...)" <args>)
+```
+
+Constructor args for each contract are visible in the console output / address-book JSON
+this script prints and writes (`STRATEGY_OUTPUT_JSON`).
+
+---
+
 ## Related Docs
 
 - `multyr-core/docs/deployment.md` — core system prerequisite
 - `multyr-strategies/docs/invariants.md` — invariant specification
 - `multyr-strategies/docs/adapters.md` — adapter documentation
 - `multyr-deployment/runbooks/full-system-deploy.md` — end-to-end multi-day deploy plan
+- `multyr-strategies/script/MULTI_CHAIN_PLAYBOOK.md` — draft playbook for deploying to
+  chains beyond Arbitrum. **Note**: as of this writing it describes calling
+  `DeployUsdcLendingStrategy.s.sol` with `--sig "run(address)"` passing an existing
+  `AdapterFactory` address, but the current `run()` takes no arguments and always deploys
+  its own `AdapterFactory` inline, hard-gated to `block.chainid == 42161`. Multi-chain
+  configs (`UsdcLendingConfigBase/Polygon/Ethereum`) are also still placeholders — see
+  `test/strategies/usdc-lending/deploy/UsdcLendingDeploy.t.sol`. Treat that playbook as
+  aspirational until the script is generalized to accept a chain config + factory address.
