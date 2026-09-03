@@ -1,10 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import { Script } from "forge-std/Script.sol";
-import { console } from "forge-std/console.sol";
+import {Script} from "forge-std/Script.sol";
+import {console} from "forge-std/console.sol";
 
-import { StrategyUpkeep } from "@multyr-strategies/strategies/usdc-lending/automation/LendingStrategyUpkeep.sol";
+import {
+    StrategyUpkeep
+} from "@multyr-strategies/strategies/usdc-lending/automation/LendingStrategyUpkeep.sol";
 
 /**
  * @title DeployStrategyUpkeep
@@ -12,7 +14,7 @@ import { StrategyUpkeep } from "@multyr-strategies/strategies/usdc-lending/autom
  * @dev Use when the existing StrategyUpkeep is compromised or needs to be replaced
  *      without redeploying the full strategy.
  *
- * POST-DEPLOY MANUAL ACTIONS (timelock):
+ * POST-DEPLOY MANUAL ACTIONS (Gnosis Safe):
  *   1. strategy.grantRole(KEEPER_ROLE, newUpkeep)         — enable poke
  *   2. strategy.revokeRole(KEEPER_ROLE, oldUpkeep)        — disable old keeper
  *   3. Chainlink Automation: register new upkeep (5M gas limit recommended)
@@ -21,6 +23,7 @@ import { StrategyUpkeep } from "@multyr-strategies/strategies/usdc-lending/autom
  * ENVIRONMENT VARIABLES
  *   DEPLOYER_PRIVATE_KEY   — required
  *   STRATEGY_ADDRESS       — existing UsdcMultiLendingVault address
+ *   GOVERNANCE_ADDRESS     — deployed Safe; receives upkeep ownership directly
  *
  * @custom:chain-id 42161
  */
@@ -28,10 +31,12 @@ contract DeployStrategyUpkeep is Script {
     function run() external returns (address upkeep) {
         require(block.chainid == 42161, "WRONG_CHAIN: DeployStrategyUpkeep is Arbitrum-only");
 
-        uint256 pk       = vm.envUint("DEPLOYER_PRIVATE_KEY");
+        uint256 pk = vm.envUint("DEPLOYER_PRIVATE_KEY");
         address strategy = vm.envAddress("STRATEGY_ADDRESS");
+        address governance = vm.envAddress("GOVERNANCE_ADDRESS");
 
         require(strategy != address(0), "STRATEGY_ADDRESS is zero");
+        require(governance.code.length > 0, "GOVERNANCE_ADDRESS must be a Safe contract");
 
         vm.startBroadcast(pk);
 
@@ -39,13 +44,17 @@ contract DeployStrategyUpkeep is Script {
         strategies[0] = strategy;
         StrategyUpkeep keeper = new StrategyUpkeep(strategies);
         upkeep = address(keeper);
+        keeper.transferOwnership(governance);
+        require(keeper.owner() == governance, "upkeep ownership handoff failed");
 
         vm.stopBroadcast();
 
         console.log("StrategyUpkeep deployed:", upkeep);
         console.log("Bound to strategy:      ", strategy);
         console.log("");
-        console.log("ACTION REQUIRED (timelock):");
+        console.log("Owner (Gnosis Safe):    ", governance);
+        console.log("");
+        console.log("ACTION REQUIRED (Gnosis Safe):");
         console.log("  strategy.grantRole(KEEPER_ROLE, ", upkeep, ")");
     }
 }

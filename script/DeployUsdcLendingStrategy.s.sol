@@ -1,63 +1,109 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.28;
 
-import { Script } from "forge-std/Script.sol";
-import { console } from "forge-std/console.sol";
-import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
+import {Script} from "forge-std/Script.sol";
+import {console} from "forge-std/console.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {IAccessControl} from "@openzeppelin/contracts/access/IAccessControl.sol";
 
 // Chain config
-import { UsdcLendingChainConfig } from "@multyr-strategies/strategies/usdc-lending/config/UsdcLendingChainConfig.sol";
-import { UsdcLendingConfigArbitrum } from "@multyr-strategies/strategies/usdc-lending/config/UsdcLendingConfigArbitrum.sol";
+import {
+    UsdcLendingChainConfig
+} from "@multyr-strategies/strategies/usdc-lending/config/UsdcLendingChainConfig.sol";
+import {
+    UsdcLendingConfigArbitrum
+} from "@multyr-strategies/strategies/usdc-lending/config/UsdcLendingConfigArbitrum.sol";
 
 // Core — type references only
-import { CoreVault } from "@multyr-core/core/CoreVault.sol";
-import { BufferManager } from "@multyr-core/core/modules/BufferManager.sol";
-import { StrategyRouter } from "@multyr-core/core/modules/StrategyRouter.sol";
-import { StrategyHealthRegistry } from "@multyr-core/core/modules/StrategyHealthRegistry.sol";
-import { FeeCollector } from "@multyr-core/core/modules/FeeCollector.sol";
-import { GlobalConfig } from "@multyr-core/core/config/GlobalConfig.sol";
-import { SelectorRegistry } from "@multyr-core/core/libraries/SelectorRegistry.sol";
-import { SystemSealer } from "@multyr-core/core/SystemSealer.sol";
-import { VaultFactory } from "@multyr-core/factory/VaultFactory.sol";
-import { Incentives } from "@multyr-core/core/modules/Incentives.sol";
-import { PriceOracleMiddleware } from "@multyr-core/core/modules/PriceOracleMiddleware.sol";
+import {CoreVault} from "@multyr-core/core/CoreVault.sol";
+import {BufferManager} from "@multyr-core/core/modules/BufferManager.sol";
+import {StrategyRouter} from "@multyr-core/core/modules/StrategyRouter.sol";
+import {StrategyHealthRegistry} from "@multyr-core/core/modules/StrategyHealthRegistry.sol";
+import {FeeCollector} from "@multyr-core/core/modules/FeeCollector.sol";
+import {GlobalConfig} from "@multyr-core/core/config/GlobalConfig.sol";
+import {SelectorRegistry} from "@multyr-core/core/libraries/SelectorRegistry.sol";
+import {SystemSealer} from "@multyr-core/core/SystemSealer.sol";
+import {VaultFactory} from "@multyr-core/factory/VaultFactory.sol";
+import {Incentives} from "@multyr-core/core/modules/Incentives.sol";
+import {PriceOracleMiddleware} from "@multyr-core/core/modules/PriceOracleMiddleware.sol";
 
 // Core interfaces
-import { IAdminModule } from "@multyr-core/interfaces/IAdminModule.sol";
-import { IStrategyRouter } from "@multyr-core/interfaces/IStrategyRouter.sol";
-import { IBufferManager } from "@multyr-core/interfaces/IBufferManager.sol";
+import {IAdminModule} from "@multyr-core/interfaces/IAdminModule.sol";
+import {IStrategyRouter} from "@multyr-core/interfaces/IStrategyRouter.sol";
+import {IBufferManager} from "@multyr-core/interfaces/IBufferManager.sol";
 
 // Strategy (V9.1 3-contract split)
-import { UsdcMultiLendingVault } from "@multyr-strategies/strategies/usdc-lending/controller/UsdcLendingStrategy.sol";
-import { StrategyParamsModule } from "@multyr-strategies/strategies/usdc-lending/controller/StrategyParamsModule.sol";
-import { StrategyScoringModule } from "@multyr-strategies/strategies/usdc-lending/controller/StrategyScoringModule.sol";
-import { StrategyAdapterOpsModule } from "@multyr-strategies/strategies/usdc-lending/controller/StrategyAdapterOpsModule.sol";
-import { StrategyRebalanceGateModule } from "@multyr-strategies/strategies/usdc-lending/controller/StrategyRebalanceGateModule.sol";
-import { StrategySettingsModule } from "@multyr-strategies/strategies/usdc-lending/controller/StrategySettingsModule.sol";
-import { StrategyAllocCalcModule } from "@multyr-strategies/strategies/usdc-lending/controller/StrategyAllocCalcModule.sol";
-import { StrategyRebalancePlanModule } from "@multyr-strategies/strategies/usdc-lending/controller/StrategyRebalancePlanModule.sol";
-import { StrategyBootstrapper } from "@multyr-strategies/strategies/usdc-lending/StrategyBootstrapper.sol";
-import { AdapterFactory } from "@multyr-strategies/strategies/usdc-lending/factory/AdapterFactory.sol";
+import {
+    UsdcMultiLendingVault
+} from "@multyr-strategies/strategies/usdc-lending/controller/UsdcLendingStrategy.sol";
+import {
+    StrategyParamsModule
+} from "@multyr-strategies/strategies/usdc-lending/controller/StrategyParamsModule.sol";
+import {
+    StrategyScoringModule
+} from "@multyr-strategies/strategies/usdc-lending/controller/StrategyScoringModule.sol";
+import {
+    StrategyAdapterOpsModule
+} from "@multyr-strategies/strategies/usdc-lending/controller/StrategyAdapterOpsModule.sol";
+import {
+    StrategyRebalanceGateModule
+} from "@multyr-strategies/strategies/usdc-lending/controller/StrategyRebalanceGateModule.sol";
+import {
+    StrategySettingsModule
+} from "@multyr-strategies/strategies/usdc-lending/controller/StrategySettingsModule.sol";
+import {
+    StrategyAllocCalcModule
+} from "@multyr-strategies/strategies/usdc-lending/controller/StrategyAllocCalcModule.sol";
+import {
+    StrategyRebalancePlanModule
+} from "@multyr-strategies/strategies/usdc-lending/controller/StrategyRebalancePlanModule.sol";
+import {
+    StrategyBootstrapper
+} from "@multyr-strategies/strategies/usdc-lending/StrategyBootstrapper.sol";
+import {
+    AdapterFactory
+} from "@multyr-strategies/strategies/usdc-lending/factory/AdapterFactory.sol";
 
 // Automation
-import { StrategyUpkeep } from "@multyr-strategies/strategies/usdc-lending/automation/LendingStrategyUpkeep.sol";
+import {
+    StrategyUpkeep
+} from "@multyr-strategies/strategies/usdc-lending/automation/LendingStrategyUpkeep.sol";
 
 // 7 Lending Adapters
-import { AaveV3USDCAdapter } from "@multyr-strategies/strategies/usdc-lending/adapters/lending/AaveV3USDCmarket.sol";
-import { MorphoUsdcMultiMarketAdapter } from "@multyr-strategies/strategies/usdc-lending/adapters/lending/MorphoUsdcMultiMarket.sol";
-import { CometUsdcMultiMarketAdapter } from "@multyr-strategies/strategies/usdc-lending/adapters/lending/CometUsdcMultiMarket.sol";
-import { EulerUsdcMultiMarketAdapter } from "@multyr-strategies/strategies/usdc-lending/adapters/lending/EulerUsdcMultiMarket.sol";
-import { DolomiteUsdcMultiMarketAdapter } from "@multyr-strategies/strategies/usdc-lending/adapters/lending/DolomiteUsdcMultiMarket.sol";
-import { FluidUsdcMultiMarketAdapter } from "@multyr-strategies/strategies/usdc-lending/adapters/lending/FluidUsdcMultiMarket.sol";
-import { VenusUsdcMultiMarketAdapter } from "@multyr-strategies/strategies/usdc-lending/adapters/lending/VenusUsdcMultiMarket.sol";
+import {
+    AaveV3USDCAdapter
+} from "@multyr-strategies/strategies/usdc-lending/adapters/lending/AaveV3USDCmarket.sol";
+import {
+    MorphoUsdcMultiMarketAdapter
+} from "@multyr-strategies/strategies/usdc-lending/adapters/lending/MorphoUsdcMultiMarket.sol";
+import {
+    CometUsdcMultiMarketAdapter
+} from "@multyr-strategies/strategies/usdc-lending/adapters/lending/CometUsdcMultiMarket.sol";
+import {
+    EulerUsdcMultiMarketAdapter
+} from "@multyr-strategies/strategies/usdc-lending/adapters/lending/EulerUsdcMultiMarket.sol";
+import {
+    DolomiteUsdcMultiMarketAdapter
+} from "@multyr-strategies/strategies/usdc-lending/adapters/lending/DolomiteUsdcMultiMarket.sol";
+import {
+    FluidUsdcMultiMarketAdapter
+} from "@multyr-strategies/strategies/usdc-lending/adapters/lending/FluidUsdcMultiMarket.sol";
+import {
+    VenusUsdcMultiMarketAdapter
+} from "@multyr-strategies/strategies/usdc-lending/adapters/lending/VenusUsdcMultiMarket.sol";
 
 // 2 Rate Providers
-import { AaveLiquidityRateProvider } from "@multyr-strategies/strategies/usdc-lending/adapters/rates/AaveLiquidityRateProvider.sol";
-import { DolomiteSupplyRateProvider } from "@multyr-strategies/strategies/usdc-lending/adapters/rates/DolomiteSupplyRateProvider.sol";
+import {
+    AaveLiquidityRateProvider
+} from "@multyr-strategies/strategies/usdc-lending/adapters/rates/AaveLiquidityRateProvider.sol";
+import {
+    DolomiteSupplyRateProvider
+} from "@multyr-strategies/strategies/usdc-lending/adapters/rates/DolomiteSupplyRateProvider.sol";
 
-// Protocol registry (deploy-time utility — configures adapter market lists)
-import { SimpleProtocolRegistry } from "../test/helpers/SimpleProtocolRegistry.sol";
+// Governance-controlled protocol registry
+import {
+    ProtocolRegistry
+} from "@multyr-strategies/strategies/usdc-lending/registry/ProtocolRegistry.sol";
 
 /**
  * @title DeployUsdcLendingStrategy
@@ -81,9 +127,11 @@ import { SimpleProtocolRegistry } from "../test/helpers/SimpleProtocolRegistry.s
  *            CONFIDENCE_ZERO and the first real deposit reverts (BootstrapIdleTooHigh).
  * Phase 3:   Deploy StrategyUpkeep + grant KEEPER_ROLE
  *            Grant PARAM_ROLE on Morpho/Dolomite/Fluid/AaveRP for poke (fails silently without)
- * Phase 3.5: Transfer adapter admin roles to timelock
+ * Phase 3.3: Configure StrategyUpkeep and execute its first APY poke
+ * Phase 3.5: Transfer adapter admin/parameter roles to governance
+ * Phase 3.6: Transfer registry, factory, upkeep, and strategy control to governance
  * Phase 4:   Unpause BufferManager (optional, env-gated)
- * Phase 5:   Seal + transfer ownership (optional, env-gated, DO_SEAL=true)
+ * Phase 5:   Verify the optional core seal (env-gated, DO_SEAL=true)
  *
  * Note: this strategy is NOT registered in VaultFactory — VaultFactory tracks
  * CoreVault instances only (DeployCoreSystem.s.sol already registers the one
@@ -99,16 +147,15 @@ import { SimpleProtocolRegistry } from "../test/helpers/SimpleProtocolRegistry.s
  *   BUFFER_MANAGER_ADDRESS
  *   HEALTH_REGISTRY_ADDRESS
  *   GUARDIAN_ADDRESS
+ *   GOVERNANCE_ADDRESS       — Safe/multisig; direct owner (no timelock required)
  *
  * Required if DO_SEAL=true:
- *   TIMELOCK_ADDRESS          — ROOT_TIMELOCK (final owner)
- *   SELECTOR_REGISTRY_ADDRESS
- *   SYSTEM_SEALER_ADDRESS
+ *   None. DO_SEAL only asserts that the already-deployed core is sealed.
  *
  * Optional:
  *   INCENTIVES_ADDRESS        — Incentives module (default: address(0))
  *   VETOER_ADDRESS            — Vetoer (default: address(0))
- *   DO_SEAL                   — "true" to seal and transfer ownership
+ *   DO_SEAL                   — "true" to assert the core is already sealed
  *   DEPLOY_UPKEEP             — "true" to deploy StrategyUpkeep (default: true)
  *   DEPLOY_LENDING_ADAPTERS   — "true" to deploy all 7 adapters (default: true)
  *   UNPAUSE_BUFFER            — "true" to unpause BufferManager (default: true)
@@ -118,7 +165,7 @@ import { SimpleProtocolRegistry } from "../test/helpers/SimpleProtocolRegistry.s
  * @custom:chain-id 42161
  */
 contract DeployUsdcLendingStrategy is Script {
-        uint256 constant DEFAULT_ADAPTER_CAPACITY = 50_000_000e6; // 50M USDC
+    uint256 constant DEFAULT_ADAPTER_CAPACITY = 50_000_000e6; // 50M USDC
 
     // ─── Deployment result ───────────────────────────────────────────────────
 
@@ -169,9 +216,7 @@ contract DeployUsdcLendingStrategy is Script {
         address incentives;
         address guardian;
         address vetoer;
-        address timelock;
-        address selectorRegistry;
-        address systemSealer;
+        address governance;
         bool deployAdapters;
         bool deployUpkeep;
         bool unpauseBuffer;
@@ -196,16 +241,21 @@ contract DeployUsdcLendingStrategy is Script {
         result = _phase1_7_deployOptionalModules(cfg, result, chainCfg);
         _phase2_wireStrategy(cfg, result);
         if (cfg.deployAdapters) {
-            _phase2_5_bootstrap(cfg, result);
+            _phase2_5_bootstrap(result);
             _phase2_6_pokeAdapterData(cfg, result);
         }
         if (cfg.deployUpkeep) {
             result = _phase3_deployAutomation(cfg, result);
             if (cfg.deployAdapters) {
-                _phase3_4_grantParamRoles(cfg, result);
-                _phase3_5_transferAdapterAdmins(cfg, result);
+                _phase3_3_grantParamRoles(result);
+                _phase3_4_configureAutomation(result, chainCfg);
             }
         }
+        if (cfg.deployAdapters) {
+            _phase3_5_transferAdapterAdmins(cfg, result);
+        }
+        _phase3_6_handoffGovernance(cfg, result);
+
         if (cfg.unpauseBuffer) {
             _phase4_unpauseBuffer(cfg, result);
         }
@@ -213,9 +263,7 @@ contract DeployUsdcLendingStrategy is Script {
         vm.stopBroadcast();
 
         if (cfg.doSeal) {
-            vm.startBroadcast(cfg.deployerPk);
-            _phase5_seal(cfg, result);
-            vm.stopBroadcast();
+            _phase5_verifyCoreSeal(cfg);
         }
 
         _writeAddressBook(cfg, result);
@@ -224,10 +272,10 @@ contract DeployUsdcLendingStrategy is Script {
 
     // ─── Phase 1: Deploy modules + strategy ──────────────────────────────────
 
-    function _phase1_deployModulesAndStrategy(DeployConfig memory cfg, UsdcLendingChainConfig memory chainCfg)
-        internal
-        returns (DeploymentResult memory result)
-    {
+    function _phase1_deployModulesAndStrategy(
+        DeployConfig memory cfg,
+        UsdcLendingChainConfig memory chainCfg
+    ) internal returns (DeploymentResult memory result) {
         // Nonce layout (V10):
         //   N+0 = AdapterFactory
         //   N+1 = StrategyParamsModule
@@ -242,11 +290,11 @@ contract DeployUsdcLendingStrategy is Script {
         //    front-runnable deploy-then-initialize() window: CREATE2 deploy and
         //    initialize() now execute atomically in one transaction.)
         uint64 n = vm.getNonce(cfg.deployer);
-        address predictedFactory  = vm.computeCreateAddress(cfg.deployer, n);
-        address predictedParams   = vm.computeCreateAddress(cfg.deployer, n + 1);
-        address predictedScoring  = vm.computeCreateAddress(cfg.deployer, n + 2);
-        address predictedOps      = vm.computeCreateAddress(cfg.deployer, n + 3);
-        address predictedGate     = vm.computeCreateAddress(cfg.deployer, n + 4);
+        address predictedFactory = vm.computeCreateAddress(cfg.deployer, n);
+        address predictedParams = vm.computeCreateAddress(cfg.deployer, n + 1);
+        address predictedScoring = vm.computeCreateAddress(cfg.deployer, n + 2);
+        address predictedOps = vm.computeCreateAddress(cfg.deployer, n + 3);
+        address predictedGate = vm.computeCreateAddress(cfg.deployer, n + 4);
         address predictedStrategy = vm.computeCreateAddress(cfg.deployer, n + 5);
 
         // 1.-1 AdapterFactory — atomic CREATE2-deploy-then-initialize for the
@@ -259,9 +307,8 @@ contract DeployUsdcLendingStrategy is Script {
         console.log("[1.-1] AdapterFactory:", result.adapterFactory);
 
         bytes32 bootstrapSalt = keccak256(abi.encodePacked(chainCfg.deploySalt, "bootstrapper"));
-        address predictedBootstrap = factory.computeAddress(
-            type(StrategyBootstrapper).creationCode, bootstrapSalt
-        );
+        address predictedBootstrap =
+            factory.computeAddress(type(StrategyBootstrapper).creationCode, bootstrapSalt);
 
         // 1.0a ParamsModule
         StrategyParamsModule params = new StrategyParamsModule(chainCfg.usdc, cfg.vault);
@@ -287,7 +334,11 @@ contract DeployUsdcLendingStrategy is Script {
 
         // 1.0d RebalanceGateModule
         StrategyRebalanceGateModule gate = new StrategyRebalanceGateModule(
-            chainCfg.usdc, cfg.vault, result.paramsModule, result.scoringModule, result.adapterOpsModule
+            chainCfg.usdc,
+            cfg.vault,
+            result.paramsModule,
+            result.scoringModule,
+            result.adapterOpsModule
         );
         result.rebalanceGateModule = address(gate);
         require(result.rebalanceGateModule == predictedGate, "GateModule address mismatch");
@@ -296,10 +347,17 @@ contract DeployUsdcLendingStrategy is Script {
         // 1.1 UsdcMultiLendingVault (assembly CREATE to control nonce)
         UsdcMultiLendingVault.StrategyInitParams memory p = _defaultParams();
         bytes memory args = abi.encode(
-            chainCfg.usdc, cfg.vault, cfg.strategyRouter, cfg.deployer, cfg.guardian,
+            chainCfg.usdc,
+            cfg.vault,
+            cfg.strategyRouter,
+            cfg.deployer,
+            cfg.guardian,
             predictedBootstrap,
-            result.paramsModule, result.scoringModule, result.adapterOpsModule,
-            result.rebalanceGateModule, p
+            result.paramsModule,
+            result.scoringModule,
+            result.adapterOpsModule,
+            result.rebalanceGateModule,
+            p
         );
         bytes memory code = abi.encodePacked(type(UsdcMultiLendingVault).creationCode, args);
         address deployed;
@@ -317,7 +375,9 @@ contract DeployUsdcLendingStrategy is Script {
         result.bootstrapper = factory.deployAndInit(
             type(StrategyBootstrapper).creationCode,
             bootstrapSalt,
-            abi.encodeCall(StrategyBootstrapper.initialize, (payable(address(result.strategy)), cfg.deployer))
+            abi.encodeCall(
+                StrategyBootstrapper.initialize, (payable(address(result.strategy)), cfg.deployer)
+            )
         );
         require(result.bootstrapper == predictedBootstrap, "Bootstrapper address mismatch");
         require(
@@ -335,33 +395,102 @@ contract DeployUsdcLendingStrategy is Script {
 
     // ─── Phase 1.5: Deploy 7 lending adapters ────────────────────────────────
 
-    function _phase1_5_deployAdapters(DeployConfig memory cfg, DeploymentResult memory result, UsdcLendingChainConfig memory chainCfg)
-        internal
-        returns (DeploymentResult memory)
-    {
-        // Deploy SimpleProtocolRegistry and configure all market addresses
-        SimpleProtocolRegistry reg = new SimpleProtocolRegistry();
+    function _phase1_5_deployAdapters(
+        DeployConfig memory cfg,
+        DeploymentResult memory result,
+        UsdcLendingChainConfig memory chainCfg
+    ) internal returns (DeploymentResult memory) {
+        // Deploy the production registry under temporary deployer ownership.
+        // Ownership is transferred to governance after every adapter has been
+        // initialized and all deployment-time registry writes are complete.
+        ProtocolRegistry reg = new ProtocolRegistry(cfg.deployer);
         result.protocolRegistry = address(reg);
-        console.log("[1.5.1] SimpleProtocolRegistry:", result.protocolRegistry);
+        console.log("[1.5.1] ProtocolRegistry:", result.protocolRegistry);
 
         // Morpho markets (5)
-        reg.addVault(SimpleProtocolRegistry.ProtocolType.MORPHO, chainCfg.morphoVault1, "Gauntlet USDC Core", 300, 5_000_000e6);
-        reg.addVault(SimpleProtocolRegistry.ProtocolType.MORPHO, chainCfg.morphoVault2, "Hyperithm USDC Apex", 350, 2_000_000e6);
-        reg.addVault(SimpleProtocolRegistry.ProtocolType.MORPHO, chainCfg.morphoVault4, "Steakhouse HY USDC", 400, 25_000_000e6);
-        reg.addVault(SimpleProtocolRegistry.ProtocolType.MORPHO, chainCfg.morphoVault6, "Gauntlet USDC Prime", 300, 10_000_000e6);
-        reg.addVault(SimpleProtocolRegistry.ProtocolType.MORPHO, chainCfg.morphoVault8, "Yearn Degen USDC", 500, 1_000_000e6);
+        reg.addVault(
+            ProtocolRegistry.ProtocolType.MORPHO,
+            chainCfg.morphoVault1,
+            "Gauntlet USDC Core",
+            300,
+            5_000_000e6
+        );
+        reg.addVault(
+            ProtocolRegistry.ProtocolType.MORPHO,
+            chainCfg.morphoVault2,
+            "Hyperithm USDC Apex",
+            350,
+            2_000_000e6
+        );
+        reg.addVault(
+            ProtocolRegistry.ProtocolType.MORPHO,
+            chainCfg.morphoVault4,
+            "Steakhouse HY USDC",
+            400,
+            25_000_000e6
+        );
+        reg.addVault(
+            ProtocolRegistry.ProtocolType.MORPHO,
+            chainCfg.morphoVault6,
+            "Gauntlet USDC Prime",
+            300,
+            10_000_000e6
+        );
+        reg.addVault(
+            ProtocolRegistry.ProtocolType.MORPHO,
+            chainCfg.morphoVault8,
+            "Yearn Degen USDC",
+            500,
+            1_000_000e6
+        );
 
         // Comet (Compound III) — 1 market
-        reg.addVault(SimpleProtocolRegistry.ProtocolType.COMPOUND_V3, chainCfg.cometUsdcV3, "Compound III USDC", 200, 10_000_000e6);
+        reg.addVault(
+            ProtocolRegistry.ProtocolType.COMPOUND_V3,
+            chainCfg.cometUsdcV3,
+            "Compound III USDC",
+            200,
+            10_000_000e6
+        );
 
         // Euler vaults (4)
-        reg.addVault(SimpleProtocolRegistry.ProtocolType.EULER_V2, chainCfg.eulerVault1, "Euler USDC 1", 300, 5_000_000e6);
-        reg.addVault(SimpleProtocolRegistry.ProtocolType.EULER_V2, chainCfg.eulerVault2, "Euler USDC 2", 300, 5_000_000e6);
-        reg.addVault(SimpleProtocolRegistry.ProtocolType.EULER_V2, chainCfg.eulerVault3, "Euler USDC 3", 350, 3_000_000e6);
-        reg.addVault(SimpleProtocolRegistry.ProtocolType.EULER_V2, chainCfg.eulerVault4, "Euler USDC 4", 350, 3_000_000e6);
+        reg.addVault(
+            ProtocolRegistry.ProtocolType.EULER_V2,
+            chainCfg.eulerVault1,
+            "Euler USDC 1",
+            300,
+            5_000_000e6
+        );
+        reg.addVault(
+            ProtocolRegistry.ProtocolType.EULER_V2,
+            chainCfg.eulerVault2,
+            "Euler USDC 2",
+            300,
+            5_000_000e6
+        );
+        reg.addVault(
+            ProtocolRegistry.ProtocolType.EULER_V2,
+            chainCfg.eulerVault3,
+            "Euler USDC 3",
+            350,
+            3_000_000e6
+        );
+        reg.addVault(
+            ProtocolRegistry.ProtocolType.EULER_V2,
+            chainCfg.eulerVault4,
+            "Euler USDC 4",
+            350,
+            3_000_000e6
+        );
 
         // Dolomite — 1 market
-        reg.addVault(SimpleProtocolRegistry.ProtocolType.DOLOMITE, chainCfg.dolomiteDUsdc, "Dolomite dUSDC", 300, 5_000_000e6);
+        reg.addVault(
+            ProtocolRegistry.ProtocolType.DOLOMITE,
+            chainCfg.dolomiteDUsdc,
+            "Dolomite dUSDC",
+            300,
+            5_000_000e6
+        );
         console.log("[1.5.2] Registry configured (5 Morpho + 1 Comet + 4 Euler + 1 Dolomite)");
 
         // All 7 adapters below are deployed via AdapterFactory.deployAndInit():
@@ -377,7 +506,14 @@ contract DeployUsdcLendingStrategy is Script {
             keccak256(abi.encodePacked(chainCfg.deploySalt, "aave")),
             abi.encodeCall(
                 AaveV3USDCAdapter.initialize,
-                (chainCfg.usdc, chainCfg.aavePool, chainCfg.aaveAUsdc, cfg.deployer, address(result.strategy), DEFAULT_ADAPTER_CAPACITY)
+                (
+                    chainCfg.usdc,
+                    chainCfg.aavePool,
+                    chainCfg.aaveAUsdc,
+                    cfg.deployer,
+                    address(result.strategy),
+                    DEFAULT_ADAPTER_CAPACITY
+                )
             )
         );
         console.log("[1.5.3] AaveV3USDCAdapter:", result.aaveAdapter);
@@ -388,7 +524,13 @@ contract DeployUsdcLendingStrategy is Script {
             keccak256(abi.encodePacked(chainCfg.deploySalt, "morpho")),
             abi.encodeCall(
                 MorphoUsdcMultiMarketAdapter.initialize,
-                (chainCfg.usdc, cfg.deployer, address(result.strategy), DEFAULT_ADAPTER_CAPACITY, result.protocolRegistry)
+                (
+                    chainCfg.usdc,
+                    cfg.deployer,
+                    address(result.strategy),
+                    DEFAULT_ADAPTER_CAPACITY,
+                    result.protocolRegistry
+                )
             )
         );
         console.log("[1.5.4] MorphoAdapter:", result.morphoAdapter);
@@ -399,7 +541,13 @@ contract DeployUsdcLendingStrategy is Script {
             keccak256(abi.encodePacked(chainCfg.deploySalt, "comet")),
             abi.encodeCall(
                 CometUsdcMultiMarketAdapter.initialize,
-                (chainCfg.usdc, cfg.deployer, address(result.strategy), DEFAULT_ADAPTER_CAPACITY, result.protocolRegistry)
+                (
+                    chainCfg.usdc,
+                    cfg.deployer,
+                    address(result.strategy),
+                    DEFAULT_ADAPTER_CAPACITY,
+                    result.protocolRegistry
+                )
             )
         );
         console.log("[1.5.5] CometAdapter:", result.cometAdapter);
@@ -411,18 +559,27 @@ contract DeployUsdcLendingStrategy is Script {
         //   initializeMarkets() itself is a separate, PARAM_ROLE-gated post-init step (not the
         //   OZ `initializer` this fix targets) — safe to run after the atomic deploy+init below.
         address[] memory eulerMarkets = new address[](4);
-        eulerMarkets[0] = chainCfg.eulerVault1; eulerMarkets[1] = chainCfg.eulerVault2;
-        eulerMarkets[2] = chainCfg.eulerVault3; eulerMarkets[3] = chainCfg.eulerVault4;
+        eulerMarkets[0] = chainCfg.eulerVault1;
+        eulerMarkets[1] = chainCfg.eulerVault2;
+        eulerMarkets[2] = chainCfg.eulerVault3;
+        eulerMarkets[3] = chainCfg.eulerVault4;
         result.eulerAdapter = factory.deployAndInit(
             type(EulerUsdcMultiMarketAdapter).creationCode,
             keccak256(abi.encodePacked(chainCfg.deploySalt, "euler")),
             abi.encodeCall(
                 EulerUsdcMultiMarketAdapter.initialize,
-                (address(result.strategy), chainCfg.usdc, eulerMarkets, result.protocolRegistry, cfg.deployer)
+                (
+                    address(result.strategy),
+                    chainCfg.usdc,
+                    eulerMarkets,
+                    result.protocolRegistry,
+                    cfg.deployer
+                )
             )
         );
         {
-            EulerUsdcMultiMarketAdapter euler = EulerUsdcMultiMarketAdapter(payable(result.eulerAdapter));
+            EulerUsdcMultiMarketAdapter euler =
+                EulerUsdcMultiMarketAdapter(payable(result.eulerAdapter));
             uint256 EULER_DUST = 1000; // 0.001 USDC for Permit2 setup
             require(
                 IERC20(chainCfg.usdc).balanceOf(cfg.deployer) >= EULER_DUST,
@@ -439,7 +596,13 @@ contract DeployUsdcLendingStrategy is Script {
             keccak256(abi.encodePacked(chainCfg.deploySalt, "dolomite")),
             abi.encodeCall(
                 DolomiteUsdcMultiMarketAdapter.initialize,
-                (chainCfg.usdc, cfg.deployer, address(result.strategy), DEFAULT_ADAPTER_CAPACITY, result.protocolRegistry)
+                (
+                    chainCfg.usdc,
+                    cfg.deployer,
+                    address(result.strategy),
+                    DEFAULT_ADAPTER_CAPACITY,
+                    result.protocolRegistry
+                )
             )
         );
         console.log("[1.5.7] DolomiteAdapter:", result.dolomiteAdapter);
@@ -450,7 +613,13 @@ contract DeployUsdcLendingStrategy is Script {
             keccak256(abi.encodePacked(chainCfg.deploySalt, "fluid")),
             abi.encodeCall(
                 FluidUsdcMultiMarketAdapter.initialize,
-                (chainCfg.usdc, cfg.deployer, address(result.strategy), DEFAULT_ADAPTER_CAPACITY, chainCfg.fluidFUsdc)
+                (
+                    chainCfg.usdc,
+                    cfg.deployer,
+                    address(result.strategy),
+                    DEFAULT_ADAPTER_CAPACITY,
+                    chainCfg.fluidFUsdc
+                )
             )
         );
         console.log("[1.5.8] FluidAdapter:", result.fluidAdapter);
@@ -461,7 +630,14 @@ contract DeployUsdcLendingStrategy is Script {
             keccak256(abi.encodePacked(chainCfg.deploySalt, "venus")),
             abi.encodeCall(
                 VenusUsdcMultiMarketAdapter.initialize,
-                (chainCfg.usdc, cfg.deployer, address(result.strategy), DEFAULT_ADAPTER_CAPACITY, chainCfg.venusVToken, chainCfg.venusBlocksPerYear)
+                (
+                    chainCfg.usdc,
+                    cfg.deployer,
+                    address(result.strategy),
+                    DEFAULT_ADAPTER_CAPACITY,
+                    chainCfg.venusVToken,
+                    chainCfg.venusBlocksPerYear
+                )
             )
         );
         console.log("[1.5.9] VenusAdapter:", result.venusAdapter);
@@ -490,7 +666,8 @@ contract DeployUsdcLendingStrategy is Script {
             .setRateProvider(result.dolomiteRateProvider);
 
         // Dolomite market config (audit requirement)
-        DolomiteUsdcMultiMarketAdapter dolo = DolomiteUsdcMultiMarketAdapter(payable(result.dolomiteAdapter));
+        DolomiteUsdcMultiMarketAdapter dolo =
+            DolomiteUsdcMultiMarketAdapter(payable(result.dolomiteAdapter));
         dolo.setUsdcMarketId(17);
         dolo.setAccountNumber(0);
         require(dolo.usdcMarketId() == 17, "DOLO_MKTID_NOT_SET");
@@ -503,10 +680,11 @@ contract DeployUsdcLendingStrategy is Script {
 
     // ─── Phase 1.7: Optional modules (MUST run before Phase 2.5 bootstrap) ───
 
-    function _phase1_7_deployOptionalModules(DeployConfig memory cfg, DeploymentResult memory result, UsdcLendingChainConfig memory chainCfg)
-        internal
-        returns (DeploymentResult memory)
-    {
+    function _phase1_7_deployOptionalModules(
+        DeployConfig memory cfg,
+        DeploymentResult memory result,
+        UsdcLendingChainConfig memory chainCfg
+    ) internal returns (DeploymentResult memory) {
         UsdcMultiLendingVault strat = result.strategy;
 
         // SettingsModule — only needs (asset, vault) since it doesn't delegatecall scoring
@@ -514,13 +692,17 @@ contract DeployUsdcLendingStrategy is Script {
         result.settingsModule = address(settings);
         console.log("[1.7.1] StrategySettingsModule:", result.settingsModule);
 
-        StrategyAllocCalcModule allocCalc = new StrategyAllocCalcModule(chainCfg.usdc, address(strat));
+        StrategyAllocCalcModule allocCalc =
+            new StrategyAllocCalcModule(chainCfg.usdc, address(strat));
         result.allocCalcModule = address(allocCalc);
         console.log("[1.7.2] StrategyAllocCalcModule:", result.allocCalcModule);
 
         StrategyRebalancePlanModule planMod = new StrategyRebalancePlanModule(
-            chainCfg.usdc, address(strat),
-            result.paramsModule, result.scoringModule, result.adapterOpsModule
+            chainCfg.usdc,
+            address(strat),
+            result.paramsModule,
+            result.scoringModule,
+            result.adapterOpsModule
         );
         result.rebalancePlanModule = address(planMod);
         console.log("[1.7.3] StrategyRebalancePlanModule:", result.rebalancePlanModule);
@@ -547,7 +729,7 @@ contract DeployUsdcLendingStrategy is Script {
                 result.router.setLossCapPerStrategy(address(result.strategy), 50);
                 console.log("[2.1] Strategy registered in router (maxBps=10000, lossCap=50bps)");
             } else {
-                console.log("[2.1] SKIP: router owner is not deployer - register via Timelock/Safe");
+                console.log("[2.1] SKIP: router owner is not deployer - register via Safe");
             }
         } else {
             console.log("[2.1] SKIP: strategy already registered");
@@ -556,8 +738,7 @@ contract DeployUsdcLendingStrategy is Script {
         // 2.2 Verify CORE_ROLE (set in constructor)
         bytes32 CORE_ROLE = keccak256("CORE_ROLE");
         require(
-            result.strategy.hasRole(CORE_ROLE, cfg.vault),
-            "DEPLOY_BUG: CoreVault missing CORE_ROLE"
+            result.strategy.hasRole(CORE_ROLE, cfg.vault), "DEPLOY_BUG: CoreVault missing CORE_ROLE"
         );
         require(
             result.strategy.hasRole(CORE_ROLE, cfg.strategyRouter),
@@ -567,18 +748,21 @@ contract DeployUsdcLendingStrategy is Script {
 
         // 2.3 setEcosystem (idempotent)
         IAdminModule.EcosystemConfig memory eco = IAdminModule(cfg.vault).getEcosystem();
-        if (eco.bufferManager == address(0)) {
-            IAdminModule(cfg.vault).setEcosystem(
-                IAdminModule.EcosystemConfig({
-                    bufferManager: cfg.bufferManager,
-                    strategyRouter: cfg.strategyRouter,
-                    healthRegistry: cfg.healthRegistry,
-                    incentives: cfg.incentives,
-                    guardian: cfg.guardian,
-                    vetoer: cfg.vetoer
-                })
-            );
+        if (eco.bufferManager == address(0) && result.vault.owner() == cfg.deployer) {
+            IAdminModule(cfg.vault)
+                .setEcosystem(
+                    IAdminModule.EcosystemConfig({
+                        bufferManager: cfg.bufferManager,
+                        strategyRouter: cfg.strategyRouter,
+                        healthRegistry: cfg.healthRegistry,
+                        incentives: cfg.incentives,
+                        guardian: cfg.guardian,
+                        vetoer: cfg.vetoer
+                    })
+                );
             console.log("[2.3] Ecosystem configured");
+        } else if (eco.bufferManager == address(0)) {
+            console.log("[2.3] SKIP: CoreVault owner is not deployer - set ecosystem via Safe");
         } else {
             console.log("[2.3] SKIP: ecosystem already set");
         }
@@ -586,9 +770,7 @@ contract DeployUsdcLendingStrategy is Script {
 
     // ─── Phase 2.5: Bootstrap adapters ───────────────────────────────────────
 
-    function _phase2_5_bootstrap(DeployConfig memory cfg, DeploymentResult memory result)
-        internal
-    {
+    function _phase2_5_bootstrap(DeploymentResult memory result) internal {
         address[] memory adapters = new address[](7);
         adapters[0] = result.aaveAdapter;
         adapters[1] = result.morphoAdapter;
@@ -635,7 +817,9 @@ contract DeployUsdcLendingStrategy is Script {
         bytes32 KEEPER_ROLE = keccak256("KEEPER_ROLE");
         bytes32 ADMIN_ROLE = result.strategy.DEFAULT_ADMIN_ROLE();
         if (!result.strategy.hasRole(ADMIN_ROLE, cfg.deployer)) {
-            console.log("[2.6] SKIP: deployer has no admin - keeper must pokeExternalTVL/pokeLiquidityBatch manually before first deposit");
+            console.log(
+                "[2.6] SKIP: deployer has no admin - keeper must pokeExternalTVL/pokeLiquidityBatch manually before first deposit"
+            );
             return;
         }
 
@@ -643,9 +827,12 @@ contract DeployUsdcLendingStrategy is Script {
 
         (bool okTvl,) = address(result.strategy).call(abi.encodeWithSignature("pokeExternalTVL()"));
         require(okTvl, "pokeExternalTVL failed");
-        (bool okLiq,) = address(result.strategy).call(
-            abi.encodeWithSignature("pokeLiquidityBatch(uint256,uint256)", uint256(0), uint256(10))
-        );
+        (bool okLiq,) = address(result.strategy)
+            .call(
+                abi.encodeWithSignature(
+                    "pokeLiquidityBatch(uint256,uint256)", uint256(0), uint256(10)
+                )
+            );
         require(okLiq, "pokeLiquidityBatch failed");
 
         address[7] memory adapters = [
@@ -665,7 +852,9 @@ contract DeployUsdcLendingStrategy is Script {
         }
 
         result.strategy.revokeRole(KEEPER_ROLE, cfg.deployer);
-        console.log("[2.6] External TVL + liquidity poked AND VERIFIED for all adapters (deployer KEEPER_ROLE revoked after)");
+        console.log(
+            "[2.6] External TVL + liquidity poked AND VERIFIED for all adapters (deployer KEEPER_ROLE revoked after)"
+        );
     }
 
     // ─── Phase 3: Automation + PARAM_ROLE grants ─────────────────────────────
@@ -681,23 +870,44 @@ contract DeployUsdcLendingStrategy is Script {
         console.log("[3.1] StrategyUpkeep:", result.strategyUpkeep);
 
         bytes32 KEEPER_ROLE = keccak256("KEEPER_ROLE");
-        bytes32 ADMIN_ROLE  = result.strategy.DEFAULT_ADMIN_ROLE();
+        bytes32 ADMIN_ROLE = result.strategy.DEFAULT_ADMIN_ROLE();
         if (result.strategy.hasRole(ADMIN_ROLE, cfg.deployer)) {
             result.strategy.grantRole(KEEPER_ROLE, result.strategyUpkeep);
             console.log("[3.2] KEEPER_ROLE granted to StrategyUpkeep");
         } else {
-            console.log("[3.2] SKIP: deployer has no admin - timelock must grant KEEPER_ROLE");
+            console.log("[3.2] SKIP: deployer has no admin - governance must grant KEEPER_ROLE");
             console.log("  ACTION: strategy.grantRole(KEEPER_ROLE, upkeep)");
         }
         return result;
     }
 
+    /// @notice Fully configure upkeep before its ownership is handed to governance.
+    /// @dev A zero pokeInterval makes POKE_APY continuously eligible, so the 24h
+    ///      interval and targets are deployment invariants rather than optional ops.
+    function _phase3_4_configureAutomation(
+        DeploymentResult memory result,
+        UsdcLendingChainConfig memory chainCfg
+    ) internal {
+        StrategyUpkeep upkeep = StrategyUpkeep(result.strategyUpkeep);
+        upkeep.setAaveConfig(chainCfg.aavePool, result.aaveRateProvider, chainCfg.usdc);
+        upkeep.addPokeTarget(result.morphoAdapter);
+        upkeep.addPokeTarget(result.dolomiteAdapter);
+        upkeep.addPokeTarget(result.fluidAdapter);
+        upkeep.setPokeInterval(1 days);
+
+        // performUpkeep is permissionless; adapter PARAM_ROLE and strategy
+        // KEEPER_ROLE grants above make each individual poke effective.
+        upkeep.performUpkeep(abi.encode(uint8(3), uint256(0)));
+        require(upkeep.lastPokeTs() != 0, "Upkeep initial poke not recorded");
+        require(upkeep.pokeInterval() == 1 days, "Upkeep poke interval not set");
+        require(upkeep.getPokeTargets().length == 3, "Upkeep poke targets not set");
+        console.log("[3.4] StrategyUpkeep configured + initial APY poke executed");
+    }
+
     /// @notice Grant PARAM_ROLE to StrategyUpkeep on Morpho/Dolomite/Fluid/AaveRP.
     /// @dev Poke (APY refresh) fails silently on these adapters without PARAM_ROLE.
     ///      v8-hotfix: must be done BEFORE Phase 3.5 role transfers.
-    function _phase3_4_grantParamRoles(DeployConfig memory cfg, DeploymentResult memory result)
-        internal
-    {
+    function _phase3_3_grantParamRoles(DeploymentResult memory result) internal {
         bytes32 PARAM_ROLE = keccak256("PARAM_ROLE");
 
         IAccessControl(result.morphoAdapter).grantRole(PARAM_ROLE, result.strategyUpkeep);
@@ -705,91 +915,156 @@ contract DeployUsdcLendingStrategy is Script {
         IAccessControl(result.fluidAdapter).grantRole(PARAM_ROLE, result.strategyUpkeep);
         IAccessControl(result.aaveRateProvider).grantRole(PARAM_ROLE, result.strategyUpkeep);
 
-        require(IAccessControl(result.morphoAdapter).hasRole(PARAM_ROLE, result.strategyUpkeep), "Morpho PARAM_ROLE not granted");
-        require(IAccessControl(result.dolomiteAdapter).hasRole(PARAM_ROLE, result.strategyUpkeep), "Dolomite PARAM_ROLE not granted");
-        require(IAccessControl(result.fluidAdapter).hasRole(PARAM_ROLE, result.strategyUpkeep), "Fluid PARAM_ROLE not granted");
-        require(IAccessControl(result.aaveRateProvider).hasRole(PARAM_ROLE, result.strategyUpkeep), "AaveRP PARAM_ROLE not granted");
-        console.log("[3.4] PARAM_ROLE granted to StrategyUpkeep on Morpho/Dolomite/Fluid/AaveRP");
+        require(
+            IAccessControl(result.morphoAdapter).hasRole(PARAM_ROLE, result.strategyUpkeep),
+            "Morpho PARAM_ROLE not granted"
+        );
+        require(
+            IAccessControl(result.dolomiteAdapter).hasRole(PARAM_ROLE, result.strategyUpkeep),
+            "Dolomite PARAM_ROLE not granted"
+        );
+        require(
+            IAccessControl(result.fluidAdapter).hasRole(PARAM_ROLE, result.strategyUpkeep),
+            "Fluid PARAM_ROLE not granted"
+        );
+        require(
+            IAccessControl(result.aaveRateProvider).hasRole(PARAM_ROLE, result.strategyUpkeep),
+            "AaveRP PARAM_ROLE not granted"
+        );
+        console.log("[3.3] PARAM_ROLE granted to StrategyUpkeep on Morpho/Dolomite/Fluid/AaveRP");
     }
 
-    /// @notice Transfer adapter admin roles to timelock (AFTER Phase 3.4 PARAM_ROLE grants).
-    function _phase3_5_transferAdapterAdmins(DeployConfig memory cfg, DeploymentResult memory result)
+    /// @notice Transfer every adapter/rate-provider role to direct governance.
+    /// @dev Runs whether or not upkeep is deployed; otherwise an upkeep-disabled
+    ///      deployment would leave all adapter privileges on the deployer.
+    function _phase3_5_transferAdapterAdmins(
+        DeployConfig memory cfg,
+        DeploymentResult memory result
+    ) internal {
+        _handoffAccessControl(result.aaveAdapter, cfg, false);
+        _handoffAccessControl(result.morphoAdapter, cfg, true);
+        _handoffAccessControl(result.cometAdapter, cfg, true);
+        _handoffAccessControl(result.eulerAdapter, cfg, true);
+        _handoffAccessControl(result.dolomiteAdapter, cfg, true);
+        _handoffAccessControl(result.fluidAdapter, cfg, true);
+        _handoffAccessControl(result.venusAdapter, cfg, true);
+        _handoffAccessControl(result.aaveRateProvider, cfg, true);
+
+        DolomiteSupplyRateProvider(address(result.dolomiteRateProvider))
+            .transferOwnership(cfg.governance);
+        require(
+            DolomiteSupplyRateProvider(address(result.dolomiteRateProvider)).owner()
+                == cfg.governance,
+            "Dolomite rate provider ownership handoff failed"
+        );
+        console.log("[3.5] Adapter and rate-provider control transferred to governance");
+    }
+
+    function _handoffAccessControl(address target, DeployConfig memory cfg, bool hasParamRole)
+        private
+    {
+        bytes32 adminRole = bytes32(0);
+        bytes32 paramRole = keccak256("PARAM_ROLE");
+        IAccessControl controlled = IAccessControl(target);
+
+        controlled.grantRole(adminRole, cfg.governance);
+        if (hasParamRole) controlled.grantRole(paramRole, cfg.governance);
+        if (hasParamRole && controlled.hasRole(paramRole, cfg.deployer)) {
+            controlled.renounceRole(paramRole, cfg.deployer);
+        }
+        controlled.renounceRole(adminRole, cfg.deployer);
+
+        require(controlled.hasRole(adminRole, cfg.governance), "Governance missing admin role");
+        require(!controlled.hasRole(adminRole, cfg.deployer), "Deployer retains admin role");
+        if (hasParamRole) {
+            require(controlled.hasRole(paramRole, cfg.governance), "Governance missing param role");
+            require(!controlled.hasRole(paramRole, cfg.deployer), "Deployer retains param role");
+        }
+    }
+
+    /// @notice Final mandatory handoff for all strategy-side control surfaces.
+    function _phase3_6_handoffGovernance(DeployConfig memory cfg, DeploymentResult memory result)
         internal
     {
-        if (cfg.timelock == address(0)) {
-            console.log("[3.5] SKIP: TIMELOCK_ADDRESS not set - transfer manually");
-            return;
-        }
-        bytes32 ADMIN_ROLE = bytes32(0); // DEFAULT_ADMIN_ROLE = 0x00
-        bytes32 PARAM_ROLE = keccak256("PARAM_ROLE");
+        bytes32 adminRole = bytes32(0);
+        bytes32 paramRole = keccak256("PARAM_ROLE");
+        bytes32 deployerRole = AdapterFactory(result.adapterFactory).DEPLOYER_ROLE();
 
-        // Morpho
-        IAccessControl(result.morphoAdapter).grantRole(ADMIN_ROLE, cfg.timelock);
-        IAccessControl(result.morphoAdapter).renounceRole(ADMIN_ROLE, cfg.deployer);
-        // Comet
-        IAccessControl(result.cometAdapter).grantRole(ADMIN_ROLE, cfg.timelock);
-        IAccessControl(result.cometAdapter).renounceRole(ADMIN_ROLE, cfg.deployer);
-        // Euler — PARAM_ROLE to timelock before renounce (grants done here since no Phase 3.4 for Euler)
-        EulerUsdcMultiMarketAdapter euler = EulerUsdcMultiMarketAdapter(payable(result.eulerAdapter));
-        IAccessControl(result.eulerAdapter).grantRole(euler.PARAM_ROLE(), cfg.timelock);
-        IAccessControl(result.eulerAdapter).grantRole(ADMIN_ROLE, cfg.timelock);
-        euler.renounceRole(euler.PARAM_ROLE(), cfg.deployer);
-        IAccessControl(result.eulerAdapter).renounceRole(ADMIN_ROLE, cfg.deployer);
-        // Dolomite — PARAM_ROLE to timelock
-        DolomiteUsdcMultiMarketAdapter dolo = DolomiteUsdcMultiMarketAdapter(payable(result.dolomiteAdapter));
-        IAccessControl(result.dolomiteAdapter).grantRole(dolo.PARAM_ROLE(), cfg.timelock);
-        IAccessControl(result.dolomiteAdapter).grantRole(ADMIN_ROLE, cfg.timelock);
-        dolo.renounceRole(dolo.PARAM_ROLE(), cfg.deployer);
-        IAccessControl(result.dolomiteAdapter).renounceRole(ADMIN_ROLE, cfg.deployer);
-        // Fluid
-        IAccessControl(result.fluidAdapter).grantRole(ADMIN_ROLE, cfg.timelock);
-        IAccessControl(result.fluidAdapter).renounceRole(ADMIN_ROLE, cfg.deployer);
-        // Venus
-        IAccessControl(result.venusAdapter).grantRole(ADMIN_ROLE, cfg.timelock);
-        IAccessControl(result.venusAdapter).renounceRole(ADMIN_ROLE, cfg.deployer);
-        // Aave
-        IAccessControl(result.aaveAdapter).revokeRole(PARAM_ROLE, cfg.deployer);
-        IAccessControl(result.aaveAdapter).grantRole(ADMIN_ROLE, cfg.timelock);
-        IAccessControl(result.aaveAdapter).renounceRole(ADMIN_ROLE, cfg.deployer);
-        // AaveRP
-        IAccessControl(result.aaveRateProvider).revokeRole(PARAM_ROLE, cfg.deployer);
-        IAccessControl(result.aaveRateProvider).grantRole(ADMIN_ROLE, cfg.timelock);
-        IAccessControl(result.aaveRateProvider).renounceRole(ADMIN_ROLE, cfg.deployer);
-        // DolomiteRP
-        DolomiteSupplyRateProvider(address(result.dolomiteRateProvider)).transferOwnership(cfg.timelock);
-        console.log("[3.5] All adapter admin roles transferred to timelock");
+        result.strategy.grantRole(adminRole, cfg.governance);
+        result.strategy.grantRole(paramRole, cfg.governance);
+        result.strategy.renounceRole(paramRole, cfg.deployer);
+        result.strategy.renounceRole(adminRole, cfg.deployer);
+
+        AdapterFactory factory = AdapterFactory(result.adapterFactory);
+        factory.grantRole(adminRole, cfg.governance);
+        factory.grantRole(deployerRole, cfg.governance);
+        factory.renounceRole(deployerRole, cfg.deployer);
+        factory.renounceRole(adminRole, cfg.deployer);
+
+        if (result.protocolRegistry != address(0)) {
+            ProtocolRegistry(result.protocolRegistry).transferOwnership(cfg.governance);
+        }
+        if (result.strategyUpkeep != address(0)) {
+            StrategyUpkeep(result.strategyUpkeep).transferOwnership(cfg.governance);
+        }
+
+        require(
+            result.strategy.hasRole(adminRole, cfg.governance), "Governance missing strategy admin"
+        );
+        require(
+            result.strategy.hasRole(paramRole, cfg.governance), "Governance missing strategy param"
+        );
+        require(
+            !result.strategy.hasRole(adminRole, cfg.deployer), "Deployer retains strategy admin"
+        );
+        require(
+            !result.strategy.hasRole(paramRole, cfg.deployer), "Deployer retains strategy param"
+        );
+        require(factory.hasRole(adminRole, cfg.governance), "Governance missing factory admin");
+        require(
+            factory.hasRole(deployerRole, cfg.governance), "Governance missing factory deployer"
+        );
+        require(!factory.hasRole(adminRole, cfg.deployer), "Deployer retains factory admin");
+        require(!factory.hasRole(deployerRole, cfg.deployer), "Deployer retains factory deployer");
+        if (result.protocolRegistry != address(0)) {
+            require(
+                ProtocolRegistry(result.protocolRegistry).owner() == cfg.governance,
+                "Governance missing registry ownership"
+            );
+        }
+        if (result.strategyUpkeep != address(0)) {
+            require(
+                StrategyUpkeep(result.strategyUpkeep).owner() == cfg.governance,
+                "Governance missing upkeep ownership"
+            );
+        }
+        console.log("[3.6] Strategy, factory, registry, and upkeep handed to governance");
     }
 
     // ─── Phase 4: Unpause BufferManager ──────────────────────────────────────
 
     function _phase4_unpauseBuffer(DeployConfig memory cfg, DeploymentResult memory) internal {
         if (IBufferManager(cfg.bufferManager).getConfig().paused) {
-            IBufferManager(cfg.bufferManager).setPaused(false);
-            console.log("[4] BufferManager unpaused");
+            if (BufferManager(cfg.bufferManager).owner() == cfg.deployer) {
+                IBufferManager(cfg.bufferManager).setPaused(false);
+                console.log("[4] BufferManager unpaused");
+            } else {
+                console.log("[4] SKIP: BufferManager owner is not deployer - unpause via Safe");
+            }
         } else {
             console.log("[4] SKIP: BufferManager already unpaused");
         }
     }
 
-    // ─── Phase 5: Seal (optional, DO_SEAL=true) ───────────────────────────────
+    // ─── Phase 5: Verify core seal (optional, DO_SEAL=true) ──────────────────
 
-    function _phase5_seal(DeployConfig memory cfg, DeploymentResult memory result) internal {
-        require(cfg.timelock != address(0), "SEAL: TIMELOCK_ADDRESS required");
-        require(cfg.selectorRegistry != address(0), "SEAL: SELECTOR_REGISTRY_ADDRESS required");
-        require(cfg.systemSealer != address(0), "SEAL: SYSTEM_SEALER_ADDRESS required");
-
-        // Transfer strategy admin roles to timelock
-        bytes32 ADMIN_ROLE = result.strategy.DEFAULT_ADMIN_ROLE();
-        bytes32 PARAM_ROLE_STRAT = keccak256("PARAM_ROLE");
-        result.strategy.grantRole(ADMIN_ROLE, cfg.timelock);
-        result.strategy.grantRole(PARAM_ROLE_STRAT, cfg.timelock);
-        result.strategy.renounceRole(ADMIN_ROLE, cfg.deployer);
-        console.log("[5] Strategy admin roles transferred to timelock");
-
-        // Verify vault routing frozen and components timelocked
+    function _phase5_verifyCoreSeal(DeployConfig memory cfg) internal view {
         require(CoreVault(payable(cfg.vault)).isRoutingFrozen(), "SEAL: routing not frozen");
-        require(IAdminModule(cfg.vault).isComponentsTimelocked(), "SEAL: components timelock not enabled");
-        console.log("[5] Routing frozen + components timelocked: PASS");
+        require(
+            IAdminModule(cfg.vault).isComponentsTimelocked(),
+            "SEAL: components timelock not enabled"
+        );
+        console.log("[5] Existing core seal verified: PASS");
     }
 
     // ─── Helpers ──────────────────────────────────────────────────────────────
@@ -802,7 +1077,11 @@ contract DeployUsdcLendingStrategy is Script {
         return false;
     }
 
-    function _defaultParams() internal view returns (UsdcMultiLendingVault.StrategyInitParams memory) {
+    function _defaultParams()
+        internal
+        view
+        returns (UsdcMultiLendingVault.StrategyInitParams memory)
+    {
         uint16 maxExpBps = 5000;
         try vm.envUint("ADAPTER_MAX_EXPOSURE_BPS") returns (uint256 val) {
             if (val > 0 && val <= 10000) maxExpBps = uint16(val);
@@ -845,26 +1124,39 @@ contract DeployUsdcLendingStrategy is Script {
 
     function _loadConfig() internal returns (DeployConfig memory cfg) {
         cfg.deployerPk = vm.envUint("DEPLOYER_PRIVATE_KEY");
-        cfg.deployer   = vm.addr(cfg.deployerPk);
-        cfg.vault         = vm.envAddress("VAULT_ADDRESS");
+        cfg.deployer = vm.addr(cfg.deployerPk);
+        cfg.vault = vm.envAddress("VAULT_ADDRESS");
         cfg.strategyRouter = vm.envAddress("STRATEGY_ROUTER_ADDRESS");
-        cfg.bufferManager  = vm.envAddress("BUFFER_MANAGER_ADDRESS");
+        cfg.bufferManager = vm.envAddress("BUFFER_MANAGER_ADDRESS");
         cfg.healthRegistry = vm.envAddress("HEALTH_REGISTRY_ADDRESS");
-        cfg.guardian       = vm.envAddress("GUARDIAN_ADDRESS");
+        cfg.guardian = vm.envAddress("GUARDIAN_ADDRESS");
+        cfg.governance = vm.envAddress("GOVERNANCE_ADDRESS");
+        require(cfg.governance != address(0), "GOVERNANCE_ADDRESS is zero");
+        require(cfg.governance != cfg.deployer, "GOVERNANCE_ADDRESS must differ from deployer");
+        require(cfg.governance.code.length > 0, "GOVERNANCE_ADDRESS must be a Safe contract");
 
-        try vm.envAddress("TIMELOCK_ADDRESS")          returns (address a) { cfg.timelock = a; } catch {}
-        try vm.envAddress("SELECTOR_REGISTRY_ADDRESS") returns (address a) { cfg.selectorRegistry = a; } catch {}
-        try vm.envAddress("SYSTEM_SEALER_ADDRESS")     returns (address a) { cfg.systemSealer = a; } catch {}
-        try vm.envAddress("INCENTIVES_ADDRESS")        returns (address a) { cfg.incentives = a; } catch {}
-        try vm.envAddress("VETOER_ADDRESS")            returns (address a) { cfg.vetoer = a; } catch {}
+        try vm.envAddress("INCENTIVES_ADDRESS") returns (address a) {
+            cfg.incentives = a;
+        } catch {}
+        try vm.envAddress("VETOER_ADDRESS") returns (address a) {
+            cfg.vetoer = a;
+        } catch {}
 
         cfg.deployAdapters = true;
-        cfg.deployUpkeep   = true;
-        cfg.unpauseBuffer  = true;
-        try vm.envBool("DEPLOY_LENDING_ADAPTERS") returns (bool v) { cfg.deployAdapters = v; } catch {}
-        try vm.envBool("DEPLOY_UPKEEP")           returns (bool v) { cfg.deployUpkeep = v; } catch {}
-        try vm.envBool("UNPAUSE_BUFFER")          returns (bool v) { cfg.unpauseBuffer = v; } catch {}
-        try vm.envBool("DO_SEAL")                 returns (bool v) { cfg.doSeal = v; } catch {}
+        cfg.deployUpkeep = true;
+        cfg.unpauseBuffer = true;
+        try vm.envBool("DEPLOY_LENDING_ADAPTERS") returns (bool v) {
+            cfg.deployAdapters = v;
+        } catch {}
+        try vm.envBool("DEPLOY_UPKEEP") returns (bool v) {
+            cfg.deployUpkeep = v;
+        } catch {}
+        try vm.envBool("UNPAUSE_BUFFER") returns (bool v) {
+            cfg.unpauseBuffer = v;
+        } catch {}
+        try vm.envBool("DO_SEAL") returns (bool v) {
+            cfg.doSeal = v;
+        } catch {}
     }
 
     function _writeAddressBook(DeployConfig memory, DeploymentResult memory result) internal {
@@ -892,13 +1184,14 @@ contract DeployUsdcLendingStrategy is Script {
         vm.serializeAddress(j, "fluidAdapter", result.fluidAdapter);
         vm.serializeAddress(j, "venusAdapter", result.venusAdapter);
         vm.serializeAddress(j, "aaveRateProvider", result.aaveRateProvider);
-        string memory out = vm.serializeAddress(j, "dolomiteRateProvider", result.dolomiteRateProvider);
+        string memory out =
+            vm.serializeAddress(j, "dolomiteRateProvider", result.dolomiteRateProvider);
 
         string memory path = "broadcast/strategy-addresses.json";
-        // vm.envString accepts "" as a valid string (unlike envAddress/envBool/envUint,
-        // which reject "" as an unparseable literal and correctly fall through to catch).
-        // A .env with STRATEGY_OUTPUT_JSON= (blank, present) would otherwise silently
-        // overwrite the sensible default with "", and vm.writeJson(out, "") reverts.
+        // vm.envString accepts "" as valid (unlike envAddress/envBool/envUint,
+        // which reject "" and fall through to catch). A .env with a blank-but-
+        // present STRATEGY_OUTPUT_JSON= would otherwise set path = "" and
+        // vm.writeJson(out, "") reverts ("path not allowed for write").
         try vm.envString("STRATEGY_OUTPUT_JSON") returns (string memory p) {
             if (bytes(p).length > 0) path = p;
         } catch {}
@@ -910,13 +1203,17 @@ contract DeployUsdcLendingStrategy is Script {
         console.log("");
         console.log("=== DEPLOY COMPLETE ===");
         console.log("UsdcMultiLendingVault:", address(result.strategy));
-        if (result.strategyUpkeep != address(0)) console.log("StrategyUpkeep:", result.strategyUpkeep);
-        if (result.aaveAdapter   != address(0)) console.log("Aave:      ", result.aaveAdapter);
+        if (result.strategyUpkeep != address(0)) {
+            console.log("StrategyUpkeep:", result.strategyUpkeep);
+        }
+        if (result.aaveAdapter != address(0)) console.log("Aave:      ", result.aaveAdapter);
         if (result.morphoAdapter != address(0)) console.log("Morpho:    ", result.morphoAdapter);
-        if (result.cometAdapter  != address(0)) console.log("Comet:     ", result.cometAdapter);
-        if (result.eulerAdapter  != address(0)) console.log("Euler:     ", result.eulerAdapter);
-        if (result.dolomiteAdapter != address(0)) console.log("Dolomite:  ", result.dolomiteAdapter);
-        if (result.fluidAdapter  != address(0)) console.log("Fluid:     ", result.fluidAdapter);
-        if (result.venusAdapter  != address(0)) console.log("Venus:     ", result.venusAdapter);
+        if (result.cometAdapter != address(0)) console.log("Comet:     ", result.cometAdapter);
+        if (result.eulerAdapter != address(0)) console.log("Euler:     ", result.eulerAdapter);
+        if (result.dolomiteAdapter != address(0)) {
+            console.log("Dolomite:  ", result.dolomiteAdapter);
+        }
+        if (result.fluidAdapter != address(0)) console.log("Fluid:     ", result.fluidAdapter);
+        if (result.venusAdapter != address(0)) console.log("Venus:     ", result.venusAdapter);
     }
 }

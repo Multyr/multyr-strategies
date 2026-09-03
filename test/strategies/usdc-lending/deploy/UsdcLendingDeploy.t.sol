@@ -14,29 +14,35 @@ pragma solidity 0.8.28;
 //  4. test_salt_collision_resistance — per-chain deploySalt distinct from each other
 // ═══════════════════════════════════════════════════════════════════════════════
 
-import { Test } from "forge-std/Test.sol";
-import { console } from "forge-std/console.sol";
+import {Test} from "forge-std/Test.sol";
+import {console} from "forge-std/console.sol";
 
-import { UsdcLendingChainConfig } from
-    "../../../../src/strategies/usdc-lending/config/UsdcLendingChainConfig.sol";
-import { UsdcLendingConfigArbitrum } from
-    "../../../../src/strategies/usdc-lending/config/UsdcLendingConfigArbitrum.sol";
-import { UsdcLendingConfigOptimism } from
-    "../../../../src/strategies/usdc-lending/config/UsdcLendingConfigOptimism.sol";
-import { UsdcLendingConfigBase } from
-    "../../../../src/strategies/usdc-lending/config/UsdcLendingConfigBase.sol";
-import { UsdcLendingConfigPolygon } from
-    "../../../../src/strategies/usdc-lending/config/UsdcLendingConfigPolygon.sol";
-import { UsdcLendingConfigEthereum } from
-    "../../../../src/strategies/usdc-lending/config/UsdcLendingConfigEthereum.sol";
-import { UsdcMultiLendingVault } from
-    "../../../../src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol";
+import {
+    UsdcLendingChainConfig
+} from "../../../../src/strategies/usdc-lending/config/UsdcLendingChainConfig.sol";
+import {
+    UsdcLendingConfigArbitrum
+} from "../../../../src/strategies/usdc-lending/config/UsdcLendingConfigArbitrum.sol";
+import {
+    UsdcLendingConfigOptimism
+} from "../../../../src/strategies/usdc-lending/config/UsdcLendingConfigOptimism.sol";
+import {
+    UsdcLendingConfigBase
+} from "../../../../src/strategies/usdc-lending/config/UsdcLendingConfigBase.sol";
+import {
+    UsdcLendingConfigPolygon
+} from "../../../../src/strategies/usdc-lending/config/UsdcLendingConfigPolygon.sol";
+import {
+    UsdcLendingConfigEthereum
+} from "../../../../src/strategies/usdc-lending/config/UsdcLendingConfigEthereum.sol";
+import {
+    UsdcMultiLendingVault
+} from "../../../../src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol";
 
 // Universal Permit2 — same address on all EVM chains.
 address constant PERMIT2_UNIVERSAL = 0x000000000022D473030F116dDEE9F6B43aC78BA3;
 
 contract UsdcLendingDeploy_Test is Test {
-
     // ─────────────────────────────────────────────────────────────────────────
     // 5-7. Base / Polygon / Ethereum — placeholder chain configs
     // ─────────────────────────────────────────────────────────────────────────
@@ -55,7 +61,9 @@ contract UsdcLendingDeploy_Test is Test {
         UsdcLendingChainConfig memory cfg = UsdcLendingConfigBase.get();
 
         assertEq(cfg.usdc, 0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913, "Base USDC mismatch");
-        assertEq(cfg.aavePool, 0xA238Dd80C259a72e81d7e4664a9801593F98d1c5, "Base Aave pool mismatch");
+        assertEq(
+            cfg.aavePool, 0xA238Dd80C259a72e81d7e4664a9801593F98d1c5, "Base Aave pool mismatch"
+        );
         assertEq(cfg.aaveAUsdc, 0x4e65fE4DbA92790696d040ac24Aa414708F5c0AB, "Base aUSDC mismatch");
         assertEq(cfg.permit2, PERMIT2_UNIVERSAL, "Base Permit2 mismatch");
         assertNotEq(cfg.deploySalt, bytes32(0), "Base deploySalt must be non-zero");
@@ -74,8 +82,12 @@ contract UsdcLendingDeploy_Test is Test {
         UsdcLendingChainConfig memory cfg = UsdcLendingConfigPolygon.get();
 
         assertEq(cfg.usdc, 0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359, "Polygon USDC mismatch");
-        assertEq(cfg.aavePool, 0x794a61358D6845594F94dc1DB02A252b5b4814aD, "Polygon Aave pool mismatch");
-        assertEq(cfg.cometUsdcV3, 0xF25212E676D1F7F89Cd72fFEe66158f541246445, "Polygon Comet mismatch");
+        assertEq(
+            cfg.aavePool, 0x794a61358D6845594F94dc1DB02A252b5b4814aD, "Polygon Aave pool mismatch"
+        );
+        assertEq(
+            cfg.cometUsdcV3, 0xF25212E676D1F7F89Cd72fFEe66158f541246445, "Polygon Comet mismatch"
+        );
         assertEq(cfg.permit2, PERMIT2_UNIVERSAL, "Polygon Permit2 mismatch");
         assertNotEq(cfg.deploySalt, bytes32(0), "Polygon deploySalt must be non-zero");
 
@@ -91,8 +103,12 @@ contract UsdcLendingDeploy_Test is Test {
         UsdcLendingChainConfig memory cfg = UsdcLendingConfigEthereum.get();
 
         assertEq(cfg.usdc, 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48, "Ethereum USDC mismatch");
-        assertEq(cfg.aavePool, 0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2, "Ethereum Aave pool mismatch");
-        assertEq(cfg.cometUsdcV3, 0xc3d688B66703497DAA19211EEdff47f25384cdc3, "Ethereum Comet mismatch");
+        assertEq(
+            cfg.aavePool, 0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2, "Ethereum Aave pool mismatch"
+        );
+        assertEq(
+            cfg.cometUsdcV3, 0xc3d688B66703497DAA19211EEdff47f25384cdc3, "Ethereum Comet mismatch"
+        );
         assertEq(cfg.permit2, PERMIT2_UNIVERSAL, "Ethereum Permit2 mismatch");
         assertNotEq(cfg.deploySalt, bytes32(0), "Ethereum deploySalt must be non-zero");
 
@@ -109,10 +125,8 @@ contract UsdcLendingDeploy_Test is Test {
     //    and a distinct deploySalt from every other configured chain, and every
     //    config's governanceMultisig is currently address(0) everywhere --
     //    including Arbitrum, the one chain the deploy script can actually
-    //    target today. Deliberately not gated on-chain (see script's own
-    //    `cfg.timelock` / TIMELOCK_ADDRESS check, which IS enforced before the
-    //    admin-role handoff) -- this test exists so that gap stays visible
-    //    rather than silently assumed fixed by a future change.
+    //    target today. The deployment script requires GOVERNANCE_ADDRESS at
+    //    runtime and verifies it has deployed contract code before handoff.
     // ─────────────────────────────────────────────────────────────────────────
 
     function test_governanceMultisig_unset_across_all_configs() public pure {
@@ -131,22 +145,27 @@ contract UsdcLendingDeploy_Test is Test {
         UsdcLendingChainConfig memory cfg = UsdcLendingConfigArbitrum.get();
 
         // Core token
-        assertEq(cfg.usdc, 0xaf88d065e77c8cC2239327C5EDb3A432268e5831,
-            "Arbitrum USDC mismatch");
+        assertEq(cfg.usdc, 0xaf88d065e77c8cC2239327C5EDb3A432268e5831, "Arbitrum USDC mismatch");
 
         // Aave V3
-        assertEq(cfg.aavePool,  0x794a61358D6845594F94dc1DB02A252b5b4814aD,
-            "Arbitrum Aave pool mismatch");
-        assertEq(cfg.aaveAUsdc, 0x724dc807b04555b71ed48a6896b6F41593b8C637,
-            "Arbitrum aUSDC mismatch");
+        assertEq(
+            cfg.aavePool, 0x794a61358D6845594F94dc1DB02A252b5b4814aD, "Arbitrum Aave pool mismatch"
+        );
+        assertEq(
+            cfg.aaveAUsdc, 0x724dc807b04555b71ed48a6896b6F41593b8C637, "Arbitrum aUSDC mismatch"
+        );
 
         // Compound III
-        assertEq(cfg.cometUsdcV3, 0x9c4ec768c28520B50860ea7a15bd7213a9fF58bf,
-            "Arbitrum Comet mismatch");
+        assertEq(
+            cfg.cometUsdcV3, 0x9c4ec768c28520B50860ea7a15bd7213a9fF58bf, "Arbitrum Comet mismatch"
+        );
 
         // Euler vaults
-        assertEq(cfg.eulerVault1, 0x6aFB8d3F6D4A34e9cB2f217317f4dc8e05Aa673b,
-            "Arbitrum Euler vault 1 mismatch");
+        assertEq(
+            cfg.eulerVault1,
+            0x6aFB8d3F6D4A34e9cB2f217317f4dc8e05Aa673b,
+            "Arbitrum Euler vault 1 mismatch"
+        );
         assertNotEq(cfg.eulerVault2, address(0), "Euler vault 2 should be set");
         assertNotEq(cfg.eulerVault3, address(0), "Euler vault 3 should be set");
         assertNotEq(cfg.eulerVault4, address(0), "Euler vault 4 should be set");
@@ -156,10 +175,16 @@ contract UsdcLendingDeploy_Test is Test {
         assertNotEq(cfg.morphoVault8, address(0), "Morpho vault 8 should be set");
 
         // Venus — enabled on Arbitrum
-        assertEq(cfg.venusVToken, 0x7D8609f8da70fF9027E9bc5229Af4F6727662707,
-            "Arbitrum Venus vToken mismatch");
-        assertEq(cfg.venusBlocksPerYear, 126_144_000,
-            "Arbitrum Venus blocksPerYear: expected 126_144_000 (0.25s blocks)");
+        assertEq(
+            cfg.venusVToken,
+            0x7D8609f8da70fF9027E9bc5229Af4F6727662707,
+            "Arbitrum Venus vToken mismatch"
+        );
+        assertEq(
+            cfg.venusBlocksPerYear,
+            126_144_000,
+            "Arbitrum Venus blocksPerYear: expected 126_144_000 (0.25s blocks)"
+        );
 
         // Governance fields
         assertEq(cfg.permit2, PERMIT2_UNIVERSAL, "Permit2 address mismatch");
@@ -176,22 +201,19 @@ contract UsdcLendingDeploy_Test is Test {
         UsdcLendingChainConfig memory cfg = UsdcLendingConfigOptimism.get();
 
         // Core token — native USDC on Optimism
-        assertEq(cfg.usdc, 0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85,
-            "Optimism USDC mismatch");
+        assertEq(cfg.usdc, 0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85, "Optimism USDC mismatch");
 
         // Aave V3 pool same proxy on Optimism
-        assertEq(cfg.aavePool, 0x794a61358D6845594F94dc1DB02A252b5b4814aD,
-            "Optimism Aave pool mismatch");
+        assertEq(
+            cfg.aavePool, 0x794a61358D6845594F94dc1DB02A252b5b4814aD, "Optimism Aave pool mismatch"
+        );
 
         // Venus disabled on Optimism
-        assertEq(cfg.venusBlocksPerYear, 0,
-            "Optimism Venus must be disabled (blocksPerYear==0)");
-        assertEq(cfg.venusVToken, address(0),
-            "Optimism Venus vToken must be address(0)");
+        assertEq(cfg.venusBlocksPerYear, 0, "Optimism Venus must be disabled (blocksPerYear==0)");
+        assertEq(cfg.venusVToken, address(0), "Optimism Venus vToken must be address(0)");
 
         // Dolomite not on Optimism
-        assertEq(cfg.dolomiteDUsdc, address(0),
-            "Dolomite must be address(0) on Optimism");
+        assertEq(cfg.dolomiteDUsdc, address(0), "Dolomite must be address(0) on Optimism");
 
         // Governance
         assertEq(cfg.permit2, PERMIT2_UNIVERSAL, "Permit2 address mismatch");
@@ -226,10 +248,14 @@ contract UsdcLendingDeploy_Test is Test {
         // bytecode_hash=none + cbor_metadata=false → no IPFS suffix in bytecode.
         // Verify: the last 2 bytes of deployed bytecode are NOT 0x0033 (CBOR metadata length).
         // (We check creationCode, not runtime, but the absence of metadata is cross-cutting.)
-        bytes2 tail = bytes2(bytes.concat(vaultCode[vaultCode.length - 2], vaultCode[vaultCode.length - 1]));
+        bytes2 tail =
+            bytes2(bytes.concat(vaultCode[vaultCode.length - 2], vaultCode[vaultCode.length - 1]));
         // 0xa264 marks the start of a Solidity CBOR metadata block; 0x0033 follows the length.
         // With bytecode_hash=none + cbor_metadata=false, this marker must be absent.
-        assertTrue(tail != 0x0033, "CBOR metadata length marker must not appear in tail (cbor_metadata=false)");
+        assertTrue(
+            tail != 0x0033,
+            "CBOR metadata length marker must not appear in tail (cbor_metadata=false)"
+        );
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -241,30 +267,30 @@ contract UsdcLendingDeploy_Test is Test {
     // ─────────────────────────────────────────────────────────────────────────
 
     function test_salt_collision_resistance() public {
-        bytes32 saltArb  = UsdcLendingConfigArbitrum.get().deploySalt;
-        bytes32 saltOp   = UsdcLendingConfigOptimism.get().deploySalt;
+        bytes32 saltArb = UsdcLendingConfigArbitrum.get().deploySalt;
+        bytes32 saltOp = UsdcLendingConfigOptimism.get().deploySalt;
         bytes32 saltBase = UsdcLendingConfigBase.get().deploySalt;
         bytes32 saltPoly = UsdcLendingConfigPolygon.get().deploySalt;
-        bytes32 saltEth  = UsdcLendingConfigEthereum.get().deploySalt;
+        bytes32 saltEth = UsdcLendingConfigEthereum.get().deploySalt;
 
         // All salts must be non-zero
-        assertNotEq(saltArb,  bytes32(0), "Arbitrum salt must be non-zero");
-        assertNotEq(saltOp,   bytes32(0), "Optimism salt must be non-zero");
+        assertNotEq(saltArb, bytes32(0), "Arbitrum salt must be non-zero");
+        assertNotEq(saltOp, bytes32(0), "Optimism salt must be non-zero");
         assertNotEq(saltBase, bytes32(0), "Base salt must be non-zero");
         assertNotEq(saltPoly, bytes32(0), "Polygon salt must be non-zero");
-        assertNotEq(saltEth,  bytes32(0), "Ethereum salt must be non-zero");
+        assertNotEq(saltEth, bytes32(0), "Ethereum salt must be non-zero");
 
         // All salts must be distinct (no cross-chain collision)
-        assertNotEq(saltArb,  saltOp,   "Arbitrum/Optimism salt collision");
-        assertNotEq(saltArb,  saltBase, "Arbitrum/Base salt collision");
-        assertNotEq(saltArb,  saltPoly, "Arbitrum/Polygon salt collision");
-        assertNotEq(saltArb,  saltEth,  "Arbitrum/Ethereum salt collision");
-        assertNotEq(saltOp,   saltBase, "Optimism/Base salt collision");
-        assertNotEq(saltOp,   saltPoly, "Optimism/Polygon salt collision");
-        assertNotEq(saltOp,   saltEth,  "Optimism/Ethereum salt collision");
+        assertNotEq(saltArb, saltOp, "Arbitrum/Optimism salt collision");
+        assertNotEq(saltArb, saltBase, "Arbitrum/Base salt collision");
+        assertNotEq(saltArb, saltPoly, "Arbitrum/Polygon salt collision");
+        assertNotEq(saltArb, saltEth, "Arbitrum/Ethereum salt collision");
+        assertNotEq(saltOp, saltBase, "Optimism/Base salt collision");
+        assertNotEq(saltOp, saltPoly, "Optimism/Polygon salt collision");
+        assertNotEq(saltOp, saltEth, "Optimism/Ethereum salt collision");
         assertNotEq(saltBase, saltPoly, "Base/Polygon salt collision");
-        assertNotEq(saltBase, saltEth,  "Base/Ethereum salt collision");
-        assertNotEq(saltPoly, saltEth,  "Polygon/Ethereum salt collision");
+        assertNotEq(saltBase, saltEth, "Base/Ethereum salt collision");
+        assertNotEq(saltPoly, saltEth, "Polygon/Ethereum salt collision");
 
         console.log("Arbitrum deploySalt:", vm.toString(saltArb));
         console.log("Optimism deploySalt:", vm.toString(saltOp));

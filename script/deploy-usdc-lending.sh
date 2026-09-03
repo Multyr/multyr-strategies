@@ -12,9 +12,8 @@
 #
 # Prerequisites (not checked by this script):
 #   - Core system already deployed (multyr-core/script/DeployCoreSystem.s.sol)
-#   - Deployer EOA is `owner` on CoreVault and StrategyRouter (neither uses
-#     AccessControl/hasRole -- CoreVault reverts ModuleNotSet() if you call
-#     hasRole() on it; use owner()/pendingOwner() instead)
+#   - GOVERNANCE_ADDRESS is the deployed Gnosis Safe that will directly own
+#     every strategy-side admin surface. A TimelockController is not required.
 #   - Deployer EOA holds >= 0.001 USDC (Euler Permit2 init dust)
 # ══════════════════════════════════════════════════════════════════════════
 
@@ -42,6 +41,7 @@ required_vars=(
   BUFFER_MANAGER_ADDRESS
   HEALTH_REGISTRY_ADDRESS
   GUARDIAN_ADDRESS
+  GOVERNANCE_ADDRESS
 )
 missing=()
 for var in "${required_vars[@]}"; do
@@ -55,24 +55,6 @@ if [[ ${#missing[@]} -gt 0 ]]; then
     echo "  - $var" >&2
   done
   exit 1
-fi
-
-# ── DO_SEAL=true requires the additional handoff addresses ─────────────
-if [[ "${DO_SEAL:-false}" == "true" ]]; then
-  seal_vars=(TIMELOCK_ADDRESS SELECTOR_REGISTRY_ADDRESS SYSTEM_SEALER_ADDRESS)
-  missing_seal=()
-  for var in "${seal_vars[@]}"; do
-    if [[ -z "${!var:-}" ]]; then
-      missing_seal+=("$var")
-    fi
-  done
-  if [[ ${#missing_seal[@]} -gt 0 ]]; then
-    echo "error: DO_SEAL=true requires the following (missing):" >&2
-    for var in "${missing_seal[@]}"; do
-      echo "  - $var" >&2
-    done
-    exit 1
-  fi
 fi
 
 BROADCAST_FLAG=()
