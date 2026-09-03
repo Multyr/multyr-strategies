@@ -95,5 +95,5 @@ fi
 forge script script/DeployUsdcLendingStrategy.s.sol:DeployUsdcLendingStrategy \
   --rpc-url "$RPC_URL" \
   -vvvv \
-  "${BROADCAST_FLAG[@]}" \
-  "${VERIFY_ARGS[@]}"
+  ${BROADCAST_FLAG[@]+"${BROADCAST_FLAG[@]}"} \
+  ${VERIFY_ARGS[@]+"${VERIFY_ARGS[@]}"}
