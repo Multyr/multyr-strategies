@@ -20,7 +20,7 @@
 #   - deployer key must be SHADOW_DEPLOYER_PRIVATE_KEY; a plain
 #     DEPLOYER_PRIVATE_KEY in .env.shadow is rejected
 #   - the derived deployer address must not appear in FORBIDDEN_DEPLOYER_ADDRESSES
-#   - all four Shadow governance/operator addresses present, nonzero, distinct
+#   - governance Safe + all Shadow operator addresses present, nonzero, distinct
 #   - simulate by default; --broadcast required to send transactions
 #   - results captured under deployments/shadow/<deployment-id>/
 #   - a completed manifest at that id blocks re-broadcast unless --force
@@ -78,7 +78,7 @@ set +a
 # ── Required Shadow governance / operator + core addresses ──────────────
 required_vars=(
   SHADOW_GUARDIAN_ADDRESS
-  SHADOW_TIMELOCK_ADDRESS
+  SHADOW_GOVERNANCE_ADDRESS
   SHADOW_KEEPER_ADDRESS
   SHADOW_EMERGENCY_ADDRESS
   VAULT_ADDRESS
@@ -91,7 +91,7 @@ for v in "${required_vars[@]}"; do [[ -n "${!v:-}" ]] || missing+=("$v"); done
 [[ ${#missing[@]} -eq 0 ]] || { printf 'error: missing required var(s):\n'; printf '  - %s\n' "${missing[@]}"; exit 1; } >&2
 
 # distinctness of the five operator roles (deployer derived below)
-gov_addrs=("$SHADOW_GUARDIAN_ADDRESS" "$SHADOW_TIMELOCK_ADDRESS" "$SHADOW_KEEPER_ADDRESS" "$SHADOW_EMERGENCY_ADDRESS")
+gov_addrs=("$SHADOW_GUARDIAN_ADDRESS" "$SHADOW_GOVERNANCE_ADDRESS" "$SHADOW_KEEPER_ADDRESS" "$SHADOW_EMERGENCY_ADDRESS")
 
 # ── Live chain-id check against the Shadow RPC ──────────────────────────
 command -v cast >/dev/null 2>&1 || die "cast (foundry) not found on PATH"
@@ -133,7 +133,7 @@ export STRATEGY_OUTPUT_JSON="${OUT_DIR}/addresses.json"
 # Map SHADOW_* → the canonical names the Solidity script's _loadConfig reads.
 export DEPLOYER_PRIVATE_KEY="$SHADOW_DEPLOYER_PRIVATE_KEY"
 export GUARDIAN_ADDRESS="$SHADOW_GUARDIAN_ADDRESS"
-export TIMELOCK_ADDRESS="$SHADOW_TIMELOCK_ADDRESS"
+export GOVERNANCE_ADDRESS="$SHADOW_GOVERNANCE_ADDRESS"
 # core addresses (VAULT/ROUTER/BUFFER/HEALTH) are already canonical.
 
 echo "── Shadow deployment ──────────────────────────────────────────────"

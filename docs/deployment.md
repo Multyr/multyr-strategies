@@ -42,7 +42,7 @@ The strategy interacts with **7 lending adapters** across 5 protocols:
 | Requirement | Source | Notes |
 |---|---|---|
 | Core system deployed | `multyr-core/script/DeployCoreSystem.s.sol:202` | `VAULT_ADDRESS`, `STRATEGY_ROUTER_ADDRESS`, `BUFFER_MANAGER_ADDRESS`, `HEALTH_REGISTRY_ADDRESS` from its output |
-| Timelock deployed | `multyr-deployment/script/DeployTimelock.s.sol:30` | `TIMELOCK_ADDRESS` — for `DO_SEAL=true` |
+| Governance Safe deployed | existing Arbitrum 3-of-5 Safe | `GOVERNANCE_ADDRESS` — direct admin; no timelock required initially |
 | Deployer has ≥0.001 USDC | Euler Permit2 dust | `multyr-strategies/script/DeployUsdcLendingStrategy.s.sol:393-400` — transfered to Euler adapter before `initializeMarkets()` |
 | Deployer EOA | `DEPLOYER_PRIVATE_KEY` env var | Must be `owner` on CoreVault and StrategyRouter -- neither uses AccessControl/`hasRole` (CoreVault is a Diamond-lite thin proxy with a plain two-step `owner()`/`pendingOwner()`/`acceptOwnership()`; calling `hasRole()` on it reverts `ModuleNotSet()`) |
 | Arbitrum archive RPC | `RPC_URL` | Block confirmation times matter for broadcast |
@@ -65,7 +65,7 @@ GUARDIAN_ADDRESS          # guardian multisig
 ### Required when `DO_SEAL=true`
 
 ```bash
-TIMELOCK_ADDRESS          # ROOT_TIMELOCK (TimelockController)
+GOVERNANCE_ADDRESS        # deployed Gnosis Safe (direct owner/admin)
 SELECTOR_REGISTRY_ADDRESS # SelectorRegistry
 SYSTEM_SEALER_ADDRESS     # SystemSealer
 ```
@@ -248,10 +248,11 @@ one transaction — and the deploy asserts `hasRole(BOOTSTRAP_ROLE, bootstrapper
 
 Source: `multyr-strategies/script/DeployUsdcLendingStrategy.s.sol`, `_phase1_5_deployAdapters`
 
-### SimpleProtocolRegistry
+### ProtocolRegistry
 
-Before deploying the adapters, a `SimpleProtocolRegistry` is deployed and configured with all
-market addresses:
+Before deploying the adapters, the production `ProtocolRegistry` is deployed under temporary
+deployer ownership and configured with all market addresses. Every mutation is `onlyOwner`, and
+the mandatory final handoff transfers ownership directly to `GOVERNANCE_ADDRESS`:
 - 5 Morpho vaults: Gauntlet USDC Core, Hyperithm USDC Apex, Steakhouse HY USDC, Gauntlet USDC Prime, Yearn Degen USDC
 - 1 Comet (Compound III USDC V3)
 - 4 Euler V2 vaults
@@ -457,7 +458,7 @@ If deployer no longer has `DEFAULT_ADMIN_ROLE` at this point, grant via timelock
 Source: `multyr-strategies/script/DeployUsdcLendingStrategy.s.sol:594-608`
 
 **⚠ MUST happen BEFORE Phase 3.5 adapter admin transfers.** After Phase 3.5, deployer has no
-admin role on adapters, so PARAM_ROLE grants become impossible without timelock.
+admin role on adapters, so any later PARAM_ROLE grant must come from the governance Safe.
 
 | Adapter / Contract | PARAM_ROLE grant to |
 |---|---|
@@ -470,14 +471,15 @@ Without `PARAM_ROLE`, `poke()` (APY refresh) silently does nothing on these adap
 will show stale APY data. Aave, Comet, Euler, Venus do not require PARAM_ROLE for their poke
 implementations.
 
-### 3.5 — Transfer Adapter Admin Roles to Timelock
+### 3.5 — Transfer Adapter Control to Governance Safe
 
 Source: `multyr-strategies/script/DeployUsdcLendingStrategy.s.sol:612-656`
 
-For each of the 7 adapters: `grantRole(DEFAULT_ADMIN_ROLE, timelock)` → `renounceRole(DEFAULT_ADMIN_ROLE, deployer)`.
+For each adapter, the script grants the Safe `DEFAULT_ADMIN_ROLE` plus `PARAM_ROLE` where
+applicable, then renounces both deployer roles. The same handoff covers both rate providers.
 
-**Euler special case**: PARAM_ROLE also transferred to timelock before deployer renounce, since
-Euler PARAM_ROLE grants happen here (not in Phase 3.4).
+Phase 3.6 then transfers the strategy, registry, adapter factory, and upkeep to the same Safe.
+This is mandatory and does not depend on `DO_SEAL`.
 
 Source: `multyr-strategies/script/DeployUsdcLendingStrategy.s.sol:628-633`
 
@@ -500,8 +502,7 @@ receive allocation from CoreVault via the StrategyRouter.
 
 Source: `multyr-strategies/script/DeployUsdcLendingStrategy.s.sol:672-688`
 
-Transfers `DEFAULT_ADMIN_ROLE` + `PARAM_ROLE` on `UsdcMultiLendingVault` from deployer to timelock.
-Verifies:
+The strategy-side handoff has already completed. This optional phase only verifies:
 1. `CoreVault.isRoutingFrozen() == true`
 2. `IAdminModule(vault).isComponentsTimelocked() == true`
 
@@ -571,23 +572,19 @@ After deploy: grant `KEEPER_ROLE` on the strategy to the new upkeep address.
 
 ## Post-Deploy State
 
-After a successful deploy with `DO_SEAL=true`:
+After every successful deploy, including `DO_SEAL=false`:
 
 | Contract | Admin | Notes |
 |---|---|---|
-| `UsdcMultiLendingVault` | `ROOT_TIMELOCK` | Deployer renounced |
+| `UsdcMultiLendingVault` | Governance Safe | Deployer admin/PARAM renounced |
 | `StrategyParamsModule` | — | No direct admin (owned by strategy) |
 | `StrategyScoringModule` | — | No direct admin (owned by strategy) |
-| `AaveV3USDCAdapter` | `ROOT_TIMELOCK` | Deployer renounced |
-| `MorphoUsdcMultiMarketAdapter` | `ROOT_TIMELOCK` | Deployer renounced |
-| `CometUsdcMultiMarketAdapter` | `ROOT_TIMELOCK` | Deployer renounced |
-| `EulerUsdcMultiMarketAdapter` | `ROOT_TIMELOCK` | Deployer renounced (PARAM_ROLE also to TL) |
-| `DolomiteUsdcMultiMarketAdapter` | `ROOT_TIMELOCK` | Deployer renounced |
-| `FluidUsdcMultiMarketAdapter` | `ROOT_TIMELOCK` | Deployer renounced |
-| `VenusUsdcMultiMarketAdapter` | `ROOT_TIMELOCK` | Deployer renounced |
-| `AaveLiquidityRateProvider` | `ROOT_TIMELOCK` | Deployer renounced |
-| `DolomiteSupplyRateProvider` | `ROOT_TIMELOCK` | via `transferOwnership()` |
-| `StrategyUpkeep` | `ROOT_TIMELOCK` | KEEPER_ROLE on strategy |
+| `ProtocolRegistry` | Governance Safe | Production, `onlyOwner` mutations |
+| All 7 lending adapters | Governance Safe | Deployer admin/PARAM renounced |
+| `AaveLiquidityRateProvider` | Governance Safe | Deployer renounced |
+| `DolomiteSupplyRateProvider` | Governance Safe | via `transferOwnership()` |
+| `AdapterFactory` | Governance Safe | Admin + deployer roles; deployer renounced |
+| `StrategyUpkeep` | Governance Safe | Configured; KEEPER_ROLE on strategy |
 
 Address book written to `broadcast/strategy-addresses.json` (or `STRATEGY_OUTPUT_JSON`).
 Source: `multyr-strategies/script/DeployUsdcLendingStrategy.s.sol:796-798`
@@ -611,7 +608,8 @@ These invariants must hold after every deploy. Source:
    `multyr-strategies/script/DeployUsdcLendingStrategy.s.sol:487-489` (Phase 1.7 before Phase 2.5)
 6. **Adapter count**: 7 adapters registered in `UsdcMultiLendingVault` — exactly
    `adapters.length == 7` passed to `StrategyBootstrapper.bootstrap()`
-7. **7 adapter PARAM_ROLE / admin NEVER deployer** after seal: all roles transferred to timelock
+7. **Adapter PARAM_ROLE / admin NEVER deployer**: all roles transfer to direct governance
+8. **Registry binding**: Morpho/Comet/Euler/Dolomite point to the Safe-owned production registry
 
 ---
 

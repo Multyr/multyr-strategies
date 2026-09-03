@@ -85,7 +85,7 @@ sequenceDiagram
     Note over Deployer,Others: Morpho/Dolomite/Fluid/AaveRateProvider only
     Deployer->>Strat: grantRole(KEEPER_ROLE, StrategyUpkeep)
     Deployer->>Strat: grantRole(KEEPER_ROLE, SAFE_GUARDIAN)
-    Deployer->>Strat: grantRole(DEFAULT_ADMIN_ROLE, ROOT_TIMELOCK)
+    Deployer->>Strat: grantRole(DEFAULT_ADMIN_ROLE, GOVERNANCE_SAFE)
     Deployer->>Strat: renounceRole(DEFAULT_ADMIN_ROLE, Deployer)
 ```
 
@@ -113,17 +113,17 @@ Source: `multyr-strategies/script/DeployUsdcLendingStrategy.s.sol:599-608`.
 | Adapter | Contract | Role constant defined at | PARAM_ROLE granted to | Phase |
 |---|---|---|---|---|
 | Aave V3 | `AaveV3USDCmarket` | no PARAM_ROLE (VAULT_ROLE only — `src/strategies/usdc-lending/adapters/lending/AaveV3USDCmarket.sol:89`) | n/a | n/a |
-| Morpho | `MorphoUsdcMultiMarket` | `src/strategies/usdc-lending/adapters/lending/MorphoUsdcMultiMarket.sol:62` | StrategyUpkeep + timelock | 3.4 |
-| Comet | `CometUsdcMultiMarket` | `src/strategies/usdc-lending/adapters/lending/CometUsdcMultiMarket.sol:82` | (verify in DeployUsdcLendingStrategy) | 3.4 |
-| Euler | `EulerUsdcMultiMarket` | `src/strategies/usdc-lending/adapters/lending/EulerUsdcMultiMarket.sol:86` | timelock only (Phase 3.5 special) | 3.5 |
-| Dolomite | `DolomiteUsdcMultiMarket` | `src/strategies/usdc-lending/adapters/lending/DolomiteUsdcMultiMarket.sol:111` | StrategyUpkeep + timelock | 3.4 |
-| Fluid | `FluidUsdcMultiMarket` | `src/strategies/usdc-lending/adapters/lending/FluidUsdcMultiMarket.sol:53` | StrategyUpkeep + timelock | 3.4 |
-| Venus | `VenusUsdcMultiMarket` | `src/strategies/usdc-lending/adapters/lending/VenusUsdcMultiMarket.sol:66` | (verify in DeployUsdcLendingStrategy) | 3.4 |
-| AaveRateProvider | `AaveLiquidityRateProvider` | `src/strategies/usdc-lending/adapters/rates/AaveLiquidityRateProvider.sol:15` | StrategyUpkeep + timelock | 3.4 |
+| Morpho | `MorphoUsdcMultiMarket` | `src/strategies/usdc-lending/adapters/lending/MorphoUsdcMultiMarket.sol:62` | StrategyUpkeep + governance Safe | 3.3/3.5 |
+| Comet | `CometUsdcMultiMarket` | `src/strategies/usdc-lending/adapters/lending/CometUsdcMultiMarket.sol:82` | governance Safe | 3.5 |
+| Euler | `EulerUsdcMultiMarket` | `src/strategies/usdc-lending/adapters/lending/EulerUsdcMultiMarket.sol:86` | governance Safe | 3.5 |
+| Dolomite | `DolomiteUsdcMultiMarket` | `src/strategies/usdc-lending/adapters/lending/DolomiteUsdcMultiMarket.sol:111` | StrategyUpkeep + governance Safe | 3.3/3.5 |
+| Fluid | `FluidUsdcMultiMarket` | `src/strategies/usdc-lending/adapters/lending/FluidUsdcMultiMarket.sol:53` | StrategyUpkeep + governance Safe | 3.3/3.5 |
+| Venus | `VenusUsdcMultiMarket` | `src/strategies/usdc-lending/adapters/lending/VenusUsdcMultiMarket.sol:66` | governance Safe | 3.5 |
+| AaveRateProvider | `AaveLiquidityRateProvider` | `src/strategies/usdc-lending/adapters/rates/AaveLiquidityRateProvider.sol:15` | StrategyUpkeep + governance Safe | 3.3/3.5 |
 
 **Euler special case** (`multyr-strategies/script/DeployUsdcLendingStrategy.s.sol:628-630`):
-Euler adapter's `initializeMarkets()` must be called BEFORE PARAM_ROLE is granted to timelock.
-The Euler adapter receives PARAM_ROLE only from timelock (not upkeep), because upkeep poke
+Euler adapter's `initializeMarkets()` must be called before PARAM_ROLE moves to the Safe.
+The Euler adapter receives PARAM_ROLE from governance (not upkeep), because upkeep poke
 pattern differs for Euler v2.
 
 ### Grant sequence
@@ -135,12 +135,11 @@ IAccessControl(dolomiteAdapter).grantRole(PARAM_ROLE, address(upkeep));
 IAccessControl(fluidAdapter).grantRole(PARAM_ROLE, address(upkeep));
 IAccessControl(aaveRateProvider).grantRole(PARAM_ROLE, address(upkeep));
 
-// Phase 3.5: transfer DEFAULT_ADMIN on each adapter to timelock, then grant PARAM_ROLE to timelock
-// (multyr-strategies/script/DeployUsdcLendingStrategy.s.sol:628-636)
-IAccessControl(eulerAdapter).grantRole(eulerAdapter.PARAM_ROLE(), cfg.timelock);
+// Phase 3.5: transfer DEFAULT_ADMIN and PARAM_ROLE on each adapter to governance
+IAccessControl(eulerAdapter).grantRole(eulerAdapter.PARAM_ROLE(), cfg.governance);
 
 // Strategy-level PARAM_ROLE (multyr-strategies/script/DeployUsdcLendingStrategy.s.sol:681)
-strategy.grantRole(PARAM_ROLE, cfg.timelock);
+strategy.grantRole(PARAM_ROLE, cfg.governance);
 ```
 
 ---
@@ -179,13 +178,13 @@ Post-register: verify `upkeep.checkUpkeep("")` returns `(false, "")` on a fresh 
 
 | Role | Constant | Source | Granted to | Grant phase | Can revoke |
 |---|---|---|---|---|---|
-| `DEFAULT_ADMIN_ROLE` | OZ built-in | `src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:148` | ROOT_TIMELOCK (from deployer) | Phase 3.5 renounce | ROOT_TIMELOCK via `revokeRole` |
-| `PARAM_ROLE` | `src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:96` | ROOT_TIMELOCK | Phase 3.5 constructor | ROOT_TIMELOCK |
+| `DEFAULT_ADMIN_ROLE` | OZ built-in | `src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:148` | Governance Safe | Phase 3.6 | Governance Safe |
+| `PARAM_ROLE` | `src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:96` | Governance Safe | Phase 3.6 | Governance Safe |
 | `KEEPER_ROLE` | `src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:97` | StrategyUpkeep + SAFE_GUARDIAN | Phase 3.2-3.3 | DEFAULT_ADMIN_ROLE |
 | `CORE_ROLE` | `src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:98` | CoreVault + StrategyRouter | Phase constructor | DEFAULT_ADMIN_ROLE |
 | `BOOTSTRAP_ROLE` | `src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:99` | StrategyBootstrapper | Phase constructor (self) | renounced permanently post-bootstrap |
 | `VAULT_ROLE` (adapters) | `src/strategies/usdc-lending/adapters/lending/AaveV3USDCmarket.sol:89` | UsdcMultiLendingVault | Adapter constructor | Adapter DEFAULT_ADMIN |
-| `PARAM_ROLE` (adapters) | per-adapter (see §3 table) | StrategyUpkeep + timelock | Phase 3.4 | Adapter DEFAULT_ADMIN |
+| `PARAM_ROLE` (adapters) | per-adapter (see §3 table) | StrategyUpkeep + governance Safe | Phase 3.3/3.5 | Adapter DEFAULT_ADMIN |
 
 **Deployer role post-wiring**: deployer must hold NO roles after Phase 3.5 completes.
 Verify: `strategy.hasRole(DEFAULT_ADMIN_ROLE, deployer) == false`
@@ -203,7 +202,7 @@ all 5 phases.
 cast call $STRATEGY "hasRole(bytes32,address)(bool)" $(cast keccak "CORE_ROLE") $VAULT
 cast call $STRATEGY "hasRole(bytes32,address)(bool)" $(cast keccak "CORE_ROLE") $ROUTER
 cast call $STRATEGY "hasRole(bytes32,address)(bool)" $(cast keccak "KEEPER_ROLE") $UPKEEP
-cast call $STRATEGY "hasRole(bytes32,address)(bool)" $(cast keccak "DEFAULT_ADMIN_ROLE") $ROOT_TIMELOCK
+cast call $STRATEGY "hasRole(bytes32,address)(bool)" $(cast keccak "DEFAULT_ADMIN_ROLE") $GOVERNANCE_ADDRESS
 cast call $STRATEGY "hasRole(bytes32,address)(bool)" $(cast keccak "DEFAULT_ADMIN_ROLE") $DEPLOYER
 # ^ must return false
 
@@ -222,7 +221,7 @@ cast call $ROUTER "isStrategyEnabled(address)(bool)" $STRATEGY
 
 # Adapter PARAM_ROLE grants (Morpho as example)
 cast call $MORPHO_ADAPTER "hasRole(bytes32,address)(bool)" $(cast keccak "PARAM_ROLE") $UPKEEP
-cast call $EULER_ADAPTER "hasRole(bytes32,address)(bool)" $(cast keccak "PARAM_ROLE") $ROOT_TIMELOCK
+cast call $EULER_ADAPTER "hasRole(bytes32,address)(bool)" $(cast keccak "PARAM_ROLE") $GOVERNANCE_ADDRESS
 
 # Euler initializeMarkets done (via AToken balance sanity check)
 cast call $EULER_ADAPTER "totalAssets()(uint256)"
@@ -241,7 +240,7 @@ constructor(
     address asset_,
     address pool_,
     address aToken_,
-    address admin_,    // deployer initially; transferred to timelock in Phase 3.5
+    address admin_,    // deployer initially; transferred to governance in Phase 3.5
     address vault_,    // UsdcMultiLendingVault — granted VAULT_ROLE
     uint256 maxCap_
 ) {
@@ -261,17 +260,17 @@ StrategyUpkeep in Phase 3.4. Poke calls from upkeep use PARAM_ROLE gating.
 
 ### Adapter DEFAULT_ADMIN Transfer (Phase 3.5)
 
-After all PARAM_ROLE grants, deployer transfers DEFAULT_ADMIN on each adapter to timelock:
+After all upkeep PARAM_ROLE grants, deployer transfers adapter control to governance:
 
 ```solidity
 // Source: multyr-strategies/script/DeployUsdcLendingStrategy.s.sol (Phase 3.5 ~line 611-680)
-IAccessControl(aaveAdapter).grantRole(DEFAULT_ADMIN_ROLE, cfg.timelock);
+IAccessControl(aaveAdapter).grantRole(DEFAULT_ADMIN_ROLE, cfg.governance);
 IAccessControl(aaveAdapter).renounceRole(DEFAULT_ADMIN_ROLE, deployer);
 // Repeat for morpho, comet, euler, dolomite, fluid, venus, aaveRateProvider
 ```
 
-Post-transfer: no adapter can be modified without a timelock proposal. This is the final
-step before deployer renounces DEFAULT_ADMIN_ROLE on the strategy itself.
+Post-transfer, only the Safe can modify adapter parameters. This precedes the final strategy,
+factory, registry, and upkeep handoff.
 
 ---
 
@@ -279,7 +278,7 @@ step before deployer renounces DEFAULT_ADMIN_ROLE on the strategy itself.
 
 ### Pause Adapter (Non-Breaking)
 
-Disable a single adapter without full emergency. Requires DEFAULT_ADMIN_ROLE (timelock):
+Disable a single adapter without full emergency. Requires the governance Safe:
 
 ```solidity
 // Disable allocation to adapter (src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:338)
@@ -314,7 +313,7 @@ IAccessControl(aaveRateProvider).revokeRole(PARAM_ROLE, oldUpkeep);
 // Then grant to newUpkeep (same phase pattern as §3)
 ```
 
-Roles not frozen until explicit `rolesNotFrozen` modifier is lifted (does not happen post-V9.1 — roles remain mutable via timelock).
+Roles remain mutable by the governance Safe until a later governance-hardening phase explicitly freezes them.
 
 ---
 
@@ -338,23 +337,23 @@ is called by CoreVault during NAV calculation. This is a view-only path — no r
 
 ---
 
-## 10. SimpleProtocolRegistry Wiring
+## 10. ProtocolRegistry Wiring
 
-`UsdcMultiLendingVault` uses `SimpleProtocolRegistry` to track which external market vaults
-are approved for each protocol. This is wired in Phase 1.5 of the deploy script
+Four multi-market adapters use the production `ProtocolRegistry` to track which external market
+vaults are approved for each protocol. This is wired in Phase 1.5 of the deploy script
 (`multyr-strategies/script/DeployUsdcLendingStrategy.s.sol:325-358`).
 
-The registry has a default `owner` (deployer) and does not use OZ AccessControl.
-Post-deploy, ownership should be transferred to ROOT_TIMELOCK:
+All registry mutations are `onlyOwner`. The deployer configures the initial eleven markets and
+the mandatory Phase 3.6 handoff transfers ownership to `GOVERNANCE_ADDRESS`:
 
 ```solidity
 // After Phase 1.5 vault registrations (Morpho/Euler/Dolomite entries)
-protocolRegistry.transferOwnership(ROOT_TIMELOCK);
+protocolRegistry.transferOwnership(GOVERNANCE_ADDRESS);
 ```
 
-Verify: adapters call `registry.isApproved(protocol, market)` internally. If the registry
-is stale or ownership transferred prematurely, new markets cannot be added without timelock
-proposal.
+Postflight verifies that Morpho, Comet, Euler, and Dolomite all point to this exact registry and
+that the registry owner is the governance Safe. The registry address is immutable in those
+adapters, so a wrong registry requires fresh adapters and a fresh strategy deployment.
 
 ---
 

@@ -32,7 +32,7 @@ The shell refuses to run unless:
 - the deployer key is `SHADOW_DEPLOYER_PRIVATE_KEY` (a plain `DEPLOYER_PRIVATE_KEY`
   in `.env.shadow` is rejected; any ambient one is cleared);
 - the derived deployer address is not in `FORBIDDEN_DEPLOYER_ADDRESSES`;
-- guardian / timelock / keeper / emergency are present, nonzero, distinct, and
+- guardian / governance Safe / keeper / emergency are present, nonzero, distinct, and
   none equals the deployer;
 - **simulation is the default** — `--broadcast` is required to send transactions;
 - a completed `manifest.json` for the deployment id blocks re-broadcast unless
@@ -90,7 +90,8 @@ gitignored.
 
 ## Keeper / emergency roles
 
-`StrategyUpkeep` is deployed and granted `KEEPER_ROLE` as in production.
+`StrategyUpkeep` is deployed, fully configured, granted `KEEPER_ROLE`, and transferred to the
+direct governance Safe as in production.
 `SHADOW_KEEPER_ADDRESS` / `SHADOW_EMERGENCY_ADDRESS` are recorded and verified in
 the manifest but not additionally granted roles — that is a governance-policy
 decision.
@@ -99,7 +100,7 @@ decision.
 
 `DeployUsdcLendingStrategy` Phase 2.1 self-registers the strategy in the router
 **only if the deployer owns the router**. On Shadow the router owner is the
-timelock, so the strategy deploys **unregistered**; step 3 reports this. Register
+governance Safe, so the strategy deploys **unregistered**; step 3 reports this. Register
 it through Shadow governance (`proposeStrategyAllowlist` → wait →
 `executeStrategyAllowlist` → `register`) as a separate step.
 

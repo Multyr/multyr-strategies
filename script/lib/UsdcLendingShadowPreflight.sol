@@ -49,7 +49,7 @@ abstract contract UsdcLendingShadowPreflight is Script {
     struct ShadowGovernance {
         address deployer; // vm.addr(SHADOW_DEPLOYER_PRIVATE_KEY)
         address guardian;
-        address timelock;
+        address governance;
         address keeper;
         address emergency;
     }
@@ -166,9 +166,9 @@ abstract contract UsdcLendingShadowPreflight is Script {
 
     // ── 5. Governance / operator addresses ─────────────────────────────────
 
-    function _checkGovernance(ShadowGovernance memory g) private pure {
-        address[5] memory a = [g.deployer, g.guardian, g.timelock, g.keeper, g.emergency];
-        string[5] memory n = ["deployer", "guardian", "timelock", "keeper", "emergency"];
+    function _checkGovernance(ShadowGovernance memory g) private view {
+        address[5] memory a = [g.deployer, g.guardian, g.governance, g.keeper, g.emergency];
+        string[5] memory n = ["deployer", "guardian", "governance", "keeper", "emergency"];
         for (uint256 i = 0; i < 5; ++i) {
             require(
                 a[i] != address(0), string.concat("PREFLIGHT: Shadow ", n[i], " address is zero")
@@ -182,6 +182,9 @@ abstract contract UsdcLendingShadowPreflight is Script {
                 );
             }
         }
+        require(
+            g.governance.code.length > 0, "PREFLIGHT: Shadow governance must be a Safe contract"
+        );
     }
 
     // ── 6. Deployer resources ─────────────────────────────────────────────
@@ -252,7 +255,7 @@ abstract contract UsdcLendingShadowPreflight is Script {
         p.gov = ShadowGovernance({
             deployer: vm.addr(vm.envUint("SHADOW_DEPLOYER_PRIVATE_KEY")),
             guardian: vm.envAddress("SHADOW_GUARDIAN_ADDRESS"),
-            timelock: vm.envAddress("SHADOW_TIMELOCK_ADDRESS"),
+            governance: vm.envAddress("SHADOW_GOVERNANCE_ADDRESS"),
             keeper: vm.envAddress("SHADOW_KEEPER_ADDRESS"),
             emergency: vm.envAddress("SHADOW_EMERGENCY_ADDRESS")
         });

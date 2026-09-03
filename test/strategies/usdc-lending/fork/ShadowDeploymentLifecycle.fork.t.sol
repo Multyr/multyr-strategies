@@ -26,6 +26,7 @@ pragma solidity 0.8.28;
 
 import {Test, console2} from "forge-std/Test.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {IPriceOracleMiddleware} from "@multyr-core/interfaces/IPriceOracleMiddleware.sol";
 
 import {DeployUsdcLendingStrategy} from "../../../../script/DeployUsdcLendingStrategy.s.sol";
 import {PreflightUsdcLendingShadow} from "../../../../script/PreflightUsdcLendingShadow.s.sol";
@@ -43,6 +44,7 @@ interface IStratLifecycle {
     function harvest() external;
     function emergencyRecallAll() external;
     function grantRole(bytes32 role, address account) external;
+    function revokeRole(bytes32 role, address account) external;
     function KEEPER_ROLE() external view returns (bytes32);
     function DEFAULT_ADMIN_ROLE() external view returns (bytes32);
     function hasRole(bytes32 role, address account) external view returns (bool);
@@ -53,6 +55,104 @@ interface IStratLifecycle {
     function quarantined(address adapter) external view returns (bool);
     function deployIdle() external;
     function prepareRebalance() external;
+    function pokeLiquidityBatch(uint256 start, uint256 count) external;
+    function setRebalanceParams(uint16, uint16, uint16, uint32, uint16, uint16, uint16) external;
+}
+
+interface ICoreSmokeVault {
+    function owner() external view returns (address);
+    function pendingOwner() external view returns (address);
+    function acceptOwnerTransfer() external;
+    function paused() external view returns (bool);
+    function unpauseAll() external;
+    function balanceOf(address) external view returns (uint256);
+    function deposit(uint256 assets, address receiver) external returns (uint256 shares);
+    function deployToStrategies(uint256 maxAmount) external;
+    function realizeForQueue(uint256 target) external;
+    function requestInstantWithdrawal(uint256 shares)
+        external
+        returns (bool settledImmediately, uint256 epochId, uint256 claimId);
+}
+
+interface IGlobalConfigSmoke {
+    struct WithdrawalConfig {
+        uint16 capPerEpochBps;
+        uint256 maxWithdrawalPerBlock;
+        uint256 maxWithdrawalPerTx;
+        uint256 minClaimAmount;
+        uint64 lockPeriod;
+    }
+
+    function setVaultDepositLimits(
+        address vault,
+        uint256 vaultCap,
+        uint256 userCap,
+        uint256 minDeposit
+    ) external;
+    function setVaultWithdrawalOverride(address vault, WithdrawalConfig calldata cfg) external;
+    function setVaultGovCaps(
+        address vault,
+        uint64 minParamDelay,
+        uint256 maxPerfRate,
+        uint16 maxFeeBps,
+        uint16 maxImmExitBps,
+        uint16 maxForceExitBps,
+        uint64 guardianPauseCooldown,
+        uint256 minDeployAmount,
+        uint256 stratTaGas,
+        uint16 opsMaxBps
+    ) external;
+    function setVaultOracleOverride(address vault, address oracle, uint256 maxStaleness) external;
+}
+
+interface IRouterSmoke {
+    function proposeStrategyAllowlist(address strategy) external returns (uint256 eta);
+    function executeStrategyAllowlist(address strategy) external;
+    function register(address strategy, uint16 priority, uint16 weightBps) external;
+    function setMaxStrategyBps(address strategy, uint16 maxBps) external;
+    function setLossCapPerStrategy(address strategy, uint16 capBps) external;
+    function setSecondaryOracle(address oracle) external;
+    function isStrategyEnabled(address strategy) external view returns (bool);
+}
+
+interface IHealthRegistrySmoke {
+    function setAuthorizedCaller(address caller, bool authorized) external;
+}
+
+interface IStrategyUpkeepSmoke {
+    function performUpkeep(bytes calldata performData) external;
+}
+
+interface IBufferSmoke {
+    function refreshWarmNav() external;
+}
+
+contract FreshForkOracle is IPriceOracleMiddleware {
+    function getQuote(address) external view returns (Quote memory) {
+        return Quote({price: 1e18, decimals: 18, lastUpdate: uint48(block.timestamp), fresh: true});
+    }
+
+    function getQuoteFresh(address) external view returns (Quote memory) {
+        return Quote({price: 1e18, decimals: 18, lastUpdate: uint48(block.timestamp), fresh: true});
+    }
+
+    function isFresh(address) external pure returns (bool) {
+        return true;
+    }
+
+    function getFeed(address) external pure returns (address) {
+        return address(1);
+    }
+
+    function getMaxStaleness(address) external pure returns (uint256) {
+        return 1 days;
+    }
+
+    function owner() external pure returns (address) {
+        return address(0);
+    }
+    function setOracleFeed(address, address, uint256) external {}
+    function setMaxStaleness(address, uint256) external {}
 }
 
 contract ShadowDeploymentLifecycle_Fork_Test is Test {
@@ -62,13 +162,15 @@ contract ShadowDeploymentLifecycle_Fork_Test is Test {
     address constant BUFFER_MANAGER = 0x4560B3E16B335358dA6bF14ec8f9B9A5D07413a1;
     address constant HEALTH_REGISTRY = 0x2bF1C86af4267C068B3c928538F7AA82219cf1D4;
     address constant USDC = 0xaf88d065e77c8cC2239327C5EDb3A432268e5831;
+    address constant GOVERNANCE_SAFE = 0x70ef444799D6FBbE0865bA598Bee6795e064a326;
+    address constant GLOBAL_CONFIG = 0xf34538f8939322798261dA245d5BB6a7DB9361cE;
 
     uint256 constant TEST_DEPLOYER_PK = 0x5EED5;
 
     bool internal ready;
     address internal deployer;
     address internal guardian = makeAddr("shadowGuardian");
-    address internal timelock = makeAddr("shadowTimelock");
+    address internal governance = makeAddr("shadowGovernanceSafe");
     address internal keeper = makeAddr("shadowKeeper");
     address internal emergency = makeAddr("shadowEmergency");
 
@@ -87,6 +189,7 @@ contract ShadowDeploymentLifecycle_Fork_Test is Test {
         deployer = vm.addr(TEST_DEPLOYER_PK);
         vm.deal(deployer, 10 ether);
         deal(USDC, deployer, 1_000_000); // 1 USDC — covers Euler Permit2 dust + preflight min
+        vm.etch(governance, hex"00"); // minimal contract code for the Safe-address invariant
 
         pf = new PreflightUsdcLendingShadow();
         _setShadowEnv();
@@ -104,8 +207,9 @@ contract ShadowDeploymentLifecycle_Fork_Test is Test {
         vm.setEnv("BUFFER_MANAGER_ADDRESS", vm.toString(BUFFER_MANAGER));
         vm.setEnv("HEALTH_REGISTRY_ADDRESS", vm.toString(HEALTH_REGISTRY));
         vm.setEnv("GUARDIAN_ADDRESS", vm.toString(guardian));
+        vm.setEnv("GOVERNANCE_ADDRESS", vm.toString(governance));
         vm.setEnv("SHADOW_GUARDIAN_ADDRESS", vm.toString(guardian));
-        vm.setEnv("SHADOW_TIMELOCK_ADDRESS", vm.toString(timelock));
+        vm.setEnv("SHADOW_GOVERNANCE_ADDRESS", vm.toString(governance));
         vm.setEnv("SHADOW_KEEPER_ADDRESS", vm.toString(keeper));
         vm.setEnv("SHADOW_EMERGENCY_ADDRESS", vm.toString(emergency));
         vm.setEnv("SHADOW_DEPLOYMENT_ID", "forktest");
@@ -126,7 +230,7 @@ contract ShadowDeploymentLifecycle_Fork_Test is Test {
         p.gov = UsdcLendingShadowPreflight.ShadowGovernance({
             deployer: deployer,
             guardian: guardian,
-            timelock: timelock,
+            governance: governance,
             keeper: keeper,
             emergency: emergency
         });
@@ -243,8 +347,8 @@ contract ShadowDeploymentLifecycle_Fork_Test is Test {
         assertGe(s.totalAssets(), amt, "deposit accounted");
         assertLt(s.idleCash(), amt, "some capital deployed on deposit");
 
-        // deployIdle + harvest need KEEPER_ROLE — grant to this test (deployer is admin pre-seal)
-        vm.startPrank(deployer);
+        // deployIdle + harvest need KEEPER_ROLE — direct governance grants it.
+        vm.startPrank(governance);
         s.grantRole(s.KEEPER_ROLE(), address(this));
         vm.stopPrank();
 
@@ -262,8 +366,8 @@ contract ShadowDeploymentLifecycle_Fork_Test is Test {
         console2.log("[shadow] prepareRebalance reachable:", okPrep);
         assertGe(s.totalAssets(), 0, "state intact after prepareRebalance");
 
-        // emergency recall — deployer holds DEFAULT_ADMIN_ROLE pre-seal
-        vm.prank(deployer);
+        // emergency recall — direct governance holds DEFAULT_ADMIN_ROLE.
+        vm.prank(governance);
         s.emergencyRecallAll();
         assertApproxEqAbs(
             s.totalAssets(), s.idleCash(), 1e6, "recall pulled positions back to idle"
@@ -274,18 +378,14 @@ contract ShadowDeploymentLifecycle_Fork_Test is Test {
         if (!ready) return;
         IStratLifecycle s = IStratLifecycle(address(_deployShadow()));
 
-        // DO_SEAL not set → deployer keeps DEFAULT_ADMIN_ROLE (documented Shadow behaviour)
-        assertTrue(
-            s.hasRole(s.DEFAULT_ADMIN_ROLE(), deployer), "deployer holds strategy admin pre-seal"
-        );
+        assertTrue(s.hasRole(s.DEFAULT_ADMIN_ROLE(), governance), "Safe holds strategy admin");
+        assertFalse(s.hasRole(s.DEFAULT_ADMIN_ROLE(), deployer), "deployer admin removed");
         // deployer's temporary Phase 2.6 KEEPER_ROLE must have been revoked
         assertFalse(s.hasRole(s.KEEPER_ROLE(), deployer), "deployer KEEPER_ROLE revoked");
 
         string memory manifest = vm.readFile("deployments/shadow/forktest/manifest.json");
-        assertTrue(
-            vm.parseJsonBool(manifest, ".roles.deployerHasStrategyAdmin"),
-            "manifest: deployer admin true"
-        );
+        assertFalse(vm.parseJsonBool(manifest, ".roles.deployerHasStrategyAdmin"));
+        assertTrue(vm.parseJsonBool(manifest, ".roles.governanceHasStrategyAdmin"));
         assertFalse(
             vm.parseJsonBool(manifest, ".roles.deployerHasKeeper"),
             "manifest: deployer keeper false"
@@ -295,6 +395,103 @@ contract ShadowDeploymentLifecycle_Fork_Test is Test {
             "manifest: bootstrap renounced"
         );
         assertFalse(vm.parseJsonBool(manifest, ".roles.sealed"), "manifest: not sealed");
+    }
+
+    function test_fresh_strategy_complete_3usdc_core_round_trip() public {
+        if (!ready) return;
+
+        // Deploy with the real 3-of-5 Safe as direct strategy governance.
+        vm.setEnv("GOVERNANCE_ADDRESS", vm.toString(GOVERNANCE_SAFE));
+        vm.setEnv("SHADOW_GOVERNANCE_ADDRESS", vm.toString(GOVERNANCE_SAFE));
+        new PreflightUsdcLendingShadow().run();
+        DeployUsdcLendingStrategy.DeploymentResult memory r = new DeployUsdcLendingStrategy().run();
+        new PostflightUsdcLendingShadow().run();
+
+        ICoreSmokeVault core = ICoreSmokeVault(CORE_VAULT);
+        IGlobalConfigSmoke config = IGlobalConfigSmoke(GLOBAL_CONFIG);
+        IRouterSmoke router = IRouterSmoke(STRATEGY_ROUTER);
+        IStratLifecycle strategy = IStratLifecycle(address(r.strategy));
+
+        // Safe batch 1: accept core ownership, configure small-value test
+        // limits, authorize the fresh strategy, and start the router delay.
+        vm.startPrank(GOVERNANCE_SAFE);
+        if (core.owner() != GOVERNANCE_SAFE) {
+            assertEq(core.pendingOwner(), GOVERNANCE_SAFE, "Safe is not pending CoreVault owner");
+            core.acceptOwnerTransfer();
+        }
+        config.setVaultDepositLimits(CORE_VAULT, 20_000e6, 20_000e6, 1e6);
+        config.setVaultWithdrawalOverride(
+            CORE_VAULT,
+            IGlobalConfigSmoke.WithdrawalConfig({
+                capPerEpochBps: 10_000,
+                maxWithdrawalPerBlock: 0,
+                maxWithdrawalPerTx: 0,
+                minClaimAmount: 1e6,
+                lockPeriod: 0
+            })
+        );
+        config.setVaultGovCaps(
+            CORE_VAULT, 2 days, 0.5e18, 500, 200, 200, 7 days, 1e6, 1_000_000, 3000
+        );
+        strategy.setRebalanceParams(3, 2, 50, 1 days, 80, 0, 500);
+        IHealthRegistrySmoke(HEALTH_REGISTRY).setAuthorizedCaller(address(r.strategy), true);
+        router.proposeStrategyAllowlist(address(r.strategy));
+        vm.stopPrank();
+
+        // The router delay is independent of any governance timelock. A fork's
+        // Chainlink timestamp does not advance, so install a fork-only fresh
+        // oracle override after the time jump.
+        vm.warp(block.timestamp + 2 days + 1);
+        FreshForkOracle freshOracle = new FreshForkOracle();
+
+        vm.startPrank(GOVERNANCE_SAFE);
+        config.setVaultOracleOverride(CORE_VAULT, address(freshOracle), 1 days);
+        router.setSecondaryOracle(address(0));
+        router.executeStrategyAllowlist(address(r.strategy));
+        router.register(address(r.strategy), 100, 10_000);
+        router.setMaxStrategyBps(address(r.strategy), 10_000);
+        router.setLossCapPerStrategy(address(r.strategy), 50);
+        strategy.grantRole(strategy.KEEPER_ROLE(), GOVERNANCE_SAFE);
+        strategy.pokeLiquidityBatch(0, 10);
+        strategy.revokeRole(strategy.KEEPER_ROLE(), GOVERNANCE_SAFE);
+        core.unpauseAll();
+        vm.stopPrank();
+
+        IStrategyUpkeepSmoke(r.strategyUpkeep).performUpkeep(abi.encode(uint8(3), uint256(0)));
+        IBufferSmoke(BUFFER_MANAGER).refreshWarmNav();
+        assertTrue(router.isStrategyEnabled(address(r.strategy)), "fresh strategy not enabled");
+        assertFalse(core.paused(), "CoreVault still paused");
+
+        // User flow: 3 USDC -> CoreVault -> fresh strategy -> lending adapter,
+        // then realize back to CoreVault and consume the new shares instantly.
+        address user = makeAddr("threeUsdcUser");
+        deal(USDC, user, 4e6);
+        uint256 usdcBefore = IERC20(USDC).balanceOf(user);
+        uint256 sharesBefore = core.balanceOf(user);
+
+        vm.startPrank(user);
+        IERC20(USDC).approve(CORE_VAULT, 3e6);
+        core.deposit(3e6, user);
+        vm.stopPrank();
+
+        uint256 newShares = core.balanceOf(user) - sharesBefore;
+        assertGt(newShares, 0, "deposit minted no shares");
+        uint256 strategyBefore = r.strategy.totalAssets();
+        vm.prank(user);
+        core.deployToStrategies(3e6);
+        assertGt(r.strategy.totalAssets(), strategyBefore, "core did not route to strategy");
+
+        IStrategyUpkeepSmoke(r.strategyUpkeep).performUpkeep(abi.encode(uint8(4), uint256(0)));
+        uint256 coreCashBefore = IERC20(USDC).balanceOf(CORE_VAULT);
+        vm.prank(user);
+        core.realizeForQueue(3e6);
+        assertGt(IERC20(USDC).balanceOf(CORE_VAULT), coreCashBefore, "realize returned no USDC");
+
+        vm.prank(user);
+        (bool immediate,,) = core.requestInstantWithdrawal(newShares);
+        assertTrue(immediate, "withdrawal fell into epoch queue");
+        assertEq(core.balanceOf(user), sharesBefore, "residual smoke-test shares");
+        assertGt(IERC20(USDC).balanceOf(user), usdcBefore - 3e6, "withdrawal returned no USDC");
     }
 
     function test_repeated_deploy_is_isolated() public {

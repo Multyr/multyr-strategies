@@ -27,20 +27,22 @@ pragma solidity 0.8.28;
 //   ARBITRUM_RPC_URL=<rpc> forge test --match-contract DeployAndDepositReadiness -vvv
 // ═══════════════════════════════════════════════════════════════════════════
 
-import { Test, console2 } from "forge-std/Test.sol";
+import {Test, console2} from "forge-std/Test.sol";
 
-import { DeployUsdcLendingStrategy } from "../../../../script/DeployUsdcLendingStrategy.s.sol";
-import { UsdcMultiLendingVault } from "../../../../src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol";
+import {DeployUsdcLendingStrategy} from "../../../../script/DeployUsdcLendingStrategy.s.sol";
+import {
+    UsdcMultiLendingVault
+} from "../../../../src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol";
 
 contract DeployAndDepositReadiness_Fork_Test is Test {
     // Real, verified-on-chain core system addresses (see
     // multyr-core/broadcast/core-addresses.json -- confirmed to have real
     // bytecode and correct asset() on Arbitrum One before writing this test).
-    address constant REAL_VAULT           = 0x685Ec439Fc62736934FF6A74301B50173E34446b;
+    address constant REAL_VAULT = 0x685Ec439Fc62736934FF6A74301B50173E34446b;
     address constant REAL_STRATEGY_ROUTER = 0x003BF0faD6b644536c14dcbF822b9fE1A3626b74;
-    address constant REAL_BUFFER_MANAGER  = 0x4560B3E16B335358dA6bF14ec8f9B9A5D07413a1;
+    address constant REAL_BUFFER_MANAGER = 0x4560B3E16B335358dA6bF14ec8f9B9A5D07413a1;
     address constant REAL_HEALTH_REGISTRY = 0x2bF1C86af4267C068B3c928538F7AA82219cf1D4;
-    address constant REAL_GUARDIAN        = 0x7407E68a5553E948eed862f19fc6B292eb48d677;
+    address constant REAL_GUARDIAN = 0x7407E68a5553E948eed862f19fc6B292eb48d677;
 
     address constant USDC = 0xaf88d065e77c8cC2239327C5EDb3A432268e5831;
 
@@ -65,12 +67,18 @@ contract DeployAndDepositReadiness_Fork_Test is Test {
         // Sanity: the real core system this script is meant to run against
         // must actually exist at these addresses on THIS fork's chain state.
         require(REAL_VAULT.code.length > 0, "REAL_VAULT has no code on this fork");
-        require(REAL_STRATEGY_ROUTER.code.length > 0, "REAL_STRATEGY_ROUTER has no code on this fork");
+        require(
+            REAL_STRATEGY_ROUTER.code.length > 0, "REAL_STRATEGY_ROUTER has no code on this fork"
+        );
         require(REAL_BUFFER_MANAGER.code.length > 0, "REAL_BUFFER_MANAGER has no code on this fork");
-        require(REAL_HEALTH_REGISTRY.code.length > 0, "REAL_HEALTH_REGISTRY has no code on this fork");
+        require(
+            REAL_HEALTH_REGISTRY.code.length > 0, "REAL_HEALTH_REGISTRY has no code on this fork"
+        );
 
         address testDeployer = vm.addr(TEST_DEPLOYER_PK);
+        address governance = makeAddr("testGovernanceSafe");
         vm.deal(testDeployer, 10 ether);
+        vm.etch(governance, hex"00");
         deal(USDC, testDeployer, 1_000_000); // 1 USDC — covers the 0.001 USDC Euler Permit2 dust
 
         vm.setEnv("DEPLOYER_PRIVATE_KEY", vm.toString(TEST_DEPLOYER_PK));
@@ -79,8 +87,9 @@ contract DeployAndDepositReadiness_Fork_Test is Test {
         vm.setEnv("BUFFER_MANAGER_ADDRESS", vm.toString(REAL_BUFFER_MANAGER));
         vm.setEnv("HEALTH_REGISTRY_ADDRESS", vm.toString(REAL_HEALTH_REGISTRY));
         vm.setEnv("GUARDIAN_ADDRESS", vm.toString(REAL_GUARDIAN));
-        // DO_SEAL left unset (false): test deployer isn't the real timelock,
-        // and sealing isn't required to prove deploy/deposit readiness.
+        vm.setEnv("GOVERNANCE_ADDRESS", vm.toString(governance));
+        // DO_SEAL left unset (false): core sealing isn't required to prove
+        // deploy/deposit readiness. Strategy governance is still handed off.
         // Explicit output path: an ambient .env with STRATEGY_OUTPUT_JSON= (blank)
         // would otherwise make vm.writeJson try to write to "", which reverts.
         vm.setEnv("STRATEGY_OUTPUT_JSON", "broadcast/fork-test-strategy-addresses.json");
@@ -97,8 +106,14 @@ contract DeployAndDepositReadiness_Fork_Test is Test {
         bytes32 BOOTSTRAP_ROLE = strategy.BOOTSTRAP_ROLE();
 
         assertTrue(strategy.hasRole(CORE_ROLE, REAL_VAULT), "REAL_VAULT must hold CORE_ROLE");
-        assertTrue(strategy.hasRole(CORE_ROLE, REAL_STRATEGY_ROUTER), "REAL_STRATEGY_ROUTER must hold CORE_ROLE");
-        assertFalse(strategy.hasRole(BOOTSTRAP_ROLE, result.bootstrapper), "BOOTSTRAP_ROLE must be renounced");
+        assertTrue(
+            strategy.hasRole(CORE_ROLE, REAL_STRATEGY_ROUTER),
+            "REAL_STRATEGY_ROUTER must hold CORE_ROLE"
+        );
+        assertFalse(
+            strategy.hasRole(BOOTSTRAP_ROLE, result.bootstrapper),
+            "BOOTSTRAP_ROLE must be renounced"
+        );
         assertEq(strategy.adapterCount(), 7, "all 7 adapters must be registered");
         assertFalse(strategy.paused(), "strategy must not be paused post-deploy");
 
@@ -132,13 +147,21 @@ contract DeployAndDepositReadiness_Fork_Test is Test {
 
         // Real capital must have actually moved into at least one real
         // external market -- not just sat idle in the strategy contract.
-        assertLt(idleAfter, DEPOSIT_AMOUNT, "at least some capital must have been deployed, not left fully idle");
+        assertLt(
+            idleAfter,
+            DEPOSIT_AMOUNT,
+            "at least some capital must have been deployed, not left fully idle"
+        );
 
         uint256 deployedSum = totalAfter - idleAfter;
         console2.log("[DEPOSIT READY] capital actually deployed to real adapters:", deployedSum);
         assertGt(deployedSum, 0, "at least one real adapter must hold a nonzero position");
 
-        console2.log("[VERDICT] Deploy ready: YES (real script completes end-to-end against live core system)");
-        console2.log("[VERDICT] Deposit ready: YES (first deposit succeeds immediately post-deploy, no manual poke needed)");
+        console2.log(
+            "[VERDICT] Deploy ready: YES (real script completes end-to-end against live core system)"
+        );
+        console2.log(
+            "[VERDICT] Deposit ready: YES (first deposit succeeds immediately post-deploy, no manual poke needed)"
+        );
     }
 }
