@@ -396,11 +396,11 @@ contract StrategyRebalancePlanModule is StrategyStorageLayout {
     }
 
     /// @notice Build performance snapshot in one loop over registered adapters.
-    /// @dev Internal view — NO state changes. Used by _emitPerformanceSnapshot.
+    /// @dev Transaction-only helper; emits precise adapter failure telemetry.
     ///      Each adapter's currentAPYBps + totalAssets are tried in try/catch:
     ///      failures don't revert the snapshot; they just exclude the adapter
     ///      from weighted aggregates (and increment the degradedViews bucket).
-    function _buildSnapshotAcc() internal view returns (_SnapshotAcc memory acc) {
+    function _buildSnapshotAcc() internal returns (_SnapshotAcc memory acc) {
         acc.idle = ASSET.balanceOf(address(this));
         uint256 n = adapters.length;
         for (uint256 i = 0; i < n;) {
@@ -420,7 +420,8 @@ contract StrategyRebalancePlanModule is StrategyStorageLayout {
                 if (pos > 0) {
                     try ILendingAdapter(a).currentAPYBps() returns (uint16 ap) {
                         acc.weightedAPY += uint256(ap) * pos;
-                    } catch {
+                    } catch (bytes memory reason) {
+                        emit AdapterCallFailed(a, ILendingAdapter.currentAPYBps.selector, block.timestamp, reason);
                         // Adapter APY unavailable — exclude from average.
                     }
                 }
@@ -437,7 +438,8 @@ contract StrategyRebalancePlanModule is StrategyStorageLayout {
                     } else {
                         acc.fallbackAssets += pos;
                     }
-                } catch {
+                } catch (bytes memory reason) {
+                    emit AdapterCallFailed(a, ILendingAdapter.totalAssets.selector, block.timestamp, reason);
                     acc.fallbackAssets += pos;
                 }
             }

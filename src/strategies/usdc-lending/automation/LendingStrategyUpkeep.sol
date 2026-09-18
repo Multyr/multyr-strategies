@@ -66,6 +66,9 @@ event UpkeepErrored(uint8 indexed op, address indexed strategy, bytes reason);
 /// @notice Emitted when Aave liquidity rate is pushed to the rate provider.
 event AaveRatePushed(uint256 rateRay);
 
+/// @notice Non-fatal external failure, including the precise called function.
+event ExternalCallFailed(address indexed target, bytes4 indexed selector, uint256 timestamp, bytes data);
+
 /// @notice Emitted when an adapter snapshot is successfully poked.
 event SnapshotPoked(address indexed target);
 
@@ -533,7 +536,8 @@ contract StrategyUpkeep is AutomationCompatibleInterface, Ownable {
                 // Keep the cursor on this strategy only while the plan is still active.
                 try IMultiStepRebalance(address(target)).rebalancePlanPhase() returns (uint8 phase) {
                     if (phase == 0) shouldAdvance = true;
-                } catch {
+                } catch (bytes memory reason) {
+                    emit ExternalCallFailed(address(target), IMultiStepRebalance.rebalancePlanPhase.selector, block.timestamp, reason);
                     // fail-safe: never get stuck forever if phase() is unreadable.
                     shouldAdvance = true;
                 }
@@ -608,8 +612,12 @@ contract StrategyUpkeep is AutomationCompatibleInterface, Ownable {
             try aavePool.getReserveData(usdc) returns (IAavePoolForPoke.ReserveData memory data) {
                 try aaveRateProvider.setLiquidityRateRay(usdc, uint256(data.currentLiquidityRate)) {
                     emit AaveRatePushed(uint256(data.currentLiquidityRate));
-                } catch {}
-            } catch {}
+                } catch (bytes memory reason) {
+                    emit ExternalCallFailed(address(aaveRateProvider), IAaveRateProviderWriter.setLiquidityRateRay.selector, block.timestamp, reason);
+                }
+            } catch (bytes memory reason) {
+                emit ExternalCallFailed(address(aavePool), IAavePoolForPoke.getReserveData.selector, block.timestamp, reason);
+            }
         }
 
         // 2. Poke all snapshot targets (Dolomite, Morpho, Gains)

@@ -105,6 +105,12 @@ import {
     ProtocolRegistry
 } from "@multyr-strategies/strategies/usdc-lending/registry/ProtocolRegistry.sol";
 
+interface IStrategyRouterAllowlist {
+    function strategyAllowlist(address strategy) external view returns (bool);
+    function strategyAllowlistEta(address strategy) external view returns (uint256);
+    function proposeStrategyAllowlist(address strategy) external returns (uint256 eta);
+}
+
 /**
  * @title DeployUsdcLendingStrategy
  * @notice Deploys the USDC Lending Strategy, wires the ecosystem, and registers adapters.
@@ -724,12 +730,27 @@ contract DeployUsdcLendingStrategy is Script {
         // 2.1 Register in router (idempotent)
         if (!_isRegistered(result.router, address(result.strategy))) {
             if (result.router.owner() == cfg.deployer) {
-                result.router.register(address(result.strategy), 100, 10000);
-                result.router.setMaxStrategyBps(address(result.strategy), 10000);
-                result.router.setLossCapPerStrategy(address(result.strategy), 50);
-                console.log("[2.1] Strategy registered in router (maxBps=10000, lossCap=50bps)");
+                IStrategyRouterAllowlist allowlist =
+                    IStrategyRouterAllowlist(address(result.router));
+                if (!allowlist.strategyAllowlist(address(result.strategy))) {
+                    uint256 eta = allowlist.strategyAllowlistEta(address(result.strategy));
+                    if (eta == 0) {
+                        eta = allowlist.proposeStrategyAllowlist(address(result.strategy));
+                    }
+                    console.log("[2.1] Strategy allowlist proposed; registration ETA:", eta);
+                    console.log(
+                        "  ACTION: executeStrategyAllowlist, register, setMaxStrategyBps, setLossCapPerStrategy"
+                    );
+                } else {
+                    result.router.register(address(result.strategy), 100, 10000);
+                    result.router.setMaxStrategyBps(address(result.strategy), 10000);
+                    result.router.setLossCapPerStrategy(address(result.strategy), 50);
+                    console.log("[2.1] Strategy registered in router (maxBps=10000, lossCap=50bps)");
+                }
             } else {
-                console.log("[2.1] SKIP: router owner is not deployer - register via Safe");
+                console.log(
+                    "[2.1] SKIP: router owner is not deployer - allowlist and register via governance"
+                );
             }
         } else {
             console.log("[2.1] SKIP: strategy already registered");
@@ -969,16 +990,22 @@ contract DeployUsdcLendingStrategy is Script {
 
         controlled.grantRole(adminRole, cfg.governance);
         if (hasParamRole) controlled.grantRole(paramRole, cfg.governance);
-        if (hasParamRole && controlled.hasRole(paramRole, cfg.deployer)) {
-            controlled.renounceRole(paramRole, cfg.deployer);
+        if (cfg.deployer != cfg.governance) {
+            if (hasParamRole && controlled.hasRole(paramRole, cfg.deployer)) {
+                controlled.renounceRole(paramRole, cfg.deployer);
+            }
+            controlled.renounceRole(adminRole, cfg.deployer);
         }
-        controlled.renounceRole(adminRole, cfg.deployer);
 
         require(controlled.hasRole(adminRole, cfg.governance), "Governance missing admin role");
-        require(!controlled.hasRole(adminRole, cfg.deployer), "Deployer retains admin role");
+        if (cfg.deployer != cfg.governance) {
+            require(!controlled.hasRole(adminRole, cfg.deployer), "Deployer retains admin role");
+        }
         if (hasParamRole) {
             require(controlled.hasRole(paramRole, cfg.governance), "Governance missing param role");
-            require(!controlled.hasRole(paramRole, cfg.deployer), "Deployer retains param role");
+            if (cfg.deployer != cfg.governance) {
+                require(!controlled.hasRole(paramRole, cfg.deployer), "Deployer retains param role");
+            }
         }
     }
 
@@ -992,14 +1019,17 @@ contract DeployUsdcLendingStrategy is Script {
 
         result.strategy.grantRole(adminRole, cfg.governance);
         result.strategy.grantRole(paramRole, cfg.governance);
-        result.strategy.renounceRole(paramRole, cfg.deployer);
-        result.strategy.renounceRole(adminRole, cfg.deployer);
 
         AdapterFactory factory = AdapterFactory(result.adapterFactory);
         factory.grantRole(adminRole, cfg.governance);
         factory.grantRole(deployerRole, cfg.governance);
-        factory.renounceRole(deployerRole, cfg.deployer);
-        factory.renounceRole(adminRole, cfg.deployer);
+
+        if (cfg.deployer != cfg.governance) {
+            result.strategy.renounceRole(paramRole, cfg.deployer);
+            result.strategy.renounceRole(adminRole, cfg.deployer);
+            factory.renounceRole(deployerRole, cfg.deployer);
+            factory.renounceRole(adminRole, cfg.deployer);
+        }
 
         if (result.protocolRegistry != address(0)) {
             ProtocolRegistry(result.protocolRegistry).transferOwnership(cfg.governance);
@@ -1014,18 +1044,22 @@ contract DeployUsdcLendingStrategy is Script {
         require(
             result.strategy.hasRole(paramRole, cfg.governance), "Governance missing strategy param"
         );
-        require(
-            !result.strategy.hasRole(adminRole, cfg.deployer), "Deployer retains strategy admin"
-        );
-        require(
-            !result.strategy.hasRole(paramRole, cfg.deployer), "Deployer retains strategy param"
-        );
         require(factory.hasRole(adminRole, cfg.governance), "Governance missing factory admin");
         require(
             factory.hasRole(deployerRole, cfg.governance), "Governance missing factory deployer"
         );
-        require(!factory.hasRole(adminRole, cfg.deployer), "Deployer retains factory admin");
-        require(!factory.hasRole(deployerRole, cfg.deployer), "Deployer retains factory deployer");
+        if (cfg.deployer != cfg.governance) {
+            require(
+                !result.strategy.hasRole(adminRole, cfg.deployer), "Deployer retains strategy admin"
+            );
+            require(
+                !result.strategy.hasRole(paramRole, cfg.deployer), "Deployer retains strategy param"
+            );
+            require(!factory.hasRole(adminRole, cfg.deployer), "Deployer retains factory admin");
+            require(
+                !factory.hasRole(deployerRole, cfg.deployer), "Deployer retains factory deployer"
+            );
+        }
         if (result.protocolRegistry != address(0)) {
             require(
                 ProtocolRegistry(result.protocolRegistry).owner() == cfg.governance,
@@ -1132,8 +1166,23 @@ contract DeployUsdcLendingStrategy is Script {
         cfg.guardian = vm.envAddress("GUARDIAN_ADDRESS");
         cfg.governance = vm.envAddress("GOVERNANCE_ADDRESS");
         require(cfg.governance != address(0), "GOVERNANCE_ADDRESS is zero");
-        require(cfg.governance != cfg.deployer, "GOVERNANCE_ADDRESS must differ from deployer");
-        require(cfg.governance.code.length > 0, "GOVERNANCE_ADDRESS must be a Safe contract");
+
+        bool allowEoaGovernance;
+        try vm.envBool("ALLOW_EOA_GOVERNANCE") returns (bool v) {
+            allowEoaGovernance = v;
+        } catch {}
+
+        if (!allowEoaGovernance) {
+            require(cfg.governance != cfg.deployer, "GOVERNANCE_ADDRESS must differ from deployer");
+            require(
+                cfg.governance.code.length > 0,
+                "GOVERNANCE_ADDRESS must be a contract; set ALLOW_EOA_GOVERNANCE=true for disposable testing"
+            );
+        } else {
+            console.log(
+                "WARNING: direct EOA governance enabled for disposable testing:", cfg.governance
+            );
+        }
 
         try vm.envAddress("INCENTIVES_ADDRESS") returns (address a) {
             cfg.incentives = a;

@@ -130,7 +130,7 @@ contract StrategySafetyOverflowModule is StrategyStorageLayout {
         if (bps >= 100) emit DegradedViewsObserved(bps);
     }
 
-    function _checkDegradedAdapterViews() private view returns (bool, uint16) {
+    function _checkDegradedAdapterViews() private returns (bool, uint16) {
         uint256 n = adapters.length;
         uint256 healthyAssets;
         uint256 fallbackAssets;
@@ -139,7 +139,8 @@ contract StrategySafetyOverflowModule is StrategyStorageLayout {
             if (!enabled[a] || quarantined[a]) continue;
             try ILendingAdapter(a).totalAssets() returns (uint256 val) {
                 healthyAssets += val;
-            } catch {
+            } catch (bytes memory reason) {
+                emit AdapterCallFailed(a, ILendingAdapter.totalAssets.selector, block.timestamp, reason);
                 fallbackAssets += positionAssets[a];
             }
         }

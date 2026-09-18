@@ -83,7 +83,7 @@ contract StrategyParamsModule is StrategyStorageLayout {
             address adapter = adapters[i];
             if (enabled[adapter] || positionAssets[adapter] > 0) {
                 uint256 oldPos = positionAssets[adapter];
-                uint256 actual = _safeTotalAssets(adapter);
+                uint256 actual = _observedTotalAssets(adapter);
                 if (actual == 0 && oldPos > 0) {
                     emit PositionSyncSkippedSuspicious(adapter, oldPos, actual);
                     unchecked { ++i; } continue;
@@ -111,7 +111,7 @@ contract StrategyParamsModule is StrategyStorageLayout {
         if (!isAdapter[adapter]) revert InvalidAdapter();
         if (!enabled[adapter] && positionAssets[adapter] == 0) return;
         uint256 oldPos = positionAssets[adapter];
-        uint256 actual = _safeTotalAssets(adapter);
+        uint256 actual = _observedTotalAssets(adapter);
         if (actual == 0 && oldPos > 0) { emit PositionSyncSkippedSuspicious(adapter, oldPos, actual); return; }
         if (oldPos > 0 && actual > oldPos * 3) { emit PositionSyncSkippedSuspicious(adapter, oldPos, actual); return; }
         uint256 diff = actual > oldPos ? actual - oldPos : oldPos - actual;
@@ -153,7 +153,8 @@ contract StrategyParamsModule is StrategyStorageLayout {
         uint256 n = enabledList.length;
         for (uint256 i = 0; i < n;) {
             address adapter = enabledList[i];
-            try ILendingAdapter(adapter).externalMarketTVL() returns (uint256 tvl) {
+            (bool tvlOk, uint256 tvl) = _readAdapterUintObserved(adapter, ILendingAdapter.externalMarketTVL.selector);
+            if (tvlOk) {
                 uint256 prev = cachedExternalTVL[adapter];
                 bool valid = true;
 
@@ -180,7 +181,7 @@ contract StrategyParamsModule is StrategyStorageLayout {
                 } else {
                     emit ExternalTVLRejected(adapter, prev, tvl);
                 }
-            } catch {}
+            }
 
             // Audit HIGH 1.6 fix: populate cachedAdapterCapacity so the delta
             // jump limiter in StrategyAllocCalcModule._checkAdapterEligibility()
@@ -188,7 +189,8 @@ contract StrategyParamsModule is StrategyStorageLayout {
             // keeper cadence and try/catch-safe pattern as the externalMarketTVL
             // poke above -- a bricked/reverting maxCapacity() simply leaves the
             // cache at its last known-good value.
-            try ILendingAdapter(adapter).maxCapacity() returns (uint256 cap) {
+            (bool capOk, uint256 cap) = _readAdapterUintObserved(adapter, ILendingAdapter.maxCapacity.selector);
+            if (capOk) {
                 uint256 prevCap = cachedAdapterCapacity[adapter];
                 if (prevCap > 0 && cap > prevCap) {
                     uint256 maxCapJump = (prevCap * MAX_EXTERNAL_TVL_JUMP_BPS) / 10_000;
@@ -199,7 +201,7 @@ contract StrategyParamsModule is StrategyStorageLayout {
                     emit AdapterCapacityDecreased(adapter, cap, prevCap);
                 }
                 cachedAdapterCapacity[adapter] = cap;
-            } catch {}
+            }
             unchecked { ++i; }
         }
     }
@@ -217,13 +219,15 @@ contract StrategyParamsModule is StrategyStorageLayout {
     }
 
     function _pokeLiquidity(address adapter) internal {
-        uint256 tot = _safeTotalAssets(adapter);
+        (bool totalOk, uint256 tot) = _readAdapterUintObserved(adapter, ILendingAdapter.totalAssets.selector);
+        if (!totalOk) tot = positionAssets[adapter];
         if (tot <= dustTolerance) {
             cachedLiquidityBps[adapter] = 10000; // empty adapter = fully liquid
             cachedLiquidityTs[adapter] = uint64(block.timestamp);
             return;
         }
-        uint256 wa = _safeWithdrawableAssets(adapter);
+        (bool withdrawableOk, uint256 wa) = _readAdapterUintObserved(adapter, ILendingAdapter.withdrawableAssets.selector);
+        if (!withdrawableOk) wa = positionAssets[adapter];
         uint256 liq = (wa * 1e4) / tot;
         if (liq > 10000) liq = 10000;
         // Store 1 instead of 0 to distinguish "measured zero" from "never cached".
@@ -235,7 +239,8 @@ contract StrategyParamsModule is StrategyStorageLayout {
         // V9.2 CTO: Update stability EMA in the same observation pass
         try ILendingAdapter(adapter).currentAPYBps() returns (uint16 currApy) {
             _updateStabilityEMA(adapter, currApy);
-        } catch {
+        } catch (bytes memory reason) {
+            emit AdapterCallFailed(adapter, ILendingAdapter.currentAPYBps.selector, block.timestamp, reason);
             // APY query failed — don't penalize stability for query failure
         }
     }
