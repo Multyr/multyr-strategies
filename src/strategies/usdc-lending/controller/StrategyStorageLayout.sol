@@ -654,6 +654,25 @@ contract StrategyStorageLayout is AccessControl, Pausable, ReentrancyGuard {
         }
     }
 
+    /// @notice A state-changing operation continued after an external adapter query failed.
+    /// @dev Emitted at the strategy address under delegatecall. Raw revert/invalid return data is retained.
+    event AdapterCallFailed(address indexed adapter, bytes4 indexed selector, uint256 timestamp, bytes data);
+
+    function _readAdapterUintObserved(address adapter, bytes4 selector)
+        internal returns (bool ok, uint256 value)
+    {
+        bytes memory data;
+        (ok, data) = adapter.staticcall(abi.encodeWithSelector(selector));
+        if (ok && data.length >= 32) return (true, abi.decode(data, (uint256)));
+        emit AdapterCallFailed(adapter, selector, block.timestamp, data);
+        return (false, 0);
+    }
+
+    function _observedTotalAssets(address adapter) internal returns (uint256) {
+        (bool ok, uint256 value) = _readAdapterUintObserved(adapter, ILendingAdapter.totalAssets.selector);
+        return ok ? value : positionAssets[adapter];
+    }
+
     function _safeTotalAssets(address adapter) internal view returns (uint256) {
         (bool ok, bytes memory data) =
             adapter.staticcall(abi.encodeWithSelector(ILendingAdapter.totalAssets.selector));

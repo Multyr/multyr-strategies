@@ -61,7 +61,8 @@ contract StrategyAdapterOpsModule is StrategyStorageLayout {
                 // failure condition), AdapterFundsStranded is still emitted
                 // for off-chain alerting and manual recovery remains available.
                 try IAdapterEmergency(adapter).sweepIdleAssetToVault() {
-                } catch {
+                } catch (bytes memory sweepReason) {
+                    emit AdapterCallFailed(adapter, IAdapterEmergency.sweepIdleAssetToVault.selector, block.timestamp, sweepReason);
                     emit AdapterFundsStranded(adapter, amount);
                 }
                 // Audit HIGH 1.3 — unify failure handling: gradual decay on BOTH
@@ -208,7 +209,7 @@ contract StrategyAdapterOpsModule is StrategyStorageLayout {
             address adapter = _adapters[i];
             if (enabled[adapter] || positionAssets[adapter] > 0) {
                 uint256 oldPos = positionAssets[adapter];
-                uint256 actual = _safeTotalAssets(adapter);
+                uint256 actual = _observedTotalAssets(adapter);
                 if (actual == 0 && oldPos > 0) {
                     emit PositionSyncSkippedSuspicious(adapter, oldPos, actual);
                     unchecked { ++i; }

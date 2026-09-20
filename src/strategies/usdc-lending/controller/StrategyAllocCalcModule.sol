@@ -50,11 +50,17 @@ contract StrategyAllocCalcModule is StrategyStorageLayout {
     /// @notice Compute adapter scores. Returns unsorted, unnormalized.
     function execComputeScores(address[] memory enabledAdapters)
         external
-        view
         onlyDelegateCall
         returns (AdapterScore[] memory)
     {
-        return _computeAdapterScores(enabledAdapters);
+        return _computeAdapterScores(enabledAdapters, false);
+    }
+
+    /// @notice Transaction-only scoring path; read-only gate keeps the non-emitting entry point.
+    function execComputeScoresObserved(address[] memory enabledAdapters)
+        external onlyDelegateCall returns (AdapterScore[] memory)
+    {
+        return _computeAdapterScores(enabledAdapters, true);
     }
 
     /// @notice Normalize scores in-place.
@@ -107,7 +113,6 @@ contract StrategyAllocCalcModule is StrategyStorageLayout {
     ///         ScoringModule executes the actual deposits after receiving this plan.
     function execSelectAllocation(uint256 amount, bool bestEffort)
         external
-        view
         onlyDelegateCall
         returns (address[] memory selected, uint256[] memory targets, uint256 selCount)
     {
@@ -116,7 +121,7 @@ contract StrategyAllocCalcModule is StrategyStorageLayout {
         address[] memory enabledList = _enabledAdapters();
         if (enabledList.length < 1) return (new address[](0), new uint256[](0), 0);
 
-        AdapterScore[] memory scores = _computeAdapterScores(enabledList);
+        AdapterScore[] memory scores = _computeAdapterScores(enabledList, true);
         _normalizeScores(scores);
         _sortAdapterScores(scores);
 
@@ -125,9 +130,8 @@ contract StrategyAllocCalcModule is StrategyStorageLayout {
 
     // ── Internal scoring helpers ─────────────────────────────────────────────
 
-    function _computeAdapterScores(address[] memory enabledAdapters)
+    function _computeAdapterScores(address[] memory enabledAdapters, bool emitFailures)
         internal
-        view
         returns (AdapterScore[] memory)
     {
         uint256 n = enabledAdapters.length;
@@ -145,13 +149,16 @@ contract StrategyAllocCalcModule is StrategyStorageLayout {
             uint16 effective = 0;
             try IAdapterAPYExt(enabledAdapters[i]).effectiveAPYBps() returns (uint16 a) {
                 effective = a;
-            } catch {}
+            } catch (bytes memory reason) {
+                if (emitFailures) emit AdapterCallFailed(enabledAdapters[i], IAdapterAPYExt.effectiveAPYBps.selector, block.timestamp, reason);
+            }
             if (effective > 0) {
                 rawAPYs[i] = effective;
             } else {
                 try ILendingAdapter(enabledAdapters[i]).currentAPYBps() returns (uint16 a) {
                     rawAPYs[i] = a;
-                } catch {
+                } catch (bytes memory reason) {
+                    if (emitFailures) emit AdapterCallFailed(enabledAdapters[i], ILendingAdapter.currentAPYBps.selector, block.timestamp, reason);
                     rawAPYs[i] = 0;
                 }
             }
@@ -323,7 +330,7 @@ contract StrategyAllocCalcModule is StrategyStorageLayout {
         AdapterScore[] memory scores,
         uint256 amount,
         bool bestEffort
-    ) internal view returns (
+    ) internal returns (
         address[] memory selected,
         uint256[] memory targets,
         uint256 selCount
@@ -356,7 +363,7 @@ contract StrategyAllocCalcModule is StrategyStorageLayout {
     }
 
     function _checkAdapterEligibility(address adapter, uint256 tvl, uint256 _dust, bool bestEffort)
-        internal view returns (bool, uint256)
+        internal returns (bool, uint256)
     {
         if (flagged[adapter]) return (false, 0);
         // P0.7 (2026-06-11) — non-safety adapters in mandate cooldown are
@@ -406,7 +413,8 @@ contract StrategyAllocCalcModule is StrategyStorageLayout {
                 uint256 maxJump = (cachedAdapterCapacity[adapter] * MAX_EXTERNAL_TVL_JUMP_BPS) / 10_000;
                 if (cap > maxJump) headroom = headroom / 2;
             }
-        } catch {
+        } catch (bytes memory reason) {
+            emit AdapterCallFailed(adapter, ILendingAdapter.maxCapacity.selector, block.timestamp, reason);
             if (!bestEffort) revert QueryFailed();
             return (false, 0);
         }

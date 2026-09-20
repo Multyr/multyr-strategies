@@ -13,7 +13,8 @@
 # Prerequisites (not checked by this script):
 #   - Core system already deployed (multyr-core/script/DeployCoreSystem.s.sol)
 #   - GOVERNANCE_ADDRESS is the deployed Gnosis Safe that will directly own
-#     every strategy-side admin surface. A TimelockController is not required.
+#     every strategy-side admin surface. For a disposable test deployment only,
+#     ALLOW_EOA_GOVERNANCE=true permits direct EOA ownership instead.
 #   - Deployer EOA holds >= 0.001 USDC (Euler Permit2 init dust)
 # ══════════════════════════════════════════════════════════════════════════
 

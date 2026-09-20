@@ -64,7 +64,7 @@ contract StrategyScoringModule is StrategyStorageLayout {
     // deposit-only to all operating paths: harvest, prepareRebalance, deployIdle).
     // When fallback totals (adapters whose totalAssets() reverts) exceed the
     // configured threshold, block the op to avoid allocating on stale accounting.
-    function _degradedGuard() internal view {
+    function _degradedGuard() internal {
         uint256 n = adapters.length;
         uint256 healthyAssets;
         uint256 fallbackAssets;
@@ -73,7 +73,8 @@ contract StrategyScoringModule is StrategyStorageLayout {
             if (!enabled[a] || quarantined[a]) continue;
             try ILendingAdapter(a).totalAssets() returns (uint256 val) {
                 healthyAssets += val;
-            } catch {
+            } catch (bytes memory reason) {
+                emit AdapterCallFailed(a, ILendingAdapter.totalAssets.selector, block.timestamp, reason);
                 fallbackAssets += positionAssets[a];
             }
         }
@@ -119,7 +120,7 @@ contract StrategyScoringModule is StrategyStorageLayout {
             return (enabledList, new uint256[](0), new uint256[](0), new uint16[](0), 0, 0);
         }
         tvl = _tvl();
-        AdapterScore[] memory scores = _computeAdapterScores(enabledList);
+        AdapterScore[] memory scores = _computeAdapterScores(enabledList, true);
         _normalizeScores(scores);
         targetAllocs = _targetAllocations(scores, tvl);
 
@@ -196,7 +197,7 @@ contract StrategyScoringModule is StrategyStorageLayout {
             return (new uint16[](0), enabledAdapters, new uint256[](0), 0, 0);
         }
         tvl = _tvl();
-        AdapterScore[] memory scores = _computeAdapterScores(enabledAdapters);
+        AdapterScore[] memory scores = _computeAdapterScores(enabledAdapters, false);
         _normalizeScores(scores);
         targetAllocs = _targetAllocations(scores, tvl);
 
@@ -502,14 +503,14 @@ contract StrategyScoringModule is StrategyStorageLayout {
     // _executeSafetyOverflow and _emitLowConfidenceSkips extracted to
     // StrategySafetyOverflowModule (F-SIZE-01, 2026-06-20).
 
-    function _computeAdapterScores(address[] memory enabledAdapters)
+    function _computeAdapterScores(address[] memory enabledAdapters, bool emitFailures)
         internal
         returns (AdapterScore[] memory)
     {
         address ac = allocCalcModule_addr;
         require(ac != address(0), "alloc-calc-not-set");
         (bool ok, bytes memory res) = ac.delegatecall(
-            abi.encodeWithSelector(EXEC_COMPUTE_SCORES_SEL, enabledAdapters)
+            abi.encodeWithSelector(emitFailures ? bytes4(keccak256("execComputeScoresObserved(address[])")) : EXEC_COMPUTE_SCORES_SEL, enabledAdapters)
         );
         require(ok, "AllocCalc: computeScores");
         return abi.decode(res, (AdapterScore[]));
