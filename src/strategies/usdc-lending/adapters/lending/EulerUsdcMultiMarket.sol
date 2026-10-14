@@ -272,7 +272,8 @@ contract EulerUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
                 emit MarketSkippedLowCapacity(mkts[idx].addr, 0);
                 return false;
             }
-        } catch {
+        } catch (bytes memory reason) {
+                emit AdapterOperationFailed(msg.sig, reason);
             // maxDeposit() not available or reverted — skip this market.
             emit MarketSkippedLowCapacity(mkts[idx].addr, 0);
             return false;
@@ -291,7 +292,8 @@ contract EulerUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
             if (shares < 1) { } // intentionally empty - we just need non-zero to confirm
             _revokeMarketApproval(mkts[idx].addr);
             return true;
-        } catch {
+        } catch (bytes memory reason) {
+                emit AdapterOperationFailed(msg.sig, reason);
             _revokeMarketApproval(mkts[idx].addr);
             return false;
         }
@@ -600,7 +602,8 @@ contract EulerUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
                 // If remaining deposit fails, that's OK — we already deposited the capped amount
             }
             return true;
-        } catch {
+        } catch (bytes memory reason) {
+                emit AdapterOperationFailed(msg.sig, reason);
             // Fix 3: Retry fallback — try poke first, then next market
             _revokeMarketApproval(mktAddr);
 
@@ -617,7 +620,8 @@ contract EulerUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
                     principalTotal += amountToDeposit;
                     emit Deposited(mktAddr, amountToDeposit);
                     return true;
-                } catch {
+                } catch (bytes memory reason) {
+                emit AdapterOperationFailed(msg.sig, reason);
                     _revokeMarketApproval(mktAddr);
                 }
             }
@@ -680,7 +684,8 @@ contract EulerUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
                         principalTotal = 0;
                     }
                     emit Withdrawn(mkts[i].addr, toPull, got, receiver);
-                } catch {
+                } catch (bytes memory reason) {
+                emit AdapterOperationFailed(msg.sig, reason);
                     // Withdraw failed (NotActivated or other error) - skip this market
                     continue;
                 }
@@ -739,7 +744,8 @@ contract EulerUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
                     if (sharesBurned < 1) { } // intentionally empty check
                     uint256 usdcAfter = USDC.balanceOf(address(this));
                     profit += usdcAfter - usdcBefore;
-                } catch {
+                } catch (bytes memory reason) {
+                emit AdapterOperationFailed(msg.sig, reason);
                     // Withdraw failed (NotActivated or other error) - skip this market
                     continue;
                 }
@@ -821,7 +827,8 @@ contract EulerUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
         ) {
             // sharesBurned captured for slither - we track USDC not shares
             if (sharesBurned < 1) { } // intentionally empty check
-        } catch {
+        } catch (bytes memory reason) {
+                emit AdapterOperationFailed(msg.sig, reason);
             revert("Optimize withdraw failed - market not activated");
         }
         uint256 movedOut = USDC.balanceOf(address(this)) - usdcBeforeOptimize;
@@ -836,7 +843,8 @@ contract EulerUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
             if (sharesMinted < 1) { } // intentionally empty check
             // Deposit successful - revoke approval
             _revokeMarketApproval(mkts[toIdx].addr);
-        } catch {
+        } catch (bytes memory reason) {
+                emit AdapterOperationFailed(msg.sig, reason);
             // Deposit to target failed - try to poke it first
             bool poked = _pokeMarket(toIdx);
             require(poked, "Optimize deposit failed - market not activated");
@@ -886,7 +894,8 @@ contract EulerUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
                 ) {
                     // sharesBurned captured for slither - we track USDC not shares
                     if (sharesBurned < 1) { } // intentionally empty check
-                } catch {
+                } catch (bytes memory reason) {
+                emit AdapterOperationFailed(msg.sig, reason);
                     // Withdraw failed (NotActivated or other error) - skip this market
                 }
                 principal[i] = 0;
@@ -1030,7 +1039,8 @@ contract EulerUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
                     }
                 }
             }
-        } catch {
+        } catch (bytes memory reason) {
+                emit AdapterOperationFailed(msg.sig, reason);
             // Registry call failed - use hardcoded markets from constructor
         }
     }
@@ -1050,4 +1060,5 @@ contract EulerUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
     fallback() external payable {
         revert("No fallback");
     }
+    event AdapterOperationFailed(bytes4 indexed operation, bytes reason);
 }

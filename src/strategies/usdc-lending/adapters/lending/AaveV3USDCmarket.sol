@@ -65,6 +65,8 @@ interface ILendingAdapter {
     function currentAPYBps() external view returns (uint16);
     function incentiveAPYBps() external view returns (uint16);
     function harvestableProfit() external view returns (uint256);
+    event HarvestCallFailed(bytes4 indexed operation, bytes reason);
+
     function harvest(address receiver) external returns (uint256 realized);
 
     function maxCapacity() external view returns (uint256);
@@ -385,7 +387,7 @@ contract AaveV3USDCAdapter is ILendingAdapter, AccessControl, ReentrancyGuard, I
             if (rc != address(0)) {
                 try IAaveRewardsController(rc).claimRewardsToSelf(emptyAssets, type(uint256).max, tok) returns (uint256 _claimed) {
                     if (_claimed > 0) emit RewardClaimed(tok, _claimed);
-                } catch {}
+                } catch (bytes memory reason) { emit HarvestCallFailed(msg.sig, reason); }
             }
             uint256 bal = IERC20(tok).balanceOf(address(this));
             if (bal == 0) { unchecked { ++i; } continue; }
@@ -393,13 +395,13 @@ contract AaveV3USDCAdapter is ILendingAdapter, AccessControl, ReentrancyGuard, I
             // (2) M1 pre-flight: defer if oracle stale (no LINK burn on doomed swap)
             try ISwapHelper(sh).canSwap(tok) returns (bool ok) {
                 if (!ok) { unchecked { ++i; } continue; }
-            } catch { unchecked { ++i; } continue; }
+            } catch (bytes memory reason) { emit HarvestCallFailed(msg.sig, reason); unchecked { ++i; } continue; }
             // (3) M2 swap — approve, attempt, reset approval regardless of outcome
             IERC20(tok).safeApprove(sh, 0);
             IERC20(tok).safeApprove(sh, bal);
             try ISwapHelper(sh).swapToUSDC(tok, bal, receiver) returns (uint256 out) {
                 total += out;
-            } catch {}
+            } catch (bytes memory reason) { emit HarvestCallFailed(msg.sig, reason); }
             IERC20(tok).safeApprove(sh, 0);
             unchecked { ++i; }
         }
@@ -449,7 +451,8 @@ contract AaveV3USDCAdapter is ILendingAdapter, AccessControl, ReentrancyGuard, I
             // requested in edge cases — e.g., utilization-bounded withdrawal).
             try pool.withdraw(asset, invested, address(this)) returns (uint256 _withdrawn) {
                 emit EmergencyAavePoolWithdrawn(invested, _withdrawn);
-            } catch {
+            } catch (bytes memory reason) {
+                emit AdapterOperationFailed(msg.sig, reason);
                 // Withdraw failed - still sweep whatever is available; emit zero to signal failure
                 emit EmergencyAavePoolWithdrawn(invested, 0);
             }
@@ -544,4 +547,5 @@ contract AaveV3USDCAdapter is ILendingAdapter, AccessControl, ReentrancyGuard, I
     fallback() external payable {
         revert("NO_FALLBACK");
     }
+    event AdapterOperationFailed(bytes4 indexed operation, bytes reason);
 }

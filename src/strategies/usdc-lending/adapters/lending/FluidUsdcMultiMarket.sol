@@ -299,7 +299,8 @@ contract FluidUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
             try fToken.redeem(shares, address(this), address(this)) returns (uint256 _assetsOut) {
                 emit EmergencyFluidRedeemed(shares, _assetsOut);
             }
-            catch {
+            catch (bytes memory reason) {
+                emit AdapterOperationFailed(msg.sig, reason);
                 emit EmergencyFluidRedeemed(shares, 0);
             }
         }
@@ -360,4 +361,5 @@ contract FluidUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
     fallback() external payable {
         revert("NO_FALLBACK");
     }
+    event AdapterOperationFailed(bytes4 indexed operation, bytes reason);
 }

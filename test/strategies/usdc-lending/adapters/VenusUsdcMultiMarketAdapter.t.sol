@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.28;
 
+import { Vm } from "forge-std/Vm.sol";
 import { Test } from "forge-std/Test.sol";
 import { VenusUsdcMultiMarketAdapter } from "../../../../src/strategies/usdc-lending/adapters/lending/VenusUsdcMultiMarket.sol";
 
@@ -806,10 +807,22 @@ contract VenusUsdcMultiMarketAdapterTest is Test {
     function test_v43_harvest_handlesClaimRevert() public {
         (, MockVenusComptroller comp,) = _initRewardPipeline_Venus();
         comp.setRevertOnClaim(true);
+        vm.recordLogs();
 
         vm.prank(vault);
         uint256 realized = adapter.harvest(core);
         assertEq(realized, 0);
+        Vm.Log[] memory logs = vm.getRecordedLogs();
+        bool found;
+        for (uint256 i; i < logs.length; ++i) {
+            if (logs[i].emitter == address(adapter) && logs[i].topics.length == 3
+                && logs[i].topics[0] == keccak256("RewardClaimFailed(address,address,bytes)")) {
+                assertEq(address(uint160(uint256(logs[i].topics[1]))), address(comp));
+                assertGt(abi.decode(logs[i].data, (bytes)).length, 0);
+                found = true;
+            }
+        }
+        assertTrue(found, "claim failure must be observable");
     }
 
     function test_v43_harvest_handlesSwapRevertGracefully() public {

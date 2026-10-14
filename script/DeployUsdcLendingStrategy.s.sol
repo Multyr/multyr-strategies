@@ -1017,6 +1017,11 @@ contract DeployUsdcLendingStrategy is Script {
         bytes32 paramRole = keccak256("PARAM_ROLE");
         bytes32 deployerRole = AdapterFactory(result.adapterFactory).DEPLOYER_ROLE();
 
+        address keeperSigner = vm.envOr("KEEPER_SIGNER_ADDRESS", address(0));
+        if (keeperSigner != address(0)) {
+            require(keeperSigner != cfg.deployer, "keeper must differ from deployer");
+            result.strategy.grantRole(keccak256("KEEPER_ROLE"), keeperSigner);
+        }
         result.strategy.grantRole(adminRole, cfg.governance);
         result.strategy.grantRole(paramRole, cfg.governance);
 
