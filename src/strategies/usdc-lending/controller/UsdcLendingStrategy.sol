@@ -653,6 +653,20 @@ contract UsdcMultiLendingVault is StrategyStorageLayout {
         if (!hasRole(DEFAULT_ADMIN_ROLE, msg.sender) && !hasRole(CORE_ROLE, msg.sender)) {
             revert Unauthorized();
         }
+        _emergencyRecallAll();
+    }
+
+    /// @notice Router-compatible emergency exit, available even while paused.
+    /// @dev Best effort: recalls disabled/flagged adapters too, retains unrecovered
+    ///      positions, and never redeploys recovered cash. Caller must hold CORE_ROLE.
+    function withdrawAll(address receiver) external nonReentrant onlyCore returns (uint256 withdrawn) {
+        if (receiver == address(0)) revert ZeroAddress();
+        _emergencyRecallAll();
+        withdrawn = idleCash();
+        if (withdrawn > 0) ASSET.safeTransfer(receiver, withdrawn);
+    }
+
+    function _emergencyRecallAll() internal {
         uint256 totalRecalled = 0;
         uint256 n = adapters.length;
         unchecked {
