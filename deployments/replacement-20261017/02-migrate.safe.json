@@ -1,0 +1,140 @@
+{
+  "version": "1.0",
+  "chainId": "42161",
+  "createdAt": 1792220021668,
+  "meta": {
+    "name": "USDC replacement: atomic migration",
+    "description": "Step 2. Execute only after allowlist ETA. Stop old upkeep, sweep old adapters, recall to Core, assert drained, register replacement, retire old strategy. AWS rollout follows successful Safe execution.",
+    "txBuilderVersion": "1.18.0",
+    "createdFromSafeAddress": "0x70ef444799D6FBbE0865bA598Bee6795e064a326",
+    "createdFromOwnerAddress": ""
+  },
+  "transactions": [
+    {
+      "to": "0x05202b06647d4597fB851162A1E32AA8437EeFc3",
+      "value": "0",
+      "data": "0xc0b143630000000000000000000000007bf0f446bb20b54597e66a602cb94d0f231d24e20000000000000000000000000000000000000000000000000000000000000000",
+      "contractMethod": null,
+      "contractInputsValues": null
+    },
+    {
+      "to": "0x03418e9b32e5e5b43c545601376c5064886211f3",
+      "value": "0",
+      "data": "0x1e4596830000000000000000000000007bf0f446bb20b54597e66a602cb94d0f231d24e2",
+      "contractMethod": null,
+      "contractInputsValues": null
+    },
+    {
+      "to": "0x7bF0f446BB20b54597E66a602cB94D0F231D24E2",
+      "value": "0",
+      "data": "0xea0cde850000000000000000000000000000000000000000000000000000000000000001",
+      "contractMethod": null,
+      "contractInputsValues": null
+    },
+    {
+      "to": "0x7bF0f446BB20b54597E66a602cB94D0F231D24E2",
+      "value": "0",
+      "data": "0x93f45456000000000000000000000000744c6a46bb4f1287ceb9bd8ff8693ab0b7503de7",
+      "contractMethod": null,
+      "contractInputsValues": null
+    },
+    {
+      "to": "0x7bF0f446BB20b54597E66a602cB94D0F231D24E2",
+      "value": "0",
+      "data": "0x93f4545600000000000000000000000036ad387092ede0ccb8ca663dc216d0320d19b677",
+      "contractMethod": null,
+      "contractInputsValues": null
+    },
+    {
+      "to": "0x7bF0f446BB20b54597E66a602cB94D0F231D24E2",
+      "value": "0",
+      "data": "0x93f4545600000000000000000000000012cdb0abbe59b4bb91362a77901d9f58e787bf80",
+      "contractMethod": null,
+      "contractInputsValues": null
+    },
+    {
+      "to": "0x7bF0f446BB20b54597E66a602cB94D0F231D24E2",
+      "value": "0",
+      "data": "0x93f45456000000000000000000000000c994b1936246899d2dd6134f543715a336ff81dd",
+      "contractMethod": null,
+      "contractInputsValues": null
+    },
+    {
+      "to": "0x7bF0f446BB20b54597E66a602cB94D0F231D24E2",
+      "value": "0",
+      "data": "0x93f45456000000000000000000000000872908a70773465d394d0eec933cd06ad160c910",
+      "contractMethod": null,
+      "contractInputsValues": null
+    },
+    {
+      "to": "0x7bF0f446BB20b54597E66a602cB94D0F231D24E2",
+      "value": "0",
+      "data": "0x93f454560000000000000000000000009fd8e87220a61103db264b583a2f0caaec4b6019",
+      "contractMethod": null,
+      "contractInputsValues": null
+    },
+    {
+      "to": "0x7bF0f446BB20b54597E66a602cB94D0F231D24E2",
+      "value": "0",
+      "data": "0x93f454560000000000000000000000002f988c3ee375e1ac25d10ee018fbc9fafd857b7f",
+      "contractMethod": null,
+      "contractInputsValues": null
+    },
+    {
+      "to": "0x37847D2e12892e3298DEE695e7E971fba0Ca3e24",
+      "value": "0",
+      "data": "0xf8ce7a8c0000000000000000000000007bf0f446bb20b54597e66a602cb94d0f231d24e2",
+      "contractMethod": null,
+      "contractInputsValues": null
+    },
+    {
+      "to": "0x03418e9b32e5e5b43c545601376c5064886211f3",
+      "value": "0",
+      "data": "0xc2a2d2970000000000000000000000007bf0f446bb20b54597e66a602cb94d0f231d24e20000000000000000000000000000000000000000000000000000000000000064",
+      "contractMethod": null,
+      "contractInputsValues": null
+    },
+    {
+      "to": "0x37847D2e12892e3298DEE695e7E971fba0Ca3e24",
+      "value": "0",
+      "data": "0xa8f1aadd000000000000000000000000a9e676d15976a1332905238ca609dff9a484efe0",
+      "contractMethod": null,
+      "contractInputsValues": null
+    },
+    {
+      "to": "0x37847D2e12892e3298DEE695e7E971fba0Ca3e24",
+      "value": "0",
+      "data": "0x696c680f000000000000000000000000a9e676d15976a1332905238ca609dff9a484efe000000000000000000000000000000000000000000000000000000000000000640000000000000000000000000000000000000000000000000000000000002710",
+      "contractMethod": null,
+      "contractInputsValues": null
+    },
+    {
+      "to": "0x37847D2e12892e3298DEE695e7E971fba0Ca3e24",
+      "value": "0",
+      "data": "0x9d822f91000000000000000000000000a9e676d15976a1332905238ca609dff9a484efe00000000000000000000000000000000000000000000000000000000000002710",
+      "contractMethod": null,
+      "contractInputsValues": null
+    },
+    {
+      "to": "0x37847D2e12892e3298DEE695e7E971fba0Ca3e24",
+      "value": "0",
+      "data": "0x2ef4daf1000000000000000000000000a9e676d15976a1332905238ca609dff9a484efe00000000000000000000000000000000000000000000000000000000000000032",
+      "contractMethod": null,
+      "contractInputsValues": null
+    },
+    {
+      "to": "0x37847D2e12892e3298DEE695e7E971fba0Ca3e24",
+      "value": "0",
+      "data": "0x808024ac000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000a000000000000000000000000000000000000000000000000000000000000000020000000000000000000000007bf0f446bb20b54597e66a602cb94d0f231d24e2000000000000000000000000a9e676d15976a1332905238ca609dff9a484efe0000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002710",
+      "contractMethod": null,
+      "contractInputsValues": null
+    },
+    {
+      "to": "0x37847D2e12892e3298DEE695e7E971fba0Ca3e24",
+      "value": "0",
+      "data": "0x3c8393850000000000000000000000007bf0f446bb20b54597e66a602cb94d0f231d24e20000000000000000000000000000000000000000000000000000000000000000",
+      "contractMethod": null,
+      "contractInputsValues": null
+    }
+  ]
+}

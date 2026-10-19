@@ -1,0 +1,16 @@
+[
+  {
+    "label": "old-20261009",
+    "tag": "deployment/arbitrum-usdc-old-20261009-source-snapshot",
+    "commit": "d70b2f10c14b3798a87e19ce3022296c6479e1ce",
+    "baseCommit": "467c0efee1c43039c23203ef58b20a5c5d36ed36",
+    "kind": "reconstructed-source-snapshot"
+  },
+  {
+    "label": "new-20261017",
+    "tag": "deployment/arbitrum-usdc-new-20261017-source-snapshot",
+    "commit": "0861783c4a78af826e20e2ee438fb7e186bc0497",
+    "baseCommit": "0b804f294b2fe07565a520aabd5ec4c4b73a1582",
+    "kind": "reconstructed-source-snapshot"
+  }
+]

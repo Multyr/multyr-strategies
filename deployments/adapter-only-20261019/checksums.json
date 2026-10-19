@@ -1,0 +1,8 @@
+{
+  "00-deploy-drain-guard.safe.json": "e9c6e4ec0fce37da7c7cccf8b4965da529c21b8ee1955dfd04f602a0b34659b8",
+  "01-deploy-venus.safe.json": "96f659995d94c5e7c02ded98421a8ec280df9e6f578db7ffe61010b483012c93",
+  "02-deploy-morpho.safe.json": "b518d15af9448698dac944c07daaccd9d08ee04f6f949fb70ada5813618abe61",
+  "03-deploy-dolomite.safe.json": "811d741de49e18da4e9debf9ddb7caf3d3c04ebfb9751f385f2fd70766c0b089",
+  "04-deploy-fluid.safe.json": "d0475d59e1299110ec0fac6c70fa0d29b6e8e359ac031e2f3646069f235966d7",
+  "05-atomic-adapter-swap.safe.json": "4236d05b1a4112a8ee6c58ad84062f921ceb280864385d0512d7727c0df0b82b"
+}

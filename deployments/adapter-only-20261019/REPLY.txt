@@ -1,0 +1,19 @@
+Hi Stefano, I rechecked the receipts. The keeper did execute the current upkeep, 0xbcaC314E7237b14E11644FC6Ba73675c8c0612DF:
+
+First deployment: https://arbiscan.io/tx/0x471052742773d3bc404f9f34271b72b95b148eb45ea0df84a773a7181b958b6d
+My subsequent 7.3 USDC deposit: https://arbiscan.io/tx/0x7182a34925acbcb8e030b3229f6fa9527b5baa7406915299f0228a058ff9567f
+Subsequent keeper deployment: https://arbiscan.io/tx/0x0982d1207561044c6172ce83564676e438126b7744550490e7e82ca5dc3566ca
+
+The Venus rate issue is confirmed: the market uses seconds, and the old adapter used the block-based annualisation factor. That inflated its ranking. Separately, the documented small-vault policy selects one adapter below $25k, and this deployment has the governance exposure cap set to zero. That combination permitted 100% concentration. It is not a rule requiring seven-way allocation.
+
+Venus can be repaired with an adapter replacement. The adapter audit also found PPS observation/cache issues in Morpho, Dolomite and Fluid; those have fixed adapter implementations. Euler's zero-capacity setting can be corrected without replacing Euler. These repairs can retain the current strategy, Core, Router and upkeep. Funds in replaced adapters must first be recalled into the same strategy, checked as drained, then the new adapters registered. Users do not need to withdraw.
+
+The one-adapter tier is a separate policy decision: setting a governance cap can limit concentration on the current strategy, but removing the tier and allowing normal diversification at small TVL requires replacement strategy code. I am keeping that decision separate from the adapter repairs.
+
+The gas quote uses conservative defaults/floors plus the 50% margin. It should not be treated as an exact simulation or compared directly with one transaction if it covers a whole rebalance. I have prepared per-adapter calibration based on the fork measurements. The latest Morpho withdrawal used about 2.97M gas, so its withdrawal allowance is 4M rather than blindly using the older 1.45M measurement. Other adapters receive their own calibrated allowances. This can be configured in the existing estimator without replacing the strategy.
+
+For an adapter-only swap, the AWS strategy/upkeep addresses stay unchanged. The Safe batch replaces the on-chain Morpho/Dolomite/Fluid APY-poke targets; the liquidity keeper discovers the enabled adapters dynamically. The retired 0x05202b06 upkeep is absent from the repository's active configuration. I have not revalidated today's ECS task because this session has no AWS credentials.
+
+FeeCollector currently holds zero USDC but still holds 96,339 raw Core vault shares. The pending fee balance therefore has not been cleared merely because its USDC balance is zero. W4 is configured to distribute both Core shares and USDC on Mondays 10:00–16:00 UTC; live execution still needs checking during that window. Warm NAV is intentionally refreshed roughly every eight minutes: a ten-minute TTL with a two-minute refresh margin.
+
+The adapter-only Safe package is prepared for review; no adapter swap has been executed on mainnet. The replacement-strategy migration remains on hold.

@@ -1,0 +1,12 @@
+{
+  "chainId": 42161,
+  "transactions": 104,
+  "successful": 104,
+  "strategy": "0xB143245BBB4333435CD8cc7CcCe1d6E0ABcF5DB6",
+  "upkeep": "0x7c8de9F5d184b507ed2d110403cf4792865C8123",
+  "strategyDeploymentTx": "0xf5c41d70e79315e0dfbee4740fbcd8d0e4e6841ae0223b40eda50238eca908cf",
+  "strategyL2DeploymentBlock": 516130405,
+  "totalReceiptFeeWei": "1711390066594422",
+  "totalReceiptFeeETH": "0.001711390066594422",
+  "fundsMigrationExecuted": false
+}

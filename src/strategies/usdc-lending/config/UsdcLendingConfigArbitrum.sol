@@ -5,8 +5,8 @@ import { UsdcLendingChainConfig } from "./UsdcLendingChainConfig.sol";
 
 /// @dev Chain config for Arbitrum One (chain id 42161). All addresses live + verified.
 library UsdcLendingConfigArbitrum {
-    // Arbitrum One: ~0.25 s blocks → 365.25d × 86400s / 0.25s = 126,144,000 blocks/year
-    uint256 internal constant BLOCKS_PER_YEAR = 126_144_000;
+    // Venus on Arbitrum accrues by timestamp, not by L2 block.
+    uint256 internal constant VENUS_RATE_SLOTS_PER_YEAR = 365 days;
 
     function get() internal pure returns (UsdcLendingChainConfig memory cfg) {
         cfg.usdc          = 0xaf88d065e77c8cC2239327C5EDb3A432268e5831;
@@ -32,7 +32,7 @@ library UsdcLendingConfigArbitrum {
         cfg.morphoVault8  = 0x36b69949d60d06ECcC14DE0Ae63f4E00cc2cd8B9;
 
         cfg.venusVToken        = 0x7D8609f8da70fF9027E9bc5229Af4F6727662707;
-        cfg.venusBlocksPerYear = BLOCKS_PER_YEAR;
+        cfg.venusBlocksPerYear = VENUS_RATE_SLOTS_PER_YEAR;
 
         cfg.governanceMultisig = address(0); // Arbitrum One multisig — set before deploy
         cfg.deploySalt = keccak256(abi.encode("UsdcLendingV10", uint256(42161))); // chain-id 42161 in salt for collision-resistance

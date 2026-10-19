@@ -67,7 +67,9 @@ contract StrategySafetyOverflowModule is StrategyStorageLayout {
 
             SafetyFallback memory sf = safetyFallback[a];
             if (sf.absCapBps == 0) continue;
-            uint256 fbCeiling = (uint256(sf.absCapBps) * tvl) / 1e4;
+            uint256 capBps = sf.absCapBps;
+            if (adapterMaxExposureBps > 0 && capBps > adapterMaxExposureBps) capBps = adapterMaxExposureBps;
+            uint256 fbCeiling = (capBps * tvl) / 1e4;
             if (sf.relCapBps > 0) {
                 uint256 fbRelCeiling = (uint256(sf.relCapBps) * extTVL) / 1e4;
                 if (fbRelCeiling < fbCeiling) fbCeiling = fbRelCeiling;

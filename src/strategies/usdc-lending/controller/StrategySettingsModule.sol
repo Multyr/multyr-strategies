@@ -43,6 +43,14 @@ contract StrategySettingsModule is StrategyStorageLayout {
     //  FREEZE / FINALIZE
     // ══════════════════════════════════════════════════════════════════════
 
+    /// @notice Enable read-only estimation for a replacement strategy before finalization.
+    /// @dev Write-once; no gas quote setter. Estimator calibration is governed separately.
+    function setRebalanceGasEstimator(address estimator) external onlyRoleOrRevert(DEFAULT_ADMIN_ROLE) paramsNotFinalized {
+        require(rebalanceGasEstimator == address(0) && estimator.code.length > 0 && rebalancePlanPhase == 0, "gas-estimator");
+        rebalanceGasEstimator = estimator;
+        emit RebalanceGasEstimatorSet(estimator);
+    }
+
     function freezeRoles() external onlyRoleOrRevert(DEFAULT_ADMIN_ROLE) rolesNotFrozen {
         rolesFrozen = true;
         emit RolesFrozen();

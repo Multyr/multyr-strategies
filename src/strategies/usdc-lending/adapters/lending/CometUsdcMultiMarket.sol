@@ -376,7 +376,7 @@ contract CometUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
     }
 
     function maxCapacity() external view override returns (uint256) {
-        return capacity;
+        return capacity == 0 ? type(uint256).max : capacity;
     }
 
     /// @notice Returns total USDC liquidity across all enabled Comet markets

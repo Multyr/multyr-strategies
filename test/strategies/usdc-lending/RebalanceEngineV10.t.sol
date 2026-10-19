@@ -192,7 +192,7 @@ contract RebalanceEngineV10_Test is Test {
 
     function test_emaGasRecordsAfterDeployIdle() public {
         // GAP 1 FIX: end-to-end gas EMA recording via deployIdle path
-        assertEq(vault.emaDepositGas(address(adapterA)), 0, "EMA should start at 0");
+        assertGt(vault.emaDepositGas(address(adapterA)), 0, "strict setup deposit now initializes EMA");
 
         // Create idle cash by sending USDC directly to strategy (bypasses deposit's auto-deploy)
         usdc.mint(address(vault), 50_000e6);

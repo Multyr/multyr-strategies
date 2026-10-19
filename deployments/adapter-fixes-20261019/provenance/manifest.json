@@ -1,0 +1,249 @@
+{
+  "gitHead": "0b804f294b2fe07565a520aabd5ec4c4b73a1582",
+  "workingTreeDirty": true,
+  "note": "Deployment is from this preserved source snapshot, not from the clean HEAD commit.",
+  "contracts": [
+    {
+      "name": "AdapterFactory",
+      "address": "0x9f8bd6432a1beb8a8159859f26cd531c575424a1",
+      "creationInputMatchesArtifact": true,
+      "constructorArguments": "000000000000000000000000908756f36954f2853134259b8846c49f90e84ece",
+      "source": "src/strategies/usdc-lending/factory/AdapterFactory.sol",
+      "buildId": "68e0800ab365429c",
+      "sourceScope": "Compiler metadata dependency closure; exact deployed creation artifact preserved separately",
+      "standardInputSHA256": "33409a08758caddcefff0dfb2f39daac45cbaea491c92469eee52ff51a5723ec",
+      "runtimeBytes": 2817
+    },
+    {
+      "name": "StrategyParamsModule",
+      "address": "0xee8f39091ed3cfba797026deab02ec99d5687366",
+      "creationInputMatchesArtifact": true,
+      "constructorArguments": "000000000000000000000000af88d065e77c8cc2239327c5edb3a432268e58310000000000000000000000005e0cdb76487bd96ff069ef7f78eadf5b5909c8cb",
+      "source": "src/strategies/usdc-lending/controller/StrategyParamsModule.sol",
+      "buildId": "68e0800ab365429c",
+      "sourceScope": "Compiler metadata dependency closure; exact deployed creation artifact preserved separately",
+      "standardInputSHA256": "1bb20a52d69b428e92549ba4b51a44f075970e68cf563e8f754e65f6481f8e7e",
+      "runtimeBytes": 14147
+    },
+    {
+      "name": "StrategyScoringModule",
+      "address": "0xcc1aa8adff9b684d539329736ff0a800b9ce3898",
+      "creationInputMatchesArtifact": true,
+      "constructorArguments": "000000000000000000000000af88d065e77c8cc2239327c5edb3a432268e58310000000000000000000000005e0cdb76487bd96ff069ef7f78eadf5b5909c8cb000000000000000000000000ee8f39091ed3cfba797026deab02ec99d568736600000000000000000000000000000000000000000000000000000000000000000000000000000000000000001c882dfe66663d878f28fb064d4529ed06b64760",
+      "source": "src/strategies/usdc-lending/controller/StrategyScoringModule.sol",
+      "buildId": "68e0800ab365429c",
+      "sourceScope": "Compiler metadata dependency closure; exact deployed creation artifact preserved separately",
+      "standardInputSHA256": "f9fcbdd6a82175db03dad3acd884742976a92ec5ac1ca410237bd1ea1fb9e02c",
+      "runtimeBytes": 21739
+    },
+    {
+      "name": "StrategyAdapterOpsModule",
+      "address": "0x1c882dfe66663d878f28fb064d4529ed06b64760",
+      "creationInputMatchesArtifact": true,
+      "constructorArguments": "000000000000000000000000af88d065e77c8cc2239327c5edb3a432268e58310000000000000000000000005e0cdb76487bd96ff069ef7f78eadf5b5909c8cb000000000000000000000000ee8f39091ed3cfba797026deab02ec99d568736600000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "source": "src/strategies/usdc-lending/controller/StrategyAdapterOpsModule.sol",
+      "buildId": "68e0800ab365429c",
+      "sourceScope": "Compiler metadata dependency closure; exact deployed creation artifact preserved separately",
+      "standardInputSHA256": "a3736068fe7959fd9c582a2401fd71dfd0661fbab88d2f748fc468d440421891",
+      "runtimeBytes": 17135
+    },
+    {
+      "name": "StrategyRebalanceGateModule",
+      "address": "0xcefffe4b3ae3c991d252c636a731b8ef8dfeaf3e",
+      "creationInputMatchesArtifact": true,
+      "constructorArguments": "000000000000000000000000af88d065e77c8cc2239327c5edb3a432268e58310000000000000000000000005e0cdb76487bd96ff069ef7f78eadf5b5909c8cb000000000000000000000000ee8f39091ed3cfba797026deab02ec99d5687366000000000000000000000000cc1aa8adff9b684d539329736ff0a800b9ce38980000000000000000000000001c882dfe66663d878f28fb064d4529ed06b64760",
+      "source": "src/strategies/usdc-lending/controller/StrategyRebalanceGateModule.sol",
+      "buildId": "68e0800ab365429c",
+      "sourceScope": "Compiler metadata dependency closure; exact deployed creation artifact preserved separately",
+      "standardInputSHA256": "5f0bdeb05c9126fbbdfef0927530840c9fbb2fef95caa50aa3fe5f56d4275e63",
+      "runtimeBytes": 22110
+    },
+    {
+      "name": "UsdcMultiLendingVault",
+      "address": "0xb143245bbb4333435cd8cc7ccce1d6e0abcf5db6",
+      "creationInputMatchesArtifact": true,
+      "constructorArguments": "000000000000000000000000af88d065e77c8cc2239327c5edb3a432268e58310000000000000000000000005e0cdb76487bd96ff069ef7f78eadf5b5909c8cb00000000000000000000000037847d2e12892e3298dee695e7e971fba0ca3e24000000000000000000000000908756f36954f2853134259b8846c49f90e84ece0000000000000000000000007407e68a5553e948eed862f19fc6b292eb48d6770000000000000000000000002fd29d1cedfb641265d60933ea11b561d20906e8000000000000000000000000ee8f39091ed3cfba797026deab02ec99d5687366000000000000000000000000cc1aa8adff9b684d539329736ff0a800b9ce38980000000000000000000000001c882dfe66663d878f28fb064d4529ed06b64760000000000000000000000000cefffe4b3ae3c991d252c636a731b8ef8dfeaf3e000000000000000000000000000000000000000000000000000000000000000700000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000032000000000000000000000000000000000000000000000000000000000001518000000000000000000000000000000000000000000000000000000000000000500000000000000000000000000000000000000000000000000000000000000fa000000000000000000000000000000000000000000000000000000000000007d000000000000000000000000000000000000000000000000000000000000007d000000000000000000000000000000000000000000000000000000000000003e800000000000000000000000000000000000000000000000000000000000003e80000000000000000000000000000000000000000000000000000000000093a8000000000000000000000000000000000000000000000000000000000000009c400000000000000000000000000000000000000000000000000000000000001f4000000000000000000000000000000000000000000000000000000000000001e000000000000000000000000000000000000000000000000000000000000000a0000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000f42400000000000000000000000000000000000000000000000000000000000000064000000000000000000000000000000000000000000000000000000000001518000000000000000000000000000000000000000000000000000000000000027100000000000000000000000000000000000000000000000000000000000000007000000000000000000000000000000000000000000000000000000174876e800000000000000000000000000000000000000000000000000000000000003f4800000000000000000000000000000000000000000000000000000000000002710000000000000000000000000000000000000000000000000000000000000271000000000000000000000000000000000000000000000000000000000000009c40000000000000000000000000000000000000000000000000000000000000e10000000000000000000000000000000000000000000000000000000000000012c000000000000000000000000000000000000000000000000000000000003f48000000000000000000000000000000000000000000000000000000000000003e800000000000000000000000000000000000000000000000000000000000189c0",
+      "source": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol",
+      "buildId": "68e0800ab365429c",
+      "sourceScope": "Compiler metadata dependency closure; exact deployed creation artifact preserved separately",
+      "standardInputSHA256": "4df21d948315497131582acbf25d5312c803bd85048d7482dfd973d80aa1f0e9",
+      "runtimeBytes": 21959
+    },
+    {
+      "name": "StrategyBootstrapper",
+      "address": "0x2fd29d1cedfb641265d60933ea11b561d20906e8",
+      "creationInputMatchesArtifact": true,
+      "constructorArguments": "",
+      "source": "src/strategies/usdc-lending/StrategyBootstrapper.sol",
+      "buildId": "68e0800ab365429c",
+      "sourceScope": "Compiler metadata dependency closure; exact deployed creation artifact preserved separately",
+      "standardInputSHA256": "a3e8894ee8be87e8e59ab36f49fed8d73f58e7b36b57eba9b16e0d8ea26bf71f",
+      "runtimeBytes": 2276
+    },
+    {
+      "name": "ProtocolRegistry",
+      "address": "0xaa8d871ad352f081a1673a2300d18f632e532870",
+      "creationInputMatchesArtifact": true,
+      "constructorArguments": "000000000000000000000000908756f36954f2853134259b8846c49f90e84ece",
+      "source": "src/strategies/usdc-lending/registry/ProtocolRegistry.sol",
+      "buildId": "68e0800ab365429c",
+      "sourceScope": "Compiler metadata dependency closure; exact deployed creation artifact preserved separately",
+      "standardInputSHA256": "ada1bf6af43e444baf077c329806ecd67668b66ace3cf5b71e21cbe1f4d8140f",
+      "runtimeBytes": 4224
+    },
+    {
+      "name": "AaveV3USDCAdapter",
+      "address": "0xd23d1b68a44b3805e84946684b6e13b5644b96a6",
+      "creationInputMatchesArtifact": true,
+      "constructorArguments": "",
+      "source": "src/strategies/usdc-lending/adapters/lending/AaveV3USDCmarket.sol",
+      "buildId": "68e0800ab365429c",
+      "sourceScope": "Compiler metadata dependency closure; exact deployed creation artifact preserved separately",
+      "standardInputSHA256": "80a9cf3b60f04d8f8a85d21269c1daa762cf6c552e41331f7051fd1b52e33e56",
+      "runtimeBytes": 13348
+    },
+    {
+      "name": "MorphoUsdcMultiMarketAdapter",
+      "address": "0x8c6a562590f1f0009b89a36ae2301bd4e75b44b7",
+      "creationInputMatchesArtifact": true,
+      "constructorArguments": "",
+      "source": "src/strategies/usdc-lending/adapters/lending/MorphoUsdcMultiMarket.sol",
+      "buildId": "68e0800ab365429c",
+      "sourceScope": "Compiler metadata dependency closure; exact deployed creation artifact preserved separately",
+      "standardInputSHA256": "f2ceb45c3107e91ae88a5252a24f61cb40fbf0f95ba16c3bc885314dbc6f206e",
+      "runtimeBytes": 22370
+    },
+    {
+      "name": "CometUsdcMultiMarketAdapter",
+      "address": "0x10a95908140661464371d9d5e9d21061f774a345",
+      "creationInputMatchesArtifact": true,
+      "constructorArguments": "",
+      "source": "src/strategies/usdc-lending/adapters/lending/CometUsdcMultiMarket.sol",
+      "buildId": "68e0800ab365429c",
+      "sourceScope": "Compiler metadata dependency closure; exact deployed creation artifact preserved separately",
+      "standardInputSHA256": "15fd9b1b02881def0fb4bdae0a4a7e36828b11a767fcc987a270dcf0e26f22fb",
+      "runtimeBytes": 19046
+    },
+    {
+      "name": "EulerUsdcMultiMarketAdapter",
+      "address": "0x796a6a56c666e1f19bbeae467314ccda57fd0fa6",
+      "creationInputMatchesArtifact": true,
+      "constructorArguments": "",
+      "source": "src/strategies/usdc-lending/adapters/lending/EulerUsdcMultiMarket.sol",
+      "buildId": "68e0800ab365429c",
+      "sourceScope": "Compiler metadata dependency closure; exact deployed creation artifact preserved separately",
+      "standardInputSHA256": "0dc305b604c9b3b274e8d097936fdf16d4548e0b64191c96d7b803b334285c02",
+      "runtimeBytes": 19813
+    },
+    {
+      "name": "DolomiteUsdcMultiMarketAdapter",
+      "address": "0x429330647d1504b781f782a062292fb008762302",
+      "creationInputMatchesArtifact": true,
+      "constructorArguments": "",
+      "source": "src/strategies/usdc-lending/adapters/lending/DolomiteUsdcMultiMarket.sol",
+      "buildId": "68e0800ab365429c",
+      "sourceScope": "Compiler metadata dependency closure; exact deployed creation artifact preserved separately",
+      "standardInputSHA256": "3bb405cb8566b988f9940832a20e3382908c961fa1d8dc9c60c58d740429b31c",
+      "runtimeBytes": 21682
+    },
+    {
+      "name": "FluidUsdcMultiMarketAdapter",
+      "address": "0x96740c2cff45c5905cc34fa891ff798b320c1c03",
+      "creationInputMatchesArtifact": true,
+      "constructorArguments": "",
+      "source": "src/strategies/usdc-lending/adapters/lending/FluidUsdcMultiMarket.sol",
+      "buildId": "68e0800ab365429c",
+      "sourceScope": "Compiler metadata dependency closure; exact deployed creation artifact preserved separately",
+      "standardInputSHA256": "243705297db2078ed46d6bf6a9468613a5323a78e52a80e5d76b55ddda5f03b0",
+      "runtimeBytes": 9720
+    },
+    {
+      "name": "VenusUsdcMultiMarketAdapter",
+      "address": "0x5251382d62427ae00a60de7da8e4eb8e97b588cf",
+      "creationInputMatchesArtifact": true,
+      "constructorArguments": "",
+      "source": "src/strategies/usdc-lending/adapters/lending/VenusUsdcMultiMarket.sol",
+      "buildId": "68e0800ab365429c",
+      "sourceScope": "Compiler metadata dependency closure; exact deployed creation artifact preserved separately",
+      "standardInputSHA256": "c3be3ccdcdf72bc3cc8ed48642577bff0b89c764742fbc93f80a449d75e5c7ad",
+      "runtimeBytes": 11381
+    },
+    {
+      "name": "AaveLiquidityRateProvider",
+      "address": "0x42b38e05a96f2691c92817f3a581f84143a0aaac",
+      "creationInputMatchesArtifact": true,
+      "constructorArguments": "000000000000000000000000908756f36954f2853134259b8846c49f90e84ece000000000000000000000000908756f36954f2853134259b8846c49f90e84ece",
+      "source": "src/strategies/usdc-lending/adapters/rates/AaveLiquidityRateProvider.sol",
+      "buildId": "68e0800ab365429c",
+      "sourceScope": "Compiler metadata dependency closure; exact deployed creation artifact preserved separately",
+      "standardInputSHA256": "9a1e413387d1cce6d5c4ee6cfd37efe73689e90e3fc3cec7845aa92309e28d76",
+      "runtimeBytes": 2218
+    },
+    {
+      "name": "DolomiteSupplyRateProvider",
+      "address": "0x6e372b43cba588268ebd260c178c51ce88507b59",
+      "creationInputMatchesArtifact": true,
+      "constructorArguments": "000000000000000000000000908756f36954f2853134259b8846c49f90e84ece",
+      "source": "src/strategies/usdc-lending/adapters/rates/DolomiteSupplyRateProvider.sol",
+      "buildId": "68e0800ab365429c",
+      "sourceScope": "Compiler metadata dependency closure; exact deployed creation artifact preserved separately",
+      "standardInputSHA256": "a9b93baaa7645e84207182fa5c7e0a964dcf6fcbc96fe6a5cd452c0e723bbf61",
+      "runtimeBytes": 732
+    },
+    {
+      "name": "StrategySettingsModule",
+      "address": "0x24a8e7a0ca95a03b9ac78f7b3ffa4edaaa04b022",
+      "creationInputMatchesArtifact": true,
+      "constructorArguments": "000000000000000000000000af88d065e77c8cc2239327c5edb3a432268e58310000000000000000000000005e0cdb76487bd96ff069ef7f78eadf5b5909c8cb",
+      "source": "src/strategies/usdc-lending/controller/StrategySettingsModule.sol",
+      "buildId": "68e0800ab365429c",
+      "sourceScope": "Compiler metadata dependency closure; exact deployed creation artifact preserved separately",
+      "standardInputSHA256": "72f0d869b59ecd09315441e776054937f9f397bcaff497cc906abb2933172823",
+      "runtimeBytes": 22939
+    },
+    {
+      "name": "StrategyAllocCalcModule",
+      "address": "0xdc66667843cd6b513a32015facc9df8aec55bd5c",
+      "creationInputMatchesArtifact": true,
+      "constructorArguments": "000000000000000000000000af88d065e77c8cc2239327c5edb3a432268e58310000000000000000000000005e0cdb76487bd96ff069ef7f78eadf5b5909c8cb",
+      "source": "src/strategies/usdc-lending/controller/StrategyAllocCalcModule.sol",
+      "buildId": "68e0800ab365429c",
+      "sourceScope": "Compiler metadata dependency closure; exact deployed creation artifact preserved separately",
+      "standardInputSHA256": "d7e146b56bfbcb2855c66c7558edecb4b9a2e6a93919215d1479ddaa945e1126",
+      "runtimeBytes": 20129
+    },
+    {
+      "name": "StrategyRebalancePlanModule",
+      "address": "0x99fd0cf53faad49508ce62b474822854a2b0acc7",
+      "creationInputMatchesArtifact": true,
+      "constructorArguments": "000000000000000000000000af88d065e77c8cc2239327c5edb3a432268e58310000000000000000000000005e0cdb76487bd96ff069ef7f78eadf5b5909c8cb000000000000000000000000ee8f39091ed3cfba797026deab02ec99d5687366000000000000000000000000cc1aa8adff9b684d539329736ff0a800b9ce38980000000000000000000000001c882dfe66663d878f28fb064d4529ed06b64760",
+      "source": "src/strategies/usdc-lending/controller/StrategyRebalancePlanModule.sol",
+      "buildId": "68e0800ab365429c",
+      "sourceScope": "Compiler metadata dependency closure; exact deployed creation artifact preserved separately",
+      "standardInputSHA256": "966e27022c3b38f43a4264b7eef0de26230fae2f9e345f1f70223ab0b934330d",
+      "runtimeBytes": 21531
+    },
+    {
+      "name": "StrategySafetyOverflowModule",
+      "address": "0x785a359f51aa4d463941407dd3b2e78e1de984aa",
+      "creationInputMatchesArtifact": true,
+      "constructorArguments": "000000000000000000000000af88d065e77c8cc2239327c5edb3a432268e58310000000000000000000000005e0cdb76487bd96ff069ef7f78eadf5b5909c8cb000000000000000000000000ee8f39091ed3cfba797026deab02ec99d5687366000000000000000000000000cc1aa8adff9b684d539329736ff0a800b9ce38980000000000000000000000001c882dfe66663d878f28fb064d4529ed06b64760",
+      "source": "src/strategies/usdc-lending/controller/StrategySafetyOverflowModule.sol",
+      "buildId": "68e0800ab365429c",
+      "sourceScope": "Compiler metadata dependency closure; exact deployed creation artifact preserved separately",
+      "standardInputSHA256": "889f3cd84fe8d9fded120e2a18737b78f9cfedd7e1a81f0c17df5653d8b8bef4",
+      "runtimeBytes": 13204
+    },
+    {
+      "name": "StrategyUpkeep",
+      "address": "0x7c8de9f5d184b507ed2d110403cf4792865c8123",
+      "creationInputMatchesArtifact": true,
+      "constructorArguments": "00000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000001000000000000000000000000b143245bbb4333435cd8cc7ccce1d6e0abcf5db6",
+      "source": "src/strategies/usdc-lending/automation/LendingStrategyUpkeep.sol",
+      "buildId": "68e0800ab365429c",
+      "sourceScope": "Compiler metadata dependency closure; exact deployed creation artifact preserved separately",
+      "standardInputSHA256": "52d91d20e563f6397ea50c85d73b4e0ed2eac9f4ca63e6e9443efa324b88ddb4",
+      "runtimeBytes": 8912
+    }
+  ]
+}

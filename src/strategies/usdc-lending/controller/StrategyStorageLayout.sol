@@ -15,6 +15,8 @@ pragma solidity 0.8.28;
 //       This is intentional — the system does not use proxy upgrades.
 // ═══════════════════════════════════════════════════════════════════════════════
 
+import {ReadOnlyGasEstimator as GasEstimator} from "../gas/ReadOnlyGasEstimator.sol";
+import {CandidateActions} from "../gas/CandidateActions.sol";
 import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
 import { Pausable } from "@openzeppelin/contracts/security/Pausable.sol";
 import { ReentrancyGuard } from "@openzeppelin/contracts/security/ReentrancyGuard.sol";
@@ -445,7 +447,42 @@ contract StrategyStorageLayout is AccessControl, Pausable, ReentrancyGuard {
     // Reduced from 2 to 1 (2026-06-20): safetyOverflowModule_addr (EIP-170 F-SIZE-01 refactor).
     /// @notice StrategySafetyOverflowModule address (set-once via setSafetyOverflowModule).
     address public safetyOverflowModule_addr;
-    uint256[1] private __gap;
+    // Consumes the final reserved slot. Shared by ALL replacement modules.
+    address public rebalanceGasEstimator;
+    bool internal _gasPlanSafety;
+    event RebalanceGasEstimatorSet(address indexed estimator);
+    event RebalanceGasEvaluated(bytes32 indexed actionsHash, uint256 costUSDC, uint256 l2Gas, uint256 posterWei, bool reliable);
+    event RebalanceEconomicsInvalidated();
+    /// @notice Accepted preparation inputs, in adapter order; hash binds the executable actions.
+    event RebalanceScores(bytes32 indexed actionsHash, address[] adapters, uint256[] normalizedScores, uint16[] apyBps, uint256[] targetAssets, uint256 tvl);
+    event RebalanceDepositSkipped(address indexed adapter, uint256 amount);
+    event RebalanceEconomicsEvaluated(uint256 movedUSDC, uint256 grossBenefitUSDC, uint256 gasCostUSDC, int256 netBenefitBps, bool accepted);
+
+    function _candidateActions(address[] memory list, uint256[] memory targets, uint256[] memory scores, uint256 tvl)
+        internal view returns (GasEstimator.Action[] memory actions)
+    {
+        if (list.length == 0) return new GasEstimator.Action[](0);
+        uint256[] memory current = new uint256[](list.length);
+        for (uint256 i; i < list.length; ++i) current[i] = positionAssets[list[i]];
+        uint256 minDelta = list.length == 0 ? dustTolerance : tvl * rebalanceMinMoveBps / 10000 / list.length;
+        if (minDelta < dustTolerance) minDelta = dustTolerance;
+        actions = CandidateActions.funded(
+            CandidateActions.build(list, current, targets, scores, minDelta),
+            ASSET.balanceOf(address(this)), minDelta
+        );
+    }
+
+    function _recordExecutionGas(address adapter, uint256 observed, bool deposit_) internal {
+        if (observed == 0 || observed > type(uint64).max) return;
+        uint256 alpha = gasEmaSmoothingBps == 0 ? 2000 : gasEmaSmoothingBps;
+        if (alpha > 10000) return; // measurement must never block an emergency withdrawal
+        uint64 old = deposit_ ? emaDepositGas[adapter] : emaWithdrawGas[adapter];
+        uint64 next = old == 0 ? uint64(observed) : uint64((uint256(old) * (10000-alpha) + observed * alpha) / 10000);
+        if (deposit_) emaDepositGas[adapter] = next;
+        else emaWithdrawGas[adapter] = next;
+        emit GasEmaUpdated(adapter, next, deposit_);
+    }
+
 
     // ── Shared events ───────────────────────────────────────────────────────
 

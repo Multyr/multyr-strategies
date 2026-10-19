@@ -1,0 +1,240 @@
+{
+  "chainId": 42161,
+  "blockNumber": 515526090,
+  "blockHash": "0x2e7562b1dc6b4b083ef6a46de73c120980d8483560e301dc5e3f4c72097ce3f6",
+  "blockTimestamp": 1792195523,
+  "source": "0x7bF0f446BB20b54597E66a602cB94D0F231D24E2",
+  "scalarsIncludingRuntimeState": {
+    "maxAdaptersPerAllocation": "3",
+    "minAdaptersActive": "2",
+    "rebalanceMinMoveBps": "50",
+    "minSecondsBetweenRebalances": "86400",
+    "driftToleranceBps": "80",
+    "wAPY": "4000",
+    "wLiq": "2000",
+    "wRisk": "2000",
+    "wStability": "1000",
+    "wIncentive": "1000",
+    "incentiveDecayHalfLife": "604800",
+    "adapterMaxExposureBps": "5000",
+    "newAdapterRampBps": "500",
+    "degradedModeActive": "0",
+    "degradedModeEnteredAt": "0",
+    "withdrawalLockSeconds": "0",
+    "gateHorizonDays": "30",
+    "gateMinNetBenefitBps": "10",
+    "slippageBpsEstimate": "2",
+    "withdrawalSpreadBpsEstimate": "2",
+    "gasCostUSDC": "1000000",
+    "harvestThresholdBps": "100",
+    "minSecondsBetweenHarvests": "86400",
+    "dustTolerance": "10000",
+    "rolesFrozen": "0",
+    "paramsFinalized": "0",
+    "lastHarvestTs": "1792157585",
+    "lastRebalanceTs": "0",
+    "stabilityEMAPeriod": "7",
+    "adapterQuarantineThreshold": "10",
+    "depositsDisabled": "0",
+    "minNewAdapterSeed": "100000000000",
+    "newAdapterRampDuration": "259200",
+    "maxIdleAfterDepositBps": "500",
+    "bootstrapEndsAt": "1791762541",
+    "maxIdleBootstrapBps": "5000",
+    "degradedViewThresholdBps": "2500",
+    "failureDecaySeconds": "3600",
+    "lastDeployIdleTs": "1791925309",
+    "minSecondsBetweenDeployIdle": "300",
+    "maxRelativeExposureBps": "1000",
+    "externalTVLStalenessSeconds": "100800",
+    "lastSyncTs": "1791925309",
+    "minSecondsBetweenSync": "0",
+    "liquidityStalenessSeconds": "0",
+    "rebalancePlanPhase": "0",
+    "rebalancePlanTs": "0",
+    "rebalancePlanNextAction": "0",
+    "rebalancePlanTotalActions": "0",
+    "maxRebalanceActionsPerTx": "0",
+    "rebalancePlanMaxAge": "0",
+    "rebalancePlanTvl": "0",
+    "rebalancePlanMinDrift": "0",
+    "apyFloorBps": "50",
+    "minStabilityUpdateInterval": "21600",
+    "gasEmaSmoothingBps": "0",
+    "estimatedGasCostUSDC": "0",
+    "minBenefitCostRatioBps": "0",
+    "entryDriftBps": "0",
+    "exitDriftBps": "0",
+    "minMoveUsd": "0",
+    "recentRebalancePenaltyBps": "0",
+    "recentRebalanceWindowSeconds": "0",
+    "minLiquidityReadinessBps": "0",
+    "currentRegime": "0",
+    "regimeHysteresisMultBps": "0",
+    "regimeBudgetMultBps": "0",
+    "regimeHorizonDays": "0",
+    "regimeConfidenceMultBps": "0",
+    "overCapRiskPremiumBps": "0",
+    "stabilityEMAStalenessSeconds": "0",
+    "riskScoreStalenessSeconds": "0",
+    "rebalancePlanConsecutiveFailures": "0",
+    "rebalancePlanBackoffThreshold": "0",
+    "capDriftToleranceBps": "0",
+    "maxIdleBps": "0",
+    "targetSafetyMarginBps": "0",
+    "mandateRedeployCooldownSeconds": "0",
+    "lastSnapshotTotalAssets": "0",
+    "paused": "0",
+    "adapterCount": "7",
+    "safetyFallbackAdaptersLength": "0"
+  },
+  "adapters": [
+    {
+      "address": "0x744c6a46bb4f1287ceb9bd8ff8693ab0b7503de7",
+      "name": "AaveV3_USDC_Adapter_Arbitrum",
+      "settings": {
+        "enabled": "1",
+        "flagged": "0",
+        "quarantined": "0",
+        "whitelistedAdapters": "1",
+        "pushDepositMode": "0",
+        "depositModeKnown": "1",
+        "adapterAbsCapOverrideBps": "0",
+        "riskScoreBps": "0",
+        "lastRiskScoreUpdateTs": "0"
+      },
+      "safetyFallback": {
+        "absCapBps": "0",
+        "relCapBps": "0"
+      }
+    },
+    {
+      "address": "0x36ad387092ede0ccb8ca663dc216d0320d19b677",
+      "name": "Morpho_USDC_MultiMarket_Adapter_Arbitrum",
+      "settings": {
+        "enabled": "1",
+        "flagged": "0",
+        "quarantined": "0",
+        "whitelistedAdapters": "1",
+        "pushDepositMode": "0",
+        "depositModeKnown": "1",
+        "adapterAbsCapOverrideBps": "0",
+        "riskScoreBps": "0",
+        "lastRiskScoreUpdateTs": "0"
+      },
+      "safetyFallback": {
+        "absCapBps": "0",
+        "relCapBps": "0"
+      }
+    },
+    {
+      "address": "0x12cdb0abbe59b4bb91362a77901d9f58e787bf80",
+      "name": "Comet_USDC_MultiMarket_Adapter_Arbitrum",
+      "settings": {
+        "enabled": "1",
+        "flagged": "0",
+        "quarantined": "0",
+        "whitelistedAdapters": "1",
+        "pushDepositMode": "0",
+        "depositModeKnown": "1",
+        "adapterAbsCapOverrideBps": "0",
+        "riskScoreBps": "0",
+        "lastRiskScoreUpdateTs": "0"
+      },
+      "safetyFallback": {
+        "absCapBps": "0",
+        "relCapBps": "0"
+      }
+    },
+    {
+      "address": "0xc994b1936246899d2dd6134f543715a336ff81dd",
+      "name": "Euler USDC Multi-Market Adapter",
+      "settings": {
+        "enabled": "1",
+        "flagged": "0",
+        "quarantined": "0",
+        "whitelistedAdapters": "1",
+        "pushDepositMode": "1",
+        "depositModeKnown": "1",
+        "adapterAbsCapOverrideBps": "0",
+        "riskScoreBps": "0",
+        "lastRiskScoreUpdateTs": "0"
+      },
+      "safetyFallback": {
+        "absCapBps": "0",
+        "relCapBps": "0"
+      }
+    },
+    {
+      "address": "0x872908a70773465d394d0eec933cd06ad160c910",
+      "name": "Dolomite_USDC_MultiMarket_Adapter_Arbitrum",
+      "settings": {
+        "enabled": "1",
+        "flagged": "0",
+        "quarantined": "0",
+        "whitelistedAdapters": "1",
+        "pushDepositMode": "0",
+        "depositModeKnown": "1",
+        "adapterAbsCapOverrideBps": "0",
+        "riskScoreBps": "0",
+        "lastRiskScoreUpdateTs": "0"
+      },
+      "safetyFallback": {
+        "absCapBps": "0",
+        "relCapBps": "0"
+      }
+    },
+    {
+      "address": "0x9fd8e87220a61103db264b583a2f0caaec4b6019",
+      "name": "Fluid_USDC_Adapter_Arbitrum",
+      "settings": {
+        "enabled": "1",
+        "flagged": "0",
+        "quarantined": "0",
+        "whitelistedAdapters": "1",
+        "pushDepositMode": "0",
+        "depositModeKnown": "1",
+        "adapterAbsCapOverrideBps": "0",
+        "riskScoreBps": "0",
+        "lastRiskScoreUpdateTs": "0"
+      },
+      "safetyFallback": {
+        "absCapBps": "0",
+        "relCapBps": "0"
+      }
+    },
+    {
+      "address": "0x2f988c3ee375e1ac25d10ee018fbc9fafd857b7f",
+      "name": "Venus_USDC_Core_Adapter_Arbitrum",
+      "settings": {
+        "enabled": "1",
+        "flagged": "0",
+        "quarantined": "0",
+        "whitelistedAdapters": "1",
+        "pushDepositMode": "0",
+        "depositModeKnown": "1",
+        "adapterAbsCapOverrideBps": "0",
+        "riskScoreBps": "0",
+        "lastRiskScoreUpdateTs": "0"
+      },
+      "safetyFallback": {
+        "absCapBps": "0",
+        "relCapBps": "0"
+      }
+    }
+  ],
+  "safetyFallbackOrder": [],
+  "upkeep": {
+    "address": "0x05202b06647d4597fB851162A1E32AA8437EeFc3",
+    "pokeInterval": "86400",
+    "enabled": true,
+    "aavePool": "0x794a61358d6845594f94dc1db02a252b5b4814ad",
+    "usdc": "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+    "pokeTargets": [
+      "0x36ad387092ede0ccb8ca663dc216d0320d19b677",
+      "0x872908a70773465d394d0eec933cd06ad160c910",
+      "0x9fd8e87220a61103db264b583a2f0caaec4b6019"
+    ]
+  },
+  "note": "Inventory includes runtime state for review; copier imports configuration only. Adapter-internal markets/capacities/roles require separate parity review."
+}
