@@ -1,0 +1,430 @@
+[
+  {
+    "name": "StrategyAllocCalcModule",
+    "path": "src/strategies/usdc-lending/controller/StrategyAllocCalcModule.sol",
+    "address": "0x7f8bc7bf0f481bf11db51bb41fe33df626005a36",
+    "creationTransaction": "0x3dae052080a048d9a4bc1b162cac43f3ec1e9326364cce57b03d5ebd901fd1cd",
+    "creationBytecodeMatch": true,
+    "constructorArguments": "0x000000000000000000000000af88d065e77c8cc2239327c5edb3a432268e58310000000000000000000000005e0cdb76487bd96ff069ef7f78eadf5b5909c8cb",
+    "runtimeMatchExcludingImmutables": true,
+    "immutableReferences": {
+      "102981": [
+        {
+          "length": 32,
+          "start": 4210
+        },
+        {
+          "length": 32,
+          "start": 8041
+        },
+        {
+          "length": 32,
+          "start": 8275
+        },
+        {
+          "length": 32,
+          "start": 8545
+        },
+        {
+          "length": 32,
+          "start": 10198
+        },
+        {
+          "length": 32,
+          "start": 10545
+        },
+        {
+          "length": 32,
+          "start": 11117
+        }
+      ],
+      "116446": [
+        {
+          "length": 32,
+          "start": 3686
+        },
+        {
+          "length": 32,
+          "start": 6990
+        },
+        {
+          "length": 32,
+          "start": 16440
+        }
+      ],
+      "116448": [
+        {
+          "length": 32,
+          "start": 2284
+        }
+      ],
+      "116450": [
+        {
+          "length": 32,
+          "start": 2082
+        }
+      ],
+      "116452": [
+        {
+          "length": 32,
+          "start": 8142
+        }
+      ],
+      "116454": [
+        {
+          "length": 32,
+          "start": 9969
+        }
+      ]
+    },
+    "runtimeCodeHash": "0x3aafd73a1ff27bd0c3bbb707efb8569340b68d9fea227daefb2ccfffab4aad8c"
+  },
+  {
+    "name": "StrategyRebalanceGateModule",
+    "path": "src/strategies/usdc-lending/controller/StrategyRebalanceGateModule.sol",
+    "address": "0xfe3805d02801a54275499af86b84a73a49ed81d4",
+    "creationTransaction": "0x7db2355c523b210ad22c5bc911991592faf3ffcae7a1cf20af6e38ad49293d69",
+    "creationBytecodeMatch": true,
+    "constructorArguments": "0x000000000000000000000000af88d065e77c8cc2239327c5edb3a432268e58310000000000000000000000005e0cdb76487bd96ff069ef7f78eadf5b5909c8cb0000000000000000000000000fbd41c07bdbe4ca4da01d546c6e75e61d6663cf00000000000000000000000009456dbfba54f1c46a0189b1165e4bd57f53e6f3000000000000000000000000516a110a2ebbd06152d59aa7847da3393df0b934",
+    "runtimeMatchExcludingImmutables": true,
+    "immutableReferences": {
+      "106685": [
+        {
+          "length": 32,
+          "start": 7626
+        },
+        {
+          "length": 32,
+          "start": 8190
+        },
+        {
+          "length": 32,
+          "start": 9500
+        },
+        {
+          "length": 32,
+          "start": 10451
+        },
+        {
+          "length": 32,
+          "start": 13363
+        }
+      ],
+      "116446": [
+        {
+          "length": 32,
+          "start": 5008
+        },
+        {
+          "length": 32,
+          "start": 16695
+        },
+        {
+          "length": 32,
+          "start": 20729
+        }
+      ],
+      "116448": [
+        {
+          "length": 32,
+          "start": 9851
+        }
+      ],
+      "116450": [
+        {
+          "length": 32,
+          "start": 10048
+        }
+      ],
+      "116452": [
+        {
+          "length": 32,
+          "start": 3684
+        },
+        {
+          "length": 32,
+          "start": 12081
+        },
+        {
+          "length": 32,
+          "start": 12745
+        }
+      ],
+      "116454": [
+        {
+          "length": 32,
+          "start": 3436
+        }
+      ]
+    },
+    "runtimeCodeHash": "0xf8a8719369cbda7c1393c7d9a6f2c0c77c69761b276205b669f2774084338d83"
+  },
+  {
+    "name": "StrategyRebalancePlanModule",
+    "path": "src/strategies/usdc-lending/controller/StrategyRebalancePlanModule.sol",
+    "address": "0x4c51aebe59dd30a8a7eb2abc0af3e7821845861b",
+    "creationTransaction": "0xb0d9ed560ae9caa08b966e1adc7490bea90d2d103a5bb271453e83e4f35948a6",
+    "creationBytecodeMatch": true,
+    "constructorArguments": "0x000000000000000000000000af88d065e77c8cc2239327c5edb3a432268e58310000000000000000000000005e0cdb76487bd96ff069ef7f78eadf5b5909c8cb0000000000000000000000000fbd41c07bdbe4ca4da01d546c6e75e61d6663cf00000000000000000000000009456dbfba54f1c46a0189b1165e4bd57f53e6f3000000000000000000000000516a110a2ebbd06152d59aa7847da3393df0b934",
+    "runtimeMatchExcludingImmutables": true,
+    "immutableReferences": {
+      "109063": [
+        {
+          "length": 32,
+          "start": 6292
+        },
+        {
+          "length": 32,
+          "start": 7685
+        },
+        {
+          "length": 32,
+          "start": 10948
+        }
+      ],
+      "116446": [
+        {
+          "length": 32,
+          "start": 4749
+        },
+        {
+          "length": 32,
+          "start": 14078
+        },
+        {
+          "length": 32,
+          "start": 16437
+        },
+        {
+          "length": 32,
+          "start": 17370
+        },
+        {
+          "length": 32,
+          "start": 20333
+        }
+      ],
+      "116448": [
+        {
+          "length": 32,
+          "start": 10361
+        }
+      ],
+      "116450": [
+        {
+          "length": 32,
+          "start": 10558
+        }
+      ],
+      "116452": [
+        {
+          "length": 32,
+          "start": 3693
+        },
+        {
+          "length": 32,
+          "start": 6497
+        },
+        {
+          "length": 32,
+          "start": 17507
+        }
+      ],
+      "116454": [
+        {
+          "length": 32,
+          "start": 3445
+        },
+        {
+          "length": 32,
+          "start": 17025
+        },
+        {
+          "length": 32,
+          "start": 17196
+        }
+      ]
+    },
+    "runtimeCodeHash": "0x78dccc3bf04159853017fbe6633e7e5bff34791f5590169ee8db82e11b5901a6"
+  },
+  {
+    "name": "StrategySafetyOverflowModule",
+    "path": "src/strategies/usdc-lending/controller/StrategySafetyOverflowModule.sol",
+    "address": "0x183d46f733ff1d31d0585a93fd5e19f52e99ed52",
+    "creationTransaction": "0xb322c8d521bbe250d1ba95151200d33078d9fb1ead816a7e091a4d0755178a66",
+    "creationBytecodeMatch": true,
+    "constructorArguments": "0x000000000000000000000000af88d065e77c8cc2239327c5edb3a432268e58310000000000000000000000005e0cdb76487bd96ff069ef7f78eadf5b5909c8cb0000000000000000000000000fbd41c07bdbe4ca4da01d546c6e75e61d6663cf00000000000000000000000009456dbfba54f1c46a0189b1165e4bd57f53e6f3000000000000000000000000516a110a2ebbd06152d59aa7847da3393df0b934",
+    "runtimeMatchExcludingImmutables": true,
+    "immutableReferences": {
+      "110934": [
+        {
+          "length": 32,
+          "start": 2835
+        },
+        {
+          "length": 32,
+          "start": 3319
+        },
+        {
+          "length": 32,
+          "start": 3827
+        },
+        {
+          "length": 32,
+          "start": 5828
+        }
+      ],
+      "116446": [
+        {
+          "length": 32,
+          "start": 7028
+        },
+        {
+          "length": 32,
+          "start": 10234
+        }
+      ],
+      "116448": [
+        {
+          "length": 32,
+          "start": 2229
+        }
+      ],
+      "116450": [
+        {
+          "length": 32,
+          "start": 2027
+        }
+      ],
+      "116452": [
+        {
+          "length": 32,
+          "start": 8004
+        }
+      ],
+      "116454": [
+        {
+          "length": 32,
+          "start": 8249
+        },
+        {
+          "length": 32,
+          "start": 12847
+        }
+      ]
+    },
+    "runtimeCodeHash": "0xa9191b43c902fa6de5d55afa65f8c432269792271bf029f4986197cc607a1a87"
+  },
+  {
+    "name": "StrategyScoringModule",
+    "path": "src/strategies/usdc-lending/controller/StrategyScoringModule.sol",
+    "address": "0x09456dbfba54f1c46a0189b1165e4bd57f53e6f3",
+    "creationTransaction": "0x61f6e45ab2834ac74e303b47030f3e70a7fb5a1e66241f22df14934043085260",
+    "creationBytecodeMatch": true,
+    "constructorArguments": "0x000000000000000000000000af88d065e77c8cc2239327c5edb3a432268e58310000000000000000000000005e0cdb76487bd96ff069ef7f78eadf5b5909c8cb0000000000000000000000000fbd41c07bdbe4ca4da01d546c6e75e61d6663cf0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000516a110a2ebbd06152d59aa7847da3393df0b934",
+    "runtimeMatchExcludingImmutables": true,
+    "immutableReferences": {
+      "111768": [
+        {
+          "length": 32,
+          "start": 3228
+        },
+        {
+          "length": 32,
+          "start": 4882
+        },
+        {
+          "length": 32,
+          "start": 5336
+        },
+        {
+          "length": 32,
+          "start": 5856
+        },
+        {
+          "length": 32,
+          "start": 8219
+        },
+        {
+          "length": 32,
+          "start": 8666
+        },
+        {
+          "length": 32,
+          "start": 8893
+        },
+        {
+          "length": 32,
+          "start": 10724
+        },
+        {
+          "length": 32,
+          "start": 11312
+        }
+      ],
+      "116446": [
+        {
+          "length": 32,
+          "start": 5607
+        },
+        {
+          "length": 32,
+          "start": 13631
+        },
+        {
+          "length": 32,
+          "start": 14244
+        },
+        {
+          "length": 32,
+          "start": 18241
+        },
+        {
+          "length": 32,
+          "start": 19336
+        },
+        {
+          "length": 32,
+          "start": 19846
+        }
+      ],
+      "116448": [
+        {
+          "length": 32,
+          "start": 10432
+        }
+      ],
+      "116450": [
+        {
+          "length": 32,
+          "start": 10629
+        }
+      ],
+      "116452": [
+        {
+          "length": 32,
+          "start": 3921
+        }
+      ],
+      "116454": [
+        {
+          "length": 32,
+          "start": 3673
+        },
+        {
+          "length": 32,
+          "start": 15540
+        },
+        {
+          "length": 32,
+          "start": 20648
+        },
+        {
+          "length": 32,
+          "start": 20791
+        }
+      ]
+    },
+    "runtimeCodeHash": "0x712b3dfcc382c1c07dabe83378b21463aed066f9ad2e13991be1b4a875d79554"
+  }
+]

@@ -1,0 +1,1223 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.28;
+
+import { ERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import { IERC20Metadata } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
+import { ERC4626 } from "@openzeppelin/contracts/token/ERC20/extensions/ERC4626.sol";
+import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+
+import { IParamsProvider } from "../interfaces/IParamsProvider.sol";
+import { IBufferManager } from "../interfaces/IBufferManager.sol";
+import { IStrategyRouter } from "../interfaces/IStrategyRouter.sol";
+import { IStrategyHealthRegistry } from "../interfaces/IStrategyHealthRegistry.sol";
+import { IIncentives } from "../interfaces/IIncentives.sol";
+import { ICoreVault } from "../interfaces/ICoreVault.sol";
+import { CoreStorage } from "./storage/CoreStorage.sol";
+import { FeeStorage } from "./storage/FeeStorage.sol";
+import { EpochQueueStorage } from "./modules/EpochedQueueModule.sol";
+import { Events } from "./libraries/Events.sol";
+import { Percentage } from "../libs/Percentage.sol";
+import { SelectorRegistry } from "./libraries/SelectorRegistry.sol";
+import { SelectorLib } from "./libraries/SelectorLib.sol";
+
+/// @title CoreVault v8 (Diamond-lite Thin Proxy)
+/// @notice ERC-4626 vault that delegates ALL economic logic to modules via delegatecall.
+///
+/// CRITICAL INVARIANT:
+///   CoreVault MUST NOT implement fee logic, asset transfer logic, or accounting logic.
+///   All economic behavior MUST be implemented in modules (ERC4626Module, QueueModule, AdminModule).
+///   CoreVault acts ONLY as: dispatcher + access control gate.
+///
+/// @dev The ERC-4626 public functions (deposit, withdraw, redeem, mint) are thin wrappers
+///      that delegate to the ERC4626Module. This ensures:
+///      1. Single source of truth for fee logic (ExitFeeLib)
+///      2. Module swappability for all economic paths
+///      3. No fee desynchronization between paths
+interface INavValidity {
+    function navValidity() external view returns (uint256 strategyAssets, uint8 issue);
+}
+
+contract CoreVault is ERC4626, ICoreVault {
+    using SafeERC20 for IERC20;
+
+    // ═══════════════════════════════════════════════════════════════════════════════
+    // ERRORS
+    // ═══════════════════════════════════════════════════════════════════════════════
+    error NotOwner();
+    error NotGuardian();
+    error NotOwnerOrGuardian();
+    error NotModule();
+    error Paused();
+    error DepositsPaused();
+    error WithdrawalsPaused();
+    error QueuedRequestPaused();
+    error EpochCloseFundPaused();
+    error FundedClaimPaused();
+    error ForceExitPaused();
+    error ZeroAmount();
+    error ZeroAddress();
+    error RoutingFrozen();
+    error ModuleNotSet();
+    error DelegatecallFailed();
+    error NoTransferPending();
+    error GuardianCooldownActive();
+    error ReentrancyGuardLocked();
+    error InvalidRoleForSelector(bytes4 selector, uint8 attemptedRole, uint8 requiredRole);
+    error SelectorRegistryAlreadySet();
+    error RecoveryGateAlreadySet();
+    error NotRecoveryGate();
+    error InvalidRecoveryGroup();
+    error WrongRecoveryModuleCount();
+    error RecoveryModuleHasNoCode();
+    error SystemSealed();
+    error SealerAlreadySet();
+    error NotAuthorizedSealer();
+    error InvalidConfigHash();
+    error RoutingNotFrozen();
+    error NotAuthorizedModule();
+
+    // ═══════════════════════════════════════════════════════════════════════════════
+    // ROLE CONSTANTS
+    // ═══════════════════════════════════════════════════════════════════════════════
+    uint8 public constant ROLE_PUBLIC = 0;
+    uint8 public constant ROLE_OWNER = 1;
+    uint8 public constant ROLE_GUARDIAN = 2;
+    uint8 public constant ROLE_OWNER_OR_GUARDIAN = 3;
+    uint8 public constant ROLE_MODULE = 4;
+
+    // ═══════════════════════════════════════════════════════════════════════════════
+    // OPS NAV CACHE (for gas-sensitive decisions — NOT for fee/PPS math)
+    // ═══════════════════════════════════════════════════════════════════════════════
+    uint256 internal _opsNavCache;
+    uint64 internal _opsNavCacheTs;
+    uint32 public opsNavCacheTtl = 60; // 60 seconds default
+
+    // ═══════════════════════════════════════════════════════════════════════════════
+    // CONSTRUCTOR
+    // ═══════════════════════════════════════════════════════════════════════════════
+    constructor(
+        IERC20Metadata _asset,
+        string memory _name,
+        string memory _symbol,
+        address _owner,
+        address _feeCollector,
+        address _params
+    ) ERC20(_name, _symbol) ERC4626(_asset) {
+        if (_owner == address(0)) revert ZeroAddress();
+        if (_feeCollector == address(0)) revert ZeroAddress();
+
+        CoreStorage.Layout storage core = CoreStorage.layout();
+        core.owner = _owner;
+        core.feeCollector = _feeCollector;
+        core.params = IParamsProvider(_params);
+        core.epochStart = uint64(block.timestamp);
+        core.epochDuration = 7 days; // default 7d, adjustable via admin within [1d, 30d]
+        core.paramMinDelay = 0; // Bootstrap: zero delay. Owner MUST set to 2 days post-setup.
+
+        // v8: Start paused — unpause only after full wiring verification
+        core.packedFlags |= CoreStorage.FLAG_PAUSED;
+
+        emit Events.OwnershipTransferred(address(0), _owner);
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════════
+    // MODIFIERS
+    // ═══════════════════════════════════════════════════════════════════════════════
+    modifier onlyOwner() {
+        if (msg.sender != CoreStorage.layout().owner) revert NotOwner();
+        _;
+    }
+
+    modifier onlyGuardian() {
+        if (msg.sender != CoreStorage.layout().guardian) revert NotGuardian();
+        _;
+    }
+
+    modifier onlyOwnerOrGuardian() {
+        CoreStorage.Layout storage core = CoreStorage.layout();
+        if (msg.sender != core.owner && msg.sender != core.guardian) revert NotOwnerOrGuardian();
+        _;
+    }
+
+    /// @dev Emergency Module Recovery (review §7) — the sole caller of
+    ///      recoverModuleGroup(). Set once via setRecoveryGate(), never
+    ///      changed afterward (review §8: recovery policy is immutable).
+    modifier onlyRecoveryGate() {
+        if (msg.sender != CoreStorage.layout().recoveryGate) revert NotRecoveryGate();
+        _;
+    }
+
+    modifier nonReentrant() {
+        CoreStorage.Layout storage core = CoreStorage.layout();
+        if (core.packedFlags & CoreStorage.FLAG_REENTRANCY_LOCKED != 0) {
+            revert ReentrancyGuardLocked();
+        }
+        core.packedFlags |= CoreStorage.FLAG_REENTRANCY_LOCKED;
+        _;
+        core.packedFlags &= ~CoreStorage.FLAG_REENTRANCY_LOCKED;
+    }
+
+    modifier onlyAuthorizedModule() {
+        if (!CoreStorage.layout().isAuthorizedModule[msg.sender]) revert NotAuthorizedModule();
+        _;
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════════
+    // FALLBACK ROUTER (diamond-lite dispatch to modules)
+    // ═══════════════════════════════════════════════════════════════════════════════
+
+    fallback() external payable {
+        CoreStorage.Layout storage core = CoreStorage.layout();
+
+        address module = core.moduleOf[msg.sig];
+        if (module == address(0)) revert ModuleNotSet();
+
+        // Role-based access control
+        uint8 role = core.roleOf[msg.sig];
+        if (role == ROLE_OWNER) {
+            if (msg.sender != core.owner) revert NotOwner();
+        } else if (role == ROLE_GUARDIAN) {
+            if (msg.sender != core.guardian) revert NotGuardian();
+        } else if (role == ROLE_OWNER_OR_GUARDIAN) {
+            if (msg.sender != core.owner && msg.sender != core.guardian) {
+                revert NotOwnerOrGuardian();
+            }
+        } else if (role == ROLE_MODULE) {
+            if (msg.sender != address(this)) revert NotModule();
+        }
+        // ROLE_PUBLIC (0) = no restrictions
+
+        // Delegatecall to module
+        (bool success, bytes memory result) = module.delegatecall(msg.data);
+        if (!success) {
+            if (result.length > 0) {
+                assembly {
+                    revert(add(result, 32), mload(result))
+                }
+            }
+            revert DelegatecallFailed();
+        }
+        assembly {
+            return(add(result, 32), mload(result))
+        }
+    }
+
+    receive() external payable {}
+
+    // ═══════════════════════════════════════════════════════════════════════════════
+    // ERC-4626 THIN WRAPPERS — delegate ALL logic to ERC4626Module
+    // ═══════════════════════════════════════════════════════════════════════════════
+    //
+    // CRITICAL: These functions contain NO fee logic, NO accounting, NO asset transfers.
+    // They ONLY dispatch to the module registered for their selector.
+    // The ERC4626Module handles everything via ExitFeeLib.
+    //
+
+    // NOTE: NO nonReentrant on these wrappers — the module handles reentrancy
+    // guard via _enterNonReentrant/_exitNonReentrant in delegatecall context
+    // (same storage slot). Adding nonReentrant here would double-lock.
+
+    function deposit(uint256 assets, address receiver)
+        public
+        override
+        returns (uint256 shares)
+    {
+        bytes memory result = _delegateToModule(msg.sig, msg.data);
+        shares = abi.decode(result, (uint256));
+        _refreshOpsNavCache();
+    }
+
+    function mint(uint256 shares, address receiver)
+        public
+        override
+        returns (uint256 assets)
+    {
+        bytes memory result = _delegateToModule(msg.sig, msg.data);
+        assets = abi.decode(result, (uint256));
+        _refreshOpsNavCache();
+    }
+
+    function withdraw(uint256 assets, address receiver, address owner_)
+        public
+        override
+        returns (uint256 shares)
+    {
+        bytes memory result = _delegateToModule(msg.sig, msg.data);
+        shares = abi.decode(result, (uint256));
+        _refreshOpsNavCache();
+    }
+
+    function redeem(uint256 shares, address receiver, address owner_)
+        public
+        override
+        returns (uint256 assets)
+    {
+        bytes memory result = _delegateToModule(msg.sig, msg.data);
+        assets = abi.decode(result, (uint256));
+        _refreshOpsNavCache();
+    }
+
+    /// @dev Internal: dispatch to module registered for the given selector
+    function _delegateToModule(bytes4 sel, bytes calldata data) internal returns (bytes memory) {
+        address module = CoreStorage.layout().moduleOf[sel];
+        if (module == address(0)) revert ModuleNotSet();
+
+        (bool success, bytes memory result) = module.delegatecall(data);
+        if (!success) {
+            if (result.length > 0) {
+                assembly {
+                    revert(add(result, 32), mload(result))
+                }
+            }
+            revert DelegatecallFailed();
+        }
+        return result;
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════════
+    // MODULE ROUTING ADMIN
+    // ═══════════════════════════════════════════════════════════════════════════════
+
+    /// @dev Set-once, and explicitly blocked post-seal — matching
+    ///      authorizeModule()/setAuthorizedSealer()/setRecoveryGate(). The
+    ///      set-once check alone already makes this unreachable in practice
+    ///      today (SystemSealer's INVARIANT 2 requires selectorRegistry !=
+    ///      address(0) to seal at all, so it can never be zero post-seal) —
+    ///      the seal check is added for defense-in-depth consistency with
+    ///      the other set-once admin functions, not because a live gap was
+    ///      found here.
+    function setSelectorRegistry(address registry) external onlyOwner {
+        CoreStorage.Layout storage core = CoreStorage.layout();
+        if (core.packedFlags & CoreStorage.FLAG_SYSTEM_SEALED != 0) revert SystemSealed();
+        if (core.selectorRegistry != address(0)) revert SelectorRegistryAlreadySet();
+        core.selectorRegistry = registry;
+        emit Events.SelectorRegistrySet(registry);
+    }
+
+    /// @notice Bind the Emergency Module Recovery gate. Set-once, immutable
+    ///         thereafter — same pattern as setSelectorRegistry() (review §8:
+    ///         the recovery policy, including which contract enforces it,
+    ///         must not be administratively changeable post-seal).
+    /// @dev Explicitly blocked post-seal (matching authorizeModule() /
+    ///      setAuthorizedSealer()): SystemSealer's INVARIANT 8e allows a
+    ///      vault to seal with no recovery gate wired at all
+    ///      (config.recoveryGate == address(0) is a valid, documented "no
+    ///      recovery" configuration). Without this check, the owner could
+    ///      seal without recovery, then call this afterward to install an
+    ///      arbitrary contract with immediate, unrestricted
+    ///      recoverModuleGroup() access — no delay, no independent
+    ///      approval, no veto — defeating the entire point of the recovery
+    ///      mechanism's immutable, pre-seal-only policy.
+    function setRecoveryGate(address gate) external onlyOwner {
+        CoreStorage.Layout storage core = CoreStorage.layout();
+        if (core.packedFlags & CoreStorage.FLAG_SYSTEM_SEALED != 0) revert SystemSealed();
+        if (core.recoveryGate != address(0)) revert RecoveryGateAlreadySet();
+        if (gate == address(0)) revert ZeroAddress();
+        core.recoveryGate = gate;
+        emit Events.RecoveryGateSet(gate);
+    }
+
+    function setModule(bytes4 selector, address module, uint8 role) external onlyOwner {
+        CoreStorage.Layout storage core = CoreStorage.layout();
+        if (core.packedFlags & CoreStorage.FLAG_ROUTING_FROZEN != 0) revert RoutingFrozen();
+        _validateRoleAssignment(core, selector, role);
+        core.moduleOf[selector] = module;
+        core.roleOf[selector] = role;
+        emit Events.ModuleSet(selector, module, role);
+    }
+
+    function setModulesBatch(
+        bytes4[] calldata selectors,
+        address[] calldata modules,
+        uint8[] calldata roles
+    ) external onlyOwner {
+        CoreStorage.Layout storage core = CoreStorage.layout();
+        if (core.packedFlags & CoreStorage.FLAG_ROUTING_FROZEN != 0) revert RoutingFrozen();
+
+        uint256 len = selectors.length;
+        require(len == modules.length && len == roles.length, "length mismatch");
+
+        for (uint256 i; i < len;) {
+            _validateRoleAssignment(core, selectors[i], roles[i]);
+            core.moduleOf[selectors[i]] = modules[i];
+            core.roleOf[selectors[i]] = roles[i];
+            unchecked { ++i; }
+        }
+        emit Events.ModulesBatchSet(len);
+    }
+
+    function _validateRoleAssignment(CoreStorage.Layout storage core, bytes4 selector, uint8 role)
+        internal
+        view
+    {
+        address reg = core.selectorRegistry;
+        if (reg == address(0)) return;
+        // Delegate entirely to SelectorRegistry — single source of truth for role enforcement.
+        // validateRoleAssignment handles ROLE_PUBLIC (0), ROLE_OWNER, and ROLE_UNREGISTERED
+        // correctly without local reimplementation that can diverge.
+        SelectorRegistry(reg).validateRoleAssignment(selector, role);
+    }
+
+    function freezeRouting() external onlyOwner {
+        CoreStorage.Layout storage core = CoreStorage.layout();
+        if (core.packedFlags & CoreStorage.FLAG_ROUTING_FROZEN != 0) revert RoutingFrozen();
+        core.packedFlags |= CoreStorage.FLAG_ROUTING_FROZEN;
+        emit Events.RoutingFrozen();
+    }
+
+    function moduleOf(bytes4 selector) external view returns (address) {
+        return CoreStorage.layout().moduleOf[selector];
+    }
+
+    function roleOf(bytes4 selector) external view returns (uint8) {
+        return CoreStorage.layout().roleOf[selector];
+    }
+
+    function isRoutingFrozen() external view returns (bool) {
+        return CoreStorage.layout().packedFlags & CoreStorage.FLAG_ROUTING_FROZEN != 0;
+    }
+
+    function selectorRegistry() external view returns (address) {
+        return CoreStorage.layout().selectorRegistry;
+    }
+
+    function recoveryGate() external view returns (address) {
+        return CoreStorage.layout().recoveryGate;
+    }
+
+    /// @notice Emergency Module Recovery entry point (review §7) — completely
+    ///         separate from setModule()/setModulesBatch(), which remain
+    ///         permanently disabled once FLAG_ROUTING_FROZEN is set. Only
+    ///         callable by the immutable recoveryGate.
+    /// @dev Deliberately takes no role parameter: it only ever rewrites
+    ///      moduleOf[selector] for the group's fixed, SelectorLib-derived
+    ///      selector set and never touches roleOf, which structurally
+    ///      forecloses role relaxation (review §11) rather than relying on a
+    ///      runtime check. Selectors are derived here from SelectorLib
+    ///      directly — the same source of truth CoreVault's own deployment
+    ///      wiring uses — not trusted from the caller, so RecoveryGate
+    ///      cannot mis-specify which selectors a group covers. All-or-
+    ///      nothing: `newModules.length` must match the group's selector
+    ///      count exactly or the whole call reverts (review §10, atomic
+    ///      module-group replacement).
+    function recoverModuleGroup(uint8 groupId, address[] calldata newModules)
+        external
+        onlyRecoveryGate
+    {
+        bytes4[] memory selectors = _recoverySelectorsForGroup(groupId);
+        if (newModules.length != selectors.length) revert WrongRecoveryModuleCount();
+
+        CoreStorage.Layout storage core = CoreStorage.layout();
+        for (uint256 i; i < selectors.length; ++i) {
+            // A codeless address (typo, or an undeployed CREATE2 address) would
+            // otherwise wire in silently: the fallback's delegatecall to an
+            // empty address succeeds and returns empty data, bricking the
+            // group into silent no-ops instead of reverting.
+            if (newModules[i].code.length == 0) revert RecoveryModuleHasNoCode();
+            core.moduleOf[selectors[i]] = newModules[i];
+        }
+
+        emit Events.ModuleGroupRecovered(groupId, newModules);
+    }
+
+    /// @dev Mirrors RecoveryGate._selectorsForGroup() exactly — kept in sync
+    ///      because both read the same underlying SelectorLib getters, not
+    ///      because either trusts the other's definition.
+    function _recoverySelectorsForGroup(uint8 groupId) internal pure returns (bytes4[] memory) {
+        if (groupId == 0) {
+            bytes4[] memory writeSel = SelectorLib.getQueueModuleSelectors();
+            bytes4[] memory viewSel = SelectorLib.getQueueModuleViewSelectors();
+            bytes4[] memory combined = new bytes4[](writeSel.length + viewSel.length);
+            for (uint256 i; i < writeSel.length; ++i) combined[i] = writeSel[i];
+            for (uint256 i; i < viewSel.length; ++i) combined[writeSel.length + i] = viewSel[i];
+            return combined;
+        }
+        if (groupId == 1) return SelectorLib.getERC4626ModuleSelectors();
+        if (groupId == 2) return SelectorLib.getLiquidityOpsModuleSelectors();
+        if (groupId == 3) return SelectorLib.getFixedMaturityModuleSelectors();
+        revert InvalidRecoveryGroup();
+    }
+
+    function authorizedSealer() external view returns (address) {
+        return CoreStorage.layout().authorizedSealer;
+    }
+
+    function pendingSealHash() external view returns (bytes32) {
+        return CoreStorage.layout().pendingSealHash;
+    }
+
+    function authorizeModule(address module, bool authorized) external onlyOwner {
+        CoreStorage.Layout storage core = CoreStorage.layout();
+        if (core.packedFlags & CoreStorage.FLAG_SYSTEM_SEALED != 0) revert SystemSealed();
+        core.isAuthorizedModule[module] = authorized;
+    }
+
+    function isModuleAuthorized(address module) external view returns (bool) {
+        return CoreStorage.layout().isAuthorizedModule[module];
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════════
+    // SEAL
+    // ═══════════════════════════════════════════════════════════════════════════════
+
+    function isSystemSealed() external view returns (bool) {
+        return CoreStorage.layout().packedFlags & CoreStorage.FLAG_SYSTEM_SEALED != 0;
+    }
+
+    function setAuthorizedSealer(address sealer) external onlyOwner {
+        CoreStorage.Layout storage core = CoreStorage.layout();
+        if (core.packedFlags & CoreStorage.FLAG_SYSTEM_SEALED != 0) revert SystemSealed();
+        if (core.authorizedSealer != address(0)) revert SealerAlreadySet();
+        core.authorizedSealer = sealer;
+        emit Events.AuthorizedSealerSet(sealer);
+    }
+
+    /**
+     * @notice Atomically record the verified config hash and seal in one call.
+     * @dev Called by SystemSealer.verifyAndSeal() as a single timelock operation.
+     *      Sets pendingSealHash and immediately activates the sealed flag so no
+     *      separate executeBatch step is required. This is the only sealing path;
+     *      the prior two-step prepareSeal()/sealFinalState() pattern was removed
+     *      as dead code (SystemSealer.prepareSeal(), the only caller, was removed
+     *      when its block.timestamp-dependent hash made the two-call timelock
+     *      batch permanently un-executable — see SystemSealer.sol for details).
+     */
+    function sealBySealer(bytes32 configHash) external {
+        CoreStorage.Layout storage core = CoreStorage.layout();
+        if (msg.sender != core.authorizedSealer) revert NotAuthorizedSealer();
+        if (core.packedFlags & CoreStorage.FLAG_SYSTEM_SEALED != 0) revert SystemSealed();
+        if (configHash == bytes32(0)) revert InvalidConfigHash();
+        if (core.packedFlags & CoreStorage.FLAG_ROUTING_FROZEN == 0) revert RoutingNotFrozen();
+        core.pendingSealHash = configHash;
+        core.packedFlags |= CoreStorage.FLAG_SYSTEM_SEALED;
+        emit Events.SystemSealed(msg.sender, configHash, block.timestamp);
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════════
+    // OWNERSHIP
+    // ═══════════════════════════════════════════════════════════════════════════════
+
+    function owner() external view returns (address) {
+        return CoreStorage.layout().owner;
+    }
+
+    function pendingOwner() external view returns (address) {
+        return CoreStorage.layout().pendingOwner;
+    }
+
+    function beginOwnerTransfer(address newOwner) external onlyOwner {
+        if (newOwner == address(0)) revert ZeroAddress();
+        CoreStorage.layout().pendingOwner = newOwner;
+        emit Events.OwnershipTransferInitiated(CoreStorage.layout().owner, newOwner);
+    }
+
+    function acceptOwnerTransfer() external {
+        CoreStorage.Layout storage core = CoreStorage.layout();
+        if (msg.sender != core.pendingOwner) revert NoTransferPending();
+        address old = core.owner;
+        core.owner = msg.sender;
+        core.pendingOwner = address(0);
+        emit Events.OwnershipTransferred(old, msg.sender);
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════════
+    // PAUSE
+    // ═══════════════════════════════════════════════════════════════════════════════
+
+    function paused() external view returns (bool) {
+        return CoreStorage.layout().packedFlags & CoreStorage.FLAG_PAUSED != 0;
+    }
+
+    function pausedDeposits() external view returns (bool) {
+        return CoreStorage.layout().packedFlags & CoreStorage.FLAG_PAUSED_DEPOSITS != 0;
+    }
+
+    function pausedWithdrawals() external view returns (bool) {
+        return CoreStorage.layout().packedFlags & CoreStorage.FLAG_PAUSED_WITHDRAWALS != 0;
+    }
+
+    // --- Granular withdrawal circuit breakers (review §20/§21) ---
+    // FLAG_PAUSED_WITHDRAWALS (above) is honored, in addition to the specific
+    // flag below, ONLY by instant settlement and epoch close/fund — the two
+    // breakers Guardian may also trip via guardianPause(). It deliberately does
+    // NOT reach queued-request creation or funded claims: exit intent must stay
+    // recordable even while settlement is paused (review §19), and funded
+    // claims must never be blockable by any general administrative flag
+    // (review §20 — only the dedicated pauseFundedClaimOnly()/
+    // pauseQueuedRequestOnly() can reach those). Force exit reads neither this
+    // flag nor FLAG_PAUSED: it has its own dedicated breaker so it can never be
+    // blocked as a side effect of a generic emergency pause (review §20).
+    function pausedInstantWithdrawal() external view returns (bool) {
+        return CoreStorage.layout().packedFlags & CoreStorage.FLAG_INSTANT_WITHDRAWAL_PAUSED != 0;
+    }
+
+    function pausedQueuedRequest() external view returns (bool) {
+        return CoreStorage.layout().packedFlags & CoreStorage.FLAG_QUEUED_REQUEST_PAUSED != 0;
+    }
+
+    function pausedEpochCloseFund() external view returns (bool) {
+        return CoreStorage.layout().packedFlags & CoreStorage.FLAG_EPOCH_CLOSE_FUND_PAUSED != 0;
+    }
+
+    function pausedFundedClaim() external view returns (bool) {
+        return CoreStorage.layout().packedFlags & CoreStorage.FLAG_FUNDED_CLAIM_PAUSED != 0;
+    }
+
+    function pausedForceExit() external view returns (bool) {
+        return CoreStorage.layout().packedFlags & CoreStorage.FLAG_FORCE_EXIT_PAUSED != 0;
+    }
+
+    function pauseAll() external onlyOwner {
+        CoreStorage.layout().packedFlags |= CoreStorage.FLAG_PAUSED;
+        emit Events.AllPaused();
+    }
+
+    function unpauseAll() external onlyOwner {
+        CoreStorage.layout().packedFlags &= ~(
+            CoreStorage.FLAG_PAUSED | CoreStorage.FLAG_PAUSED_DEPOSITS
+                | CoreStorage.FLAG_PAUSED_WITHDRAWALS | CoreStorage.FLAG_INSTANT_WITHDRAWAL_PAUSED
+                | CoreStorage.FLAG_QUEUED_REQUEST_PAUSED | CoreStorage.FLAG_EPOCH_CLOSE_FUND_PAUSED
+                | CoreStorage.FLAG_FUNDED_CLAIM_PAUSED | CoreStorage.FLAG_FORCE_EXIT_PAUSED
+        );
+        emit Events.AllUnpaused();
+    }
+
+    /// @notice Guardian-eligible instant-settlement breaker (review §20: approved
+    ///         as a narrow circuit breaker Guardian may trip immediately).
+    /// @dev Restrict-only for the Guardian: tripping (p == true) is Owner-or-
+    ///      Guardian, but clearing (p == false) is Owner-only. The Guardian must
+    ///      never be able to reverse its own emergency action — every clearing
+    ///      operation requires the Owner (docs/governance.md §4.2, AC5).
+    function pauseInstantWithdrawalOnly(bool p) external onlyOwnerOrGuardian {
+        CoreStorage.Layout storage core = CoreStorage.layout();
+        if (p) {
+            core.packedFlags |= CoreStorage.FLAG_INSTANT_WITHDRAWAL_PAUSED;
+            emit Events.InstantWithdrawalPaused();
+        } else {
+            if (msg.sender != core.owner) revert NotOwner();
+            core.packedFlags &= ~CoreStorage.FLAG_INSTANT_WITHDRAWAL_PAUSED;
+            emit Events.InstantWithdrawalUnpaused();
+        }
+    }
+
+    /// @notice Guardian-eligible epoch close/fund breaker (review §20: "may be
+    ///         temporarily restricted where the affected accounting or
+    ///         settlement path is implicated"; separate from exit-intent
+    ///         recording, which is pauseQueuedRequestOnly below).
+    /// @dev Restrict-only for the Guardian: tripping (p == true) is Owner-or-
+    ///      Guardian, but clearing (p == false) is Owner-only. Same rationale
+    ///      as pauseInstantWithdrawalOnly above.
+    function pauseEpochCloseFundOnly(bool p) external onlyOwnerOrGuardian {
+        CoreStorage.Layout storage core = CoreStorage.layout();
+        if (p) {
+            core.packedFlags |= CoreStorage.FLAG_EPOCH_CLOSE_FUND_PAUSED;
+            emit Events.EpochCloseFundPaused();
+        } else {
+            if (msg.sender != core.owner) revert NotOwner();
+            core.packedFlags &= ~CoreStorage.FLAG_EPOCH_CLOSE_FUND_PAUSED;
+            emit Events.EpochCloseFundUnpaused();
+        }
+    }
+
+    /// @notice Owner-only, exceptional: blocking NEW queued-exit requests is
+    ///         explicitly NOT approved as a routine Guardian tool (review §20).
+    ///         Existing requests can still be cancelled regardless of this flag.
+    function pauseQueuedRequestOnly(bool p) external onlyOwner {
+        if (p) {
+            CoreStorage.layout().packedFlags |= CoreStorage.FLAG_QUEUED_REQUEST_PAUSED;
+            emit Events.QueuedRequestPaused();
+        } else {
+            CoreStorage.layout().packedFlags &= ~CoreStorage.FLAG_QUEUED_REQUEST_PAUSED;
+            emit Events.QueuedRequestUnpaused();
+        }
+    }
+
+    /// @notice Owner-only, exceptional: funded claims are permissionless by
+    ///         default and must never be stoppable by ordinary/Guardian action
+    ///         (review §20 — only if the claim execution path itself is unsafe).
+    function pauseFundedClaimOnly(bool p) external onlyOwner {
+        if (p) {
+            CoreStorage.layout().packedFlags |= CoreStorage.FLAG_FUNDED_CLAIM_PAUSED;
+            emit Events.FundedClaimPaused();
+        } else {
+            CoreStorage.layout().packedFlags &= ~CoreStorage.FLAG_FUNDED_CLAIM_PAUSED;
+            emit Events.FundedClaimUnpaused();
+        }
+    }
+
+    /// @notice Owner-only, exceptional: force exit's own dedicated breaker.
+    ///         Never touched by pauseAll()/guardianPause() — its behavior must
+    ///         be a deliberate, separate governance action (review §20).
+    function pauseForceExitOnly(bool p) external onlyOwner {
+        if (p) {
+            CoreStorage.layout().packedFlags |= CoreStorage.FLAG_FORCE_EXIT_PAUSED;
+            emit Events.ForceExitPaused();
+        } else {
+            CoreStorage.layout().packedFlags &= ~CoreStorage.FLAG_FORCE_EXIT_PAUSED;
+            emit Events.ForceExitUnpaused();
+        }
+    }
+
+    function pauseDepositsOnly(bool p) external onlyOwner {
+        if (p) {
+            CoreStorage.layout().packedFlags |= CoreStorage.FLAG_PAUSED_DEPOSITS;
+            emit Events.DepositsPaused();
+        } else {
+            CoreStorage.layout().packedFlags &= ~CoreStorage.FLAG_PAUSED_DEPOSITS;
+            emit Events.DepositsUnpaused();
+        }
+    }
+
+    function pauseWithdrawalsOnly(bool p) external onlyOwner {
+        if (p) {
+            CoreStorage.layout().packedFlags |= CoreStorage.FLAG_PAUSED_WITHDRAWALS;
+            emit Events.WithdrawalsPaused();
+        } else {
+            CoreStorage.layout().packedFlags &= ~CoreStorage.FLAG_PAUSED_WITHDRAWALS;
+            emit Events.WithdrawalsUnpaused();
+        }
+    }
+
+    function guardianPause() external onlyGuardian {
+        CoreStorage.Layout storage core = CoreStorage.layout();
+        uint64 cooldown = address(core.params) != address(0)
+            ? core.params.guardianPauseCooldown(address(this))
+            : 7 days;
+        if (cooldown == 0) cooldown = 7 days;
+        if (core.lastGuardianPause != 0 && block.timestamp < uint256(core.lastGuardianPause) + cooldown) {
+            revert GuardianCooldownActive();
+        }
+        core.lastGuardianPause = uint64(block.timestamp);
+        // Deposits (unchanged), plus the two withdrawal breakers review §20
+        // approves for Guardian's immediate use. Queued-request, funded-claim,
+        // and force-exit stay owner-only/exceptional and are never touched here.
+        core.packedFlags |= CoreStorage.FLAG_PAUSED | CoreStorage.FLAG_INSTANT_WITHDRAWAL_PAUSED
+            | CoreStorage.FLAG_EPOCH_CLOSE_FUND_PAUSED;
+        emit Events.GuardianPauseActivated(msg.sender, block.timestamp);
+    }
+
+    function guardian() external view returns (address) {
+        return CoreStorage.layout().guardian;
+    }
+
+    /// @dev Blocked post-seal, matching AdminModule.setVetoer()'s existing
+    ///      _requireNotSealed() guard. Unlike setSelectorRegistry() above,
+    ///      this one had no protection at all pre-fix — SystemSealer locks
+    ///      in and verifies vault.guardian() == config.guardian at seal
+    ///      time, and review §11 explicitly lists "Guardian modification"
+    ///      as something the system must never permit, but nothing in code
+    ///      stopped the owner from calling this freely at any time,
+    ///      including after sealing.
+    function setGuardian(address newGuardian) external onlyOwner {
+        CoreStorage.Layout storage core = CoreStorage.layout();
+        if (core.packedFlags & CoreStorage.FLAG_SYSTEM_SEALED != 0) revert SystemSealed();
+        core.guardian = newGuardian;
+        emit Events.GuardianUpdated(newGuardian);
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════════
+    // COMPONENT VIEWS
+    // ═══════════════════════════════════════════════════════════════════════════════
+
+    function feeCollector() external view returns (address) { return CoreStorage.layout().feeCollector; }
+    function params() external view returns (IParamsProvider) { return CoreStorage.layout().params; }
+    function bufferManager() external view returns (IBufferManager) { return CoreStorage.layout().bufferManager; }
+    function router() external view returns (IStrategyRouter) { return CoreStorage.layout().router; }
+    function healthRegistry() external view returns (IStrategyHealthRegistry) { return CoreStorage.layout().healthRegistry; }
+    function incentives() external view returns (IIncentives) { return CoreStorage.layout().incentives; }
+    function vetoer() external view returns (address) { return CoreStorage.layout().vetoer; }
+    function rewardsTreasury() external view returns (address) { return CoreStorage.layout().rewardsTreasury; }
+
+    // ═══════════════════════════════════════════════════════════════════════════════
+    // ACCOUNTING PRIMITIVES (P0-C) — the ONE source of truth for each quantity
+    // ═══════════════════════════════════════════════════════════════════════════════
+    //
+    //   grossAssets()  hot + warm + Σ strategy assets      physical portfolio value  (class A)
+    //   totalOwed()    Σ nominal assetsOwed, unclaimed     fixed liabilities to exited users
+    //   totalAssets()  max(0, grossAssets - totalOwed)     active shareholder NAV    (class B)
+    //
+    // No module may reconstruct either quantity locally: every consumer reads
+    // grossAssets() (portfolio / liquidity / risk math) or totalAssets()
+    // (shareholder pricing, fees, caps). See docs/exit-engine.md for the audit of
+    // every call site.
+    //
+    // totalAssets() lives HERE, in the CoreVault shell (not in a module), because
+    // it is the ERC-4626 entry point. The shell is not behind a proxy: changing it
+    // means deploying a new CoreVault.
+    //
+    // reservedForClaims is NOT subtracted: it only earmarks liquidity already
+    // inside grossAssets, and totalOwed already contains everything owed, funded
+    // or not. Subtracting both would double count.
+    //
+    // CRITICAL: These always compute live. _cachedNavForOps() is a SEPARATE cache
+    // for gas-sensitive decisions and MUST NOT be used for economic calculations.
+    //
+
+    /// @notice Physical value of the portfolio: hot + warm + Σ strategy assets. (class A)
+    function grossAssets() public view returns (uint256) {
+        return _grossAssets();
+    }
+
+    /// @notice Σ nominal assetsOwed over all unclaimed claims, funded or not.
+    function totalOwed() public view returns (uint256) {
+        return EpochQueueStorage.layout().totalOwed;
+    }
+
+    /// @notice Active shareholder NAV (ERC-4626 totalAssets): grossAssets - totalOwed,
+    ///         saturating at 0. Never reverts on underflow, in any state. (class B)
+    function totalAssets() public view override(ERC4626, ICoreVault) returns (uint256) {
+        return _totalAssets();
+    }
+
+    /// @notice grossAssets, totalOwed and liabilityIndex read consistently in one call.
+    /// @dev liabilityIndex is a pure function of state, computed on read, never stored:
+    ///      1e18 when totalOwed == 0 or grossAssets >= totalOwed, else
+    ///      grossAssets * 1e18 / totalOwed. Always <= 1e18, O(1).
+    function liabilityState()
+        public
+        view
+        returns (uint256 gross, uint256 owed, uint256 index)
+    {
+        gross = _grossAssets();
+        owed = EpochQueueStorage.layout().totalOwed;
+        index = (owed == 0 || gross >= owed) ? 1e18 : (gross * 1e18) / owed;
+    }
+
+    /// @notice The payout multiplier for every outstanding claim (1e18 when solvent).
+    function liabilityIndex() external view returns (uint256 index) {
+        (, , index) = liabilityState();
+    }
+
+    /// @notice True whenever grossAssets < totalOwed. Derived, not stored.
+    ///         In this mode totalAssets() == 0.
+    function isInsolvent() public view returns (bool) {
+        return _grossAssets() < EpochQueueStorage.layout().totalOwed;
+    }
+
+    /// @notice Is the economic NAV trustworthy enough to CRYSTALLIZE an irrevocable withdrawal
+    ///         liability from it? Checks every input of grossAssets(), not just cache age:
+    ///         hot balance (always readable), the warm cache (present, complete = no adapter
+    ///         failed, and not older than 15 minutes), and every enabled strategy (valuation
+    ///         readable, health registry OK, required oracle live/fresh/consistent).
+    /// @return valid true only if every check passes
+    /// @return reason 0 ok; 1 no BufferManager; 2 warm NAV incomplete/invalid; 3 warm NAV stale;
+    ///         4 strategy valuation failed; 5 strategy unhealthy; 6 oracle invalid
+    function navStatus() external view returns (bool valid, uint8 reason) {
+        CoreStorage.Layout storage core = CoreStorage.layout();
+        IBufferManager bm = core.bufferManager;
+        if (address(bm) == address(0)) return (false, 1);
+        (, uint40 ts, bool warmOk) = bm.warmNavState();
+        if (!warmOk) return (false, 2);
+        if (block.timestamp > uint256(ts) + CoreStorage.MAX_WARM_NAV_AGE) return (false, 3);
+
+        IStrategyRouter r = core.router;
+        if (address(r) != address(0)) {
+            try INavValidity(address(r)).navValidity() returns (uint256, uint8 issue) {
+                if (issue != 0) return (false, issue);
+            } catch {
+                return (false, 4);
+            }
+        }
+        return (true, 0);
+    }
+
+    function _totalAssets() internal view returns (uint256) {
+        uint256 gross = _grossAssets();
+        uint256 owed = EpochQueueStorage.layout().totalOwed;
+        return gross > owed ? gross - owed : 0;
+    }
+
+    function _grossAssets() internal view returns (uint256) {
+        (uint256 hot, uint256 strat, uint256 warm) = _totalAssetsBreakdown();
+        return hot + strat + warm;
+    }
+
+    function _totalAssetsBreakdown()
+        internal
+        view
+        returns (uint256 hot, uint256 strat, uint256 warm)
+    {
+        CoreStorage.Layout storage core = CoreStorage.layout();
+        hot = IERC20(asset()).balanceOf(address(this));
+
+        IStrategyRouter r = core.router;
+        if (address(r) != address(0)) {
+            strat = r.totalStrategyAssetsSafe();
+        }
+
+        IBufferManager bm = core.bufferManager;
+        if (address(bm) != address(0)) {
+            (warm,,) = bm.warmNavState();
+        }
+    }
+
+    /// @notice Class A breakdown: `nav` is grossAssets() (physical portfolio value,
+    ///         NOT net of totalOwed) — consumed by deploy sizing and buffer planning.
+    function totalAssetsBreakdown() external view returns (uint256 nav, uint256 hot, uint256 warm) {
+        uint256 strat;
+        (hot, strat, warm) = _totalAssetsBreakdown();
+        nav = hot + strat + warm;
+    }
+
+    function asset() public view override(ERC4626, ICoreVault) returns (address) {
+        return ERC4626.asset();
+    }
+
+    function decimals() public view override(ERC4626) returns (uint8) {
+        return ERC4626.decimals();
+    }
+
+    /// @notice Returns 0 — withdraw() always reverts (queued protocol).
+    /// @dev ERC4626 compliant: "MUST return 0 if withdraw would revert."
+    function maxWithdraw(address) public pure override returns (uint256) {
+        return 0;
+    }
+
+    /// @notice Returns 0 — redeem() always reverts (queued protocol).
+    /// @dev ERC4626 compliant: "MUST return 0 if redeem would revert."
+    function maxRedeem(address) public pure override returns (uint256) {
+        return 0;
+    }
+
+    function maxDeposit(address receiver) public view override returns (uint256) {
+        if (!_depositsAreCurrentlyAllowed()) return 0;
+
+        IParamsProvider.DepositLimits memory limits =
+            CoreStorage.layout().params.getDepositLimits(address(this));
+        uint256 remaining = type(uint256).max;
+
+        if (limits.vaultDepositCap > 0) {
+            uint256 total = _totalAssets();
+            if (total >= limits.vaultDepositCap) return 0;
+            remaining = limits.vaultDepositCap - total;
+        }
+
+        if (limits.userDepositCap > 0) {
+            uint256 userAssets = convertToAssets(balanceOf(receiver));
+            if (userAssets >= limits.userDepositCap) return 0;
+            uint256 userRemaining = limits.userDepositCap - userAssets;
+            if (userRemaining < remaining) remaining = userRemaining;
+        }
+
+        if (
+            limits.minDepositAmount > 0 && remaining != type(uint256).max
+                && remaining < limits.minDepositAmount
+        ) {
+            return 0;
+        }
+
+        return remaining;
+    }
+
+    function maxMint(address receiver) public view override returns (uint256) {
+        uint256 maxAssets_ = maxDeposit(receiver);
+        if (maxAssets_ == 0) return 0;
+        if (maxAssets_ == type(uint256).max) return type(uint256).max;
+        return previewDeposit(maxAssets_);
+    }
+
+    /// @notice Returns net shares the caller would receive for `assets` deposited.
+    /// @dev ERC4626: "MUST return as close to and no fewer than the exact amount of shares
+    ///      that would be minted in a deposit call in the same transaction."
+    ///      Since deposit() deducts a deposit fee, previewDeposit must reflect net shares.
+    function previewDeposit(uint256 assets) public view override returns (uint256) {
+        uint16 depBps = FeeStorage.layout().fee.depBps;
+        if (depBps == 0) return super.previewDeposit(assets);
+        uint256 feeA = assets * uint256(depBps) / 10000;
+        return super.previewDeposit(assets - feeA);
+    }
+
+    /// @notice Returns gross assets needed to mint `shares` (includes deposit fee).
+    /// @dev ERC4626: "MUST return as close to and no fewer than the exact amount of assets
+    ///      that would be deposited in a mint call in the same transaction."
+    ///      Since mint() charges a deposit fee on top, previewMint must include it.
+    function previewMint(uint256 shares) public view override returns (uint256) {
+        uint256 netAssets = super.previewMint(shares);
+        uint16 depBps = FeeStorage.layout().fee.depBps;
+        if (depBps == 0) return netAssets;
+        uint256 denom = 10000 - uint256(depBps);
+        // Gross-up: ceil(net * 10000 / (10000 - f))
+        return (netAssets * 10000 + denom - 1) / denom;
+    }
+
+    function _depositsAreCurrentlyAllowed() internal view returns (bool) {
+        CoreStorage.Layout storage core = CoreStorage.layout();
+        uint256 flags = core.packedFlags;
+        if (flags & CoreStorage.FLAG_PAUSED != 0) return false;
+        if (flags & CoreStorage.FLAG_PAUSED_DEPOSITS != 0) return false;
+
+        IBufferManager bm = core.bufferManager;
+        if (address(bm) == address(0)) return false;
+        (, uint40 ts, bool valid) = bm.warmNavState();
+        if (!valid) return false;
+        if (block.timestamp > uint256(ts) + CoreStorage.MAX_WARM_NAV_AGE) return false;
+        // Insolvency mode (grossAssets < totalOwed), or zero shareholder equity
+        // (grossAssets == totalOwed with shares outstanding): totalAssets() == 0, so share
+        // pricing would divide by zero or mint unbounded shares. ERC-4626: maxDeposit == 0.
+        (uint256 gross, uint256 owed,) = liabilityState();
+        if (gross < owed) return false;
+        return !(gross == owed && totalSupply() > 0);
+    }
+
+    // NOTE: previewWithdraw/previewRedeem keep OZ defaults (share/asset conversion).
+    // They are used internally by forceWithdraw for baseShares computation.
+    // maxWithdraw=0 and maxRedeem=0 already signal that standard withdrawal is disabled.
+
+    // ═══════════════════════════════════════════════════════════════════════════════
+    // OPS NAV CACHE — for gas-sensitive decisions ONLY
+    // ═══════════════════════════════════════════════════════════════════════════════
+    //
+    // CRITICAL RULE — Cache usage boundary:
+    //   ALLOWED: checkUpkeep, plan(), BM routing, pre-check gas-sensitive
+    //   FORBIDDEN: convertToAssets, convertToShares, fee math, mint/burn, payout
+    //
+
+    /// @notice Returns cached NAV for operational decisions (NOT for economic math)
+    /// @return nav The cached total assets value
+    /// @return valid True if cache is fresh (within TTL)
+    function cachedNavForOps() external view returns (uint256 nav, bool valid) {
+        return _cachedNavForOps();
+    }
+
+    function _cachedNavForOps() internal view returns (uint256 nav, bool valid) {
+        nav = _opsNavCache;
+        valid = (block.timestamp < uint256(_opsNavCacheTs) + uint256(opsNavCacheTtl))
+            && _opsNavCacheTs > 0;
+    }
+
+    function _refreshOpsNavCache() internal {
+        _opsNavCache = _grossAssets(); // class A: physical value for ops decisions
+        _opsNavCacheTs = uint64(block.timestamp);
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════════
+    // PREVIEW FUNCTIONS (view-only, delegate to totalAssets live)
+    // ═══════════════════════════════════════════════════════════════════════════════
+    // Note: preview functions use totalAssets() (live) for PPS calculation.
+    // They do NOT go through modules — they are pure ERC-4626 views.
+    // Fee-aware previews are implemented in the ERC4626Module if needed.
+
+    // Inherits default ERC4626 previews which use totalAssets() live.
+
+    // ═══════════════════════════════════════════════════════════════════════════════
+    // PROCESSOR FUNCTIONS (for modules to mint/burn/transfer shares)
+    // ═══════════════════════════════════════════════════════════════════════════════
+
+    function _requireModuleAccess() internal view {
+        // Pattern 1: Delegatecall context (QueueModule, AdminModule, LiquidityOpsModule)
+        if (msg.sender == address(this)) return;
+        // Pattern 2: Authorized external module (ERC4626Module)
+        if (CoreStorage.layout().isAuthorizedModule[msg.sender]) return;
+        revert NotAuthorizedModule();
+    }
+
+    function processorMint(address to, uint256 amount) external {
+        _requireModuleAccess();
+        _mint(to, amount);
+    }
+
+    function processorBurn(address from, uint256 amount) external {
+        _requireModuleAccess();
+        _burn(from, amount);
+    }
+
+    function processorTransfer(address from, address to, uint256 amount) external {
+        _requireModuleAccess();
+        _transfer(from, to, amount);
+    }
+
+    function processorSpendAllowance(address owner_, address spender, uint256 amount) external {
+        _requireModuleAccess();
+        _spendAllowance(owner_, spender, amount);
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════════
+    // ICoreVault VIEW INTERFACE
+    // ═══════════════════════════════════════════════════════════════════════════════
+
+    /// @notice True if there is epoch-queue work a keeper should perform:
+    ///         either the open epoch is closeable and non-empty, or a prior
+    ///         epoch closed but hasn't been funded yet.
+    /// @dev Reads EpochedQueueModule's delegatecall-dispatched views via
+    ///      staticcall-to-self (this function lives in CoreVault's own
+    ///      bytecode, not the module, so it cannot call them directly).
+    function canSettle() external view returns (bool) {
+        (bool okClose, bytes memory dataClose) =
+            address(this).staticcall(abi.encodeWithSignature("canCloseCurrentEpoch()"));
+        if (okClose && dataClose.length == 32 && abi.decode(dataClose, (bool))) {
+            (bool okCnt, bytes memory dataCnt) =
+                address(this).staticcall(abi.encodeWithSignature("currentEpochClaimCount()"));
+            if (okCnt && dataCnt.length == 32 && abi.decode(dataCnt, (uint256)) > 0) {
+                return true;
+            }
+        }
+
+        (bool okOldest, bytes memory dataOldest) =
+            address(this).staticcall(abi.encodeWithSignature("oldestUnfundedEpochId()"));
+        (bool okCur, bytes memory dataCur) =
+            address(this).staticcall(abi.encodeWithSignature("currentEpochId()"));
+        if (okOldest && okCur && dataOldest.length == 32 && dataCur.length == 32) {
+            return abi.decode(dataOldest, (uint256)) < abi.decode(dataCur, (uint256));
+        }
+        return false;
+    }
+
+    function canCrystallize() external view returns (bool) {
+        FeeStorage.Layout storage f = FeeStorage.layout();
+        uint256 hwm = f.highWaterMark;
+        uint64 last = f.lastCrystallize;
+        uint64 minInterval = f.minCrystallizeInterval;
+
+        if (hwm == 0) return true;
+        if (block.timestamp < uint256(last) + uint256(minInterval)) return false;
+        uint256 ts = totalSupply();
+        if (ts == 0) return false;
+        uint256 pps = (_totalAssets() * 1e18) / ts;
+        return pps > hwm;
+    }
+
+    function canRealize() external view returns (bool) {
+        CoreStorage.Layout storage core = CoreStorage.layout();
+        IBufferManager bm = core.bufferManager;
+        if (address(bm) == address(0)) return false;
+        if (address(core.router) == address(0)) return false;
+
+        uint16 targetBps = bm.getConfig().opsReserveTargetBps;
+        if (targetBps == 0) return false;
+
+        uint256 currentCash = IERC20(asset()).balanceOf(address(this));
+        uint256 tvl = _grossAssets(); // class A: physical liquidity vs portfolio
+        uint256 target = Percentage.mulBpsDown(tvl, targetBps);
+        return currentCash < target;
+    }
+
+    /// @notice canRealize with gap — single call for VaultUpkeep (avoids redundant totalAssets)
+    /// @notice Realize assets from strategies to hot buffer (routed to LiquidityOpsModule)
+    /// @dev Required by ICoreVault interface. Delegates to module via fallback-style dispatch.
+    function realizeForReserveAndOps(uint256 maxAmount) external {
+        bytes memory result = _delegateToModule(
+            bytes4(keccak256("realizeForReserveAndOps(uint256)")),
+            msg.data
+        );
+        _refreshOpsNavCache();
+    }
+
+    function canRealizeWithGap() external view returns (bool canR, uint256 gap) {
+        CoreStorage.Layout storage core = CoreStorage.layout();
+        IBufferManager bm = core.bufferManager;
+        if (address(bm) == address(0)) return (false, 0);
+        if (address(core.router) == address(0)) return (false, 0);
+
+        uint16 targetBps = bm.getConfig().opsReserveTargetBps;
+        if (targetBps == 0) return (false, 0);
+
+        uint256 currentCash = IERC20(asset()).balanceOf(address(this));
+        uint256 tvl = _grossAssets(); // class A: physical liquidity vs portfolio
+        uint256 target = Percentage.mulBpsDown(tvl, targetBps);
+        if (currentCash >= target) return (false, 0);
+        return (true, target - currentCash);
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════════
+    // VIEW HELPERS
+    // ═══════════════════════════════════════════════════════════════════════════════
+
+    function lastDepositTs(address user) external view returns (uint64) {
+        return CoreStorage.layout().lastDepositTs[user];
+    }
+
+    function epochStart() external view returns (uint64) {
+        return CoreStorage.layout().epochStart;
+    }
+
+    function epochWithdrawn() external view returns (uint256) {
+        return CoreStorage.layout().epochWithdrawn;
+    }
+
+    /// @notice The instant-withdrawal cap BASE snapshotted at the last cap-epoch rollover
+    ///         (0 before the vault's first instant/rollover call). This, not live totalAssets(),
+    ///         is what requestInstantWithdrawal() actually sizes the 10%-style bucket against, so
+    ///         it stays independent of standard-queue activity within the same cap epoch.
+    function capBaseSnapshot() external view returns (uint256) {
+        return CoreStorage.layout().capBaseSnapshot;
+    }
+
+    function paramMinDelay() external view returns (uint64) {
+        return CoreStorage.layout().paramMinDelay;
+    }
+
+    function isParamsFrozen() external view returns (bool) {
+        return CoreStorage.layout().packedFlags & CoreStorage.FLAG_PARAMS_FROZEN != 0;
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════════
+    // WARM ADAPTER APPROVALS
+    // ═══════════════════════════════════════════════════════════════════════════════
+
+    /// @notice Grant each warm adapter a BOUNDED allowance to pull the vault's
+    ///         underlying. Warm adapters pull with transferFrom rather than
+    ///         receiving a push, so they need standing allowance; an unbounded
+    ///         one meant a single compromised or buggy adapter could drain the
+    ///         vault outright, and reservedForClaims cannot defend against that
+    ///         because it is enforced when sizing a deploy, not when the token
+    ///         moves.
+    /// @dev The allowance depletes as it is spent and is not self-renewing:
+    ///      once an adapter has pulled `cap` in total, warm deploys through it
+    ///      stop until governance tops it up. That is the intended trade -- a
+    ///      visible, deliberate budget per adapter instead of an open tap. Size
+    ///      it against the vault's deposit cap and expected warm cycling, not
+    ///      against a single deploy.
+    ///
+    ///      Pairs with the adapter-list guard on the BufferManager side: this
+    ///      bounds what each adapter can take, that bounds who can become an
+    ///      adapter. Neither alone is sufficient.
+    function approveWarmAdapters(address[] calldata adapters, uint256 cap) external onlyOwner {
+        if (cap == 0) revert ZeroAmount();
+        address assetAddr = asset();
+        for (uint256 i; i < adapters.length;) {
+            IERC20(assetAddr).forceApprove(adapters[i], cap);
+            emit Events.WarmAdapterApproved(adapters[i], cap);
+            unchecked { ++i; }
+        }
+    }
+
+    function revokeWarmAdapters(address[] calldata adapters) external onlyOwner {
+        address assetAddr = asset();
+        for (uint256 i; i < adapters.length;) {
+            IERC20(assetAddr).forceApprove(adapters[i], 0);
+            emit Events.WarmAdapterRevoked(adapters[i]);
+            unchecked { ++i; }
+        }
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════════
+    // REWARD SHARES MINTING (dedicated, minimal — only callable by authorized payout manager)
+    // ═══════════════════════════════════════════════════════════════════════════════
+
+    /// @notice Pay vault shares as incentive reward payout, transferred from the
+    ///         pre-funded rewards treasury. Non-dilutive by construction: no new
+    ///         shares are minted, so totalSupply/totalAssets — and PPS — are
+    ///         unaffected. Reverts if the treasury's balance is insufficient
+    ///         rather than falling back to minting.
+    ///         Tightly-scoped: ONLY callable by authorized RewardsPayoutManager.
+    ///         NOT processorMint — this is a separate, dedicated function.
+    /// @param user Recipient of reward shares
+    /// @param usdcEquivalent USDC-equivalent amount (6 decimals) to convert to shares
+    function payRewardShares(address user, uint256 usdcEquivalent) external {
+        CoreStorage.Layout storage core = CoreStorage.layout();
+        require(msg.sender == core.rewardsPayoutManager, "not-payout-manager");
+        require(user != address(0), "user=0");
+        if (usdcEquivalent == 0) return;
+
+        // Use convertToShares (no fee) — reward payout is fee-free
+        uint256 shares = convertToShares(usdcEquivalent);
+        if (shares == 0) return;
+
+        address treasury = core.rewardsTreasury;
+        require(treasury != address(0), "treasury=0");
+
+        _transfer(treasury, user, shares);
+        emit Events.RewardSharesPaid(user, treasury, usdcEquivalent, shares);
+    }
+}
