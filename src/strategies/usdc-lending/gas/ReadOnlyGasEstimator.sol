@@ -17,6 +17,8 @@ interface IFeed {
 interface IMeasurements {
     function emaDepositGas(address) external view returns (uint64);
     function emaWithdrawGas(address) external view returns (uint64);
+    function depositGasObservation(address) external view returns (uint32 count, uint64 updatedAt);
+    function withdrawGasObservation(address) external view returns (uint32 count, uint64 updatedAt);
 }
 
 /// @notice Read-only plan cost model. Governance calibration writes are separate.
@@ -97,6 +99,33 @@ contract ReadOnlyGasEstimator {
         withdrawFloor[adapter] = withdrawGas;
         emit AdapterFloorsSet(adapter, depositGas, withdrawGas);
     }
+    // Defaults are cold-start values; the legacy floor ABI is retained for governance tooling.
+    uint32 public constant MIN_EMA_SAMPLES = 3;
+    uint32 public constant MAX_EMA_AGE = 7 days;
+    struct PathOverhead { uint32 preparation; uint32 withdrawalStep; uint32 depositStep; uint32 mixedStep; uint32 finalization; }
+    PathOverhead public pathOverhead;
+    event PathOverheadUpdated();
+    function setPathOverhead(PathOverhead calldata p) external {
+        require(msg.sender == calibrator, "unauthorized");
+        require(p.preparation > 0 && p.withdrawalStep > 0 && p.depositStep > 0
+            && p.mixedStep > 0 && p.finalization > 0, "invalid overhead");
+        pathOverhead = p;
+        emit PathOverheadUpdated();
+    }
+
+    function _sampleReliable(IMeasurements measurements, Action memory a, uint256 sample) internal view returns (bool) {
+        if (sample < 21000) return false;
+        uint32 count;
+        uint64 updated;
+        if (a.deposit) {
+            try measurements.depositGasObservation(a.adapter) returns (uint32 c, uint64 t) { count = c; updated = t; } catch { return false; }
+        } else {
+            try measurements.withdrawGasObservation(a.adapter) returns (uint32 c, uint64 t) { count = c; updated = t; } catch { return false; }
+        }
+        return count >= MIN_EMA_SAMPLES && updated > 0 && updated <= block.timestamp
+            && block.timestamp - updated <= MAX_EMA_AGE;
+    }
+
     error InvalidConfig();
     error InvalidPlan();
 
@@ -187,8 +216,18 @@ contract ReadOnlyGasEstimator {
         q.costUSDC = config.fallbackUSDC;
         uint256 steps = (actions.length + actionsPerTx - 1) / actionsPerTx;
         q.txCount = (includePreparation ? 1 : 0) + steps;
-        q.l2Gas = (includePreparation ? uint256(config.prepareGas) : 0) + steps * config.stepGas
-            + q.txCount * config.intrinsicGas + config.finalizeGas;
+        PathOverhead memory p = pathOverhead;
+        q.l2Gas = (includePreparation ? uint256(p.preparation == 0 ? config.prepareGas : p.preparation) : 0)
+            + q.txCount * config.intrinsicGas + (p.finalization == 0 ? config.finalizeGas : p.finalization);
+        for (uint256 start; start < actions.length; start += actionsPerTx) {
+            bool deposits; bool withdrawals;
+            uint256 end = Math.min(start + actionsPerTx, actions.length);
+            for (uint256 j = start; j < end; ++j) {
+                if (actions[j].deposit) deposits = true; else withdrawals = true;
+            }
+            uint32 overhead = deposits && withdrawals ? p.mixedStep : deposits ? p.depositStep : p.withdrawalStep;
+            q.l2Gas += overhead == 0 ? config.stepGas : overhead;
+        }
         for (uint256 i; i < actions.length; i++) {
             Action memory a = actions[i];
             if (a.adapter == address(0) || a.amount == 0) revert InvalidPlan();
@@ -206,8 +245,8 @@ contract ReadOnlyGasEstimator {
             if (floor == 0) {
                 floor = a.deposit ? config.defaultDepositGas : config.defaultWithdrawGas;
             }
-            // A small or missing EMA cannot drag the estimate below the tested floor.
-            if (sample < floor) {
+            // Reliable EMA is primary, even below the cold-start default.
+            if (!_sampleReliable(measurements, a, sample)) {
                 sample = floor;
                 q.usedDefaults = true;
             }

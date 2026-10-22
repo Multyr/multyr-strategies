@@ -140,7 +140,7 @@ contract StrategySettingsModule is StrategyStorageLayout {
         uint16 _adapterMaxExposureBps,
         uint16 _newAdapterRampBps
     ) external onlyRoleOrRevert(PARAM_ROLE) {
-        if (_maxAdaptersPerAllocation < 2) revert MinAdaptersTooLow();
+        if (_maxAdaptersPerAllocation < 1) revert MinAdaptersTooLow();
         if (_minAdaptersActive < 2) revert MinAdaptersTooLow();
         if (!(_minSecondsBetweenRebalances >= 3600 && _minSecondsBetweenRebalances <= 604800)) revert ParamOutOfRange(); // "range: 1h-7d"
         // C-03: bounds on previously-unbounded params (P0.7 mandate-gate integrity).
@@ -558,6 +558,13 @@ contract StrategySettingsModule is StrategyStorageLayout {
         if (_bps > 2000) revert ParamOutOfRange();
         emit MaxIdleBpsUpdated(maxIdleBps, _bps);
         maxIdleBps = _bps;
+    }
+
+    /// @notice Configure the idle reserve independently of cap headroom margins.
+    function setTargetIdleBufferBps(uint16 bps) external onlyRoleOrRevert(DEFAULT_ADMIN_ROLE) {
+        if (bps > 10000) revert ParamOutOfRange();
+        emit TargetIdleBufferUpdated(targetIdleBufferBps, bps);
+        targetIdleBufferBps = bps;
     }
 
     /// @notice Set the target safety margin applied when abs/rel cap binds in target_allocations.

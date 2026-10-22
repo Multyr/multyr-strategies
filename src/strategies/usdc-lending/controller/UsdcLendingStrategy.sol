@@ -415,7 +415,8 @@ contract UsdcMultiLendingVault is StrategyStorageLayout {
                 emit IdleCashRemaining(idle, dustTolerance);
             }
             uint256 tvlAfter = totalAssets();
-            uint256 maxIdle = (uint256(maxIdleBootstrapBps) * tvlAfter) / 1e4;
+            uint256 allowedIdleBps = maxIdleBootstrapBps > targetIdleBufferBps ? maxIdleBootstrapBps : targetIdleBufferBps;
+            uint256 maxIdle = (allowedIdleBps * tvlAfter) / 1e4;
             if (maxIdle < dustTolerance) maxIdle = dustTolerance;
             if (idle > maxIdle) revert BootstrapIdleTooHigh();
         } else {
@@ -437,7 +438,8 @@ contract UsdcMultiLendingVault is StrategyStorageLayout {
             _delegateToScoring(abi.encodeWithSelector(bytes4(keccak256("deployIdleToAdapters(uint256,bool)")), assets, false));
             uint256 idle = idleCash();
             uint256 tvlTarget = tvlBefore + assets;
-            uint256 maxIdle = (uint256(maxIdleAfterDepositBps) * tvlTarget) / 1e4;
+            uint256 allowedIdleBps = maxIdleAfterDepositBps > targetIdleBufferBps ? maxIdleAfterDepositBps : targetIdleBufferBps;
+            uint256 maxIdle = (allowedIdleBps * tvlTarget) / 1e4;
             if (maxIdle < dustTolerance) maxIdle = dustTolerance;
             if (idle > maxIdle) revert NoCashInvariant();
         }

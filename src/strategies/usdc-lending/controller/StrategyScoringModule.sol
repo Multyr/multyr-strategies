@@ -115,7 +115,7 @@ contract StrategyScoringModule is StrategyStorageLayout {
         _degradedGuard();
         _syncPositionAssets(true);
 
-        enabledList = _enabledAdapters();
+        enabledList = _rebalanceAdapters();
         if (enabledList.length == 0) {
             return (enabledList, new uint256[](0), new uint256[](0), new uint16[](0), 0, 0);
         }
@@ -193,8 +193,8 @@ contract StrategyScoringModule is StrategyStorageLayout {
             uint256[] memory normScores
         )
     {
-        enabledAdapters = _enabledAdapters();
-        if (enabledAdapters.length < minAdaptersActive) {
+        enabledAdapters = _rebalanceAdapters();
+        if (enabledAdapters.length == 0) {
             return (new uint16[](0), enabledAdapters, new uint256[](0), 0, 0, new uint256[](0));
         }
         tvl = _tvl();
@@ -248,15 +248,11 @@ contract StrategyScoringModule is StrategyStorageLayout {
         uint256 tvl = _tvl();
         uint16 staticMax = maxAdaptersPerAllocation;
         uint16 dynamicMax;
-        if (tvl < 250_000e6) dynamicMax = 2; // Small vaults use the existing diversified tier.
+        if (tvl < 25_000e6) dynamicMax = 1;
+        else if (tvl < 250_000e6) dynamicMax = 2;
         else if (tvl < 1_000_000e6) dynamicMax = 3;      // T3 triple:  250K - 1M
         else if (tvl < 5_000_000e6) dynamicMax = 4;      // T4 quad:    1M - 5M
         else dynamicMax = 5;                              // T5 max:     5M+
-        if (adapterMaxExposureBps > 0) {
-            uint256 required = (11000 + uint256(adapterMaxExposureBps) - 1) / adapterMaxExposureBps;
-            if (required > MAX_ADAPTERS) required = MAX_ADAPTERS;
-            if (required > dynamicMax) dynamicMax = uint16(required);
-        }
         return (staticMax > 0 && staticMax < dynamicMax) ? staticMax : dynamicMax;
     }
 
@@ -265,8 +261,7 @@ contract StrategyScoringModule is StrategyStorageLayout {
     function effectiveAbsCapBps(address adapter) public view onlyDelegateCall returns (uint16) {
         uint16 dMax = effectiveMaxAdaptersPerAllocation();
         if (dMax == 0) return 0;
-        // A manual one-slot limit may restrict deployment, but must not relax exposure caps.
-        if (dMax < 2) dMax = 2;
+        // The one-adapter tier permits 100% structurally; the idle reserve and overlays still bind.
         // Layer 1: STRUCTURAL_BASE — ceil(11000 / dMax), floor 2500, ceiling 10000
         uint256 cap = (11000 + uint256(dMax) - 1) / uint256(dMax);
         if (cap > 10000) cap = 10000;

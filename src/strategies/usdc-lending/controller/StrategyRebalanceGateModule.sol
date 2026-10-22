@@ -75,7 +75,7 @@ contract StrategyRebalanceGateModule is StrategyStorageLayout {
             uint256[] memory scores
         ) = abi.decode(dcRes, (uint16[], address[], uint256[], uint256, uint256, uint256[]));
 
-        if (enabledAdapters.length < minAdaptersActive) return (false, 0, 0);
+        if (enabledAdapters.length == 0) return (false, 0, 0);
 
         // canRebalance is called via STATICCALL by LendingStrategyUpkeep.checkUpkeep
         // (view). Passing `emitOnMandate=false` guarantees no LOG* opcode executes
@@ -149,13 +149,12 @@ contract StrategyRebalanceGateModule is StrategyStorageLayout {
         uint256 cash = ASSET.balanceOf(address(this));
         for (uint256 i; i < actions.length; ++i) {
             GasEstimator.Action memory action = actions[i];
-            if (!enabled[action.adapter] || quarantined[action.adapter]) return (false, targets, moved);
             bool found;
             for (uint256 j; j < list.length; ++j) {
                 if (list[j] != action.adapter) continue;
                 found = true;
                 if (action.deposit) {
-                    if (depositsDisabled || flagged[action.adapter] || action.amount > cash) return (false, targets, moved);
+                    if (!enabled[action.adapter] || quarantined[action.adapter] || depositsDisabled || flagged[action.adapter] || action.amount > cash) return (false, targets, moved);
                     uint256 projected = targets[j] + action.amount;
                     (bool success, bytes memory response) = allocCalcModule_addr.delegatecall(
                         abi.encodeWithSignature("validateRebalanceDeposit(address,uint256,uint256)", action.adapter, projected, tvl)
@@ -176,7 +175,7 @@ contract StrategyRebalanceGateModule is StrategyStorageLayout {
             }
             if (!found) return (false, targets, moved);
         }
-        valid = actions.length > 0;
+        valid = actions.length > 0 && cash >= tvl * targetIdleBufferBps / 10000;
     }
 
     /// @notice Reprice the unexecuted suffix; sunk preparation/step costs are excluded.
@@ -184,7 +183,7 @@ contract StrategyRebalanceGateModule is StrategyStorageLayout {
         if (rebalanceGasEstimator == address(0) || _gasPlanSafety) return true;
         (bool success, bytes memory data) = scoringModule.delegatecall(abi.encodeWithSelector(COMPUTE_INPUTS_SEL));
         if (!success) return false;
-        (uint16[] memory apys, address[] memory list,, uint256 tvl,,) =
+        (uint16[] memory apys, address[] memory list, uint256[] memory currentTargets, uint256 tvl,,) =
             abi.decode(data, (uint16[], address[], uint256[], uint256, uint256, uint256[]));
         uint256 count = rebalancePlanTotalActions - rebalancePlanNextAction;
         GasEstimator.Action[] memory actions = new GasEstimator.Action[](count);
@@ -192,6 +191,16 @@ contract StrategyRebalanceGateModule is StrategyStorageLayout {
             uint256 at = rebalancePlanNextAction + i;
             uint256 raw = rebalancePlanAmounts[at];
             actions[i] = GasEstimator.Action(rebalancePlanAdapters[at], raw & ((1 << 255)-1), raw >> 255 == 1);
+        }
+        // Scores/TVL can change the selected set after preparation. Never deposit
+        // into a venue excluded by the freshly recomputed target policy.
+        for (uint256 i; i < actions.length; ++i) {
+            if (!actions[i].deposit) continue;
+            bool selected;
+            for (uint256 j; j < list.length; ++j) {
+                if (list[j] == actions[i].adapter && currentTargets[j] > 0) { selected = true; break; }
+            }
+            if (!selected) return false;
         }
         (bool valid, uint256[] memory targets, uint256 moved) = _actionTargets(list, actions, tvl);
         if (!valid) return false;

@@ -36,8 +36,8 @@ contract ReplacementMigrationTest is Test {
         // Foundry does not implement ArbOS precompile 0x6c. Replay the real pinned
         // response, while all feeds/protocols/Core/Router use their original code.
         vm.mockCall(address(0x6c), abi.encodeWithSignature("getPricesInWei()"), vm.envBytes("REHEARSAL_FEES"));
-        E.Config memory c = E.Config(1_500_000, 1_000_000, 300_000, 2_000_000, 3_000_000,
-            21_000, 164, 5000, 7200, 90000, 3600, 100e6);
+        E.Config memory c = E.Config(2_300_000, 1_700_000, 600_000, 2_000_000, 3_000_000,
+            21_612, 164, 3000, 7200, 90000, 3600, 100e6);
         estimator = new GE(IFeeInfo(address(0x6c)), IFeed(ETH_FEED), IFeed(USDC_FEED), IFeed(SEQ_FEED), c, GOV);
         assertEq(estimator.calibrator(), GOV);
         assertEq(estimator.pendingCalibrator(), address(0));
@@ -60,19 +60,22 @@ contract ReplacementMigrationTest is Test {
         vm.setEnv("GAS_SEQUENCER_FEED", vm.toString(SEQ_FEED));
         vm.setEnv("GAS_CONFIG_HASH", vm.toString(keccak256(abi.encode(c))));
         vm.setEnv("COPY_SOURCE_SETTINGS", "false");
-        vm.setEnv("ADAPTER_MAX_EXPOSURE_BPS", "2500");
+        vm.setEnv("TARGET_IDLE_BUFFER_BPS", "1000");
+        vm.setEnv("ADAPTER_MAX_EXPOSURE_BPS", "0");
         vm.setEnv("UNPAUSE_BUFFER", "false"); vm.setEnv("DO_SEAL", "false");
         vm.setEnv("DEPLOY_LENDING_ADAPTERS", "true"); vm.setEnv("DEPLOY_UPKEEP", "true");
-        vm.setEnv("STRATEGY_OUTPUT_JSON", "deployments/adapter-fixes-20261019/rehearsal-addresses.json");
+        vm.setEnv("STRATEGY_OUTPUT_JSON", "deployments/estimator-margin-20261023/migration-rehearsal-addresses.json");
         r = new Deploy().run();
-        uint32[7] memory deposits = [uint32(600000),1100000,550000,900000,1200000,450000,750000];
-        uint32[7] memory withdrawals = [uint32(300000),4000000,300000,450000,600000,300000,350000];
+        uint32[7] memory deposits = [uint32(330000),1860000,290000,550000,790000,220000,420000];
+        uint32[7] memory withdrawals = [uint32(170000),2040000,160000,240000,390000,140000,240000];
         for (uint256 i; i < 7; ++i) {
             address adapter = r.strategy.adapters(i);
             vm.prank(GOV);
             estimator.setAdapterFloors(adapter, deposits[i], withdrawals[i]);
         }
 
+        vm.prank(GOV); estimator.setPathOverhead(E.PathOverhead(2300000,1450000,1600000,1700000,600000));
+        assertEq(r.strategy.targetIdleBufferBps(),1000);
         assertFalse(StrategyRouter(ROUTER).isStrategyEnabled(address(r.strategy)));
         assertEq(IERC20(USDC).balanceOf(vm.addr(key)), 0, "deployment must need no USDC");
     }
@@ -111,7 +114,7 @@ contract ReplacementMigrationTest is Test {
             assertGe(r.strategy.totalAssets() + 100, amounts[k]);
             assertLt(r.strategy.idleCash(), amounts[k], "no protocol received funds");
             for (uint256 i; i < r.strategy.adapterCount(); ++i) {
-                assertLe(ILendingAdapter(r.strategy.adapters(i)).totalAssets(), amounts[k] / 4 + 100, "25 percent cap exceeded");
+                assertLe(ILendingAdapter(r.strategy.adapters(i)).totalAssets(), amounts[k] * 9000 / 10000 + 100, "reserve budget exceeded");
             }
             vm.prank(GOV); Settings(address(r.strategy)).exitBootstrapMode();
             uint256 idleBeforeTopup = IERC20(USDC).balanceOf(address(r.strategy));

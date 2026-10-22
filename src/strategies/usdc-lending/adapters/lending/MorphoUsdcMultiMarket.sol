@@ -911,22 +911,19 @@ contract MorphoUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentra
     function sortMarketsByAPY(bool asc) internal view returns (uint8[] memory idxs) {
         uint256 n = mkts.length;
         idxs = new uint8[](n);
-        for (uint8 i = 0; i < n; ++i) {
+        uint16[] memory apys = new uint16[](n);
+        // Each valuation can traverse an underlying vault's markets. Snapshot
+        // once per sort, rather than repeating external reads for every comparison.
+        for (uint8 i; i < n; ++i) {
             idxs[i] = i;
+            apys[i] = getAPYOnChain(mkts[i].addr);
         }
-        // Simple selection sort (n<=10)
-        for (uint8 i = 0; i < n; ++i) {
+        for (uint8 i; i < n; ++i) {
             uint8 best = i;
             for (uint8 j = i + 1; j < n; ++j) {
-                uint16 apyBest = getAPYOnChain(mkts[idxs[best]].addr);
-                uint16 apyJ = getAPYOnChain(mkts[idxs[j]].addr);
-                if (asc ? (apyJ < apyBest) : (apyJ > apyBest)) best = j;
+                if (asc ? apys[idxs[j]] < apys[idxs[best]] : apys[idxs[j]] > apys[idxs[best]]) best = j;
             }
-            if (best != i) {
-                uint8 tmp = idxs[i];
-                idxs[i] = idxs[best];
-                idxs[best] = tmp;
-            }
+            if (best != i) (idxs[i], idxs[best]) = (idxs[best], idxs[i]);
         }
     }
 

@@ -307,6 +307,7 @@ contract ShadowDeploymentLifecycle_Fork_Test is Test {
 
         // step 2 — the unmodified production deploy script
         vm.createDir("deployments/shadow/forktest", true);
+        vm.setEnv("TARGET_IDLE_BUFFER_BPS", "0"); // Legacy lifecycle fixture: no reserve policy.
         DeployUsdcLendingStrategy.DeploymentResult memory r = new DeployUsdcLendingStrategy().run();
         strat = r.strategy;
         assertEq(strat.adapterCount(), 7, "7 adapters");
@@ -404,6 +405,7 @@ contract ShadowDeploymentLifecycle_Fork_Test is Test {
         vm.setEnv("GOVERNANCE_ADDRESS", vm.toString(GOVERNANCE_SAFE));
         vm.setEnv("SHADOW_GOVERNANCE_ADDRESS", vm.toString(GOVERNANCE_SAFE));
         new PreflightUsdcLendingShadow().run();
+        vm.setEnv("TARGET_IDLE_BUFFER_BPS", "0"); // Legacy lifecycle fixture: no reserve policy.
         DeployUsdcLendingStrategy.DeploymentResult memory r = new DeployUsdcLendingStrategy().run();
         new PostflightUsdcLendingShadow().run();
 

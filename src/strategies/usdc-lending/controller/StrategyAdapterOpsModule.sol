@@ -170,6 +170,8 @@ contract StrategyAdapterOpsModule is StrategyStorageLayout {
     /// @dev KEEPER_ROLE only.
     function recordWithdrawGas(address adapter, uint256 gasUsed) external onlyDelegateCall onlyRoleOrRevert(KEEPER_ROLE) {
         _updateGasEma(adapter, gasUsed, false);
+        // Keeper-supplied legacy samples are not execution evidence.
+        delete withdrawGasObservation[adapter];
     }
 
     /// @dev Update per-adapter gas EMA. alpha = gasEmaSmoothingBps / 10000.

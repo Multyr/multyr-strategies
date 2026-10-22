@@ -1,0 +1,81 @@
+{
+  "status": "Finalized 30% calibration candidate; five current-code plans, native L1-envelope cross-check and fresh-state migration rehearsal passed; NOT deployed",
+  "config": {
+    "prepareGas": 2300000,
+    "stepGas": 1700000,
+    "finalizeGas": 600000,
+    "defaultDepositGas": 2000000,
+    "defaultWithdrawGas": 3000000,
+    "intrinsicGas": 21612,
+    "calldataBytes": 164,
+    "marginBps": 3000,
+    "maxPriceAge": 7200,
+    "usdcMaxPriceAge": 90000,
+    "sequencerGrace": 3600,
+    "fallbackUSDC": "100000000"
+  },
+  "pathOverhead": {
+    "preparation": 2300000,
+    "withdrawalStep": 1450000,
+    "depositStep": 1600000,
+    "mixedStep": 1700000,
+    "finalization": 600000
+  },
+  "adapterDefaults": [
+    {
+      "adapter": "aaveAdapter",
+      "measuredDepositMax": 329866,
+      "measuredWithdrawalMax": 168911,
+      "depositDefault": 330000,
+      "withdrawDefault": 170000
+    },
+    {
+      "adapter": "morphoAdapter",
+      "measuredDepositMax": 1856099,
+      "measuredWithdrawalMax": 2035497,
+      "depositDefault": 1860000,
+      "withdrawDefault": 2040000
+    },
+    {
+      "adapter": "cometAdapter",
+      "measuredDepositMax": 282915,
+      "measuredWithdrawalMax": 156959,
+      "depositDefault": 290000,
+      "withdrawDefault": 160000
+    },
+    {
+      "adapter": "eulerAdapter",
+      "measuredDepositMax": 544224,
+      "measuredWithdrawalMax": 233196,
+      "depositDefault": 550000,
+      "withdrawDefault": 240000
+    },
+    {
+      "adapter": "dolomiteAdapter",
+      "measuredDepositMax": 780450,
+      "measuredWithdrawalMax": 387270,
+      "depositDefault": 790000,
+      "withdrawDefault": 390000
+    },
+    {
+      "adapter": "fluidAdapter",
+      "measuredDepositMax": 218544,
+      "measuredWithdrawalMax": 136209,
+      "depositDefault": 220000,
+      "withdrawDefault": 140000
+    },
+    {
+      "adapter": "venusAdapter",
+      "measuredDepositMax": 411841,
+      "measuredWithdrawalMax": 238322,
+      "depositDefault": 420000,
+      "withdrawDefault": 240000
+    }
+  ],
+  "overheadBasis": "Current ten-scenario component maxima plus earlier measured preparation/mixed-step/finalization backstops (2,238,560 / 1,676,009 / 590,192). Rounded allowances, not a separate percentage margin. Older backstops are retained conservatively until corresponding revised-code paths are demonstrated cheaper.",
+  "scopeLimits": "Finite pinned-block coverage; first/repeated 1000-USDC adapter round trips and five tier books, not a worst-case bound for arbitrary protocol states.",
+  "strategyConfiguration": {
+    "targetIdleBufferBps": 1000
+  },
+  "pathOverheadRationale": "Deposit-only step increased from 1,500,000 to 1,600,000 after measuring 1,577,015. Re-quoted all five exact action lists; 30% covers gross costs without relying on refunds."
+}

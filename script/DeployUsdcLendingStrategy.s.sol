@@ -306,6 +306,11 @@ contract DeployUsdcLendingStrategy is Script {
         if (cfg.deployAdapters) {
             _phase3_5_transferAdapterAdmins(cfg, result);
         }
+        // Explicit release policy: never silently deploy with an unconfigured reserve.
+        uint256 targetIdleBps = vm.envUint("TARGET_IDLE_BUFFER_BPS");
+        require(targetIdleBps <= 10000, "IDLE_BUFFER_OUT_OF_RANGE");
+        StrategySettingsModule(address(result.strategy)).setTargetIdleBufferBps(uint16(targetIdleBps));
+        require(result.strategy.targetIdleBufferBps() == targetIdleBps, "IDLE_BUFFER_NOT_WIRED");
         _phase3_6_handoffGovernance(cfg, result);
 
         if (cfg.unpauseBuffer) {

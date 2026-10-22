@@ -71,6 +71,13 @@ contract Fees is IFeeInfo {
 }
 
 contract Samples is IMeasurements {
+    struct Observation { uint32 count; uint64 updated; }
+    mapping(address => Observation) public depositGasObservation;
+    mapping(address => Observation) public withdrawGasObservation;
+    function evidence(address a, bool deposit, uint32 count, uint64 updated) external {
+        if (deposit) depositGasObservation[a] = Observation(count, updated);
+        else withdrawGasObservation[a] = Observation(count, updated);
+    }
     mapping(address => uint64) public emaDepositGas;
     mapping(address => uint64) public emaWithdrawGas;
 
@@ -195,7 +202,41 @@ contract ReadOnlyGasEstimatorTest is Test {
         samples.set(address(1), 1, 1);
         assertEq(quote(plan(2)).costUSDC, before);
         samples.set(address(1), 1, 3000000);
+        samples.evidence(address(1), false, 3, uint64(block.timestamp));
         assertGt(quote(plan(2)).costUSDC, before);
+    }
+
+    function test_reliableEmaBelowDefaultAndStaleFallback() public {
+        E.Action[] memory a = new E.Action[](1);
+        a[0] = E.Action(address(1), 100e6, true);
+        e.setAdapterFloors(address(1), 750000, 350000);
+        uint256 cold = quote(a).l2Gas;
+        samples.set(address(1), 305025, 0);
+        samples.evidence(address(1), true, 2, uint64(block.timestamp));
+        assertEq(quote(a).l2Gas, cold);
+        samples.evidence(address(1), true, 3, uint64(block.timestamp));
+        assertEq(quote(a).l2Gas, cold - 750000 + 305025);
+        assertFalse(quote(a).usedDefaults);
+        samples.evidence(address(1), true, 3, uint64(block.timestamp - 7 days - 1));
+        assertEq(quote(a).l2Gas, cold);
+    }
+
+    function test_fiveOperationsThreeTargetsFourTransactions() public {
+        E.Action[] memory a = new E.Action[](5);
+        a[0] = E.Action(address(1), 300000e6, false);
+        a[1] = E.Action(address(2), 200000e6, false);
+        a[2] = E.Action(address(3), 200000e6, true);
+        a[3] = E.Action(address(4), 175000e6, true);
+        a[4] = E.Action(address(5), 125000e6, true);
+        e.setPathOverhead(E.PathOverhead(500000, 200000, 300000, 400000, 250000));
+        E.Quote memory q = quote(a);
+        assertEq(q.txCount, 4);
+        assertEq(q.l2Gas, 500000 + 200000 + 300000 * 2 + 250000 + 4 * 23112 + 2 * 2000000 + 3 * 1000000);
+        a[1].deposit = true;
+        assertEq(quote(a).l2Gas, q.l2Gas - 2000000 + 1000000 + 200000);
+        E.Quote memory remainder = e.estimate(address(samples), a, 2, false);
+        assertEq(remainder.txCount, 3);
+        assertEq(remainder.l2Gas, quote(a).l2Gas - 500000 - 23112);
     }
 
     function test_badOracleFailsClosed() public {
@@ -353,6 +394,18 @@ contract ReadOnlyGasEstimatorTest is Test {
         vm.txGasPrice(100_000_000);
         E.Quote memory q = quote(plan(2));
         assertEq(q.executionWei, q.l2Gas * 100_000_000);
+    }
+
+    function test_thirtyPercentMarginAppliedOnceToWholePlan() public {
+        (, bytes memory data) = address(e).staticcall(abi.encodeWithSignature("config()"));
+        E.Config memory c = abi.decode(data, (E.Config));
+        c.marginBps = 3000;
+        e.setConfig(c);
+        for (uint256 n = 1; n <= 7; ++n) {
+            E.Quote memory q = quote(plan(n));
+            uint256 base = ((q.executionWei + q.posterWei) * 3000 + 1e12 - 1) / 1e12;
+            assertEq(q.costUSDC, (base * 13000 + 9999) / 10000);
+        }
     }
 
     function test_configGovernanceAndBounds() public {

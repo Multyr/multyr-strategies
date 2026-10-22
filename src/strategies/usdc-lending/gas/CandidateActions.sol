@@ -55,10 +55,18 @@ library CandidateActions {
     function funded(E.Action[] memory actions, uint256 cash, uint256 minDelta)
         internal pure returns (E.Action[] memory)
     {
+        return fundedWithReserve(actions, cash, minDelta, 0);
+    }
+
+    function fundedWithReserve(E.Action[] memory actions, uint256 cash, uint256 minDelta, uint256 reserve)
+        internal pure returns (E.Action[] memory)
+    {
         uint256 count;
+        bool reserved;
         for (uint256 i; i < actions.length; ++i) {
             E.Action memory action = actions[i];
             if (action.deposit) {
+                if (!reserved) { cash = cash > reserve ? cash - reserve : 0; reserved = true; }
                 if (action.amount > cash) action.amount = cash;
                 if (action.amount == 0 || action.amount < minDelta) continue;
                 cash -= action.amount;

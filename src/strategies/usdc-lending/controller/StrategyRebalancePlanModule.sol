@@ -157,7 +157,7 @@ contract StrategyRebalancePlanModule is StrategyStorageLayout {
         }
 
         uint256 len = enabledList.length;
-        if (len < minAdaptersActive) revert InsufficientAdapters();
+        if (len == 0) revert InsufficientAdapters();
         if (len > 10) revert TooManyAdapters();
 
         // One canonical action builder is shared by preview, gate and execution.
@@ -257,14 +257,15 @@ contract StrategyRebalancePlanModule is StrategyStorageLayout {
             bool isDeposit = (rawAmount >> 255) == 1;
             uint256 amount = rawAmount & ((1 << 255) - 1);
 
-            if (!enabled[adapter] || quarantined[adapter]) {
+            if (isDeposit && (!enabled[adapter] || quarantined[adapter])) {
                 unchecked { ++i; }
                 continue;
             }
 
             if (isDeposit) {
                 uint256 idle = ASSET.balanceOf(address(this));
-                if (amount > idle) { incomplete = true; amount = idle; }
+                uint256 spendable = targetIdleBufferBps > 0 ? _deployableIdle() : idle;
+                if (amount > spendable) { incomplete = true; amount = spendable; }
                 // Safety mandates waive profitability, never deposit controls. Check each
                 // deposit against current state without preventing protective withdrawals.
                 if (amount > 0 && rebalanceGasEstimator != address(0) && _gasPlanSafety) {
