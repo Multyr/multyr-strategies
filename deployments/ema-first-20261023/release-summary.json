@@ -1,5 +1,5 @@
 {
-  "status": "deployed-and-verified-awaiting-Safe-migration",
+  "status": "migration-executed-keeper-live-subgraph-indexed",
   "chainId": 42161,
   "sourceCommit": "407b3df",
   "sourceTag": "usdc-lending-ema-first-20261023",
@@ -44,19 +44,37 @@
     "targetIdleBufferBpsAfterMigration": 0
   },
   "subgraph": {
-    "version": "v3.6.0-ema-first-20261023",
-    "deployment": "QmVAjbqwne7e5pQiZRi8ap1VBfZ3fsDgGjymgqv3FRD9h8",
-    "status": "Studio deployed, replaying history, no indexing errors at initial check",
-    "commit": "bb835e6"
+    "version": "v3.6.1-ema-first-20261023",
+    "deployment": "QmdApkpTSuGSqH1GRn2UFHeRPM3ThD89wFcqwNXGPogxub",
+    "indexedBlock": 517511218,
+    "hasIndexingErrors": false,
+    "queryUrl": "https://api.studio.thegraph.com/query/1758013/multyr-subgraph/v3.6.1-ema-first-20261023"
   },
   "keeper": {
-    "status": "prepared and pushed; AWS unchanged until Safe migration",
-    "commit": "e76c59f"
+    "status": "live-healthy",
+    "commit": "486078a",
+    "taskDefinitionRevision": 6,
+    "allSixJobsChecked": true,
+    "imageDigest": "sha256:9f4cdae078658c5a42cdf0a9eb49f9ab2242d6e704e9a30c37022d6a3eb8dfb8"
   },
   "safeFiles": {
     "01-propose-allowlist.safe.json": "a846a503fde78f6c369c03a8fcb6789507b1d1c03ab421ebc9ddd7a4d58cb212",
     "02-migrate.safe.json": "4b059b493df9ae5cd7421a6e8466f268f5ad9084ee29691cfae68a26782a25a6"
   },
   "targetIdleBufferBpsAfterMigration": 0,
-  "safeRevision": "31-call-zero-reserve"
+  "safeRevision": "31-call-zero-reserve",
+  "migrationVerification": {
+    "block": 517510894,
+    "replacementEnabled": true,
+    "previousStrategyEnabled": false,
+    "previousUpkeepEnabled": false,
+    "targetIdleBufferBps": 0
+  },
+  "firstKeeperDeployIdle": {
+    "hash": "0xf7821a51a73c3902b95d0849af62f68dcdea8990184bc003314c29fc24a650c7",
+    "block": 517507346,
+    "adapter": "0xE2247C76f1A6f40967f70F114ABa44c8BA0E0F66",
+    "gasUsed": 1965831,
+    "actualFeeWei": "39316620000000"
+  }
 }
