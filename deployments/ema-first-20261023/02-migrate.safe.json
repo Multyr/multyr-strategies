@@ -1,10 +1,10 @@
 {
   "version": "1.0",
   "chainId": "42161",
-  "createdAt": 1792709322605,
+  "createdAt": 1792740649761,
   "meta": {
     "name": "ema-first-20261023: atomic migration",
-    "description": "Step 2. Execute only after allowlist ETA. Stop old upkeep, sweep old adapters, recall to Core, assert drained, register replacement, retire old strategy. AWS rollout follows successful Safe execution.",
+    "description": "Step 2. Execute only after allowlist ETA. Stop old upkeep, sweep old adapters, recall to Core, assert drained, register replacement, retire old strategy. AWS rollout follows successful Safe execution. Sets the replacement target idle reserve to 0% before activation. Supersedes the previous 30-call migration batch.",
     "txBuilderVersion": "1.18.0",
     "createdFromSafeAddress": "0x70ef444799D6FBbE0865bA598Bee6795e064a326",
     "createdFromOwnerAddress": ""
@@ -175,6 +175,13 @@
       "to": "0x3d8028cc7052c168ca184db1b742932ad76e7872",
       "value": "0",
       "data": "0xdfa53f81000000000000000000000000883bb97a5cd4c0e0ae5798632e1ec8c87e4fddb300000000000000000000000000000000000000000000000000000000000668a0000000000000000000000000000000000000000000000000000000000003a980",
+      "contractMethod": null,
+      "contractInputsValues": null
+    },
+    {
+      "to": "0x2AD722B6241605481829E4B251AE8A4Ba8Be86cE",
+      "value": "0",
+      "data": "0x5bd246480000000000000000000000000000000000000000000000000000000000000000",
       "contractMethod": null,
       "contractInputsValues": null
     },

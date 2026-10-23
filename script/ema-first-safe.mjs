@@ -77,6 +77,7 @@ const migration=batch(`${dir.split('/').at(-1)}: atomic migration`,'Step 2. Exec
   tx(env.MIGRATION_GUARD,'assertDrained(address,uint256)',[old,100n]),
   tx(env.REBALANCE_GAS_ESTIMATOR,'setPathOverhead((uint32,uint32,uint32,uint32,uint32))',[Object.values(calibration.pathOverhead)]),
   ...calibration.adapterDefaults.map(d=>tx(env.REBALANCE_GAS_ESTIMATOR,'setAdapterFloors(address,uint32,uint32)',[book[d.adapter],d.depositDefault,d.withdrawDefault])),
+  tx(fresh,'setTargetIdleBufferBps(uint16)',[0]),
   tx(router,'executeStrategyAllowlist(address)',[fresh]),
   tx(router,'register(address,uint16,uint16)',[fresh,100,10000]),
   tx(router,'setMaxStrategyBps(address,uint16)',[fresh,10000]),

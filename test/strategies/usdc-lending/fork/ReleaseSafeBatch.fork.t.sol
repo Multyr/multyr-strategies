@@ -30,7 +30,7 @@ contract ReleaseSafeBatchTest is Test {
         assertFalse(IReleaseRouter(ROUTER).isStrategyEnabled(OLD));
         assertTrue(IReleaseRouter(ROUTER).isStrategyEnabled(fresh));
         assertLe(IReleaseStrategy(OLD).totalAssets(),100);
-        assertEq(IReleaseStrategy(fresh).targetIdleBufferBps(),1000);
+        assertEq(IReleaseStrategy(fresh).targetIdleBufferBps(),0);
         assertEq(IReleaseStrategy(fresh).rebalanceGasEstimator(),vm.parseJsonAddress(book,".rebalanceGasEstimator"));
         console2.log("Exact deployed-address Safe batches passed");
     }
