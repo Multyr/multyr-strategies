@@ -1,0 +1,17 @@
+[
+  {
+    "status": "1",
+    "message": "OK",
+    "result": "pbafe4ujhv4dqcgfcr9gxceeg2rrfrjq4nim4z1jcczjaafc7h"
+  },
+  {
+    "status": "0",
+    "message": "NOTOK",
+    "result": "Pending in queue"
+  },
+  {
+    "status": "1",
+    "message": "OK",
+    "result": "Pass - Verified"
+  }
+]

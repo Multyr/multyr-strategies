@@ -6,6 +6,8 @@ import {
     Overflow,
     GateNotMet
 } from "./StrategyStorageLayout.sol";
+import {ReadOnlyGasEstimator as GasEstimator} from "../gas/ReadOnlyGasEstimator.sol";
+import {ILendingAdapter} from "../interfaces/ILendingAdapter.sol";
 import { StrategyConfigLib } from "../lib/StrategyConfigLib.sol";
 
 import { IERC20Metadata } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
@@ -51,7 +53,10 @@ contract StrategyRebalanceGateModule is StrategyStorageLayout {
     {
         // Pre-checks (same as old canRebalance)
         if (rebalancePlanPhase != 0) return (false, 0, 0);
-        if (block.timestamp - lastRebalanceTs < minSecondsBetweenRebalances) {
+        uint256 cooldown = minSecondsBetweenRebalances;
+        if (rebalancePlanBackoffThreshold > 0 && rebalancePlanConsecutiveFailures > rebalancePlanBackoffThreshold)
+            cooldown *= rebalancePlanConsecutiveFailures - rebalancePlanBackoffThreshold >= 2 ? 4 : 2;
+        if (block.timestamp - lastRebalanceTs < cooldown) {
             return (false, 0, 0);
         }
 
@@ -66,20 +71,23 @@ contract StrategyRebalanceGateModule is StrategyStorageLayout {
             address[] memory enabledAdapters,
             uint256[] memory targetAllocs,
             uint256 tvl,
-            uint256 moved
-        ) = abi.decode(dcRes, (uint16[], address[], uint256[], uint256, uint256));
+            uint256 moved,
+            uint256[] memory scores
+        ) = abi.decode(dcRes, (uint16[], address[], uint256[], uint256, uint256, uint256[]));
 
-        if (enabledAdapters.length < minAdaptersActive) return (false, 0, 0);
+        if (enabledAdapters.length == 0) return (false, 0, 0);
 
         // canRebalance is called via STATICCALL by LendingStrategyUpkeep.checkUpkeep
         // (view). Passing `emitOnMandate=false` guarantees no LOG* opcode executes
         // on this path, so the staticcall succeeds even when the mandate fires.
         // The CapDriftMandate event is still emitted when the plan is actually
         // prepared (checkGate path, see below).
+        GasEstimator.Action[] memory actions = _candidateActions(enabledAdapters, targetAllocs, scores, tvl);
         (ok, netBenefitBps) = _fullGateCheck(
-            apyBpsArray, enabledAdapters, targetAllocs, tvl, moved, false
+            apyBpsArray, enabledAdapters, targetAllocs, tvl, moved, false, actions
         );
-        movedEstimateUSDC = moved;
+        if (rebalanceGasEstimator == address(0)) movedEstimateUSDC = moved;
+        else for (uint256 i; i < actions.length; ++i) movedEstimateUSDC += actions[i].amount;
     }
 
     /// @notice Gate check called by ScoringModule._prepareRebalanceInternal() via delegatecall.
@@ -97,7 +105,111 @@ contract StrategyRebalanceGateModule is StrategyStorageLayout {
         uint256 tvl,
         uint256 moved
     ) external onlyDelegateCall onlyRoleOrRevert(KEEPER_ROLE) returns (bool ok, int256 netBenefitBps) {
-        return _fullGateCheck(apyBpsArray, enabledAdapters, targetAllocs, tvl, moved, true);
+        return _fullGateCheck(apyBpsArray, enabledAdapters, targetAllocs, tvl, moved, true,
+            _candidateActions(enabledAdapters, targetAllocs, new uint256[](enabledAdapters.length), tvl));
+    }
+
+    /// @notice True read-only preview; uses the same scoring and candidate builder as preparation.
+    /// @dev Scoring's false-update path is STATICCALL-safe. No quotes are stored.
+    function previewRebalanceGas() external view onlyDelegateCall
+        returns (GasEstimator.Action[] memory actions, GasEstimator.Quote memory quote)
+    {
+        (bool ok, bytes memory data) = address(this).staticcall(abi.encodeWithSelector(COMPUTE_INPUTS_SEL));
+        require(ok, "scoring-preview");
+        (, address[] memory list, uint256[] memory targets, uint256 tvl,, uint256[] memory scores) =
+            abi.decode(data, (uint16[], address[], uint256[], uint256, uint256, uint256[]));
+        if (list.length == 0) return (new GasEstimator.Action[](0), quote);
+        actions = _candidateActions(list, targets, scores, tvl);
+        if (actions.length > 0 && rebalanceGasEstimator != address(0)) quote = _quote(actions, true);
+    }
+
+    /// @notice Preparation evaluates the same canonical ordered actions as execution.
+    function checkCandidateGate(uint16[] calldata apys, address[] calldata list, uint256[] calldata targets,
+        uint256[] calldata scores, uint256 tvl, uint256 moved)
+        external onlyDelegateCall onlyRoleOrRevert(KEEPER_ROLE) returns (bool pass, int256 benefit, bool safety)
+    {
+        if (capDriftToleranceBps > 0 && adapterMaxExposureBps > 0 && tvl > 0)
+            (safety,,,) = _checkCapDriftMandate(list, tvl);
+        (pass, benefit) = _fullGateCheck(apys, list, targets, tvl, moved, true, _candidateActions(list, targets, scores, tvl));
+    }
+
+    function _quote(GasEstimator.Action[] memory actions, bool prepare) internal view returns (GasEstimator.Quote memory q) {
+        uint8 batch = maxRebalanceActionsPerTx == 0 ? 2 : maxRebalanceActionsPerTx;
+        try GasEstimator(rebalanceGasEstimator).estimate(address(this), actions, batch, prepare)
+            returns (GasEstimator.Quote memory result) { return result; } catch { return q; }
+    }
+
+    /// @dev Validate executable funding and construct the resulting allocation.
+    ///      Short liquidity, disabled venues and changed deposit flags invalidate the plan.
+    function _actionTargets(address[] memory list, GasEstimator.Action[] memory actions, uint256 tvl)
+        internal returns (bool valid, uint256[] memory targets, uint256 moved)
+    {
+        targets = new uint256[](list.length);
+        for (uint256 j; j < list.length; ++j) targets[j] = positionAssets[list[j]];
+        uint256 cash = ASSET.balanceOf(address(this));
+        for (uint256 i; i < actions.length; ++i) {
+            GasEstimator.Action memory action = actions[i];
+            bool found;
+            for (uint256 j; j < list.length; ++j) {
+                if (list[j] != action.adapter) continue;
+                found = true;
+                if (action.deposit) {
+                    if (!enabled[action.adapter] || quarantined[action.adapter] || depositsDisabled || flagged[action.adapter] || action.amount > cash) return (false, targets, moved);
+                    uint256 projected = targets[j] + action.amount;
+                    (bool success, bytes memory response) = allocCalcModule_addr.delegatecall(
+                        abi.encodeWithSignature("validateRebalanceDeposit(address,uint256,uint256)", action.adapter, projected, tvl)
+                    );
+                    if (!success || response.length < 32 || !abi.decode(response, (bool))) return (false, targets, moved);
+                    cash -= action.amount;
+                    targets[j] = projected;
+                } else {
+                    if (action.amount > targets[j]) return (false, targets, moved);
+                    try ILendingAdapter(action.adapter).withdrawableAssets() returns (uint256 liquid) {
+                        if (action.amount > liquid) return (false, targets, moved);
+                    } catch { return (false, targets, moved); }
+                    targets[j] -= action.amount;
+                    cash += action.amount;
+                }
+                moved += action.amount;
+                break;
+            }
+            if (!found) return (false, targets, moved);
+        }
+        valid = actions.length > 0 && cash >= tvl * targetIdleBufferBps / 10000;
+    }
+
+    /// @notice Reprice the unexecuted suffix; sunk preparation/step costs are excluded.
+    function checkRemainingPlan() external onlyDelegateCall onlyRoleOrRevert(KEEPER_ROLE) returns (bool) {
+        if (rebalanceGasEstimator == address(0) || _gasPlanSafety) return true;
+        (bool success, bytes memory data) = scoringModule.delegatecall(abi.encodeWithSelector(COMPUTE_INPUTS_SEL));
+        if (!success) return false;
+        (uint16[] memory apys, address[] memory list, uint256[] memory currentTargets, uint256 tvl,,) =
+            abi.decode(data, (uint16[], address[], uint256[], uint256, uint256, uint256[]));
+        uint256 count = rebalancePlanTotalActions - rebalancePlanNextAction;
+        GasEstimator.Action[] memory actions = new GasEstimator.Action[](count);
+        for (uint256 i; i < count; ++i) {
+            uint256 at = rebalancePlanNextAction + i;
+            uint256 raw = rebalancePlanAmounts[at];
+            actions[i] = GasEstimator.Action(rebalancePlanAdapters[at], raw & ((1 << 255)-1), raw >> 255 == 1);
+        }
+        // Scores/TVL can change the selected set after preparation. Never deposit
+        // into a venue excluded by the freshly recomputed target policy.
+        for (uint256 i; i < actions.length; ++i) {
+            if (!actions[i].deposit) continue;
+            bool selected;
+            for (uint256 j; j < list.length; ++j) {
+                if (list[j] == actions[i].adapter && currentTargets[j] > 0) { selected = true; break; }
+            }
+            if (!selected) return false;
+        }
+        (bool valid, uint256[] memory targets, uint256 moved) = _actionTargets(list, actions, tvl);
+        if (!valid) return false;
+        GasEstimator.Quote memory q = _quote(actions, false);
+        emit RebalanceGasEvaluated(q.actionsHash, q.costUSDC, q.l2Gas, q.posterWei, q.reliable);
+        if (!q.reliable) return false;
+        (bool pass, uint256 gross, int256 net) = _gateBenefitCost(apys, list, targets, tvl, moved, q.costUSDC);
+        emit RebalanceEconomicsEvaluated(moved, gross, q.costUSDC, net, pass);
+        return pass;
     }
 
     // ── Internal gate logic ─────────────────────────────────────────────
@@ -108,8 +220,10 @@ contract StrategyRebalanceGateModule is StrategyStorageLayout {
         uint256[] memory targetAllocs,
         uint256 tvl,
         uint256 moved,
-        bool emitOnMandate
+        bool emitOnMandate,
+        GasEstimator.Action[] memory actions
     ) internal returns (bool ok, int256 netBenefitBps) {
+        if (rebalanceGasEstimator != address(0) && actions.length == 0) return (false, 0);
         // ─────────────────────────────────────────────────────────────────
         // P0.4 (2026-04-24) — Cap drift mandate bypass.
         //
@@ -165,6 +279,17 @@ contract StrategyRebalanceGateModule is StrategyStorageLayout {
         }
         // ─────────────────────────────────────────────────────────────────
 
+        uint256 cost = estimatedGasCostUSDC > 0 ? estimatedGasCostUSDC : gasCostUSDC;
+        if (rebalanceGasEstimator != address(0)) {
+            bool valid;
+            (valid, targetAllocs, moved) = _actionTargets(enabledAdapters, actions, tvl);
+            if (!valid) return (false, 0);
+            GasEstimator.Quote memory q = _quote(actions, true);
+            if (emitOnMandate) emit RebalanceGasEvaluated(q.actionsHash, q.costUSDC, q.l2Gas, q.posterWei, q.reliable);
+            if (!q.reliable) return (false, 0);
+            cost = q.costUSDC;
+        }
+
         // P0.3 (remediation sprint 2026-04-22): drift denominator must use the
         // re-allocatable TVL (idle + enabled positions), NOT the total TVL that
         // includes quarantined positions. Otherwise quarantine inflates the
@@ -189,8 +314,10 @@ contract StrategyRebalanceGateModule is StrategyStorageLayout {
         // the net-benefit-bps normalisation is consistent with the pre-check).
         uint256 grossBenefit;
         (ok, grossBenefit, netBenefitBps) = _gateBenefitCost(
-            apyBpsArray, enabledAdapters, targetAllocs, tvl, moved
+            apyBpsArray, enabledAdapters, targetAllocs, tvl, moved, cost
         );
+        if (emitOnMandate && rebalanceGasEstimator != address(0))
+            emit RebalanceEconomicsEvaluated(moved, grossBenefit, cost, netBenefitBps, ok);
     }
 
     /// @dev P0.4 (2026-04-24) — scan enabled adapters for cap drift mandate.
@@ -255,6 +382,7 @@ contract StrategyRebalanceGateModule is StrategyStorageLayout {
 
             // (1) Absolute cap drift — fallback abs cap for safety adapters.
             uint256 absCapBpsEff = isSafety ? uint256(sf.absCapBps) : uint256(normalAbsCapBps);
+            if (normalAbsCapBps > 0 && absCapBpsEff > normalAbsCapBps) absCapBpsEff = normalAbsCapBps;
             uint256 absMaxExp   = (absCapBpsEff * tvl) / 1e4;
             uint256 absHard     = (absMaxExp * (1e4 + uint256(tolBps))) / 1e4;
             if (curr > absHard) {
@@ -309,7 +437,8 @@ contract StrategyRebalanceGateModule is StrategyStorageLayout {
         address[] memory enabledAdapters,
         uint256[] memory targetAllocs,
         uint256 tvl,
-        uint256 moved
+        uint256 moved,
+        uint256 gasCost
     ) internal view returns (bool ok, uint256 grossBenefit, int256 netBenefitBps) {
         // Calculate deltaAPY = weightedAPY(target) - weightedAPY(current)
         uint256 currWeightedAPY = 0;
@@ -331,12 +460,25 @@ contract StrategyRebalanceGateModule is StrategyStorageLayout {
         if (currWeightedAPY > uint256(type(int256).max)) revert Overflow();
 
         int256 deltaAPY = int256(tgtWeightedAPY) - int256(currWeightedAPY);
+        // Dynamic mode uses the executable allocation's annual USDC yield delta.
+        int256 annualDelta;
+        if (rebalanceGasEstimator != address(0)) {
+            for (uint256 i; i < enabledAdapters.length; ++i) {
+                uint256 beforeYield = positionAssets[enabledAdapters[i]] * apyBpsArray[i];
+                uint256 afterYield = targetAllocs[i] * apyBpsArray[i];
+                if (beforeYield > uint256(type(int256).max) || afterYield > uint256(type(int256).max)) revert Overflow();
+                annualDelta += int256(afterYield) - int256(beforeYield);
+            }
+        }
+
 
         // P3: Regime-aware horizon (0 = use default)
         uint256 _horizon = regimeHorizonDays > 0 ? regimeHorizonDays : gateHorizonDays;
 
         // Gross benefit = moved × deltaAPY × horizon / (10000 × 365)
-        if (deltaAPY > 0) {
+        if (rebalanceGasEstimator != address(0)) {
+            if (annualDelta > 0) grossBenefit = uint256(annualDelta) * _horizon / (10000 * 365);
+        } else if (deltaAPY > 0) {
             grossBenefit = (moved * uint256(deltaAPY) * _horizon) / (10000 * 365);
         }
 
@@ -358,6 +500,11 @@ contract StrategyRebalanceGateModule is StrategyStorageLayout {
             grossBenefit += protBenefit;
         }
 
+        if (rebalanceGasEstimator != address(0) && annualDelta < 0) {
+            uint256 yieldLoss = uint256(-annualDelta) * _horizon / (10000 * 365);
+            grossBenefit = grossBenefit > yieldLoss ? grossBenefit - yieldLoss : 0;
+        }
+
         // P3: Confidence multiplier (10000 = 1x, 0 = no override)
         if (regimeConfidenceMultBps > 0 && regimeConfidenceMultBps < 10000) {
             grossBenefit = (grossBenefit * regimeConfidenceMultBps) / 10000;
@@ -371,7 +518,7 @@ contract StrategyRebalanceGateModule is StrategyStorageLayout {
         }
 
         // P0: Dynamic gas cost (EMA-based if available, else fixed fallback)
-        uint256 _gasCost = estimatedGasCostUSDC > 0 ? estimatedGasCostUSDC : gasCostUSDC;
+        uint256 _gasCost = gasCost;
         uint256 moveCost = _gasCost + (moved * (slippageBpsEstimate + withdrawalSpreadBpsEstimate)) / 1e4;
 
         if (grossBenefit > uint256(type(int256).max)) revert Overflow();
@@ -379,6 +526,7 @@ contract StrategyRebalanceGateModule is StrategyStorageLayout {
         if (moved > uint256(type(int256).max)) revert Overflow();
 
         int256 netBenefit = int256(grossBenefit) - int256(moveCost);
+        if (rebalanceGasEstimator != address(0) && netBenefit <= 0) return (false, grossBenefit, 0);
         if (moved < 1) return (false, grossBenefit, 0);
         netBenefitBps = (netBenefit * 1e4) / int256(moved);
 

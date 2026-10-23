@@ -15,6 +15,8 @@ pragma solidity 0.8.28;
 //       This is intentional — the system does not use proxy upgrades.
 // ═══════════════════════════════════════════════════════════════════════════════
 
+import {ReadOnlyGasEstimator as GasEstimator} from "../gas/ReadOnlyGasEstimator.sol";
+import {CandidateActions} from "../gas/CandidateActions.sol";
 import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
 import { Pausable } from "@openzeppelin/contracts/security/Pausable.sol";
 import { ReentrancyGuard } from "@openzeppelin/contracts/security/ReentrancyGuard.sol";
@@ -445,7 +447,91 @@ contract StrategyStorageLayout is AccessControl, Pausable, ReentrancyGuard {
     // Reduced from 2 to 1 (2026-06-20): safetyOverflowModule_addr (EIP-170 F-SIZE-01 refactor).
     /// @notice StrategySafetyOverflowModule address (set-once via setSafetyOverflowModule).
     address public safetyOverflowModule_addr;
-    uint256[1] private __gap;
+    // Consumes the final reserved slot. Shared by ALL replacement modules.
+    address public rebalanceGasEstimator;
+    bool internal _gasPlanSafety;
+    event RebalanceGasEstimatorSet(address indexed estimator);
+    event RebalanceGasEvaluated(bytes32 indexed actionsHash, uint256 costUSDC, uint256 l2Gas, uint256 posterWei, bool reliable);
+    event RebalanceEconomicsInvalidated();
+    /// @notice Accepted preparation inputs, in adapter order; hash binds the executable actions.
+    event RebalanceScores(bytes32 indexed actionsHash, address[] adapters, uint256[] normalizedScores, uint16[] apyBps, uint256[] targetAssets, uint256 tvl);
+    event RebalanceDepositSkipped(address indexed adapter, uint256 amount);
+    event RebalanceEconomicsEvaluated(uint256 movedUSDC, uint256 grossBenefitUSDC, uint256 gasCostUSDC, int256 netBenefitBps, bool accepted);
+
+    function _candidateActions(address[] memory list, uint256[] memory targets, uint256[] memory scores, uint256 tvl)
+        internal view returns (GasEstimator.Action[] memory actions)
+    {
+        if (list.length == 0) return new GasEstimator.Action[](0);
+        uint256[] memory current = new uint256[](list.length);
+        for (uint256 i; i < list.length; ++i) current[i] = positionAssets[list[i]];
+        uint256 minDelta = list.length == 0 ? dustTolerance : tvl * rebalanceMinMoveBps / 10000 / list.length;
+        if (minDelta < dustTolerance) minDelta = dustTolerance;
+        actions = CandidateActions.build(list, current, targets, scores, minDelta);
+        // Price and execute only realizable proceeds, including ERC4626 rounding.
+        // Do not relax the gate's liquidity check or fund deposits with unavailable NAV.
+        uint256 count;
+        for (uint256 i; i < actions.length; ++i) {
+            GasEstimator.Action memory action = actions[i];
+            if (!action.deposit) {
+                try ILendingAdapter(action.adapter).withdrawableAssets() returns (uint256 liquid) {
+                    if (action.amount > liquid) action.amount = liquid;
+                } catch { continue; }
+                if (action.amount == 0 || action.amount < minDelta) continue;
+            }
+            actions[count++] = action;
+        }
+        assembly ("memory-safe") { mstore(actions, count) }
+        actions = CandidateActions.fundedWithReserve(actions, ASSET.balanceOf(address(this)), minDelta, tvl * targetIdleBufferBps / 10000);
+    }
+
+    event ExecutionGasObserved(address indexed adapter, uint256 gasUsed, bool deposit);
+
+    // Appended storage: replacement modules must all use this layout.
+    struct GasObservation { uint32 count; uint64 updatedAt; }
+    mapping(address => GasObservation) public depositGasObservation;
+    mapping(address => GasObservation) public withdrawGasObservation;
+
+    /// @notice Idle reserve in basis points of TVL; configure 1000 for a 10% buffer.
+    uint16 public targetIdleBufferBps;
+    event TargetIdleBufferUpdated(uint16 previousBps, uint16 nextBps);
+
+    function _deployableIdle() internal view returns (uint256) {
+        uint256 idle = ASSET.balanceOf(address(this));
+        uint256 reserve = _tvl() * targetIdleBufferBps / 10000;
+        return idle > reserve ? idle - reserve : 0;
+    }
+
+    // Allocation eligibility must never hide a funded adapter from recall planning.
+    function _rebalanceAdapters() internal view returns (address[] memory result) {
+        result = new address[](adapters.length);
+        uint256 count;
+        for (uint256 i; i < adapters.length; ++i) {
+            address a = adapters[i];
+            if ((enabled[a] && !quarantined[a]) || positionAssets[a] > 0) result[count++] = a;
+        }
+        assembly ("memory-safe") { mstore(result, count) }
+    }
+
+    function _recordExecutionGas(address adapter, uint256 observed, bool deposit_) internal {
+        if (observed == 0 || observed > type(uint64).max) return;
+        uint256 alpha = gasEmaSmoothingBps == 0 ? 2000 : gasEmaSmoothingBps;
+        if (alpha > 10000) return; // measurement must never block an emergency withdrawal
+        uint64 old = deposit_ ? emaDepositGas[adapter] : emaWithdrawGas[adapter];
+        GasObservation storage observation = deposit_ ? depositGasObservation[adapter] : withdrawGasObservation[adapter];
+        // A new execution regime or a long gap restarts the evidence window.
+        bool reset = old == 0 || observation.updatedAt == 0
+            || block.timestamp > uint256(observation.updatedAt) + 7 days
+            || observed > uint256(old) * 125 / 100 || observed * 125 < uint256(old) * 100;
+        if (reset) observation.count = 1;
+        else if (observation.count < type(uint32).max) ++observation.count;
+        observation.updatedAt = uint64(block.timestamp);
+        uint64 next = reset ? uint64(observed) : old == 0 ? uint64(observed) : uint64((uint256(old) * (10000-alpha) + observed * alpha) / 10000);
+        if (deposit_) emaDepositGas[adapter] = next;
+        else emaWithdrawGas[adapter] = next;
+        emit GasEmaUpdated(adapter, next, deposit_);
+        emit ExecutionGasObserved(adapter, observed, deposit_);
+    }
+
 
     // ── Shared events ───────────────────────────────────────────────────────
 

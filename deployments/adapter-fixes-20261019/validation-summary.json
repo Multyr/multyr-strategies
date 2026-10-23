@@ -1,0 +1,42 @@
+{
+  "adapterTests": {
+    "passed": 1252,
+    "failed": 0
+  },
+  "releaseTests": {
+    "passed": 49,
+    "failed": 0
+  },
+  "keeperTests": {
+    "passed": 32,
+    "failed": 0,
+    "typecheck": "passed"
+  },
+  "forkBlock": 516126107,
+  "fullPlan": {
+    "measuredWrapperGas": 5943262,
+    "modeledL2Gas": 6463000,
+    "modeledCostUSDCRaw": 468248,
+    "scope": "Fork scenario; no live rebalance performed",
+    "opportunity": "Hypothetical APY overrides on real protocol adapters, used only on the fork to exercise an economic rebalance"
+  },
+  "migrationRehearsal": "current book recalled to unchanged Core; deposits at current book size, 10000 and 200000 USDC; 25% caps; post-bootstrap topups; seven protocol round trips",
+  "capRegressionTests": {
+    "passed": 116,
+    "failed": 0
+  },
+  "keeperCommit": "25c538648e7b898f2e65eff345006d352f69f3e8",
+  "keeperConfigPushed": true,
+  "awsActivated": false,
+  "exactSafeBatchTests": {
+    "passed": 1,
+    "failed": 0
+  },
+  "totalContractTestsPassed": 1418,
+  "safeCallCounts": [
+    1,
+    25
+  ],
+  "allowlistDelaySeconds": 300,
+  "liveMigrationExecuted": false
+}

@@ -82,21 +82,13 @@ contract SafetyAdapterCapTierProperties is CapDrift_D1f_SafetyAdapterCapTier {
     // path. The forbidden outcome is ok=true && nb==0 (the mandate signature)
     // — any other tuple (ok=false, or ok=true with positive nb) is legitimate.
 
-    function testFuzz_I2_safety_below_fallback_no_mandate_signal(uint16 pctBps) public {
-        // Bound to the "above normal hardCeiling, below SAFETY hardCeiling" band
-        // — exactly the band where the design must protect the safety tranche
-        // from a spurious mandate. Below 5200 the adapter is in normal-cap
-        // territory, where mandate behaviour is irrelevant.
+    function testFuzz_I2_safetyAboveGlobalCeilingRequiresMandate(uint16 pctBps) public {
         pctBps = uint16(bound(uint256(pctBps), 5200, 7100));
         _forcePctOfNewTvl(adapterA, pctBps);
-
         vm.warp(block.timestamp + 22000);
-        (bool ok, , int256 nb) =
-            StrategyRebalanceGateModule(address(vault)).canRebalance();
-
-        if (ok) {
-            assertGt(nb, 0, "I-2: safety in tranche must not mandate-fire (nb==0 forbidden)");
-        }
+        (bool ok,,int256 nb) = StrategyRebalanceGateModule(address(vault)).canRebalance();
+        assertTrue(ok, "Global ceiling binds even below the configured fallback cap");
+        assertEq(nb, 0, "Safety over global cap must mandate protective recall");
     }
 
     // ── Property I-3 ────────────────────────────────────────────────────────

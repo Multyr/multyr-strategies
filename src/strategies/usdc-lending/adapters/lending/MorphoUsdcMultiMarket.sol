@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.28;
+import { PpsRateLib } from "./PpsRateLib.sol";
 
 // ===== OpenZeppelin imports =====
 import { SafeERC20, IERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
@@ -379,21 +380,19 @@ contract MorphoUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentra
     /// Audit #2 P1.9: if cache is stale (beyond apyStalenessSeconds), returns 0 so
     /// the scoring engine does not allocate based on outdated yield data.
     function _getAPYOnChainOrCached(address market) internal view returns (uint16) {
-        uint64 ts = lastApyUpdateTs[market];
-        if (ts == 0) return 0;
-        if (apyStalenessSeconds > 0 && block.timestamp - ts > apyStalenessSeconds) return 0;
-        return lastGoodApyBps[market];
+        (bool ok, uint256 pps) = _safeConvertToAssets(market, 1e24);
+        if (!ok) return 0;
+        if (apyStalenessSeconds > 0 && rateSamples[market].ts != 0
+            && block.timestamp - rateSamples[market].ts > apyStalenessSeconds) return 0;
+        return PpsRateLib.read(rateSamples[market], pps);
     }
 
-    /// @dev Non-view cache refresh. Safe: uses staticcall and clamps decode.
-    ///      Called before every deposit attempt and in pokeAPYSnapshots.
     function _refreshApyCache(address market) internal {
-        // MetaMorpho vaults: APY derived from PPS delta in pokeAPYSnapshots().
-        // No on-chain getAPYBps() to call — use PPS snapshot path only.
-        {
-            uint16 cached = lastGoodApyBps[market];
-            if (cached > 0) emit MarketApyFallbackUsed(market, cached);
-        }
+        (bool ok, uint256 pps) = _safeConvertToAssets(market, 1e24);
+        if (!ok) return;
+        PpsRateLib.update(rateSamples[market], pps);
+        lastGoodApyBps[market] = PpsRateLib.read(rateSamples[market], pps);
+        lastApyUpdateTs[market] = rateSamples[market].ts;
     }
 
     /// @dev Try deposit to a specific market. Returns true on success, false on failure.
@@ -610,35 +609,11 @@ contract MorphoUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentra
     }
     mapping(address => PpsSnap) public ppsSnap;
 
+    mapping(address => PpsRateLib.Sample) internal rateSamples;
     function currentAPYBps() public view override returns (uint16) {
         if (apyOverrideBps != 0) return apyOverrideBps;
-        // If active market has a recent snapshot, estimate APY from pps change
-        if (activeIdx < mkts.length && mkts[activeIdx].enabled) {
-            address m = mkts[activeIdx].addr;
-            PpsSnap memory s = ppsSnap[m];
-            // PPS_SNAP_TTL: ignore stale snapshots
-            if (s.ts > 0 && block.timestamp <= uint256(s.ts) + PPS_SNAP_TTL) {
-                uint256 p0 = s.pps;
-                (bool ok, uint256 p1) = _safeConvertToAssets(m, 1e18);
-                if (ok && p1 > p0) {
-                    uint256 dt = block.timestamp - uint256(s.ts);
-                    if (dt > 0) {
-                        uint256 fracWad = (p1 * 1e18) / p0;
-                        if (fracWad > 1e18) {
-                            unchecked {
-                                fracWad -= 1e18;
-                            }
-                            uint256 aprWad = (fracWad * 31_536_000) / dt;
-                            uint256 bps = aprWad / 1e14;
-                            if (bps > type(uint16).max) return type(uint16).max;
-                            return uint16(bps);
-                        }
-                    }
-                }
-                // convertToAssets failed or p1 <= p0 → fall through to on-chain
-            }
-        }
-        // Fallback to best market metric
+        if (activeIdx < mkts.length && mkts[activeIdx].enabled)
+            return _getAPYOnChainOrCached(mkts[activeIdx].addr);
         (, uint16 bestAPY) = getBestMarket();
         return bestAPY;
     }
@@ -663,7 +638,7 @@ contract MorphoUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentra
     }
 
     function maxCapacity() external view override returns (uint256) {
-        return capacity;
+        return capacity == 0 ? type(uint256).max : capacity;
     }
 
     /// @notice Returns sum of totalAssets() across all enabled Morpho markets
@@ -696,7 +671,7 @@ contract MorphoUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentra
             if (ok) {
                 ppsSnap[m] = PpsSnap({ pps: pps, ts: nowTs });
                 // Audit #2 P1.9 — record when APY was last successfully refreshed.
-                lastApyUpdateTs[m] = nowTs;
+                lastApyUpdateTs[m] = rateSamples[m].ts;
             }
         }
         _refreshNavCache();
@@ -936,22 +911,19 @@ contract MorphoUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentra
     function sortMarketsByAPY(bool asc) internal view returns (uint8[] memory idxs) {
         uint256 n = mkts.length;
         idxs = new uint8[](n);
-        for (uint8 i = 0; i < n; ++i) {
+        uint16[] memory apys = new uint16[](n);
+        // Each valuation can traverse an underlying vault's markets. Snapshot
+        // once per sort, rather than repeating external reads for every comparison.
+        for (uint8 i; i < n; ++i) {
             idxs[i] = i;
+            apys[i] = getAPYOnChain(mkts[i].addr);
         }
-        // Simple selection sort (n<=10)
-        for (uint8 i = 0; i < n; ++i) {
+        for (uint8 i; i < n; ++i) {
             uint8 best = i;
             for (uint8 j = i + 1; j < n; ++j) {
-                uint16 apyBest = getAPYOnChain(mkts[idxs[best]].addr);
-                uint16 apyJ = getAPYOnChain(mkts[idxs[j]].addr);
-                if (asc ? (apyJ < apyBest) : (apyJ > apyBest)) best = j;
+                if (asc ? apys[idxs[j]] < apys[idxs[best]] : apys[idxs[j]] > apys[idxs[best]]) best = j;
             }
-            if (best != i) {
-                uint8 tmp = idxs[i];
-                idxs[i] = idxs[best];
-                idxs[best] = tmp;
-            }
+            if (best != i) (idxs[i], idxs[best]) = (idxs[best], idxs[i]);
         }
     }
 

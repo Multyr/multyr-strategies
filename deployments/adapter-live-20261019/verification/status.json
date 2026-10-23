@@ -1,0 +1,20 @@
+[
+  {
+    "name": "AdapterFactory",
+    "address": "0x695a5EDD49259eB644a8e6014C6A2404F5eB6127",
+    "status": "needs-review",
+    "url": "https://arbiscan.io/address/0x695a5EDD49259eB644a8e6014C6A2404F5eB6127#code"
+  },
+  {
+    "name": "AdapterSwapGuard",
+    "address": "0x97b2292104CFA7a5BF8742188f27a6eFCC6a7727",
+    "status": "needs-review",
+    "url": "https://arbiscan.io/address/0x97b2292104CFA7a5BF8742188f27a6eFCC6a7727#code"
+  },
+  {
+    "name": "VenusUsdcMultiMarketAdapter",
+    "address": "0xB8fed94A1A7dc046402de039c0143aC48396eb7a",
+    "status": "verified",
+    "url": "https://arbiscan.io/address/0xB8fed94A1A7dc046402de039c0143aC48396eb7a#code"
+  }
+]

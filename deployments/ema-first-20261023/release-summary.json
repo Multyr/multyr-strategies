@@ -1,0 +1,80 @@
+{
+  "status": "migration-executed-keeper-live-subgraph-indexed",
+  "chainId": 42161,
+  "sourceCommit": "407b3df",
+  "sourceTag": "usdc-lending-ema-first-20261023",
+  "strategy": "0x2AD722B6241605481829E4B251AE8A4Ba8Be86cE",
+  "upkeep": "0xAB30b7D1ADe850b6b122bcfF29F389CF1D051D44",
+  "estimator": "0x3d8028cC7052c168cA184Db1B742932ad76e7872",
+  "deploymentTransactions": 106,
+  "actualDeploymentFeeWei": "1788068956488621",
+  "verifiedContracts": [
+    "AaveLiquidityRateProvider",
+    "AaveV3USDCAdapter",
+    "AdapterFactory",
+    "CometUsdcMultiMarketAdapter",
+    "DolomiteSupplyRateProvider",
+    "DolomiteUsdcMultiMarketAdapter",
+    "EulerUsdcMultiMarketAdapter",
+    "FluidUsdcMultiMarketAdapter",
+    "GovernedReadOnlyGasEstimator",
+    "MorphoUsdcMultiMarketAdapter",
+    "ProtocolRegistry",
+    "StrategyAdapterOpsModule",
+    "StrategyAllocCalcModule",
+    "StrategyBootstrapper",
+    "StrategyParamsModule",
+    "StrategyRebalanceGateModule",
+    "StrategyRebalancePlanModule",
+    "StrategySafetyOverflowModule",
+    "StrategyScoringModule",
+    "StrategySettingsModule",
+    "StrategyUpkeep",
+    "UsdcMultiLendingVault",
+    "VenusUsdcMultiMarketAdapter"
+  ],
+  "postflight": "passed",
+  "safeRehearsal": {
+    "result": "passed",
+    "block": "517469653",
+    "proposalCalls": 1,
+    "migrationCalls": 31,
+    "allowlistDelaySeconds": 300,
+    "scope": "Exact JSON calls replayed as Safe on local fork; no live migration executed",
+    "targetIdleBufferBpsAfterMigration": 0
+  },
+  "subgraph": {
+    "version": "v3.6.1-ema-first-20261023",
+    "deployment": "QmdApkpTSuGSqH1GRn2UFHeRPM3ThD89wFcqwNXGPogxub",
+    "indexedBlock": 517511218,
+    "hasIndexingErrors": false,
+    "queryUrl": "https://api.studio.thegraph.com/query/1758013/multyr-subgraph/v3.6.1-ema-first-20261023"
+  },
+  "keeper": {
+    "status": "live-healthy",
+    "commit": "486078a",
+    "taskDefinitionRevision": 6,
+    "allSixJobsChecked": true,
+    "imageDigest": "sha256:9f4cdae078658c5a42cdf0a9eb49f9ab2242d6e704e9a30c37022d6a3eb8dfb8"
+  },
+  "safeFiles": {
+    "01-propose-allowlist.safe.json": "a846a503fde78f6c369c03a8fcb6789507b1d1c03ab421ebc9ddd7a4d58cb212",
+    "02-migrate.safe.json": "4b059b493df9ae5cd7421a6e8466f268f5ad9084ee29691cfae68a26782a25a6"
+  },
+  "targetIdleBufferBpsAfterMigration": 0,
+  "safeRevision": "31-call-zero-reserve",
+  "migrationVerification": {
+    "block": 517510894,
+    "replacementEnabled": true,
+    "previousStrategyEnabled": false,
+    "previousUpkeepEnabled": false,
+    "targetIdleBufferBps": 0
+  },
+  "firstKeeperDeployIdle": {
+    "hash": "0xf7821a51a73c3902b95d0849af62f68dcdea8990184bc003314c29fc24a650c7",
+    "block": 517507346,
+    "adapter": "0xE2247C76f1A6f40967f70F114ABa44c8BA0E0F66",
+    "gasUsed": 1965831,
+    "actualFeeWei": "39316620000000"
+  }
+}

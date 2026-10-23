@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.28;
+import { PpsRateLib } from "./PpsRateLib.sol";
 
 // ===== OpenZeppelin imports =====
 import { SafeERC20, IERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
@@ -119,6 +120,7 @@ contract FluidUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
         // Initialize APY snapshot
         lastSnapshotPPS = IERC4626(fToken_).convertToAssets(1e18);
         lastSnapshotTs = uint64(block.timestamp);
+        PpsRateLib.update(rateSample, IERC4626(fToken_).convertToAssets(1e24));
     }
 
     // ===== ILendingAdapter: Metadata =====
@@ -231,23 +233,12 @@ contract FluidUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
     // ===== ILendingAdapter: Yield =====
 
     /// @notice APY in basis points computed from PPS snapshot delta
+    PpsRateLib.Sample internal rateSample;
     function currentAPYBps() external view override returns (uint16) {
-        // Manual override takes priority
         if (apyOverrideBps != 0) return apyOverrideBps;
-
-        // Snapshot-based APY
-        if (lastSnapshotTs == 0 || lastSnapshotPPS == 0) return 0;
-
-        uint256 currentPPS = fToken.convertToAssets(1e18);
-        uint256 elapsed = block.timestamp - lastSnapshotTs;
-        if (elapsed == 0) return 0;
-
-        uint256 delta = currentPPS > lastSnapshotPPS ? currentPPS - lastSnapshotPPS : 0;
-        if (delta == 0) return 0;
-
-        // annualize: (delta / lastPPS) * (365 days / elapsed) * 10000
-        uint256 annualBps = (delta * 365 days * 10_000) / (lastSnapshotPPS * elapsed);
-        return annualBps > type(uint16).max ? type(uint16).max : uint16(annualBps);
+        try fToken.convertToAssets(1e24) returns (uint256 pps) {
+            return PpsRateLib.read(rateSample, pps);
+        } catch { return 0; }
     }
 
     function incentiveAPYBps() external view override returns (uint16) {
@@ -267,7 +258,7 @@ contract FluidUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
     // ===== ILendingAdapter: Limits =====
 
     function maxCapacity() external view override returns (uint256) {
-        return capacity;
+        return capacity == 0 ? type(uint256).max : capacity;
     }
 
     // ===== ILendingAdapter: External Market TVL =====
@@ -319,6 +310,7 @@ contract FluidUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
     function pokeAPYSnapshots() external onlyParamRole {
         uint256 pps = fToken.convertToAssets(1e18);
         uint64 nowTs = uint64(block.timestamp);
+        PpsRateLib.update(rateSample, fToken.convertToAssets(1e24));
         lastSnapshotPPS = pps;
         lastSnapshotTs = nowTs;
         emit APYSnapshotPoked(pps, nowTs);

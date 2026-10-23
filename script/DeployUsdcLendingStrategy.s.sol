@@ -1,6 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.28;
+import {StrategySafetyOverflowModule} from "../src/strategies/usdc-lending/controller/StrategySafetyOverflowModule.sol";
+import {AdapterSettingsCopy} from "./AdapterSettingsCopy.sol";
+import {StrategySettingsCopy} from "./StrategySettingsCopy.sol";
+import {GasEstimatorPreflight} from "./GasEstimatorPreflight.sol";
 
+import {ReadOnlyGasEstimator} from "../src/strategies/usdc-lending/gas/ReadOnlyGasEstimator.sol";
 import {Script} from "forge-std/Script.sol";
 import {console} from "forge-std/console.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
@@ -165,7 +170,8 @@ interface IStrategyRouterAllowlist {
  *   DEPLOY_UPKEEP             — "true" to deploy StrategyUpkeep (default: true)
  *   DEPLOY_LENDING_ADAPTERS   — "true" to deploy all 7 adapters (default: true)
  *   UNPAUSE_BUFFER            — "true" to unpause BufferManager (default: true)
- *   ADAPTER_MAX_EXPOSURE_BPS  — uint16, default 5000 (50%)
+ *   SOURCE_STRATEGY          — required current strategy; configuration is copied
+ *   SOURCE_STRATEGY_UPKEEP   — required current upkeep; targets are remapped
  *   STRATEGY_OUTPUT_JSON      — output path for address book JSON
  *
  * @custom:chain-id 42161
@@ -184,6 +190,7 @@ contract DeployUsdcLendingStrategy is Script {
         address settingsModule;
         address allocCalcModule;
         address rebalancePlanModule;
+        address safetyOverflowModule;
         // Strategy
         UsdcMultiLendingVault strategy;
         address bootstrapper;
@@ -223,6 +230,9 @@ contract DeployUsdcLendingStrategy is Script {
         address guardian;
         address vetoer;
         address governance;
+        address sourceStrategy;
+        address sourceUpkeep;
+        bool copySourceSettings;
         bool deployAdapters;
         bool deployUpkeep;
         bool unpauseBuffer;
@@ -237,6 +247,30 @@ contract DeployUsdcLendingStrategy is Script {
         UsdcLendingChainConfig memory chainCfg = UsdcLendingConfigArbitrum.get();
         DeployConfig memory cfg = _loadConfig();
 
+        // Foundry's local EVM cannot execute ArbOS native precompile 0x6c.
+        // The runner supplies eth_call returndata read from Arbitrum immediately
+        // before simulation. This cheatcode affects simulation only, never chain state.
+        bytes memory feeSnapshot = vm.envOr("ARBITRUM_FEE_SNAPSHOT", bytes(""));
+        if (feeSnapshot.length > 0) {
+            require(feeSnapshot.length == 192, "INVALID_ARBITRUM_FEE_SNAPSHOT");
+            vm.mockCall(address(0x6c), abi.encodeWithSignature("getPricesInWei()"), feeSnapshot);
+        }
+
+        // Replacement deployments must explicitly supply a reviewed, calibrated estimator.
+        // Validate BEFORE broadcasting any deployment transactions.
+        address gasEstimator = vm.envAddress("REBALANCE_GAS_ESTIMATOR");
+        GasEstimatorPreflight.validate(gasEstimator, cfg.governance,
+            vm.envAddress("GAS_ETH_USD_FEED"), vm.envAddress("GAS_USDC_USD_FEED"),
+            vm.envAddress("GAS_SEQUENCER_FEED"), vm.envBytes32("GAS_CONFIG_HASH"));
+        UsdcMultiLendingVault source = UsdcMultiLendingVault(payable(cfg.sourceStrategy));
+        require(source.core() == cfg.vault && address(source.ASSET()) == chainCfg.usdc, "SOURCE_CORE_OR_ASSET_MISMATCH");
+        // Freezing before renouncing deployer roles would lock them in permanently.
+        // A frozen source needs a separately reviewed governance freeze transaction after handoff.
+        if (cfg.copySourceSettings) require(!source.rolesFrozen(), "SOURCE_ROLES_FROZEN_REQUIRES_GOVERNANCE_FINALIZATION");
+        require(source.rebalancePlanPhase() == 0, "SOURCE_HAS_ACTIVE_PLAN");
+        require(cfg.deployAdapters && cfg.deployUpkeep, "REPLACEMENT_REQUIRES_ADAPTERS_AND_UPKEEP");
+        bytes32 sourceGlobalsHash;
+        if (cfg.copySourceSettings) sourceGlobalsHash = StrategySettingsCopy.globals(cfg.sourceStrategy, address(0), false);
         vm.startBroadcast(cfg.deployerPk);
 
         result = _phase1_deployModulesAndStrategy(cfg, chainCfg);
@@ -245,6 +279,8 @@ contract DeployUsdcLendingStrategy is Script {
             result = _phase1_6_deployRateProviders(cfg, result);
         }
         result = _phase1_7_deployOptionalModules(cfg, result, chainCfg);
+        StrategySettingsModule(address(result.strategy)).setRebalanceGasEstimator(gasEstimator);
+        require(result.strategy.rebalanceGasEstimator() == gasEstimator, "GAS_ESTIMATOR_NOT_WIRED");
         _phase2_wireStrategy(cfg, result);
         if (cfg.deployAdapters) {
             _phase2_5_bootstrap(result);
@@ -257,9 +293,24 @@ contract DeployUsdcLendingStrategy is Script {
                 _phase3_4_configureAutomation(result, chainCfg);
             }
         }
+        if (cfg.copySourceSettings) {
+            _preserveStrategySettings(cfg, result);
+            require(sourceGlobalsHash == StrategySettingsCopy.globals(cfg.sourceStrategy, address(result.strategy), false), "SOURCE_SETTINGS_CHANGED");
+        }
+        if (!cfg.copySourceSettings) {
+            StrategySettingsModule fresh = StrategySettingsModule(address(result.strategy));
+            fresh.addSafetyFallbackAdapter(result.aaveAdapter, 2500, 1000);
+            fresh.addSafetyFallbackAdapter(result.fluidAdapter, 2500, 1000);
+            fresh.setMaxIdleBps(100);
+        }
         if (cfg.deployAdapters) {
             _phase3_5_transferAdapterAdmins(cfg, result);
         }
+        // Explicit release policy: never silently deploy with an unconfigured reserve.
+        uint256 targetIdleBps = vm.envUint("TARGET_IDLE_BUFFER_BPS");
+        require(targetIdleBps <= 10000, "IDLE_BUFFER_OUT_OF_RANGE");
+        StrategySettingsModule(address(result.strategy)).setTargetIdleBufferBps(uint16(targetIdleBps));
+        require(result.strategy.targetIdleBufferBps() == targetIdleBps, "IDLE_BUFFER_NOT_WIRED");
         _phase3_6_handoffGovernance(cfg, result);
 
         if (cfg.unpauseBuffer) {
@@ -351,7 +402,7 @@ contract DeployUsdcLendingStrategy is Script {
         console.log("[1.0d] StrategyRebalanceGateModule:", result.rebalanceGateModule);
 
         // 1.1 UsdcMultiLendingVault (assembly CREATE to control nonce)
-        UsdcMultiLendingVault.StrategyInitParams memory p = _defaultParams();
+        UsdcMultiLendingVault.StrategyInitParams memory p = cfg.copySourceSettings ? StrategySettingsCopy.initParams(cfg.sourceStrategy) : _defaultParams();
         bytes memory args = abi.encode(
             chainCfg.usdc,
             cfg.vault,
@@ -560,7 +611,7 @@ contract DeployUsdcLendingStrategy is Script {
 
         // 1.5.6 Euler — initializeMarkets() BEFORE any role transfer
         // ⚠ CRITICAL (v8-hotfix): Euler Permit2 internal allowance must be set before first deposit.
-        //   USDC dust transferred to adapter → initializeMarkets() → THEN role transfer in Phase 3.5.
+        //   initializeMarkets() sets allowances without needing USDC; handoff follows in Phase 3.5.
         //   Without this, first strategy deposit to Euler silently fails or quarantines the adapter.
         //   initializeMarkets() itself is a separate, PARAM_ROLE-gated post-init step (not the
         //   OZ `initializer` this fix targets) — safe to run after the atomic deploy+init below.
@@ -586,12 +637,7 @@ contract DeployUsdcLendingStrategy is Script {
         {
             EulerUsdcMultiMarketAdapter euler =
                 EulerUsdcMultiMarketAdapter(payable(result.eulerAdapter));
-            uint256 EULER_DUST = 1000; // 0.001 USDC for Permit2 setup
-            require(
-                IERC20(chainCfg.usdc).balanceOf(cfg.deployer) >= EULER_DUST,
-                "DEPLOY: insufficient USDC for Euler Permit2 dust (need 0.001 USDC)"
-            );
-            IERC20(chainCfg.usdc).transfer(address(euler), EULER_DUST);
+            // initializeMarkets only configures Permit2 allowances; no token funding is needed.
             euler.initializeMarkets();
         }
         console.log("[1.5.6] EulerAdapter:", result.eulerAdapter, "(initializeMarkets done)");
@@ -699,13 +745,13 @@ contract DeployUsdcLendingStrategy is Script {
         console.log("[1.7.1] StrategySettingsModule:", result.settingsModule);
 
         StrategyAllocCalcModule allocCalc =
-            new StrategyAllocCalcModule(chainCfg.usdc, address(strat));
+            new StrategyAllocCalcModule(chainCfg.usdc, cfg.vault);
         result.allocCalcModule = address(allocCalc);
         console.log("[1.7.2] StrategyAllocCalcModule:", result.allocCalcModule);
 
         StrategyRebalancePlanModule planMod = new StrategyRebalancePlanModule(
             chainCfg.usdc,
-            address(strat),
+            cfg.vault,
             result.paramsModule,
             result.scoringModule,
             result.adapterOpsModule
@@ -713,8 +759,13 @@ contract DeployUsdcLendingStrategy is Script {
         result.rebalancePlanModule = address(planMod);
         console.log("[1.7.3] StrategyRebalancePlanModule:", result.rebalancePlanModule);
 
+        result.safetyOverflowModule = address(new StrategySafetyOverflowModule(
+            chainCfg.usdc, cfg.vault, result.paramsModule, result.scoringModule, result.adapterOpsModule
+        ));
+
         // Wire modules on-chain (deployer has DEFAULT_ADMIN_ROLE at this point)
         strat.setSettingsModule(result.settingsModule);
+        StrategySettingsModule(address(strat)).setSafetyOverflowModule(result.safetyOverflowModule);
         strat.setAllocCalcModule(result.allocCalcModule);
         strat.setRebalancePlanModule(result.rebalancePlanModule);
         console.log("  [OK] settingsModule, allocCalcModule, rebalancePlanModule wired");
@@ -1116,17 +1167,86 @@ contract DeployUsdcLendingStrategy is Script {
         return false;
     }
 
+    /// @dev Apply before governance handoff; no measured state or balances are imported.
+    function _preserveStrategySettings(DeployConfig memory cfg, DeploymentResult memory result) internal {
+        address target = address(result.strategy);
+        bytes32 keeperRole = keccak256("KEEPER_ROLE");
+        bool hadKeeper = result.strategy.hasRole(keeperRole, cfg.deployer);
+        if (!hadKeeper) result.strategy.grantRole(keeperRole, cfg.deployer);
+        StrategySettingsCopy.globals(cfg.sourceStrategy, target, true);
+        StrategySettingsCopy.copyAdapters(cfg.sourceStrategy, target);
+        for (uint256 i; i < result.strategy.adapterCount(); ++i) {
+            AdapterSettingsCopy.copy(UsdcMultiLendingVault(payable(cfg.sourceStrategy)).adapters(i), result.strategy.adapters(i), i);
+        }
+        _preserveRegistryAndRates(cfg, result);
+        StrategySettingsCopy.verifyInit(cfg.sourceStrategy, target);
+        if (!hadKeeper) result.strategy.revokeRole(keeperRole, cfg.deployer);
+        UsdcMultiLendingVault source = UsdcMultiLendingVault(payable(cfg.sourceStrategy));
+        StrategyUpkeep oldUpkeep = StrategyUpkeep(cfg.sourceUpkeep);
+        StrategyUpkeep newUpkeep = StrategyUpkeep(result.strategyUpkeep);
+        require(oldUpkeep.isStrategy(cfg.sourceStrategy), "SOURCE_UPKEEP_MISMATCH");
+        require(address(oldUpkeep.aavePool()) == address(newUpkeep.aavePool()) && oldUpkeep.usdc() == newUpkeep.usdc(), "UPKEEP_PROTOCOL_CONFIG_CHANGED");
+        address[] memory oldTargets = oldUpkeep.getPokeTargets();
+        address[] memory newTargets = newUpkeep.getPokeTargets();
+        for (uint256 i; i < newTargets.length; ++i) newUpkeep.removePokeTarget(newTargets[i]);
+        for (uint256 i; i < oldTargets.length; ++i) {
+            address mapped;
+            for (uint256 j; j < source.adapterCount(); ++j) {
+                if (source.adapters(j) == oldTargets[i]) mapped = result.strategy.adapters(j);
+            }
+            require(mapped != address(0), "UNMAPPED_POKE_TARGET");
+            newUpkeep.addPokeTarget(mapped);
+        }
+        newUpkeep.setPokeInterval(oldUpkeep.pokeInterval());
+        newUpkeep.toggleStrategy(target, oldUpkeep.enabled(cfg.sourceStrategy));
+        require(newUpkeep.pokeInterval() == oldUpkeep.pokeInterval()
+            && newUpkeep.enabled(target) == oldUpkeep.enabled(cfg.sourceStrategy), "UPKEEP_SETTINGS_MISMATCH");
+        if (source.paramsFinalized()) StrategySettingsModule(target).finalizeParameters();
+        if (source.paused()) result.strategy.pause();
+        require(source.paramsFinalized() == result.strategy.paramsFinalized()
+            && source.paused() == result.strategy.paused(), "LIFECYCLE_SETTINGS_MISMATCH");
+        console.log("Current strategy settings and mapped upkeep settings preserved and verified");
+    }
+
+    function _preserveRegistryAndRates(DeployConfig memory cfg, DeploymentResult memory result) internal {
+        UsdcMultiLendingVault old = UsdcMultiLendingVault(payable(cfg.sourceStrategy));
+        address oldRegistry = address(MorphoUsdcMultiMarketAdapter(payable(old.adapters(1))).registry());
+        ProtocolRegistry source = ProtocolRegistry(oldRegistry);
+        ProtocolRegistry target = ProtocolRegistry(result.protocolRegistry);
+        for (uint256 i; i < 7; ++i) {
+            ProtocolRegistry.ProtocolType protocol = ProtocolRegistry.ProtocolType(i);
+            address[] memory a = source.getEnabledVaults(protocol);
+            address[] memory b = target.getEnabledVaults(protocol);
+            require(source.getVaultCount(protocol) == a.length && a.length == b.length
+                && keccak256(abi.encode(a)) == keccak256(abi.encode(b)), "REGISTRY_MARKETS_REQUIRE_REVIEW");
+            for (uint256 j; j < a.length; ++j) {
+                ProtocolRegistry.VaultMetadata memory m = source.getMetadata(protocol, a[j]);
+                target.updateMetadata(protocol, a[j], m.name, m.riskScoreBps, m.maxCapacity);
+                require(keccak256(abi.encode(target.getMetadata(protocol,a[j]))) == keccak256(abi.encode(m)), "REGISTRY_METADATA_PARITY");
+            }
+        }
+        DolomiteUsdcMultiMarketAdapter oldDolo = DolomiteUsdcMultiMarketAdapter(payable(old.adapters(4)));
+        address provider = address(oldDolo.rateProvider());
+        require(provider != address(0), "SOURCE_DOLOMITE_RATE_PROVIDER_MISSING");
+        address[] memory markets = oldDolo.markets();
+        for (uint256 i; i < markets.length; ++i) {
+            uint256 rate = DolomiteSupplyRateProvider(provider).getSupplyRatePerSecond(markets[i]);
+            DolomiteSupplyRateProvider(result.dolomiteRateProvider).setSupplyRatePerSecond(markets[i], rate);
+        }
+    }
+
     function _defaultParams()
         internal
         view
         returns (UsdcMultiLendingVault.StrategyInitParams memory)
     {
-        uint16 maxExpBps = 5000;
+        uint16 maxExpBps = 0; // Use the existing TVL-tier caps, including single-adapter T1.
         try vm.envUint("ADAPTER_MAX_EXPOSURE_BPS") returns (uint256 val) {
-            if (val > 0 && val <= 10000) maxExpBps = uint16(val);
+            require(val <= 5000, "EXPOSURE_OVERRIDE_TOO_HIGH");
+            maxExpBps = uint16(val);
         } catch {}
         return UsdcMultiLendingVault.StrategyInitParams({
-            maxAdaptersPerAllocation: 3,
+            maxAdaptersPerAllocation: 7,
             minAdaptersActive: 2,
             rebalanceMinMoveBps: 50,
             minSecondsBetweenRebalances: 86400,
@@ -1150,8 +1270,8 @@ contract DeployUsdcLendingStrategy is Script {
             stabilityEMAPeriod: 7,
             minNewAdapterSeed: 100_000e6,
             newAdapterRampDuration: 259200,
-            maxIdleAfterDepositBps: 500,
-            maxIdleBootstrapBps: 5000,
+            maxIdleAfterDepositBps: 10000, // Strict exposure caps take priority over immediate deployment.
+            maxIdleBootstrapBps: 10000,
             degradedViewThresholdBps: 2500,
             failureDecaySeconds: 3600,
             minSecondsBetweenDeployIdle: 300,
@@ -1162,6 +1282,10 @@ contract DeployUsdcLendingStrategy is Script {
     }
 
     function _loadConfig() internal returns (DeployConfig memory cfg) {
+        cfg.copySourceSettings = vm.envOr("COPY_SOURCE_SETTINGS", false);
+        cfg.sourceStrategy = vm.envAddress("SOURCE_STRATEGY");
+        cfg.sourceUpkeep = vm.envAddress("SOURCE_STRATEGY_UPKEEP");
+        require(cfg.sourceStrategy.code.length > 0 && cfg.sourceUpkeep.code.length > 0, "SOURCE_NOT_DEPLOYED");
         cfg.deployerPk = vm.envUint("DEPLOYER_PRIVATE_KEY");
         cfg.deployer = vm.addr(cfg.deployerPk);
         cfg.vault = vm.envAddress("VAULT_ADDRESS");
@@ -1198,7 +1322,7 @@ contract DeployUsdcLendingStrategy is Script {
 
         cfg.deployAdapters = true;
         cfg.deployUpkeep = true;
-        cfg.unpauseBuffer = true;
+        cfg.unpauseBuffer = false;
         try vm.envBool("DEPLOY_LENDING_ADAPTERS") returns (bool v) {
             cfg.deployAdapters = v;
         } catch {}
@@ -1213,12 +1337,16 @@ contract DeployUsdcLendingStrategy is Script {
         } catch {}
     }
 
-    function _writeAddressBook(DeployConfig memory, DeploymentResult memory result) internal {
+    function _writeAddressBook(DeployConfig memory cfg, DeploymentResult memory result) internal {
         string memory j = "strategy";
         vm.serializeUint(j, "chainId", block.chainid);
         vm.serializeUint(j, "blockNumber", block.number);
         vm.serializeUint(j, "timestamp", block.timestamp);
         vm.serializeAddress(j, "strategy", address(result.strategy));
+        vm.serializeBool(j, "copiedSourceSettings", cfg.copySourceSettings);
+        vm.serializeAddress(j, "settingsSourceStrategy", cfg.sourceStrategy);
+        vm.serializeAddress(j, "settingsSourceUpkeep", cfg.sourceUpkeep);
+        vm.serializeAddress(j, "rebalanceGasEstimator", result.strategy.rebalanceGasEstimator());
         vm.serializeAddress(j, "paramsModule", result.paramsModule);
         vm.serializeAddress(j, "scoringModule", result.scoringModule);
         vm.serializeAddress(j, "adapterOpsModule", result.adapterOpsModule);
@@ -1226,6 +1354,7 @@ contract DeployUsdcLendingStrategy is Script {
         vm.serializeAddress(j, "settingsModule", result.settingsModule);
         vm.serializeAddress(j, "allocCalcModule", result.allocCalcModule);
         vm.serializeAddress(j, "rebalancePlanModule", result.rebalancePlanModule);
+        vm.serializeAddress(j, "safetyOverflowModule", result.safetyOverflowModule);
         vm.serializeAddress(j, "bootstrapper", result.bootstrapper);
         vm.serializeAddress(j, "adapterFactory", result.adapterFactory);
         vm.serializeAddress(j, "strategyUpkeep", result.strategyUpkeep);

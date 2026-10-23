@@ -1,0 +1,24 @@
+import fs from 'node:fs';
+import {createRequire} from 'node:module';
+const require=createRequire(new URL('../../multyr-periphery/keeper/package.json',import.meta.url));
+const {createPublicClient,http,parseAbi,encodeFunctionData,keccak256}=require('viem');
+const {privateKeyToAccount}=require('viem/accounts');
+const e=process.env,c=createPublicClient({transport:http(e.RPC_URL)});
+const account=privateKeyToAccount(e.DEPLOYER_PRIVATE_KEY.startsWith('0x')?e.DEPLOYER_PRIVATE_KEY:'0x'+e.DEPLOYER_PRIVATE_KEY);
+const blockNumber=await c.getBlockNumber();
+const read=(address,sig,args=[])=>c.readContract({address,abi:parseAbi(['function '+sig]),functionName:sig.split('(')[0],args,blockNumber});
+if(await c.getChainId()!==42161)throw Error('Wrong chain');
+if(!await read(e.STRATEGY_ROUTER_ADDRESS,'isStrategyEnabled(address) view returns(bool)',[e.SOURCE_STRATEGY]))throw Error('Source strategy not active');
+if(Number(await read(e.SOURCE_STRATEGY,'rebalancePlanPhase() view returns(uint8)'))!==0)throw Error('Active source plan');
+const feeSnapshot=(await c.call({to:'0x000000000000000000000000000000000000006c',data:encodeFunctionData({abi:parseAbi(['function getPricesInWei() view returns(uint256,uint256,uint256,uint256,uint256,uint256)']),functionName:'getPricesInWei'}),blockNumber})).data;
+const result={chainId:42161,blockNumber:String(blockNumber),deployer:account.address,balanceWei:String(await c.getBalance({address:account.address})),nonce:await c.getTransactionCount({address:account.address}),sourceStrategy:e.SOURCE_STRATEGY,sourceAssets:String(await read(e.SOURCE_STRATEGY,'totalAssets() view returns(uint256)')),feeSnapshot};
+fs.writeFileSync('deployments/ema-first-20261023/preflight.json',JSON.stringify(result,null,2)+'\n');
+console.log(JSON.stringify(result,null,2));
+if(e.REBALANCE_GAS_ESTIMATOR){
+ const data=(await c.call({to:e.REBALANCE_GAS_ESTIMATOR,data:encodeFunctionData({abi:parseAbi(['function config()']),functionName:'config'}),blockNumber})).data;
+ if(!data || data.length!==2+12*64)throw Error('Estimator configuration missing');
+ const hash=keccak256(data),file='deployments/ema-first-20261023/public.env';
+ let contents=fs.readFileSync(file,'utf8').replace(/^GAS_CONFIG_HASH=.*\n/gm,'');
+ fs.writeFileSync(file,contents+'GAS_CONFIG_HASH='+hash+'\n');
+ console.log('Estimator config hash:',hash);
+}

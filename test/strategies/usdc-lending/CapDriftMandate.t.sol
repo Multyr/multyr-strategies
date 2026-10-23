@@ -734,19 +734,12 @@ contract CapDrift_D1f_SafetyAdapterCapTier is CapDriftBase {
 
     /// @notice (01) Safety adapter above NORMAL cap but below FALLBACK ceiling:
     ///         mandate does not fire because the gate honours fbAbsCap for it.
-    function test_D1f_01_mandate_uses_fallback_cap_for_safety_adapter() public {
-        // 65% of NEW TVL: above normal hardCeiling (~51.25%), below fallback hardCeiling (~71.75%).
+    function test_D1f_01_globalCeilingAlsoBindsSafetyAdapters() public {
         _forcePctOfNewTvl(adapterA, 6500);
-
         vm.warp(block.timestamp + 22000);
-        (bool ok, , int256 nb) =
-            StrategyRebalanceGateModule(address(vault)).canRebalance();
-
-        // Forbidden outcome: ok=true && nb==0 (that is the mandate fingerprint).
-        // Allowed: ok=false, or ok=true with positive nb (legitimate APY-driven move).
-        if (ok) {
-            assertGt(nb, 0, "safety adapter in tranche: ok=true must reflect APY benefit, not mandate");
-        }
+        (bool ok,,int256 nb) = StrategyRebalanceGateModule(address(vault)).canRebalance();
+        assertTrue(ok, "Safety fallback cannot exempt an adapter from the global ceiling");
+        assertEq(nb, 0, "Over-global-cap safety position requires protective recall");
     }
 
     /// @notice (02) Non-safety adapter above normal hard ceiling: mandate MUST
@@ -1211,7 +1204,7 @@ contract CapDrift_D1f_SafetyOverflowMargin is CapDrift_D1f_SafetyAdapterCapTier 
         StrategyScoringModule(address(vault)).deployIdle();
 
         uint256 tvl = _totalTvl(); // conserved
-        uint256 fbCeiling = (uint256(SAFETY_FB_ABS_BPS) * tvl) / 10_000;
+        uint256 fbCeiling = (uint256(vault.adapterMaxExposureBps()) * tvl) / 10_000;
         uint256 posA = vault.positionAssets(address(adapterA));
         uint256 dust = vault.dustTolerance();
 

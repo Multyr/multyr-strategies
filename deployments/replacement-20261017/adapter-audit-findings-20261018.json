@@ -1,0 +1,42 @@
+{
+  "scope": "Live rate, binding, NAV, capacity and gas EMA reads plus source review and adapter unit suites. Not a complete independent security audit; no live changes in this check.",
+  "tests": {
+    "suites": 30,
+    "passed": 1245,
+    "failed": 0,
+    "skipped": 0
+  },
+  "findings": [
+    {
+      "severity": "high",
+      "adapter": "Venus",
+      "finding": "Time-based market uses 31536000 slots/year; deployed adapter uses 126144000 and reports 1774 bps rather than 443. Source fix tested but not deployed."
+    },
+    {
+      "severity": "high",
+      "adapter": "Euler",
+      "finding": "Configured capacity=0 means unlimited to adapter deposit but maxCapacity() returns 0; strategy interprets zero as no room. Underlying four markets report positive maxDeposit."
+    },
+    {
+      "severity": "medium",
+      "adapter": "Morpho",
+      "finding": "lastGoodApyBps has no writer in source; all five deployed market caches are zero despite nonzero active PPS yield, breaking internal yield ranking and cache fallback."
+    },
+    {
+      "severity": "medium",
+      "adapter": "Morpho, Dolomite, Fluid",
+      "finding": "pokeAPYSnapshots replaces the comparison baseline with current PPS and time; same-timestamp currentAPYBps becomes zero with no override (Morpho fallback caches are also zero). Fluid and Dolomite snapshot rates have no maximum-age guard."
+    },
+    {
+      "severity": "informational",
+      "adapter": "All",
+      "finding": "Rate APIs use APY naming but largely report simple annualized APR or historical PPS growth, not consistent compounded forward APY."
+    },
+    {
+      "severity": "informational",
+      "adapter": "Gas calibration",
+      "finding": "Venus deposit EMA=297811, all other observed deposit/withdraw EMAs zero. Current 2m/3m floors dominate, even for measured Venus deposit."
+    }
+  ],
+  "unchangedLive": true
+}

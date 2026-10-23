@@ -1,0 +1,156 @@
+[
+  {
+    "name": "AdapterFactory",
+    "address": "0x9f8bd6432a1beb8a8159859f26cd531c575424a1",
+    "status": "verified",
+    "returncode": 0,
+    "url": "https://arbiscan.io/address/0x9f8bd6432a1beb8a8159859f26cd531c575424a1#code"
+  },
+  {
+    "name": "StrategyParamsModule",
+    "address": "0xee8f39091ed3cfba797026deab02ec99d5687366",
+    "status": "verified",
+    "returncode": 0,
+    "url": "https://arbiscan.io/address/0xee8f39091ed3cfba797026deab02ec99d5687366#code"
+  },
+  {
+    "name": "StrategyScoringModule",
+    "address": "0xcc1aa8adff9b684d539329736ff0a800b9ce3898",
+    "status": "verified",
+    "returncode": 0,
+    "url": "https://arbiscan.io/address/0xcc1aa8adff9b684d539329736ff0a800b9ce3898#code"
+  },
+  {
+    "name": "StrategyAdapterOpsModule",
+    "address": "0x1c882dfe66663d878f28fb064d4529ed06b64760",
+    "status": "verified",
+    "returncode": 0,
+    "url": "https://arbiscan.io/address/0x1c882dfe66663d878f28fb064d4529ed06b64760#code"
+  },
+  {
+    "name": "StrategyRebalanceGateModule",
+    "address": "0xcefffe4b3ae3c991d252c636a731b8ef8dfeaf3e",
+    "status": "verified",
+    "returncode": 0,
+    "url": "https://arbiscan.io/address/0xcefffe4b3ae3c991d252c636a731b8ef8dfeaf3e#code"
+  },
+  {
+    "name": "UsdcMultiLendingVault",
+    "address": "0xb143245bbb4333435cd8cc7ccce1d6e0abcf5db6",
+    "status": "verified",
+    "returncode": 0,
+    "url": "https://arbiscan.io/address/0xb143245bbb4333435cd8cc7ccce1d6e0abcf5db6#code"
+  },
+  {
+    "name": "StrategyBootstrapper",
+    "address": "0x2fd29d1cedfb641265d60933ea11b561d20906e8",
+    "status": "verified",
+    "returncode": 0,
+    "url": "https://arbiscan.io/address/0x2fd29d1cedfb641265d60933ea11b561d20906e8#code"
+  },
+  {
+    "name": "ProtocolRegistry",
+    "address": "0xaa8d871ad352f081a1673a2300d18f632e532870",
+    "status": "verified",
+    "returncode": 0,
+    "url": "https://arbiscan.io/address/0xaa8d871ad352f081a1673a2300d18f632e532870#code"
+  },
+  {
+    "name": "AaveV3USDCAdapter",
+    "address": "0xd23d1b68a44b3805e84946684b6e13b5644b96a6",
+    "status": "verified",
+    "returncode": 0,
+    "url": "https://arbiscan.io/address/0xd23d1b68a44b3805e84946684b6e13b5644b96a6#code"
+  },
+  {
+    "name": "MorphoUsdcMultiMarketAdapter",
+    "address": "0x8c6a562590f1f0009b89a36ae2301bd4e75b44b7",
+    "status": "verified",
+    "returncode": 0,
+    "url": "https://arbiscan.io/address/0x8c6a562590f1f0009b89a36ae2301bd4e75b44b7#code"
+  },
+  {
+    "name": "CometUsdcMultiMarketAdapter",
+    "address": "0x10a95908140661464371d9d5e9d21061f774a345",
+    "status": "verified",
+    "returncode": 0,
+    "url": "https://arbiscan.io/address/0x10a95908140661464371d9d5e9d21061f774a345#code"
+  },
+  {
+    "name": "EulerUsdcMultiMarketAdapter",
+    "address": "0x796a6a56c666e1f19bbeae467314ccda57fd0fa6",
+    "status": "verified",
+    "returncode": 0,
+    "url": "https://arbiscan.io/address/0x796a6a56c666e1f19bbeae467314ccda57fd0fa6#code"
+  },
+  {
+    "name": "DolomiteUsdcMultiMarketAdapter",
+    "address": "0x429330647d1504b781f782a062292fb008762302",
+    "status": "verified",
+    "returncode": 0,
+    "url": "https://arbiscan.io/address/0x429330647d1504b781f782a062292fb008762302#code"
+  },
+  {
+    "name": "FluidUsdcMultiMarketAdapter",
+    "address": "0x96740c2cff45c5905cc34fa891ff798b320c1c03",
+    "status": "verified",
+    "returncode": 0,
+    "url": "https://arbiscan.io/address/0x96740c2cff45c5905cc34fa891ff798b320c1c03#code"
+  },
+  {
+    "name": "VenusUsdcMultiMarketAdapter",
+    "address": "0x5251382d62427ae00a60de7da8e4eb8e97b588cf",
+    "status": "verified",
+    "returncode": 0,
+    "url": "https://arbiscan.io/address/0x5251382d62427ae00a60de7da8e4eb8e97b588cf#code"
+  },
+  {
+    "name": "AaveLiquidityRateProvider",
+    "address": "0x42b38e05a96f2691c92817f3a581f84143a0aaac",
+    "status": "verified",
+    "returncode": 0,
+    "url": "https://arbiscan.io/address/0x42b38e05a96f2691c92817f3a581f84143a0aaac#code"
+  },
+  {
+    "name": "DolomiteSupplyRateProvider",
+    "address": "0x6e372b43cba588268ebd260c178c51ce88507b59",
+    "status": "verified",
+    "returncode": 0,
+    "url": "https://arbiscan.io/address/0x6e372b43cba588268ebd260c178c51ce88507b59#code"
+  },
+  {
+    "name": "StrategySettingsModule",
+    "address": "0x24a8e7a0ca95a03b9ac78f7b3ffa4edaaa04b022",
+    "status": "verified",
+    "returncode": 0,
+    "url": "https://arbiscan.io/address/0x24a8e7a0ca95a03b9ac78f7b3ffa4edaaa04b022#code"
+  },
+  {
+    "name": "StrategyAllocCalcModule",
+    "address": "0xdc66667843cd6b513a32015facc9df8aec55bd5c",
+    "status": "verified",
+    "returncode": 0,
+    "url": "https://arbiscan.io/address/0xdc66667843cd6b513a32015facc9df8aec55bd5c#code"
+  },
+  {
+    "name": "StrategyRebalancePlanModule",
+    "address": "0x99fd0cf53faad49508ce62b474822854a2b0acc7",
+    "status": "verified",
+    "returncode": 0,
+    "url": "https://arbiscan.io/address/0x99fd0cf53faad49508ce62b474822854a2b0acc7#code"
+  },
+  {
+    "name": "StrategySafetyOverflowModule",
+    "address": "0x785a359f51aa4d463941407dd3b2e78e1de984aa",
+    "status": "verified",
+    "returncode": 0,
+    "url": "https://arbiscan.io/address/0x785a359f51aa4d463941407dd3b2e78e1de984aa#code"
+  },
+  {
+    "name": "StrategyUpkeep",
+    "address": "0x7c8de9f5d184b507ed2d110403cf4792865c8123",
+    "status": "verified",
+    "returncode": 0,
+    "url": "https://arbiscan.io/address/0x7c8de9f5d184b507ed2d110403cf4792865c8123#code"
+  }
+]

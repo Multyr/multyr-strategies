@@ -85,6 +85,13 @@ required_vars=(
   STRATEGY_ROUTER_ADDRESS
   BUFFER_MANAGER_ADDRESS
   HEALTH_REGISTRY_ADDRESS
+  SOURCE_STRATEGY
+  SOURCE_STRATEGY_UPKEEP
+  REBALANCE_GAS_ESTIMATOR
+  GAS_ETH_USD_FEED
+  GAS_USDC_USD_FEED
+  GAS_SEQUENCER_FEED
+  GAS_CONFIG_HASH
 )
 missing=()
 for v in "${required_vars[@]}"; do [[ -n "${!v:-}" ]] || missing+=("$v"); done
