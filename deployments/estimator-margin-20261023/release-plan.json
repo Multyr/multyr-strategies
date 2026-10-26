@@ -1,0 +1,30 @@
+{
+  "status": "Predeployment calibration/rehearsal passed; live deployment and Safe execution not performed",
+  "chainId": 42161,
+  "marginBps": 3000,
+  "targetIdleBufferBps": 1000,
+  "copySourceSettings": false,
+  "sourceBaseCommit": "0ffda7d",
+  "configuration": "candidate-calibration.json",
+  "configurationEnvironment": "candidate.env",
+  "releaseConditions": [
+    "Latest-state migration rehearsal must pass",
+    "Freeze reviewed source and record deployed-bytecode provenance",
+    "Configure estimator path overhead and each real deployed adapter before enabling strategy",
+    "Simulate governance migration against then-current state; verify old strategy drained atomically",
+    "Repoint keeper and indexer only after migration execution; compare first real receipts"
+  ],
+  "doNotUse": [
+    "Prior simulation addresses as deployed addresses",
+    "Historical pre-reserve Safe JSONs without regenerating/rehearsing",
+    "A 50% margin to conceal component underestimation"
+  ],
+  "safeExecution": "Not performed; existing Safe owners retain execution control",
+  "latestRehearsal": {
+    "block": "517327742",
+    "blockHash": "0x402370266b9df15170b22791fb4237100cb967594db23fd2ee233c05e927e1bd",
+    "passed": true,
+    "oldBookRecalledUSDC": "20.563589",
+    "coreAndRouterCodeUnchanged": true
+  }
+}

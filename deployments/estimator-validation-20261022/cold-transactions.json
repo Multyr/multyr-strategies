@@ -1,0 +1,951 @@
+{
+  "block": 516950276,
+  "scope": "Separate local EVM transactions; hypothetical starting books and APY overrides; ArbGasInfo stubbed with pinned prices; not native ArbOS receipts",
+  "tiers": [
+    {
+      "tier": 0,
+      "tvlUSDC": 10000,
+      "actions": [
+        {
+          "adapter": "0x22Fa441d14C7b8D8b9E9F66D4c351F47c481dadB",
+          "amount": "2500000000",
+          "deposit": false
+        },
+        {
+          "adapter": "0xaAf2d7e9a56738eF19aD2Dbe27BBbDD08b300E00",
+          "amount": "5500000000",
+          "deposit": false
+        },
+        {
+          "adapter": "0x3CF80a75C5C5908272Bc61BF2251fb97b3c8c29F",
+          "amount": "1900000000",
+          "deposit": false
+        },
+        {
+          "adapter": "0x68F1Ccc020c543295B717D8fCf4070d58f77F13B",
+          "amount": "5500000000",
+          "deposit": true
+        }
+      ],
+      "quote": {
+        "actionsHash": "0xdcc1cb3a6bea9bd3f12034abceba38b4ff2e69f73c372cf2187e2e96c22f9546",
+        "costUSDC": "671364",
+        "l2Gas": "8863000",
+        "posterWei": "285197254656",
+        "executionWei": "178305834000000",
+        "txCount": "3",
+        "reliable": true,
+        "usedDefaults": true
+      },
+      "gateResult": [
+        true,
+        "15400000000",
+        "49"
+      ],
+      "transactions": [
+        {
+          "step": 0,
+          "hash": "0x02627857ccf8c448c51521958567cebe7fabee7d511668361ea68fa2b8444db0",
+          "status": "success",
+          "gasUsed": "1643471",
+          "observations": [],
+          "phase": 1,
+          "failures": 0,
+          "calldata": "0x4585e33b0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000050000000000000000000000000000000000000000000000000000000000000000",
+          "gasBreakdown": {
+            "grossGas": 1646271,
+            "refund": 2800,
+            "intrinsic": 21612,
+            "adapterGas": 0,
+            "finalizationGas": 0,
+            "otherStrategyOverhead": 1624659
+          }
+        },
+        {
+          "step": 1,
+          "hash": "0x0d36ea124fb1185b62fd81ee542e87e7630983613714361572612158e106ca80",
+          "status": "success",
+          "gasUsed": "1411374",
+          "observations": [
+            {
+              "adapter": "0x22Fa441d14C7b8D8b9E9F66D4c351F47c481dadB",
+              "gasUsed": "142958",
+              "deposit": false
+            },
+            {
+              "adapter": "0xaAf2d7e9a56738eF19aD2Dbe27BBbDD08b300E00",
+              "gasUsed": "207750",
+              "deposit": false
+            }
+          ],
+          "phase": 2,
+          "failures": 0,
+          "calldata": "0x4585e33b0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000060000000000000000000000000000000000000000000000000000000000000000",
+          "gasBreakdown": {
+            "grossGas": 1465274,
+            "refund": 53900,
+            "intrinsic": 21612,
+            "adapterGas": 350708,
+            "finalizationGas": 0,
+            "otherStrategyOverhead": 1092954
+          }
+        },
+        {
+          "step": 2,
+          "hash": "0xce6f1726c75f57ae5a75000e047030f5e030a5c55bec59090d6094357fe091a3",
+          "status": "success",
+          "gasUsed": "3036779",
+          "observations": [
+            {
+              "adapter": "0x3CF80a75C5C5908272Bc61BF2251fb97b3c8c29F",
+              "gasUsed": "117094",
+              "deposit": false
+            },
+            {
+              "adapter": "0x68F1Ccc020c543295B717D8fCf4070d58f77F13B",
+              "gasUsed": "1818799",
+              "deposit": true
+            }
+          ],
+          "phase": 0,
+          "failures": 0,
+          "calldata": "0x4585e33b0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000060000000000000000000000000000000000000000000000000000000000000000",
+          "gasBreakdown": {
+            "grossGas": 3174979,
+            "refund": 138200,
+            "intrinsic": 21612,
+            "adapterGas": 1935893,
+            "finalizationGas": 183614,
+            "otherStrategyOverhead": 1033860
+          }
+        }
+      ],
+      "preparedActions": [
+        {
+          "adapter": "0x22Fa441d14C7b8D8b9E9F66D4c351F47c481dadB",
+          "amount": "2500000000",
+          "deposit": false
+        },
+        {
+          "adapter": "0xaAf2d7e9a56738eF19aD2Dbe27BBbDD08b300E00",
+          "amount": "5500000000",
+          "deposit": false
+        },
+        {
+          "adapter": "0x3CF80a75C5C5908272Bc61BF2251fb97b3c8c29F",
+          "amount": "1900000000",
+          "deposit": false
+        },
+        {
+          "adapter": "0x68F1Ccc020c543295B717D8fCf4070d58f77F13B",
+          "amount": "5500000000",
+          "deposit": true
+        }
+      ],
+      "previewMatchesPreparation": true,
+      "acceptedQuote": {
+        "actionsHash": "0xdcc1cb3a6bea9bd3f12034abceba38b4ff2e69f73c372cf2187e2e96c22f9546",
+        "costUSDC": "671364",
+        "l2Gas": "8863000",
+        "posterWei": "285197254656",
+        "reliable": true
+      }
+    },
+    {
+      "tier": 1,
+      "tvlUSDC": 100000,
+      "actions": [
+        {
+          "adapter": "0xaAf2d7e9a56738eF19aD2Dbe27BBbDD08b300E00",
+          "amount": "7570877355",
+          "deposit": false
+        },
+        {
+          "adapter": "0x3CF80a75C5C5908272Bc61BF2251fb97b3c8c29F",
+          "amount": "25000000000",
+          "deposit": false
+        },
+        {
+          "adapter": "0x4E9646e4eDCC576225E81aDdB447E1FfC0B8EF59",
+          "amount": "4936950629",
+          "deposit": false
+        },
+        {
+          "adapter": "0x68F1Ccc020c543295B717D8fCf4070d58f77F13B",
+          "amount": "51054176674",
+          "deposit": true
+        },
+        {
+          "adapter": "0x22Fa441d14C7b8D8b9E9F66D4c351F47c481dadB",
+          "amount": "23945823325",
+          "deposit": true
+        }
+      ],
+      "quote": {
+        "actionsHash": "0x78cd16d1360028b0d841ff5b472ae98095587551be82102fdbe9664b6d83b199",
+        "costUSDC": "835911",
+        "l2Gas": "11034000",
+        "posterWei": "380263006208",
+        "executionWei": "221982012000000",
+        "txCount": "4",
+        "reliable": true,
+        "usedDefaults": true
+      },
+      "gateResult": [
+        true,
+        "112507827983",
+        "233"
+      ],
+      "transactions": [
+        {
+          "step": 0,
+          "hash": "0x02627857ccf8c448c51521958567cebe7fabee7d511668361ea68fa2b8444db0",
+          "status": "success",
+          "gasUsed": "1747028",
+          "observations": [],
+          "phase": 1,
+          "failures": 0,
+          "calldata": "0x4585e33b0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000050000000000000000000000000000000000000000000000000000000000000000",
+          "gasBreakdown": {
+            "grossGas": 1749828,
+            "refund": 2800,
+            "intrinsic": 21612,
+            "adapterGas": 0,
+            "finalizationGas": 0,
+            "otherStrategyOverhead": 1728216
+          }
+        },
+        {
+          "step": 1,
+          "hash": "0x0d36ea124fb1185b62fd81ee542e87e7630983613714361572612158e106ca80",
+          "status": "success",
+          "gasUsed": "1386996",
+          "observations": [
+            {
+              "adapter": "0xaAf2d7e9a56738eF19aD2Dbe27BBbDD08b300E00",
+              "gasUsed": "212550",
+              "deposit": false
+            },
+            {
+              "adapter": "0x3CF80a75C5C5908272Bc61BF2251fb97b3c8c29F",
+              "gasUsed": "112297",
+              "deposit": false
+            }
+          ],
+          "phase": 2,
+          "failures": 0,
+          "calldata": "0x4585e33b0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000060000000000000000000000000000000000000000000000000000000000000000",
+          "gasBreakdown": {
+            "grossGas": 1466396,
+            "refund": 79400,
+            "intrinsic": 21612,
+            "adapterGas": 324847,
+            "finalizationGas": 0,
+            "otherStrategyOverhead": 1119937
+          }
+        },
+        {
+          "step": 2,
+          "hash": "0xce6f1726c75f57ae5a75000e047030f5e030a5c55bec59090d6094357fe091a3",
+          "status": "success",
+          "gasUsed": "2968685",
+          "observations": [
+            {
+              "adapter": "0x4E9646e4eDCC576225E81aDdB447E1FfC0B8EF59",
+              "gasUsed": "216707",
+              "deposit": false
+            },
+            {
+              "adapter": "0x68F1Ccc020c543295B717D8fCf4070d58f77F13B",
+              "gasUsed": "1818799",
+              "deposit": true
+            }
+          ],
+          "phase": 2,
+          "failures": 0,
+          "calldata": "0x4585e33b0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000060000000000000000000000000000000000000000000000000000000000000000",
+          "gasBreakdown": {
+            "grossGas": 3099285,
+            "refund": 130600,
+            "intrinsic": 21612,
+            "adapterGas": 2035506,
+            "finalizationGas": 0,
+            "otherStrategyOverhead": 1042167
+          }
+        },
+        {
+          "step": 3,
+          "hash": "0x6231c6eec8579dd2df9de3c92565bf2269ae3b3523343ebbdfbb187e122b2b39",
+          "status": "success",
+          "gasUsed": "1765159",
+          "observations": [
+            {
+              "adapter": "0x22Fa441d14C7b8D8b9E9F66D4c351F47c481dadB",
+              "gasUsed": "260670",
+              "deposit": true
+            }
+          ],
+          "phase": 0,
+          "failures": 0,
+          "calldata": "0x4585e33b0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000060000000000000000000000000000000000000000000000000000000000000000",
+          "gasBreakdown": {
+            "grossGas": 1835259,
+            "refund": 70100,
+            "intrinsic": 21612,
+            "adapterGas": 260670,
+            "finalizationGas": 184430,
+            "otherStrategyOverhead": 1368547
+          }
+        }
+      ],
+      "preparedActions": [
+        {
+          "adapter": "0xaAf2d7e9a56738eF19aD2Dbe27BBbDD08b300E00",
+          "amount": "7570877355",
+          "deposit": false
+        },
+        {
+          "adapter": "0x3CF80a75C5C5908272Bc61BF2251fb97b3c8c29F",
+          "amount": "25000000000",
+          "deposit": false
+        },
+        {
+          "adapter": "0x4E9646e4eDCC576225E81aDdB447E1FfC0B8EF59",
+          "amount": "4936950629",
+          "deposit": false
+        },
+        {
+          "adapter": "0x68F1Ccc020c543295B717D8fCf4070d58f77F13B",
+          "amount": "51054176674",
+          "deposit": true
+        },
+        {
+          "adapter": "0x22Fa441d14C7b8D8b9E9F66D4c351F47c481dadB",
+          "amount": "23945823325",
+          "deposit": true
+        }
+      ],
+      "previewMatchesPreparation": true,
+      "acceptedQuote": {
+        "actionsHash": "0x78cd16d1360028b0d841ff5b472ae98095587551be82102fdbe9664b6d83b199",
+        "costUSDC": "835911",
+        "l2Gas": "11034000",
+        "posterWei": "380263006208",
+        "reliable": true
+      }
+    },
+    {
+      "tier": 2,
+      "tvlUSDC": 500000,
+      "actions": [
+        {
+          "adapter": "0xa2781F0226C1A4c0FCA9e61C02AdbF52FF11b0e9",
+          "amount": "183350000000",
+          "deposit": false
+        },
+        {
+          "adapter": "0xaAf2d7e9a56738eF19aD2Dbe27BBbDD08b300E00",
+          "amount": "7570877355",
+          "deposit": false
+        },
+        {
+          "adapter": "0x3CF80a75C5C5908272Bc61BF2251fb97b3c8c29F",
+          "amount": "125000000000",
+          "deposit": false
+        },
+        {
+          "adapter": "0x4E9646e4eDCC576225E81aDdB447E1FfC0B8EF59",
+          "amount": "4936950629",
+          "deposit": false
+        },
+        {
+          "adapter": "0x68F1Ccc020c543295B717D8fCf4070d58f77F13B",
+          "amount": "171507979200",
+          "deposit": true
+        },
+        {
+          "adapter": "0x9D0d40F7F62623dfE5F3FDCA04f63ac396B496FA",
+          "amount": "164066702528",
+          "deposit": true
+        },
+        {
+          "adapter": "0x22Fa441d14C7b8D8b9E9F66D4c351F47c481dadB",
+          "amount": "39425318271",
+          "deposit": true
+        }
+      ],
+      "quote": {
+        "actionsHash": "0xaeeb4302fddbba20e81fbcaf845f90275a5357194d91dacc2010d8c2845f4962",
+        "costUSDC": "1064741",
+        "l2Gas": "14055000",
+        "posterWei": "475328757760",
+        "executionWei": "282758490000000",
+        "txCount": "5",
+        "reliable": true,
+        "usedDefaults": true
+      },
+      "gateResult": [
+        true,
+        "695857827983",
+        "184"
+      ],
+      "transactions": [
+        {
+          "step": 0,
+          "hash": "0x02627857ccf8c448c51521958567cebe7fabee7d511668361ea68fa2b8444db0",
+          "status": "success",
+          "gasUsed": "1933051",
+          "observations": [],
+          "phase": 1,
+          "failures": 0,
+          "calldata": "0x4585e33b0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000050000000000000000000000000000000000000000000000000000000000000000",
+          "gasBreakdown": {
+            "grossGas": 1935851,
+            "refund": 2800,
+            "intrinsic": 21612,
+            "adapterGas": 0,
+            "finalizationGas": 0,
+            "otherStrategyOverhead": 1914239
+          }
+        },
+        {
+          "step": 1,
+          "hash": "0x0d36ea124fb1185b62fd81ee542e87e7630983613714361572612158e106ca80",
+          "status": "success",
+          "gasUsed": "1467970",
+          "observations": [
+            {
+              "adapter": "0xa2781F0226C1A4c0FCA9e61C02AdbF52FF11b0e9",
+              "gasUsed": "136069",
+              "deposit": false
+            },
+            {
+              "adapter": "0xaAf2d7e9a56738eF19aD2Dbe27BBbDD08b300E00",
+              "gasUsed": "207750",
+              "deposit": false
+            }
+          ],
+          "phase": 2,
+          "failures": 0,
+          "calldata": "0x4585e33b0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000060000000000000000000000000000000000000000000000000000000000000000",
+          "gasBreakdown": {
+            "grossGas": 1561670,
+            "refund": 93700,
+            "intrinsic": 21612,
+            "adapterGas": 343819,
+            "finalizationGas": 0,
+            "otherStrategyOverhead": 1196239
+          }
+        },
+        {
+          "step": 2,
+          "hash": "0xce6f1726c75f57ae5a75000e047030f5e030a5c55bec59090d6094357fe091a3",
+          "status": "success",
+          "gasUsed": "1401830",
+          "observations": [
+            {
+              "adapter": "0x3CF80a75C5C5908272Bc61BF2251fb97b3c8c29F",
+              "gasUsed": "122466",
+              "deposit": false
+            },
+            {
+              "adapter": "0x4E9646e4eDCC576225E81aDdB447E1FfC0B8EF59",
+              "gasUsed": "211907",
+              "deposit": false
+            }
+          ],
+          "phase": 2,
+          "failures": 0,
+          "calldata": "0x4585e33b0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000060000000000000000000000000000000000000000000000000000000000000000",
+          "gasBreakdown": {
+            "grossGas": 1463230,
+            "refund": 61400,
+            "intrinsic": 21612,
+            "adapterGas": 334373,
+            "finalizationGas": 0,
+            "otherStrategyOverhead": 1107245
+          }
+        },
+        {
+          "step": 3,
+          "hash": "0x6231c6eec8579dd2df9de3c92565bf2269ae3b3523343ebbdfbb187e122b2b39",
+          "status": "success",
+          "gasUsed": "3476158",
+          "observations": [
+            {
+              "adapter": "0x68F1Ccc020c543295B717D8fCf4070d58f77F13B",
+              "gasUsed": "1823599",
+              "deposit": true
+            },
+            {
+              "adapter": "0x9D0d40F7F62623dfE5F3FDCA04f63ac396B496FA",
+              "gasUsed": "756160",
+              "deposit": true
+            }
+          ],
+          "phase": 2,
+          "failures": 0,
+          "calldata": "0x4585e33b0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000060000000000000000000000000000000000000000000000000000000000000000",
+          "gasBreakdown": {
+            "grossGas": 3689158,
+            "refund": 213000,
+            "intrinsic": 21612,
+            "adapterGas": 2579759,
+            "finalizationGas": 0,
+            "otherStrategyOverhead": 1087787
+          }
+        },
+        {
+          "step": 4,
+          "hash": "0x2b6af53668ae3f969e69d833b8c6343df20b3aa95bfdc49cb41ccc0e5117d57d",
+          "status": "success",
+          "gasUsed": "1828428",
+          "observations": [
+            {
+              "adapter": "0x22Fa441d14C7b8D8b9E9F66D4c351F47c481dadB",
+              "gasUsed": "260670",
+              "deposit": true
+            }
+          ],
+          "phase": 0,
+          "failures": 0,
+          "calldata": "0x4585e33b0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000060000000000000000000000000000000000000000000000000000000000000000",
+          "gasBreakdown": {
+            "grossGas": 1898528,
+            "refund": 70100,
+            "intrinsic": 21612,
+            "adapterGas": 260670,
+            "finalizationGas": 225242,
+            "otherStrategyOverhead": 1391004
+          }
+        }
+      ],
+      "preparedActions": [
+        {
+          "adapter": "0xa2781F0226C1A4c0FCA9e61C02AdbF52FF11b0e9",
+          "amount": "183350000000",
+          "deposit": false
+        },
+        {
+          "adapter": "0xaAf2d7e9a56738eF19aD2Dbe27BBbDD08b300E00",
+          "amount": "7570877355",
+          "deposit": false
+        },
+        {
+          "adapter": "0x3CF80a75C5C5908272Bc61BF2251fb97b3c8c29F",
+          "amount": "125000000000",
+          "deposit": false
+        },
+        {
+          "adapter": "0x4E9646e4eDCC576225E81aDdB447E1FfC0B8EF59",
+          "amount": "4936950629",
+          "deposit": false
+        },
+        {
+          "adapter": "0x68F1Ccc020c543295B717D8fCf4070d58f77F13B",
+          "amount": "171507979200",
+          "deposit": true
+        },
+        {
+          "adapter": "0x9D0d40F7F62623dfE5F3FDCA04f63ac396B496FA",
+          "amount": "164066702528",
+          "deposit": true
+        },
+        {
+          "adapter": "0x22Fa441d14C7b8D8b9E9F66D4c351F47c481dadB",
+          "amount": "39425318271",
+          "deposit": true
+        }
+      ],
+      "previewMatchesPreparation": true,
+      "acceptedQuote": {
+        "actionsHash": "0xaeeb4302fddbba20e81fbcaf845f90275a5357194d91dacc2010d8c2845f4962",
+        "costUSDC": "1064741",
+        "l2Gas": "14055000",
+        "posterWei": "475328757760",
+        "reliable": true
+      }
+    },
+    {
+      "tier": 3,
+      "tvlUSDC": 2000000,
+      "actions": [
+        {
+          "adapter": "0x22Fa441d14C7b8D8b9E9F66D4c351F47c481dadB",
+          "amount": "43719806764",
+          "deposit": false
+        },
+        {
+          "adapter": "0xa2781F0226C1A4c0FCA9e61C02AdbF52FF11b0e9",
+          "amount": "550000000000",
+          "deposit": false
+        },
+        {
+          "adapter": "0xaAf2d7e9a56738eF19aD2Dbe27BBbDD08b300E00",
+          "amount": "7570877355",
+          "deposit": false
+        },
+        {
+          "adapter": "0x4E9646e4eDCC576225E81aDdB447E1FfC0B8EF59",
+          "amount": "4936950629",
+          "deposit": false
+        },
+        {
+          "adapter": "0x9D0d40F7F62623dfE5F3FDCA04f63ac396B496FA",
+          "amount": "374518967888",
+          "deposit": true
+        },
+        {
+          "adapter": "0x68F1Ccc020c543295B717D8fCf4070d58f77F13B",
+          "amount": "279355928123",
+          "deposit": true
+        }
+      ],
+      "quote": {
+        "actionsHash": "0xf5e1a4f97c8fa01bfe7b154870f8eb618ac03c4388717336687a3b1ee4c18e7c",
+        "costUSDC": "903977",
+        "l2Gas": "11934000",
+        "posterWei": "380263006208",
+        "executionWei": "240088212000000",
+        "txCount": "4",
+        "reliable": true,
+        "usedDefaults": true
+      },
+      "gateResult": [
+        true,
+        "1260102530759",
+        "218"
+      ],
+      "transactions": [
+        {
+          "step": 0,
+          "hash": "0x02627857ccf8c448c51521958567cebe7fabee7d511668361ea68fa2b8444db0",
+          "status": "success",
+          "gasUsed": "1873559",
+          "observations": [],
+          "phase": 1,
+          "failures": 0,
+          "calldata": "0x4585e33b0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000050000000000000000000000000000000000000000000000000000000000000000",
+          "gasBreakdown": {
+            "grossGas": 1876359,
+            "refund": 2800,
+            "intrinsic": 21612,
+            "adapterGas": 0,
+            "finalizationGas": 0,
+            "otherStrategyOverhead": 1854747
+          }
+        },
+        {
+          "step": 1,
+          "hash": "0x0d36ea124fb1185b62fd81ee542e87e7630983613714361572612158e106ca80",
+          "status": "success",
+          "gasUsed": "1437711",
+          "observations": [
+            {
+              "adapter": "0x22Fa441d14C7b8D8b9E9F66D4c351F47c481dadB",
+              "gasUsed": "142958",
+              "deposit": false
+            },
+            {
+              "adapter": "0xa2781F0226C1A4c0FCA9e61C02AdbF52FF11b0e9",
+              "gasUsed": "131269",
+              "deposit": false
+            }
+          ],
+          "phase": 2,
+          "failures": 0,
+          "calldata": "0x4585e33b0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000060000000000000000000000000000000000000000000000000000000000000000",
+          "gasBreakdown": {
+            "grossGas": 1490711,
+            "refund": 53000,
+            "intrinsic": 21612,
+            "adapterGas": 274227,
+            "finalizationGas": 0,
+            "otherStrategyOverhead": 1194872
+          }
+        },
+        {
+          "step": 2,
+          "hash": "0xce6f1726c75f57ae5a75000e047030f5e030a5c55bec59090d6094357fe091a3",
+          "status": "success",
+          "gasUsed": "1493358",
+          "observations": [
+            {
+              "adapter": "0xaAf2d7e9a56738eF19aD2Dbe27BBbDD08b300E00",
+              "gasUsed": "212797",
+              "deposit": false
+            },
+            {
+              "adapter": "0x4E9646e4eDCC576225E81aDdB447E1FfC0B8EF59",
+              "gasUsed": "211907",
+              "deposit": false
+            }
+          ],
+          "phase": 2,
+          "failures": 0,
+          "calldata": "0x4585e33b0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000060000000000000000000000000000000000000000000000000000000000000000",
+          "gasBreakdown": {
+            "grossGas": 1565158,
+            "refund": 71800,
+            "intrinsic": 21612,
+            "adapterGas": 424704,
+            "finalizationGas": 0,
+            "otherStrategyOverhead": 1118842
+          }
+        },
+        {
+          "step": 3,
+          "hash": "0x6231c6eec8579dd2df9de3c92565bf2269ae3b3523343ebbdfbb187e122b2b39",
+          "status": "success",
+          "gasUsed": "3706089",
+          "observations": [
+            {
+              "adapter": "0x9D0d40F7F62623dfE5F3FDCA04f63ac396B496FA",
+              "gasUsed": "760960",
+              "deposit": true
+            },
+            {
+              "adapter": "0x68F1Ccc020c543295B717D8fCf4070d58f77F13B",
+              "gasUsed": "1818799",
+              "deposit": true
+            }
+          ],
+          "phase": 0,
+          "failures": 0,
+          "calldata": "0x4585e33b0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000060000000000000000000000000000000000000000000000000000000000000000",
+          "gasBreakdown": {
+            "grossGas": 3919089,
+            "refund": 213000,
+            "intrinsic": 21612,
+            "adapterGas": 2579759,
+            "finalizationGas": 212093,
+            "otherStrategyOverhead": 1105625
+          }
+        }
+      ],
+      "preparedActions": [
+        {
+          "adapter": "0x22Fa441d14C7b8D8b9E9F66D4c351F47c481dadB",
+          "amount": "43719806764",
+          "deposit": false
+        },
+        {
+          "adapter": "0xa2781F0226C1A4c0FCA9e61C02AdbF52FF11b0e9",
+          "amount": "550000000000",
+          "deposit": false
+        },
+        {
+          "adapter": "0xaAf2d7e9a56738eF19aD2Dbe27BBbDD08b300E00",
+          "amount": "7570877355",
+          "deposit": false
+        },
+        {
+          "adapter": "0x4E9646e4eDCC576225E81aDdB447E1FfC0B8EF59",
+          "amount": "4936950629",
+          "deposit": false
+        },
+        {
+          "adapter": "0x9D0d40F7F62623dfE5F3FDCA04f63ac396B496FA",
+          "amount": "374518967888",
+          "deposit": true
+        },
+        {
+          "adapter": "0x68F1Ccc020c543295B717D8fCf4070d58f77F13B",
+          "amount": "279355928123",
+          "deposit": true
+        }
+      ],
+      "previewMatchesPreparation": true,
+      "acceptedQuote": {
+        "actionsHash": "0xf5e1a4f97c8fa01bfe7b154870f8eb618ac03c4388717336687a3b1ee4c18e7c",
+        "costUSDC": "903977",
+        "l2Gas": "11934000",
+        "posterWei": "380263006208",
+        "reliable": true
+      }
+    },
+    {
+      "tier": 4,
+      "tvlUSDC": 6000000,
+      "actions": [
+        {
+          "adapter": "0xa2781F0226C1A4c0FCA9e61C02AdbF52FF11b0e9",
+          "amount": "717129674471",
+          "deposit": false
+        },
+        {
+          "adapter": "0xaAf2d7e9a56738eF19aD2Dbe27BBbDD08b300E00",
+          "amount": "7570877355",
+          "deposit": false
+        },
+        {
+          "adapter": "0x4E9646e4eDCC576225E81aDdB447E1FfC0B8EF59",
+          "amount": "4936950629",
+          "deposit": false
+        },
+        {
+          "adapter": "0x9D0d40F7F62623dfE5F3FDCA04f63ac396B496FA",
+          "amount": "374518967888",
+          "deposit": true
+        },
+        {
+          "adapter": "0x68F1Ccc020c543295B717D8fCf4070d58f77F13B",
+          "amount": "279355928123",
+          "deposit": true
+        }
+      ],
+      "quote": {
+        "actionsHash": "0x397ba8cfbfb7555038fc57b3feef7208ee5c0237591fea2e72b49b0f0d59c476",
+        "costUSDC": "881288",
+        "l2Gas": "11634000",
+        "posterWei": "380263006208",
+        "executionWei": "234052812000000",
+        "txCount": "4",
+        "reliable": true,
+        "usedDefaults": true
+      },
+      "gateResult": [
+        true,
+        "1383512398466",
+        "209"
+      ],
+      "transactions": [
+        {
+          "step": 0,
+          "hash": "0x02627857ccf8c448c51521958567cebe7fabee7d511668361ea68fa2b8444db0",
+          "status": "success",
+          "gasUsed": "1809296",
+          "observations": [],
+          "phase": 1,
+          "failures": 0,
+          "calldata": "0x4585e33b0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000050000000000000000000000000000000000000000000000000000000000000000",
+          "gasBreakdown": {
+            "grossGas": 1812096,
+            "refund": 2800,
+            "intrinsic": 21612,
+            "adapterGas": 0,
+            "finalizationGas": 0,
+            "otherStrategyOverhead": 1790484
+          }
+        },
+        {
+          "step": 1,
+          "hash": "0x0d36ea124fb1185b62fd81ee542e87e7630983613714361572612158e106ca80",
+          "status": "success",
+          "gasUsed": "1439491",
+          "observations": [
+            {
+              "adapter": "0xa2781F0226C1A4c0FCA9e61C02AdbF52FF11b0e9",
+              "gasUsed": "136069",
+              "deposit": false
+            },
+            {
+              "adapter": "0xaAf2d7e9a56738eF19aD2Dbe27BBbDD08b300E00",
+              "gasUsed": "207750",
+              "deposit": false
+            }
+          ],
+          "phase": 2,
+          "failures": 0,
+          "calldata": "0x4585e33b0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000060000000000000000000000000000000000000000000000000000000000000000",
+          "gasBreakdown": {
+            "grossGas": 1528391,
+            "refund": 88900,
+            "intrinsic": 21612,
+            "adapterGas": 343819,
+            "finalizationGas": 0,
+            "otherStrategyOverhead": 1162960
+          }
+        },
+        {
+          "step": 2,
+          "hash": "0xce6f1726c75f57ae5a75000e047030f5e030a5c55bec59090d6094357fe091a3",
+          "status": "success",
+          "gasUsed": "1960952",
+          "observations": [
+            {
+              "adapter": "0x4E9646e4eDCC576225E81aDdB447E1FfC0B8EF59",
+              "gasUsed": "216707",
+              "deposit": false
+            },
+            {
+              "adapter": "0x9D0d40F7F62623dfE5F3FDCA04f63ac396B496FA",
+              "gasUsed": "756150",
+              "deposit": true
+            }
+          ],
+          "phase": 2,
+          "failures": 0,
+          "calldata": "0x4585e33b0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000060000000000000000000000000000000000000000000000000000000000000000",
+          "gasBreakdown": {
+            "grossGas": 2097152,
+            "refund": 136200,
+            "intrinsic": 21612,
+            "adapterGas": 972857,
+            "finalizationGas": 0,
+            "otherStrategyOverhead": 1102683
+          }
+        },
+        {
+          "step": 3,
+          "hash": "0x6231c6eec8579dd2df9de3c92565bf2269ae3b3523343ebbdfbb187e122b2b39",
+          "status": "success",
+          "gasUsed": "3025390",
+          "observations": [
+            {
+              "adapter": "0x68F1Ccc020c543295B717D8fCf4070d58f77F13B",
+              "gasUsed": "1823599",
+              "deposit": true
+            }
+          ],
+          "phase": 0,
+          "failures": 0,
+          "calldata": "0x4585e33b0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000060000000000000000000000000000000000000000000000000000000000000000",
+          "gasBreakdown": {
+            "grossGas": 3130490,
+            "refund": 105100,
+            "intrinsic": 21612,
+            "adapterGas": 1823599,
+            "finalizationGas": 266831,
+            "otherStrategyOverhead": 1018448
+          }
+        }
+      ],
+      "preparedActions": [
+        {
+          "adapter": "0xa2781F0226C1A4c0FCA9e61C02AdbF52FF11b0e9",
+          "amount": "717129674471",
+          "deposit": false
+        },
+        {
+          "adapter": "0xaAf2d7e9a56738eF19aD2Dbe27BBbDD08b300E00",
+          "amount": "7570877355",
+          "deposit": false
+        },
+        {
+          "adapter": "0x4E9646e4eDCC576225E81aDdB447E1FfC0B8EF59",
+          "amount": "4936950629",
+          "deposit": false
+        },
+        {
+          "adapter": "0x9D0d40F7F62623dfE5F3FDCA04f63ac396B496FA",
+          "amount": "374518967888",
+          "deposit": true
+        },
+        {
+          "adapter": "0x68F1Ccc020c543295B717D8fCf4070d58f77F13B",
+          "amount": "279355928123",
+          "deposit": true
+        }
+      ],
+      "previewMatchesPreparation": true,
+      "acceptedQuote": {
+        "actionsHash": "0x397ba8cfbfb7555038fc57b3feef7208ee5c0237591fea2e72b49b0f0d59c476",
+        "costUSDC": "881288",
+        "l2Gas": "11634000",
+        "posterWei": "380263006208",
+        "reliable": true
+      }
+    }
+  ]
+}

@@ -1,0 +1,423 @@
+{
+  "scope": "Candidate configuration applied ONLY on localhost; quotes use exact saved action lists with cold metadata. This is not a live deployment.",
+  "emaFirstProof": {
+    "adapter": "0x4E9646e4eDCC576225E81aDdB447E1FfC0B8EF59",
+    "ema": "292794",
+    "evidence": [
+      4,
+      "1792595609"
+    ],
+    "emaQuote": {
+      "actionsHash": "0xcb28da3538e22d9eb0c7e05893690f20257b0bf44c490694f312aa2947052796",
+      "costUSDC": "358892",
+      "l2Gas": "4736018",
+      "posterWei": "190131503104",
+      "executionWei": "95279210124000",
+      "txCount": "2",
+      "reliable": true,
+      "usedDefaults": false
+    },
+    "coldQuote": {
+      "actionsHash": "0xcb28da3538e22d9eb0c7e05893690f20257b0bf44c490694f312aa2947052796",
+      "costUSDC": "368513",
+      "l2Gas": "4863224",
+      "posterWei": "190131503104",
+      "executionWei": "97838340432000",
+      "txCount": "2",
+      "reliable": true,
+      "usedDefaults": true
+    }
+  },
+  "prices": [
+    true,
+    "2505900000000000000000",
+    "999900350000000000"
+  ],
+  "quotes": [
+    {
+      "source": "cold-transactions.json",
+      "tvlUSDC": 10000,
+      "actions": [
+        {
+          "adapter": "0x22Fa441d14C7b8D8b9E9F66D4c351F47c481dadB",
+          "amount": "2500000000",
+          "deposit": false
+        },
+        {
+          "adapter": "0xaAf2d7e9a56738eF19aD2Dbe27BBbDD08b300E00",
+          "amount": "5500000000",
+          "deposit": false
+        },
+        {
+          "adapter": "0x3CF80a75C5C5908272Bc61BF2251fb97b3c8c29F",
+          "amount": "1900000000",
+          "deposit": false
+        },
+        {
+          "adapter": "0x68F1Ccc020c543295B717D8fCf4070d58f77F13B",
+          "amount": "5500000000",
+          "deposit": true
+        }
+      ],
+      "q": {
+        "actionsHash": "0xdcc1cb3a6bea9bd3f12034abceba38b4ff2e69f73c372cf2187e2e96c22f9546",
+        "costUSDC": "645791",
+        "l2Gas": "8524836",
+        "posterWei": "285197254656",
+        "executionWei": "171502650648000",
+        "txCount": "3",
+        "reliable": true,
+        "usedDefaults": true
+      },
+      "beforeMarginUSDC": 0.430527,
+      "withMarginUSDC": 0.645791
+    },
+    {
+      "source": "cold-transactions.json",
+      "tvlUSDC": 100000,
+      "actions": [
+        {
+          "adapter": "0xaAf2d7e9a56738eF19aD2Dbe27BBbDD08b300E00",
+          "amount": "7570877355",
+          "deposit": false
+        },
+        {
+          "adapter": "0x3CF80a75C5C5908272Bc61BF2251fb97b3c8c29F",
+          "amount": "25000000000",
+          "deposit": false
+        },
+        {
+          "adapter": "0x4E9646e4eDCC576225E81aDdB447E1FfC0B8EF59",
+          "amount": "4936950629",
+          "deposit": false
+        },
+        {
+          "adapter": "0x68F1Ccc020c543295B717D8fCf4070d58f77F13B",
+          "amount": "51054176674",
+          "deposit": true
+        },
+        {
+          "adapter": "0x22Fa441d14C7b8D8b9E9F66D4c351F47c481dadB",
+          "amount": "23945823325",
+          "deposit": true
+        }
+      ],
+      "q": {
+        "actionsHash": "0x78cd16d1360028b0d841ff5b472ae98095587551be82102fdbe9664b6d83b199",
+        "costUSDC": "791475",
+        "l2Gas": "10446448",
+        "posterWei": "380263006208",
+        "executionWei": "210161640864000",
+        "txCount": "4",
+        "reliable": true,
+        "usedDefaults": true
+      },
+      "beforeMarginUSDC": 0.52765,
+      "withMarginUSDC": 0.791475
+    },
+    {
+      "source": "cold-transactions.json",
+      "tvlUSDC": 500000,
+      "actions": [
+        {
+          "adapter": "0xa2781F0226C1A4c0FCA9e61C02AdbF52FF11b0e9",
+          "amount": "183350000000",
+          "deposit": false
+        },
+        {
+          "adapter": "0xaAf2d7e9a56738eF19aD2Dbe27BBbDD08b300E00",
+          "amount": "7570877355",
+          "deposit": false
+        },
+        {
+          "adapter": "0x3CF80a75C5C5908272Bc61BF2251fb97b3c8c29F",
+          "amount": "125000000000",
+          "deposit": false
+        },
+        {
+          "adapter": "0x4E9646e4eDCC576225E81aDdB447E1FfC0B8EF59",
+          "amount": "4936950629",
+          "deposit": false
+        },
+        {
+          "adapter": "0x68F1Ccc020c543295B717D8fCf4070d58f77F13B",
+          "amount": "171507979200",
+          "deposit": true
+        },
+        {
+          "adapter": "0x9D0d40F7F62623dfE5F3FDCA04f63ac396B496FA",
+          "amount": "164066702528",
+          "deposit": true
+        },
+        {
+          "adapter": "0x22Fa441d14C7b8D8b9E9F66D4c351F47c481dadB",
+          "amount": "39425318271",
+          "deposit": true
+        }
+      ],
+      "q": {
+        "actionsHash": "0xaeeb4302fddbba20e81fbcaf845f90275a5357194d91dacc2010d8c2845f4962",
+        "costUSDC": "959849",
+        "l2Gas": "12668060",
+        "posterWei": "475328757760",
+        "executionWei": "254856031080000",
+        "txCount": "5",
+        "reliable": true,
+        "usedDefaults": true
+      },
+      "beforeMarginUSDC": 0.639899,
+      "withMarginUSDC": 0.959849
+    },
+    {
+      "source": "cold-transactions.json",
+      "tvlUSDC": 2000000,
+      "actions": [
+        {
+          "adapter": "0x22Fa441d14C7b8D8b9E9F66D4c351F47c481dadB",
+          "amount": "43719806764",
+          "deposit": false
+        },
+        {
+          "adapter": "0xa2781F0226C1A4c0FCA9e61C02AdbF52FF11b0e9",
+          "amount": "550000000000",
+          "deposit": false
+        },
+        {
+          "adapter": "0xaAf2d7e9a56738eF19aD2Dbe27BBbDD08b300E00",
+          "amount": "7570877355",
+          "deposit": false
+        },
+        {
+          "adapter": "0x4E9646e4eDCC576225E81aDdB447E1FfC0B8EF59",
+          "amount": "4936950629",
+          "deposit": false
+        },
+        {
+          "adapter": "0x9D0d40F7F62623dfE5F3FDCA04f63ac396B496FA",
+          "amount": "374518967888",
+          "deposit": true
+        },
+        {
+          "adapter": "0x68F1Ccc020c543295B717D8fCf4070d58f77F13B",
+          "amount": "279355928123",
+          "deposit": true
+        }
+      ],
+      "q": {
+        "actionsHash": "0xf5e1a4f97c8fa01bfe7b154870f8eb618ac03c4388717336687a3b1ee4c18e7c",
+        "costUSDC": "821727",
+        "l2Gas": "10846448",
+        "posterWei": "380263006208",
+        "executionWei": "218208840864000",
+        "txCount": "4",
+        "reliable": true,
+        "usedDefaults": true
+      },
+      "beforeMarginUSDC": 0.547818,
+      "withMarginUSDC": 0.821727
+    },
+    {
+      "source": "cold-transactions.json",
+      "tvlUSDC": 6000000,
+      "actions": [
+        {
+          "adapter": "0xa2781F0226C1A4c0FCA9e61C02AdbF52FF11b0e9",
+          "amount": "717129674471",
+          "deposit": false
+        },
+        {
+          "adapter": "0xaAf2d7e9a56738eF19aD2Dbe27BBbDD08b300E00",
+          "amount": "7570877355",
+          "deposit": false
+        },
+        {
+          "adapter": "0x4E9646e4eDCC576225E81aDdB447E1FfC0B8EF59",
+          "amount": "4936950629",
+          "deposit": false
+        },
+        {
+          "adapter": "0x9D0d40F7F62623dfE5F3FDCA04f63ac396B496FA",
+          "amount": "374518967888",
+          "deposit": true
+        },
+        {
+          "adapter": "0x68F1Ccc020c543295B717D8fCf4070d58f77F13B",
+          "amount": "279355928123",
+          "deposit": true
+        }
+      ],
+      "q": {
+        "actionsHash": "0x397ba8cfbfb7555038fc57b3feef7208ee5c0237591fea2e72b49b0f0d59c476",
+        "costUSDC": "827777",
+        "l2Gas": "10926448",
+        "posterWei": "380263006208",
+        "executionWei": "219818280864000",
+        "txCount": "4",
+        "reliable": true,
+        "usedDefaults": true
+      },
+      "beforeMarginUSDC": 0.551851,
+      "withMarginUSDC": 0.827777
+    },
+    {
+      "source": "real-rate-cold-transactions.json",
+      "tvlUSDC": 10000,
+      "actions": [
+        {
+          "adapter": "0x22Fa441d14C7b8D8b9E9F66D4c351F47c481dadB",
+          "amount": "2500000000",
+          "deposit": false
+        },
+        {
+          "adapter": "0x3CF80a75C5C5908272Bc61BF2251fb97b3c8c29F",
+          "amount": "1900000000",
+          "deposit": false
+        }
+      ],
+      "q": {
+        "actionsHash": "0x262e883dcb22bc9f4049e380f6d2f20eb64f76d665cb5e01fbba3d3b0b3798d2",
+        "costUSDC": "356412",
+        "l2Gas": "4703224",
+        "posterWei": "190131503104",
+        "executionWei": "94619460432000",
+        "txCount": "2",
+        "reliable": true,
+        "usedDefaults": true
+      },
+      "beforeMarginUSDC": 0.237608,
+      "withMarginUSDC": 0.356412
+    },
+    {
+      "source": "real-rate-cold-transactions.json",
+      "tvlUSDC": 100000,
+      "actions": [
+        {
+          "adapter": "0x22Fa441d14C7b8D8b9E9F66D4c351F47c481dadB",
+          "amount": "25000000000",
+          "deposit": false
+        },
+        {
+          "adapter": "0x3CF80a75C5C5908272Bc61BF2251fb97b3c8c29F",
+          "amount": "25000000000",
+          "deposit": false
+        },
+        {
+          "adapter": "0x4E9646e4eDCC576225E81aDdB447E1FfC0B8EF59",
+          "amount": "4936950629",
+          "deposit": false
+        },
+        {
+          "adapter": "0xa2781F0226C1A4c0FCA9e61C02AdbF52FF11b0e9",
+          "amount": "45166620765",
+          "deposit": true
+        }
+      ],
+      "q": {
+        "actionsHash": "0x6e2fd1eca97da217e6db8d2975bab9fb90e501733ab1f2f9a7b08709396293f8",
+        "costUSDC": "527054",
+        "l2Gas": "6954836",
+        "posterWei": "285197254656",
+        "executionWei": "139917390648000",
+        "txCount": "3",
+        "reliable": true,
+        "usedDefaults": true
+      },
+      "beforeMarginUSDC": 0.351369,
+      "withMarginUSDC": 0.527054
+    },
+    {
+      "source": "real-rate-cold-transactions.json",
+      "tvlUSDC": 500000,
+      "actions": [
+        {
+          "adapter": "0x22Fa441d14C7b8D8b9E9F66D4c351F47c481dadB",
+          "amount": "125000000000",
+          "deposit": false
+        },
+        {
+          "adapter": "0xa2781F0226C1A4c0FCA9e61C02AdbF52FF11b0e9",
+          "amount": "27783872503",
+          "deposit": false
+        },
+        {
+          "adapter": "0x3CF80a75C5C5908272Bc61BF2251fb97b3c8c29F",
+          "amount": "125000000000",
+          "deposit": false
+        }
+      ],
+      "q": {
+        "actionsHash": "0x9e46cbf580163718edb31cdb6e627d08d4f32a436a305526398e912e4c366a20",
+        "costUSDC": "480165",
+        "l2Gas": "6334836",
+        "posterWei": "285197254656",
+        "executionWei": "127444230648000",
+        "txCount": "3",
+        "reliable": true,
+        "usedDefaults": true
+      },
+      "beforeMarginUSDC": 0.32011,
+      "withMarginUSDC": 0.480165
+    },
+    {
+      "source": "real-rate-cold-transactions.json",
+      "tvlUSDC": 2000000,
+      "actions": [
+        {
+          "adapter": "0x22Fa441d14C7b8D8b9E9F66D4c351F47c481dadB",
+          "amount": "92168674699",
+          "deposit": false
+        },
+        {
+          "adapter": "0xa2781F0226C1A4c0FCA9e61C02AdbF52FF11b0e9",
+          "amount": "72774022921",
+          "deposit": false
+        },
+        {
+          "adapter": "0x3CF80a75C5C5908272Bc61BF2251fb97b3c8c29F",
+          "amount": "500000000000",
+          "deposit": false
+        }
+      ],
+      "q": {
+        "actionsHash": "0xa56d6111a41cd515bfe30fcc847e2a29ed44ffd8ceed7c7165ce0d9201311aa3",
+        "costUSDC": "480165",
+        "l2Gas": "6334836",
+        "posterWei": "285197254656",
+        "executionWei": "127444230648000",
+        "txCount": "3",
+        "reliable": true,
+        "usedDefaults": true
+      },
+      "beforeMarginUSDC": 0.32011,
+      "withMarginUSDC": 0.480165
+    },
+    {
+      "source": "real-rate-cold-transactions.json",
+      "tvlUSDC": 6000000,
+      "actions": [
+        {
+          "adapter": "0xa2781F0226C1A4c0FCA9e61C02AdbF52FF11b0e9",
+          "amount": "246102432613",
+          "deposit": false
+        },
+        {
+          "adapter": "0x3CF80a75C5C5908272Bc61BF2251fb97b3c8c29F",
+          "amount": "643397664284",
+          "deposit": false
+        }
+      ],
+      "q": {
+        "actionsHash": "0x7d3019e494cf4903627f131f2b6b5503399567c7fe7e40f8512e29c5eaa880b3",
+        "costUSDC": "355655",
+        "l2Gas": "4693224",
+        "posterWei": "190131503104",
+        "executionWei": "94418280432000",
+        "txCount": "2",
+        "reliable": true,
+        "usedDefaults": true
+      },
+      "beforeMarginUSDC": 0.237103,
+      "withMarginUSDC": 0.355655
+    }
+  ]
+}

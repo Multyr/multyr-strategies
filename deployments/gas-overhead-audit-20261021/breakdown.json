@@ -1,0 +1,115 @@
+{
+  "intervals": [
+    {
+      "entryPC": 17289,
+      "returnPC": 11973,
+      "depth": 3,
+      "startGas": 83049733,
+      "endGas": 82459541,
+      "gas": 590192,
+      "startIndex": 607935,
+      "endIndex": 722197
+    }
+  ],
+  "transactions": [
+    {
+      "index": 0,
+      "receiptGas": 2257372,
+      "grossGas": 2260172,
+      "refund": 2800,
+      "strategyOverhead": 2238560,
+      "traceGas": 2257372,
+      "intrinsic": 21612,
+      "adapterGas": 0,
+      "samples": [],
+      "finalizationGas": 0
+    },
+    {
+      "index": 1,
+      "receiptGas": 2200933,
+      "grossGas": 2283033,
+      "refund": 82100,
+      "strategyOverhead": 1676009,
+      "traceGas": 2200933,
+      "intrinsic": 21612,
+      "adapterGas": 585412,
+      "samples": [
+        {
+          "adapter": "0x066200e9bbd1F2Bf191ed88cFf2Ab477220f5125",
+          "emaGas": "117094",
+          "isDeposit": false
+        },
+        {
+          "adapter": "0x543E0Bb27FDb271Ac87A9c0963C9498131549059",
+          "emaGas": "468318",
+          "isDeposit": true
+        }
+      ],
+      "finalizationGas": 0
+    },
+    {
+      "index": 2,
+      "receiptGas": 2352192,
+      "grossGas": 2535792,
+      "refund": 183600,
+      "strategyOverhead": 1418689,
+      "traceGas": 2352192,
+      "intrinsic": 21612,
+      "adapterGas": 1095491,
+      "samples": [
+        {
+          "adapter": "0x17ff34D3ecE99Ee79F7ed0aC85809efDD34FC543",
+          "emaGas": "720950",
+          "isDeposit": true
+        },
+        {
+          "adapter": "0xB8fed94A1A7dc046402de039c0143aC48396eb7a",
+          "emaGas": "374541",
+          "isDeposit": true
+        }
+      ],
+      "finalizationGas": 0
+    },
+    {
+      "index": 3,
+      "receiptGas": 1818800,
+      "grossGas": 1966500,
+      "refund": 147700,
+      "strategyOverhead": 1372907,
+      "traceGas": 1818800,
+      "intrinsic": 21612,
+      "adapterGas": 571981,
+      "samples": [
+        {
+          "adapter": "0xaA42AC31eEa373299B1984BA29E8b05ea1E3D048",
+          "emaGas": "253415",
+          "isDeposit": true
+        },
+        {
+          "adapter": "0xd510EA3F3463c2dC3c06c80C94B32FCcb9564A5B",
+          "emaGas": "318566",
+          "isDeposit": true
+        }
+      ],
+      "finalizationGas": 0
+    },
+    {
+      "index": 4,
+      "receiptGas": 4678148,
+      "grossGas": 4783248,
+      "refund": 105100,
+      "strategyOverhead": 1298782,
+      "traceGas": 4678148,
+      "intrinsic": 21612,
+      "adapterGas": 2872662,
+      "samples": [
+        {
+          "adapter": "0x3e2E4eFE18909E614e74f197f5907d9f74dAdCc9",
+          "emaGas": "2872662",
+          "isDeposit": true
+        }
+      ],
+      "finalizationGas": 590192
+    }
+  ]
+}

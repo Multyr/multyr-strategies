@@ -1,0 +1,58 @@
+{
+  "scope": "Native RPC L1 estimates of generic keeper op 5/6 index 0 on the existing public upkeep address. No adapter amounts transmitted. Not live execution receipts or future deployed-address verification.",
+  "reference": "https://developer.arbitrum.io/arbitrum-essentials/nodeinterface/reference",
+  "rows": [
+    {
+      "blockNumber": "516950276",
+      "op": 5,
+      "strategyIndex": 0,
+      "destination": "0xbcaC314E7237b14E11644FC6Ba73675c8c0612DF",
+      "calldataBytes": 132,
+      "modeledPosterWei": "95065751552",
+      "nativePosterWei": "88561242000",
+      "nativeGasForL1": "4389",
+      "nativeL2Price": "20178000",
+      "nativeL1Price": "19544768",
+      "covered": true
+    },
+    {
+      "blockNumber": "516950276",
+      "op": 6,
+      "strategyIndex": 0,
+      "destination": "0xbcaC314E7237b14E11644FC6Ba73675c8c0612DF",
+      "calldataBytes": 132,
+      "modeledPosterWei": "95065751552",
+      "nativePosterWei": "88218216000",
+      "nativeGasForL1": "4372",
+      "nativeL2Price": "20178000",
+      "nativeL1Price": "19544768",
+      "covered": true
+    },
+    {
+      "blockNumber": "517327153",
+      "op": 5,
+      "strategyIndex": 0,
+      "destination": "0xbcaC314E7237b14E11644FC6Ba73675c8c0612DF",
+      "calldataBytes": 132,
+      "modeledPosterWei": "19867192832",
+      "nativePosterWei": "18509250000",
+      "nativeGasForL1": "925",
+      "nativeL2Price": "20010000",
+      "nativeL1Price": "4084538",
+      "covered": true
+    },
+    {
+      "blockNumber": "517327153",
+      "op": 6,
+      "strategyIndex": 0,
+      "destination": "0xbcaC314E7237b14E11644FC6Ba73675c8c0612DF",
+      "calldataBytes": 132,
+      "modeledPosterWei": "19867192832",
+      "nativePosterWei": "18429210000",
+      "nativeGasForL1": "921",
+      "nativeL2Price": "20010000",
+      "nativeL1Price": "4084538",
+      "covered": true
+    }
+  ]
+}

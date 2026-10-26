@@ -1,0 +1,62 @@
+{
+  "block": "516959897",
+  "strategy": "0xa9E676D15976A1332905238ca609Dff9A484Efe0",
+  "slots": [
+    {
+      "adapter": "0xd510EA3F3463c2dC3c06c80C94B32FCcb9564A5B",
+      "deposit": "0",
+      "withdraw": "0"
+    },
+    {
+      "adapter": "0x5A8ac17B80694ACE43F8c38a9cC13B7B08cc8555",
+      "deposit": "0",
+      "withdraw": "0"
+    },
+    {
+      "adapter": "0xaA42AC31eEa373299B1984BA29E8b05ea1E3D048",
+      "deposit": "0",
+      "withdraw": "0"
+    },
+    {
+      "adapter": "0x543E0Bb27FDb271Ac87A9c0963C9498131549059",
+      "deposit": "0",
+      "withdraw": "0"
+    },
+    {
+      "adapter": "0x6099803838D1bA17Cc03e7f2BDFe71C86924Fc0D",
+      "deposit": "0",
+      "withdraw": "0"
+    },
+    {
+      "adapter": "0x862415F76ff11231De1B8833Ba5590Bc71b46957",
+      "deposit": "0",
+      "withdraw": "0"
+    },
+    {
+      "adapter": "0xAba3D7015fFC9b8dEEb404389296864A1607E828",
+      "deposit": "297811",
+      "withdraw": "221222"
+    },
+    {
+      "adapter": "0xB8fed94A1A7dc046402de039c0143aC48396eb7a",
+      "deposit": "0",
+      "withdraw": "0"
+    },
+    {
+      "adapter": "0x3e2E4eFE18909E614e74f197f5907d9f74dAdCc9",
+      "deposit": "0",
+      "withdraw": "0"
+    },
+    {
+      "adapter": "0x17ff34D3ecE99Ee79F7ed0aC85809efDD34FC543",
+      "deposit": "0",
+      "withdraw": "0"
+    },
+    {
+      "adapter": "0x066200e9bbd1F2Bf191ed88cFf2Ab477220f5125",
+      "deposit": "197008",
+      "withdraw": "0"
+    }
+  ],
+  "events": []
+}

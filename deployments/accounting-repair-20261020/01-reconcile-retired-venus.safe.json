@@ -1,0 +1,35 @@
+{
+  "version": "1.0",
+  "chainId": "42161",
+  "createdAt": 1792494347029,
+  "meta": {
+    "name": "Reconcile drained retired Venus position",
+    "description": "Requires the documented vToken seed first. Execute all calls atomically: sync the retired position to its real seed balance, recall the seed, and require the retired adapter to be empty. No strategy or allocation-policy replacement.",
+    "txBuilderVersion": "1.18.0",
+    "createdFromSafeAddress": "0x70ef444799D6FBbE0865bA598Bee6795e064a326",
+    "createdFromOwnerAddress": ""
+  },
+  "transactions": [
+    {
+      "to": "0xa9E676D15976A1332905238ca609Dff9A484Efe0",
+      "value": "0",
+      "data": "0xd1278eae000000000000000000000000aba3d7015ffc9b8deeb404389296864a1607e828",
+      "contractMethod": null,
+      "contractInputsValues": null
+    },
+    {
+      "to": "0xa9E676D15976A1332905238ca609Dff9A484Efe0",
+      "value": "0",
+      "data": "0xabf2407300000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000001000000000000000000000000aba3d7015ffc9b8deeb404389296864a1607e828",
+      "contractMethod": null,
+      "contractInputsValues": null
+    },
+    {
+      "to": "0x97b2292104CFA7a5BF8742188f27a6eFCC6a7727",
+      "value": "0",
+      "data": "0x0277e12c000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000aba3d7015ffc9b8deeb404389296864a1607e828",
+      "contractMethod": null,
+      "contractInputsValues": null
+    }
+  ]
+}

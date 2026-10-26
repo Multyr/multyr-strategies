@@ -1,0 +1,26 @@
+{
+  "baselineBlock": 516950276,
+  "grossGas": 13828745,
+  "netReceiptGas": 13307445,
+  "refundGas": 521300,
+  "refundMethod": "Gross gas derived from final top-level opcode gas remaining and transaction gas limit; net from fork receipt. Difference is refund; individual child callTracer gasUsed is not an additive decomposition.",
+  "morphoUnderlyingDepositAttempts": [
+    {
+      "to": "0x7e97fa6893871a2751b5fe961978dccb2c201e65",
+      "input": "0x6e553f65000000000000000000000000000000000000000000000000000000000024dd1d0000000000000000000000003e2e4efe18909e614e74f197f5907d9f74dadcc9",
+      "gasUsed": "0x2652a",
+      "error": "execution reverted",
+      "output": "0xded0652d"
+    },
+    {
+      "to": "0x4b6f1c9e5d470b97181786b26da0d0945a7cf027",
+      "input": "0x6e553f65000000000000000000000000000000000000000000000000000000000024dd1d0000000000000000000000003e2e4efe18909e614e74f197f5907d9f74dadcc9",
+      "gasUsed": "0x3d8a0",
+      "error": null,
+      "output": "0x0000000000000000000000000000000000000000000000001fbaf67e640ed63f"
+    }
+  ],
+  "morphoFindings": "First underlying deposit reverted; second succeeded. Repeated convertToAssets valuation calls during APY sorting consumed 2,018,378 gas in 23 calls. Snapshotting APY once per market removes repeated reads within each sort; this does not remove legitimate fallback attempts.",
+  "nativeArbitrumValidation": "Still required; Anvil EVM receipts do not include ArbOS poster accounting.",
+  "noDoubleCounting": "Adapter event observations and separate finalization PC interval deducted from gross transaction gas along with 21,612 intrinsic/calldata gas per wrapper; remaining gas is strategy overhead. L1 added separately exactly once."
+}

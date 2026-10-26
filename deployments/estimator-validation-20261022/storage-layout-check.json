@@ -1,0 +1,22 @@
+{
+  "baseline": "deployed exact-source compilation",
+  "preexistingStorageChanges": [],
+  "appendedFields": [
+    {
+      "astId": 117245,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "depositGasObservation",
+      "offset": 0,
+      "slot": "85",
+      "type": "mapping(address => struct StrategyStorageLayout.GasObservation)"
+    },
+    {
+      "astId": 117250,
+      "contract": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:StrategyStorageLayout",
+      "label": "withdrawGasObservation",
+      "offset": 0,
+      "slot": "86",
+      "type": "mapping(address => struct StrategyStorageLayout.GasObservation)"
+    }
+  ]
+}
