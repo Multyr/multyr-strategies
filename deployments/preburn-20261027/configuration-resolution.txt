@@ -1,0 +1,13 @@
+27 October 2026 — configuration and diagnostic resolution
+
+Fee source: ERC4626Module uses FeeStorage.layout() for deposit and direct exit fees. EpochedQueueModule uses FeeStorage.layout().fee for economic exits and FeeStorage.layout() in _crystallize for performance fees. getFeeParams(address) has no runtime caller in the checked multyr-core source. GlobalConfig's 20% / 7-day / deployer-treasury defaults therefore do not override current Core's local 6% / 12-hour configuration. Fees are transferred to CoreStorage.feeCollector, with actual recipient distributions separately reconciled. These defaults are not silently changed; future consumers must not assume equivalence.
+
+Zero semantics: IParamsProvider.WithdrawalParams.minClaimAmount is explicitly deprecated and unused for economic exits. ERC4626Module applies maxWithdrawalPerTx and maxWithdrawalPerBlock only when greater than zero: zero disables those specific limits. The instant cap and deposit lock remain separate constraints.
+
+Six failed reads resolved by interface boundaries: five constants are public on the queue/ERC4626 modules but absent from Core fallback routing. Direct module reads confirm insolvency rounding 1 base unit, cursor scan 50, strategy redeem buffer 50 bps, warm NAV age 900 seconds, force legs 10. checkDegradedModeLocally is an internal SafetyOverflow delegatecall entry, absent from the strategy fallback dispatcher; external InvalidInput is expected. No dispatch changes are required.
+
+AdapterCallFailed selector 0x4664ae11 is effectiveAPYBps(). Aave, Fluid and Venus do not implement this optional interface; their fallback reverts NO_FALLBACK. StrategyAllocCalcModule catches it and reads currentAPYBps(). Live fallback reads at block 518689054: 243 / 395 / 453 bps, failure counters and last-failure timestamps all zero. This is diagnostic noise from optional-interface probing, not a failed withdrawal or deposit. No replacement adapter is needed for these events alone.
+
+Size policy updated with explicit user authorization on 27 October: the strategy and Scoring internal budgets are now 24000 bytes, below the 24576-byte EVM limit. Current sizes 22786 / 22085 pass. Historical refactor documents retain their original 22000-byte targets; this release decision supersedes those two targets. This changes tests only, not production bytecode.
+
+No production parameters or contract implementations changed in this resolution pass. Positive Safe permission evidence: current strategy reserve update in transaction 0x4704e0d391dcbecf65ec59b3fd5d97e247964ee2fad9df7f24a3397ea838fd04. Negative permission test: intentional unauthorized pause reverted on mainnet, strategy remained unpaused.

@@ -9,13 +9,14 @@
   },
   "strategy": {
     "deployedSource": "407b3df677e97c8e523ae11948d534ec9fed11cc",
-    "reviewedHead": "a985d1e31d7b7a6029ddf06ca31007dd18a3485e",
     "sourceLibCompilerConfigDiff": "none",
     "openPRs": [
       11,
       12,
       13
-    ]
+    ],
+    "baselineBeforeValidationCommit": "7e6f59af99ecbd4b3ab0e49868ef6b422803249b",
+    "reviewReference": "PR #13 current head; review pending"
   },
   "keeper": {
     "deployedSource": "486078ac514363a5b97cc8a599d2905679e53573",
@@ -40,7 +41,7 @@
     "subgraphQueries": "PASS",
     "subgraphCodegen": "PASS",
     "subgraphBuild": "PASS",
-    "strategyTests": "RUNNING; result required before merge"
+    "strategyTests": "2588 passed, 0 failed, 15 conditional skipped; see resolution-summary.json"
   },
   "preburn": {
     "frozen": false,
@@ -48,12 +49,13 @@
     "evidence": "execution-summary.json",
     "blockedUntil": "2026-10-27T16:29:16Z for all four deposit locks, assuming no later deposits or settings changes",
     "remaining": [
-      "actual full epoch lifecycle and autonomous fee distribution",
-      "external protocol allocation and partial/full undeployment",
-      "full permission/provenance and accounting reconciliation",
-      "required reviews and merged code identities",
-      "independent Multyr acceptance"
-    ]
+      "Governor Safe full recall execution and receipt-block reconciliation (3 of 5 signatures)",
+      "Ordinary-wallet instant exit and queued request after deposit lock expiry",
+      "Current-deployment full epoch lifecycle and keeper close/fund/claim; 48h duration unchanged",
+      "Remaining binding/provenance review, temporary-setting declaration and Multyr acceptance",
+      "PR reviews and authorized merges; no direct merge"
+    ],
+    "resolutionEvidence": "resolution-summary.json"
   },
   "contracts": {
     "core": {

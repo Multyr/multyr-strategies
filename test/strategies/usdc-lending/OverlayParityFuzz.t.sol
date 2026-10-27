@@ -61,7 +61,7 @@ contract OverlayParityFuzz_Test is UsdcMultiLendingVaultTestBase {
 
         vm.prank(admin);
         StrategySettingsModule(address(vault)).setRebalanceParams(
-            10, 2, 50, 21600, 80,
+            7, 2, 50, 21600, 80,
             0,    // adapterMaxExposureBps=0 -- no global ceiling by default
             3400
         );
@@ -87,10 +87,6 @@ contract OverlayParityFuzz_Test is UsdcMultiLendingVaultTestBase {
         uint16 globalCeiling
     ) internal pure returns (uint16) {
         if (dMax == 0) return 0;
-        // T1 mirrors effectiveAbsCapBps()'s T1 branch exactly: the governance
-        // ceiling still applies at T1, it is NOT an unconditional short-circuit.
-        if (dMax == 1) return globalCeiling > 0 ? globalCeiling : 10000;
-
         uint256 cap = (11000 + uint256(dMax) - 1) / uint256(dMax);
         if (cap > 10000) cap = 10000;
         if (cap < 2500)  cap = 2500;

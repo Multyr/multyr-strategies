@@ -951,10 +951,10 @@ contract UsdcMultiLendingVault_ParamSetters_Test is UsdcMultiLendingVaultTestBas
         StrategySettingsModule(address(vault)).setRebalanceParams(3, 1, 50, 21600, 80, 5000, 500);
     }
 
-    function test_setRebalanceParams_reverts_maxAdapters_too_low() public {
-        vm.expectRevert(MinAdaptersTooLow.selector);
+    function test_setRebalanceParams_accepts_single_target_adapter() public {
         vm.prank(paramSetter);
         StrategySettingsModule(address(vault)).setRebalanceParams(1, 2, 50, 21600, 80, 5000, 500);
+        assertEq(vault.maxAdaptersPerAllocation(), 1);
     }
 
     // C-03: bounds on previously-unbounded params

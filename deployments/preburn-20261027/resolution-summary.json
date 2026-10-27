@@ -1,0 +1,62 @@
+{
+  "date": "2026-10-27",
+  "status": "PREBURN_NOT_PASSED",
+  "productionCodeOrParametersChanged": false,
+  "strategySourceCommit": "407b3df677e97c8e523ae11948d534ec9fed11cc",
+  "tests": {
+    "passed": 2588,
+    "failed": 0,
+    "skipped": 15,
+    "suites": 190,
+    "logSHA256": "f4ac62eb6d14acd3f17c9620c714b51f4758b770e1a5bd65222616701c6318fc",
+    "skippedScope": "Conditional fork/deployment scenarios excluded from acceptance evidence"
+  },
+  "sizePolicy": {
+    "userAuthorized": true,
+    "oldInternalBudgetBytes": 22000,
+    "newInternalBudgetBytes": 24000,
+    "evmLimitBytes": 24576,
+    "strategyBytes": 22786,
+    "scoringBytes": 22085
+  },
+  "partialRecall": {
+    "hash": "0xa606cf72ceb69646cbd80281cf78bea4207a6d65cd6036370bf5f263cf5df28e",
+    "assets": "250000",
+    "protocolSharesBurned": "235544",
+    "subgraphMatched": true
+  },
+  "unauthorizedProbe": {
+    "target": "0x2AD722B6241605481829E4B251AE8A4Ba8Be86cE",
+    "caller": "0x908756f36954f2853134259B8846c49F90E84ECe",
+    "expectedError": "Unauthorized",
+    "beforePaused": false,
+    "mode": "INTENTIONAL_UNAUTHORIZED_REVERT_TEST",
+    "hash": "0x47a7887f478da4d695d7e168994bc2678583988dfd6d416d4acc97b15bf089ac",
+    "receipt": {
+      "status": "reverted",
+      "block": "518688696",
+      "gasUsed": "25889"
+    },
+    "afterPaused": false,
+    "rejectionConfirmed": true
+  },
+  "authorizedHistoricalSafeCall": "0x4704e0d391dcbecf65ec59b3fd5d97e247964ee2fad9df7f24a3397ea838fd04",
+  "runtimeChecks": {
+    "contracts": 38,
+    "nonImmutableRuntimeMatches": 38,
+    "immutableValues": "Recorded in raw evidence; final constructor/binding provenance review required"
+  },
+  "accessControlRoles": {
+    "events": 58,
+    "candidateMemberships": 41,
+    "activeDeployerGrants": 0,
+    "scope": "Current strategy, protocol registry and seven adapters; all historical RoleGranted/Revoked pairs from deployment"
+  },
+  "remaining": [
+    "Governor Safe full recall execution and receipt-block reconciliation (3 of 5 signatures)",
+    "Ordinary-wallet instant exit and queued request after deposit lock expiry",
+    "Current-deployment full epoch lifecycle and keeper close/fund/claim; 48h duration unchanged",
+    "Remaining binding/provenance review, temporary-setting declaration and Multyr acceptance",
+    "PR reviews and authorized merges; no direct merge"
+  ]
+}
