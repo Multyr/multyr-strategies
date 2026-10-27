@@ -1,0 +1,126 @@
+{
+  "blockNumber": "515605517",
+  "chainId": 42161,
+  "deployer": "0x908756f36954f2853134259b8846c49f90e84ece",
+  "governance": "0x70ef444799D6FBbE0865bA598Bee6795e064a326",
+  "allowlistDelaySeconds": "300",
+  "copiedSourceSettings": false,
+  "checked": [
+    {
+      "key": "aaveAdapter",
+      "address": "0xd510EA3F3463c2dC3c06c80C94B32FCcb9564A5B",
+      "codehash": "0x61698e49e48d6ded6e36fd582235bb2f746c3ed2184581a72ea48cb977c00295"
+    },
+    {
+      "key": "aaveRateProvider",
+      "address": "0x05CF8580C0EddEb61B8BC4CCF097cc454e9FE067",
+      "codehash": "0x8600054e983b3a89728db385f8b252058fa1ae1a60408b77ee48edad9e1ffccb"
+    },
+    {
+      "key": "adapterFactory",
+      "address": "0xeF79F9db75202F5D8E74f096A058F4393EEB84a3",
+      "codehash": "0xab4b798fadf9bdd205c256ea75f67cf00686aa9336fc48db8cc99ac9c5dfa61e"
+    },
+    {
+      "key": "adapterOpsModule",
+      "address": "0x516a110A2EBbd06152D59aA7847da3393dF0B934",
+      "codehash": "0xadc2e9bf52cfff9b05323cdf7f619ed98624216bc17a33b5a246098d883f694b"
+    },
+    {
+      "key": "allocCalcModule",
+      "address": "0x7F8bC7BF0f481BF11DB51Bb41fE33df626005a36",
+      "codehash": "0x3aafd73a1ff27bd0c3bbb707efb8569340b68d9fea227daefb2ccfffab4aad8c"
+    },
+    {
+      "key": "bootstrapper",
+      "address": "0xC201E4F452454B57761E51228460883482A8D216",
+      "codehash": "0x43a088cc56f3a657c08ef57b0fd8240c24171a9ecdf5f6dd97ce58154ad75933"
+    },
+    {
+      "key": "cometAdapter",
+      "address": "0xaA42AC31eEa373299B1984BA29E8b05ea1E3D048",
+      "codehash": "0xab4f9e0c2a452971eb4a85365ce4b7ab5463f0447da0823c9953cf7b52225295"
+    },
+    {
+      "key": "dolomiteAdapter",
+      "address": "0x6099803838D1bA17Cc03e7f2BDFe71C86924Fc0D",
+      "codehash": "0xeb69861e736126254a1691e61f7bd8209152fcea1d73cced461263888c299a0c"
+    },
+    {
+      "key": "dolomiteRateProvider",
+      "address": "0x741c33142D53094C1226F1e4F9514a1a59d95847",
+      "codehash": "0x5c92d959ac2649decc1f76593b66171db40ee1990ab5181aa90d7752d7bf1911"
+    },
+    {
+      "key": "eulerAdapter",
+      "address": "0x543E0Bb27FDb271Ac87A9c0963C9498131549059",
+      "codehash": "0x128d336e0447bcf7b8f7c6a39d848affab5ddc920aecb8a6a6a2a7ecc25555a4"
+    },
+    {
+      "key": "fluidAdapter",
+      "address": "0x862415F76ff11231De1B8833Ba5590Bc71b46957",
+      "codehash": "0x351caadb10c7721ed4380ba46cc57484d4b842fa1c5994e8ed286059c248c47d"
+    },
+    {
+      "key": "morphoAdapter",
+      "address": "0x5A8ac17B80694ACE43F8c38a9cC13B7B08cc8555",
+      "codehash": "0xa0a64a57f31ef64897942a8e5d179c971592171fd4b50af63391ff352fe01599"
+    },
+    {
+      "key": "paramsModule",
+      "address": "0x0FbD41C07BDBE4CA4Da01d546c6E75E61d6663CF",
+      "codehash": "0x397ae29385b652cb00e6a78f3a459505226560f7d0087d826c815e787d590c07"
+    },
+    {
+      "key": "protocolRegistry",
+      "address": "0x6c4197885973Af1c89B1EA1F8c79295C006B0F56",
+      "codehash": "0x3f9b1873772a5b0c6bcb0b98f6c066a15fd8b6541d7c17164afb6490334872d0"
+    },
+    {
+      "key": "rebalanceGasEstimator",
+      "address": "0xD29649980B46e73127d14Cd6f2620527E3c9934d",
+      "codehash": "0x7b789036377b153d563401ab06d7795f923f61505c59708125e416acd9f9b583"
+    },
+    {
+      "key": "rebalanceGateModule",
+      "address": "0xFe3805D02801a54275499af86b84A73a49eD81d4",
+      "codehash": "0xf8a8719369cbda7c1393c7d9a6f2c0c77c69761b276205b669f2774084338d83"
+    },
+    {
+      "key": "rebalancePlanModule",
+      "address": "0x4C51aEBE59DD30a8a7eB2ABC0af3E7821845861b",
+      "codehash": "0x78dccc3bf04159853017fbe6633e7e5bff34791f5590169ee8db82e11b5901a6"
+    },
+    {
+      "key": "safetyOverflowModule",
+      "address": "0x183D46F733FF1d31D0585a93fD5E19f52E99Ed52",
+      "codehash": "0xa9191b43c902fa6de5d55afa65f8c432269792271bf029f4986197cc607a1a87"
+    },
+    {
+      "key": "scoringModule",
+      "address": "0x09456dbfbA54f1c46A0189b1165E4Bd57F53e6f3",
+      "codehash": "0x712b3dfcc382c1c07dabe83378b21463aed066f9ad2e13991be1b4a875d79554"
+    },
+    {
+      "key": "settingsModule",
+      "address": "0x749Cb044cd6F700135A756A51c799f5D3c80cC72",
+      "codehash": "0x83d03414c121d10c0630b128ff9784cb4bfd5c220bf4013139f7c3b2f8d4860c"
+    },
+    {
+      "key": "strategy",
+      "address": "0xa9E676D15976A1332905238ca609Dff9A484Efe0",
+      "codehash": "0xb77eef55e22fcf089652cd69446f54ff184c7620f986661ae04e66ba65f6e948"
+    },
+    {
+      "key": "strategyUpkeep",
+      "address": "0xbcaC314E7237b14E11644FC6Ba73675c8c0612DF",
+      "codehash": "0x12cfa95d66f465db843dbeeec1382da08593f5f65eec5017631d8c13bbfae370"
+    },
+    {
+      "key": "venusAdapter",
+      "address": "0xAba3D7015fFC9b8dEEb404389296864A1607E828",
+      "codehash": "0x49372daf85a1c9d304da1ad122e4b9c50a8178e79bb184211c9bdfd5b614083c"
+    }
+  ],
+  "checksPassed": true
+}

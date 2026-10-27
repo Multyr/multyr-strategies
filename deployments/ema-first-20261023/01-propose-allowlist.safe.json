@@ -1,0 +1,21 @@
+{
+  "version": "1.0",
+  "chainId": "42161",
+  "createdAt": 1792709322602,
+  "meta": {
+    "name": "ema-first-20261023: propose allowlist",
+    "description": "Step 1. Starts Router delay (300 seconds). Does not move vault funds.",
+    "txBuilderVersion": "1.18.0",
+    "createdFromSafeAddress": "0x70ef444799D6FBbE0865bA598Bee6795e064a326",
+    "createdFromOwnerAddress": ""
+  },
+  "transactions": [
+    {
+      "to": "0x37847D2e12892e3298DEE695e7E971fba0Ca3e24",
+      "value": "0",
+      "data": "0xdcc04ceb0000000000000000000000002ad722b6241605481829e4b251ae8a4ba8be86ce",
+      "contractMethod": null,
+      "contractInputsValues": null
+    }
+  ]
+}

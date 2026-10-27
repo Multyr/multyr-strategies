@@ -840,3 +840,23 @@ contract S22_DolomitePrincipalAccounting_Test is DolomiteAdapter_Test {
         assertEq(adapter.principalAt(1), 1920e6, "after 2nd withdraw: 2400 - 480 = 1920");
     }
 }
+
+contract DolomiteRateRegressionTest is Test {
+    function testRefreshPreservesRateAndRejectsStaleSample() public {
+        vm.warp(100_000);
+        MockUSDCDolo token = new MockUSDCDolo();
+        MockDoloERC4626 market = new MockDoloERC4626(address(token));
+        MockDoloRegistry registry = new MockDoloRegistry(address(market));
+        DolomiteUsdcMultiMarketAdapter adapter = new DolomiteUsdcMultiMarketAdapter();
+        adapter.initialize(address(token), address(this), address(123), 0, address(registry));
+        assertEq(adapter.maxCapacity(), type(uint256).max);
+        adapter.pokeAPYSnapshots();
+        vm.warp(block.timestamp + 1 days);
+        vm.mockCall(address(market), abi.encodeWithSignature("convertToAssets(uint256)", 1e24), abi.encode(uint256(1.0001e24)));
+        assertEq(adapter.currentAPYBps(), 365);
+        adapter.pokeAPYSnapshots();
+        assertEq(adapter.currentAPYBps(), 365);
+        vm.warp(block.timestamp + 2 days + 1);
+        assertEq(adapter.currentAPYBps(), 0);
+    }
+}

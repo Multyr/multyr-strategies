@@ -1,0 +1,130 @@
+{
+  "chainId": 42161,
+  "migrationStatus": "Not rechecked on-chain in this handoff; deployed addresses do not establish migration completion.",
+  "newContracts": {
+    "AdapterFactory": {
+      "address": "0xef79f9db75202f5d8e74f096a058f4393eeb84a3",
+      "explorer": "https://arbiscan.io/address/0xef79f9db75202f5d8e74f096a058f4393eeb84a3#code"
+    },
+    "StrategyParamsModule": {
+      "address": "0x0fbd41c07bdbe4ca4da01d546c6e75e61d6663cf",
+      "explorer": "https://arbiscan.io/address/0x0fbd41c07bdbe4ca4da01d546c6e75e61d6663cf#code"
+    },
+    "StrategyScoringModule": {
+      "address": "0x09456dbfba54f1c46a0189b1165e4bd57f53e6f3",
+      "explorer": "https://arbiscan.io/address/0x09456dbfba54f1c46a0189b1165e4bd57f53e6f3#code"
+    },
+    "StrategyAdapterOpsModule": {
+      "address": "0x516a110a2ebbd06152d59aa7847da3393df0b934",
+      "explorer": "https://arbiscan.io/address/0x516a110a2ebbd06152d59aa7847da3393df0b934#code"
+    },
+    "StrategyRebalanceGateModule": {
+      "address": "0xfe3805d02801a54275499af86b84a73a49ed81d4",
+      "explorer": "https://arbiscan.io/address/0xfe3805d02801a54275499af86b84a73a49ed81d4#code"
+    },
+    "UsdcMultiLendingVault": {
+      "address": "0xa9e676d15976a1332905238ca609dff9a484efe0",
+      "explorer": "https://arbiscan.io/address/0xa9e676d15976a1332905238ca609dff9a484efe0#code"
+    },
+    "StrategyBootstrapper": {
+      "address": "0xc201e4f452454b57761e51228460883482a8d216",
+      "explorer": "https://arbiscan.io/address/0xc201e4f452454b57761e51228460883482a8d216#code"
+    },
+    "ProtocolRegistry": {
+      "address": "0x6c4197885973af1c89b1ea1f8c79295c006b0f56",
+      "explorer": "https://arbiscan.io/address/0x6c4197885973af1c89b1ea1f8c79295c006b0f56#code"
+    },
+    "AaveV3USDCAdapter": {
+      "address": "0xd510ea3f3463c2dc3c06c80c94b32fccb9564a5b",
+      "explorer": "https://arbiscan.io/address/0xd510ea3f3463c2dc3c06c80c94b32fccb9564a5b#code"
+    },
+    "MorphoUsdcMultiMarketAdapter": {
+      "address": "0x5a8ac17b80694ace43f8c38a9cc13b7b08cc8555",
+      "explorer": "https://arbiscan.io/address/0x5a8ac17b80694ace43f8c38a9cc13b7b08cc8555#code"
+    },
+    "CometUsdcMultiMarketAdapter": {
+      "address": "0xaa42ac31eea373299b1984ba29e8b05ea1e3d048",
+      "explorer": "https://arbiscan.io/address/0xaa42ac31eea373299b1984ba29e8b05ea1e3d048#code"
+    },
+    "EulerUsdcMultiMarketAdapter": {
+      "address": "0x543e0bb27fdb271ac87a9c0963c9498131549059",
+      "explorer": "https://arbiscan.io/address/0x543e0bb27fdb271ac87a9c0963c9498131549059#code"
+    },
+    "DolomiteUsdcMultiMarketAdapter": {
+      "address": "0x6099803838d1ba17cc03e7f2bdfe71c86924fc0d",
+      "explorer": "https://arbiscan.io/address/0x6099803838d1ba17cc03e7f2bdfe71c86924fc0d#code"
+    },
+    "FluidUsdcMultiMarketAdapter": {
+      "address": "0x862415f76ff11231de1b8833ba5590bc71b46957",
+      "explorer": "https://arbiscan.io/address/0x862415f76ff11231de1b8833ba5590bc71b46957#code"
+    },
+    "VenusUsdcMultiMarketAdapter": {
+      "address": "0xaba3d7015ffc9b8deeb404389296864a1607e828",
+      "explorer": "https://arbiscan.io/address/0xaba3d7015ffc9b8deeb404389296864a1607e828#code"
+    },
+    "AaveLiquidityRateProvider": {
+      "address": "0x05cf8580c0eddeb61b8bc4ccf097cc454e9fe067",
+      "explorer": "https://arbiscan.io/address/0x05cf8580c0eddeb61b8bc4ccf097cc454e9fe067#code"
+    },
+    "DolomiteSupplyRateProvider": {
+      "address": "0x741c33142d53094c1226f1e4f9514a1a59d95847",
+      "explorer": "https://arbiscan.io/address/0x741c33142d53094c1226f1e4f9514a1a59d95847#code"
+    },
+    "StrategySettingsModule": {
+      "address": "0x749cb044cd6f700135a756a51c799f5d3c80cc72",
+      "explorer": "https://arbiscan.io/address/0x749cb044cd6f700135a756a51c799f5d3c80cc72#code"
+    },
+    "StrategyAllocCalcModule": {
+      "address": "0x7f8bc7bf0f481bf11db51bb41fe33df626005a36",
+      "explorer": "https://arbiscan.io/address/0x7f8bc7bf0f481bf11db51bb41fe33df626005a36#code"
+    },
+    "StrategyRebalancePlanModule": {
+      "address": "0x4c51aebe59dd30a8a7eb2abc0af3e7821845861b",
+      "explorer": "https://arbiscan.io/address/0x4c51aebe59dd30a8a7eb2abc0af3e7821845861b#code"
+    },
+    "StrategySafetyOverflowModule": {
+      "address": "0x183d46f733ff1d31d0585a93fd5e19f52e99ed52",
+      "explorer": "https://arbiscan.io/address/0x183d46f733ff1d31d0585a93fd5e19f52e99ed52#code"
+    },
+    "StrategyUpkeep": {
+      "address": "0xbcac314e7237b14e11644fc6ba73675c8c0612df",
+      "explorer": "https://arbiscan.io/address/0xbcac314e7237b14e11644fc6ba73675c8c0612df#code"
+    },
+    "GovernedReadOnlyGasEstimator": {
+      "address": "0xd29649980b46e73127d14cd6f2620527e3c9934d",
+      "explorer": "https://arbiscan.io/address/0xd29649980b46e73127d14cd6f2620527e3c9934d#code"
+    },
+    "StrategyMigrationGuard": {
+      "address": "0x03418e9b32e5e5b43c545601376c5064886211f3",
+      "explorer": "https://arbiscan.io/address/0x03418e9b32e5e5b43c545601376c5064886211f3#code"
+    }
+  },
+  "unchanged": {
+    "CoreVault": "0x5e0cdb76487BD96Ff069Ef7F78eaDF5b5909C8cb",
+    "StrategyRouter": "0x37847D2e12892e3298DEE695e7E971fba0Ca3e24",
+    "GovernanceSafe": "0x70ef444799D6FBbE0865bA598Bee6795e064a326"
+  },
+  "tags": [
+    {
+      "label": "old-20261009",
+      "tag": "deployment/arbitrum-usdc-old-20261009-source-snapshot",
+      "commit": "d70b2f10c14b3798a87e19ce3022296c6479e1ce",
+      "baseCommit": "467c0efee1c43039c23203ef58b20a5c5d36ed36",
+      "kind": "reconstructed-source-snapshot"
+    },
+    {
+      "label": "new-20261017",
+      "tag": "deployment/arbitrum-usdc-new-20261017-source-snapshot",
+      "commit": "0861783c4a78af826e20e2ee438fb7e186bc0497",
+      "baseCommit": "0b804f294b2fe07565a520aabd5ec4c4b73a1582",
+      "kind": "reconstructed-source-snapshot"
+    }
+  ],
+  "tagsPublished": false,
+  "subgraph": {
+    "liveIndexingConfirmed": false,
+    "localRegistrationDiscovery": true,
+    "localRebalanceScoresHandler": false,
+    "queryEndpointRequired": true
+  }
+}

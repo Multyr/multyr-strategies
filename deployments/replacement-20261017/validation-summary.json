@@ -1,0 +1,19 @@
+{
+  "chainId": 42161,
+  "deploymentTransactions": 104,
+  "deploymentFailures": 0,
+  "postflight": "passed",
+  "exactSafeBatches": "passed",
+  "safeTransactionCounts": [
+    1,
+    18
+  ],
+  "routerDelaySeconds": 300,
+  "strategySettingsCopied": false,
+  "awsChanged": false,
+  "safeExecuted": false,
+  "profitablePlanCompleted": true,
+  "planObservedWrapperGas": 6337365,
+  "planModeledL2Gas": 12863000,
+  "explorerSourceVerification": "blocked pending approval to publish repository source"
+}

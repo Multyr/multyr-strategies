@@ -115,7 +115,7 @@ contract StrategyScoringModule is StrategyStorageLayout {
         _degradedGuard();
         _syncPositionAssets(true);
 
-        enabledList = _enabledAdapters();
+        enabledList = _rebalanceAdapters();
         if (enabledList.length == 0) {
             return (enabledList, new uint256[](0), new uint256[](0), new uint16[](0), 0, 0);
         }
@@ -189,12 +189,13 @@ contract StrategyScoringModule is StrategyStorageLayout {
             address[] memory enabledAdapters,
             uint256[] memory targetAllocs,
             uint256 tvl,
-            uint256 moved
+            uint256 moved,
+            uint256[] memory normScores
         )
     {
-        enabledAdapters = _enabledAdapters();
-        if (enabledAdapters.length < minAdaptersActive) {
-            return (new uint16[](0), enabledAdapters, new uint256[](0), 0, 0);
+        enabledAdapters = _rebalanceAdapters();
+        if (enabledAdapters.length == 0) {
+            return (new uint16[](0), enabledAdapters, new uint256[](0), 0, 0, new uint256[](0));
         }
         tvl = _tvl();
         AdapterScore[] memory scores = _computeAdapterScores(enabledAdapters, false);
@@ -203,8 +204,10 @@ contract StrategyScoringModule is StrategyStorageLayout {
 
         uint256 len = enabledAdapters.length;
         apyBpsArray = new uint16[](len);
+        normScores = new uint256[](len);
         for (uint256 i; i < len;) {
             apyBpsArray[i] = uint16(scores[i].apyBps);
+            normScores[i] = scores[i].score;
             uint256 curr = positionAssets[enabledAdapters[i]];
             uint256 tgt = targetAllocs[i];
             moved += curr > tgt ? curr - tgt : tgt - curr;
@@ -245,8 +248,8 @@ contract StrategyScoringModule is StrategyStorageLayout {
         uint256 tvl = _tvl();
         uint16 staticMax = maxAdaptersPerAllocation;
         uint16 dynamicMax;
-        if (tvl < 25_000e6) dynamicMax = 1;              // T1 single:  < 25K
-        else if (tvl < 250_000e6) dynamicMax = 2;        // T2 dual:    25K - 250K
+        if (tvl < 25_000e6) dynamicMax = 1;
+        else if (tvl < 250_000e6) dynamicMax = 2;
         else if (tvl < 1_000_000e6) dynamicMax = 3;      // T3 triple:  250K - 1M
         else if (tvl < 5_000_000e6) dynamicMax = 4;      // T4 quad:    1M - 5M
         else dynamicMax = 5;                              // T5 max:     5M+
@@ -258,17 +261,7 @@ contract StrategyScoringModule is StrategyStorageLayout {
     function effectiveAbsCapBps(address adapter) public view onlyDelegateCall returns (uint16) {
         uint16 dMax = effectiveMaxAdaptersPerAllocation();
         if (dMax == 0) return 0;
-        // T1: single-adapter mode. Governance ceiling (adapterMaxExposureBps) still
-        // respected if set. Sentinel preservation: globalCeiling == 0 = no constraint
-        // -> returns 10000 (100% TVL allowed = original T1 behavior).
-        // Fix: F-SCORING-INV2 (audit Wave 2) -- mirrors StrategyAllocCalcModule
-        // ._effectiveAbsCapBps() exactly (I-ALLOC-06 overlay parity). Before this
-        // fix, this getter still returned the stale 10000 while AllocCalcModule
-        // enforced the governance ceiling for real -- a live parity regression.
-        if (dMax == 1) {
-            uint16 t1Ceiling = adapterMaxExposureBps;
-            return t1Ceiling > 0 ? t1Ceiling : 10000;
-        }
+        // The one-adapter tier permits 100% structurally; the idle reserve and overlays still bind.
         // Layer 1: STRUCTURAL_BASE — ceil(11000 / dMax), floor 2500, ceiling 10000
         uint256 cap = (11000 + uint256(dMax) - 1) / uint256(dMax);
         if (cap > 10000) cap = 10000;
@@ -283,9 +276,10 @@ contract StrategyScoringModule is StrategyStorageLayout {
         cap = (cap * _failureOverlay(adapter)) / 10000;
         cap = (cap * _liquidityOverlay(adapter)) / 10000;
         // Per-adapter floor override — can raise above structural for specific partnerships.
-        // If floor > ceiling, floor wins (per-adapter override takes precedence).
+        // The governance ceiling remains binding even when an adapter has a floor.
         uint16 floor = adapterAbsCapOverrideBps[adapter];
         if (floor > 0 && cap < uint256(floor)) cap = uint256(floor);
+        if (adapterMaxExposureBps > 0 && cap > adapterMaxExposureBps) cap = adapterMaxExposureBps;
         return uint16(cap);
     }
 

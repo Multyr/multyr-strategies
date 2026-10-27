@@ -759,7 +759,7 @@ contract EulerUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
     }
 
     function maxCapacity() external view override returns (uint256) {
-        return capacity;
+        return capacity == 0 ? type(uint256).max : capacity;
     }
 
     /// @notice Returns sum of totalAssets() across all enabled Euler markets

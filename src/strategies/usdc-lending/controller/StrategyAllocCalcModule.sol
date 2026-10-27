@@ -116,6 +116,8 @@ contract StrategyAllocCalcModule is StrategyStorageLayout {
         onlyDelegateCall
         returns (address[] memory selected, uint256[] memory targets, uint256 selCount)
     {
+        uint256 deployable = _deployableIdle();
+        if (amount > deployable) amount = deployable;
         if (amount < 1) return (new address[](0), new uint256[](0), 0);
 
         address[] memory enabledList = _enabledAdapters();
@@ -125,6 +127,26 @@ contract StrategyAllocCalcModule is StrategyStorageLayout {
         _normalizeScores(scores);
         _sortAdapterScores(scores);
 
+        if (targetIdleBufferBps > 0) {
+            uint256 tvl = _tvl();
+            uint256[] memory desired = _targetAllocations(scores, tvl);
+            selected = new address[](scores.length);
+            targets = new uint256[](scores.length);
+            for (uint256 i; i < scores.length && amount > 0; ++i) {
+                address a = scores[i].adapter;
+                if (desired[i] <= positionAssets[a]) continue;
+                (bool eligible, uint256 room) = _checkAdapterEligibility(a, tvl, dustTolerance, bestEffort);
+                if (!eligible) continue;
+                uint256 delta = desired[i] - positionAssets[a];
+                if (delta > room) delta = room;
+                if (delta > amount) delta = amount;
+                if (delta <= dustTolerance) continue;
+                selected[selCount] = a;
+                targets[selCount++] = delta;
+                amount -= delta;
+            }
+            return (selected, targets, selCount);
+        }
         return _buildAllocationPlan(scores, amount, bestEffort);
     }
 
@@ -162,12 +184,16 @@ contract StrategyAllocCalcModule is StrategyStorageLayout {
                     rawAPYs[i] = 0;
                 }
             }
-            if (rawAPYs[i] > maxAPY) maxAPY = rawAPYs[i];
+            address a = enabledAdapters[i];
+            if (enabled[a] && !quarantined[a] && !flagged[a] && rawAPYs[i] > maxAPY) maxAPY = rawAPYs[i];
             unchecked { ++i; }
         }
 
         for (uint256 i = 0; i < n;) {
-            scores[i] = _scoreOneAdapter(enabledAdapters[i], rawAPYs[i], maxAPY, wA, wL, wR, wS, wI);
+            address a = enabledAdapters[i];
+            scores[i] = _scoreOneAdapter(a, rawAPYs[i], maxAPY, wA, wL, wR, wS, wI);
+            // Keep the APY for current-yield accounting, but excluded positions cannot dilute allocation scores.
+            if (!enabled[a] || quarantined[a] || flagged[a]) scores[i].score = 0;
             unchecked { ++i; }
         }
         return scores;
@@ -261,10 +287,20 @@ contract StrategyAllocCalcModule is StrategyStorageLayout {
     {
         uint256 n = scores.length;
         uint256[] memory allocs = new uint256[](n);
-        uint256 totalScore = 0;
-        for (uint256 i = 0; i < n;) {
-            totalScore += scores[i].score;
-            unchecked { ++i; }
+        // Preserve adapter order for scoring/gate alignment; select by composite score.
+        bool[] memory selected = new bool[](n);
+        uint256 totalScore;
+        uint256 limit = _effectiveMaxAdapters(tvl);
+        for (uint256 k; k < limit && k < n; ++k) {
+            uint256 best = n;
+            for (uint256 j; j < n; ++j) {
+                address candidate = scores[j].adapter;
+                if (!enabled[candidate] || selected[j] || flagged[candidate] || quarantined[candidate] || scores[j].score == 0) continue;
+                if (best == n || scores[j].score > scores[best].score) best = j;
+            }
+            if (best == n) break;
+            selected[best] = true;
+            totalScore += scores[best].score;
         }
         if (totalScore < 1) return allocs;
         uint16 maxRelGov = maxRelativeExposureBps;
@@ -277,13 +313,14 @@ contract StrategyAllocCalcModule is StrategyStorageLayout {
         uint256 safetyMult = 10_000 - marginBps;
 
         for (uint256 i = 0; i < n;) {
+            if (!selected[i]) { unchecked { ++i; } continue; }
             address adapter = scores[i].adapter;
             // Scoring path always uses NORMAL caps. The fallback caps are
             // intentionally NOT honoured here — opportunistic allocation must
             // not target above the regular cap; only the safety-overflow path
             // can push above it.
             uint256 maxExp = (_effectiveAbsCapBps(adapter, tvl) * tvl) / 1e4;
-            uint256 raw = (scores[i].score * tvl) / totalScore;
+            uint256 raw = (scores[i].score * (tvl * (10000 - targetIdleBufferBps) / 10000)) / totalScore;
             uint256 capped = raw > maxExp ? (maxExp * safetyMult) / 10_000 : raw;
 
             uint256 extTVL = cachedExternalTVL[adapter];
@@ -304,10 +341,12 @@ contract StrategyAllocCalcModule is StrategyStorageLayout {
             // from routing overflow to the safety adapter is immediately
             // given back at the next rebalance.
             SafetyFallback memory sf = safetyFallback[adapter];
-            if (sf.absCapBps != 0) {
+            if (sf.absCapBps != 0 && targetIdleBufferBps == 0) {
                 uint256 current = positionAssets[adapter];
                 if (current > capped) {
                     uint256 fbCeiling = (uint256(sf.absCapBps) * tvl) / 1e4;
+                    if (adapterMaxExposureBps > 0 && sf.absCapBps > adapterMaxExposureBps)
+                        fbCeiling = uint256(adapterMaxExposureBps) * tvl / 1e4;
                     if (extTVL > 0 && sf.relCapBps > 0) {
                         uint256 fbRelCeiling = (uint256(sf.relCapBps) * extTVL) / 1e4;
                         if (fbRelCeiling < fbCeiling) fbCeiling = fbRelCeiling;
@@ -318,6 +357,14 @@ contract StrategyAllocCalcModule is StrategyStorageLayout {
                 }
             }
 
+            // Dynamic-cost plans must be executable at the quoted capacity.
+            // A target above maxCapacity otherwise makes every plan fail its
+            // preflight even when other venues have a profitable opportunity.
+            if (rebalanceGasEstimator != address(0)) {
+                try ILendingAdapter(adapter).maxCapacity() returns (uint256 capacity) {
+                    if (capped > capacity) capped = capacity;
+                } catch { if (capped > positionAssets[adapter]) capped = positionAssets[adapter]; }
+            }
             allocs[i] = capped;
             unchecked { ++i; }
         }
@@ -360,6 +407,25 @@ contract StrategyAllocCalcModule is StrategyStorageLayout {
         }
 
         targets = _computeTargets(selected, selScores, headrooms, selCount, amount, _dust);
+    }
+
+    /// @notice Read-only cap validation for an already selected rebalance deposit.
+    /// @dev Same cap helpers as allocation; called by the gate through delegatecall.
+    function validateRebalanceDeposit(address adapter, uint256 projected, uint256 tvl)
+        external view onlyDelegateCall returns (bool)
+    {
+        if (!enabled[adapter] || flagged[adapter] || quarantined[adapter] || depositsDisabled) return false;
+        if (_tvlConfidence(adapter) == CONFIDENCE_ZERO) return false;
+        if (projected > _effectiveAbsCapBps(adapter, tvl) * tvl / 10000) return false;
+        uint256 externalTvl = cachedExternalTVL[adapter];
+        if (externalTvl > 0) {
+            uint16 cap = _effectiveRelativeCapBps(externalTvl);
+            if (maxRelativeExposureBps > 0 && maxRelativeExposureBps < cap) cap = maxRelativeExposureBps;
+            if (projected > externalTvl * cap / 10000) return false;
+        }
+        try ILendingAdapter(adapter).maxCapacity() returns (uint256 capacity) {
+            return projected <= capacity;
+        } catch { return false; }
     }
 
     function _checkAdapterEligibility(address adapter, uint256 tvl, uint256 _dust, bool bestEffort)
@@ -492,15 +558,6 @@ contract StrategyAllocCalcModule is StrategyStorageLayout {
     function _effectiveAbsCapBps(address adapter, uint256 tvl) internal view returns (uint256) {
         uint16 dMax = _effectiveMaxAdapters(tvl);
         if (dMax == 0) return 0;
-        // T1: single-adapter mode. Governance ceiling (adapterMaxExposureBps) still
-        // respected if set. Sentinel preservation: globalCeiling == 0 = no constraint
-        // -> returns 10000 (100% TVL allowed = original T1 behavior).
-        // Fix: F-SCORING-INV2 (audit Wave 2) -- ensures governance setter never silently
-        // overridden regardless of TVL.
-        if (dMax == 1) {
-            uint16 globalCeiling = adapterMaxExposureBps;
-            return globalCeiling > 0 ? uint256(globalCeiling) : 10000;
-        }
         uint256 cap = (11000 + uint256(dMax) - 1) / uint256(dMax);
         if (cap > 10000) cap = 10000;
         if (cap < 2500) cap = 2500;
@@ -511,6 +568,7 @@ contract StrategyAllocCalcModule is StrategyStorageLayout {
         cap = (cap * _liquidityOverlay(adapter)) / 10000;
         uint16 floor = adapterAbsCapOverrideBps[adapter];
         if (floor > 0 && cap < uint256(floor)) cap = uint256(floor);
+        if (adapterMaxExposureBps > 0 && cap > adapterMaxExposureBps) cap = adapterMaxExposureBps;
         return cap;
     }
 

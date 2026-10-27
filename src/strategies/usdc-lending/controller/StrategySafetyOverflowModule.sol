@@ -39,6 +39,8 @@ contract StrategySafetyOverflowModule is StrategyStorageLayout {
     ///         Respects fallbackAbsCap and fallbackRelCap per adapter -- never normal abs/rel cap.
     ///         Skips adapters that are disabled, flagged, quarantined, or below extTVL MICRO band.
     function executeSafetyOverflow() external onlyDelegateCall {
+        // With an explicit reserve policy, only the score-selected target path deploys.
+        if (targetIdleBufferBps > 0) return;
         uint16 maxIdleBpsLocal = maxIdleBps;
         if (maxIdleBpsLocal == 0) return;
         uint256 nSafety = safetyFallbackAdapters.length;
@@ -46,7 +48,8 @@ contract StrategySafetyOverflowModule is StrategyStorageLayout {
 
         uint256 tvl = _tvl();
         if (tvl < 1) return;
-        uint256 maxIdleAmt = (tvl * uint256(maxIdleBpsLocal)) / 1e4;
+        uint256 idleBps = maxIdleBpsLocal > targetIdleBufferBps ? maxIdleBpsLocal : targetIdleBufferBps;
+        uint256 maxIdleAmt = (tvl * idleBps) / 1e4;
         uint256 idleBalance = ASSET.balanceOf(address(this));
         if (idleBalance <= maxIdleAmt) return;
         uint256 remaining = idleBalance - maxIdleAmt;
@@ -67,7 +70,9 @@ contract StrategySafetyOverflowModule is StrategyStorageLayout {
 
             SafetyFallback memory sf = safetyFallback[a];
             if (sf.absCapBps == 0) continue;
-            uint256 fbCeiling = (uint256(sf.absCapBps) * tvl) / 1e4;
+            uint256 capBps = sf.absCapBps;
+            if (adapterMaxExposureBps > 0 && capBps > adapterMaxExposureBps) capBps = adapterMaxExposureBps;
+            uint256 fbCeiling = (capBps * tvl) / 1e4;
             if (sf.relCapBps > 0) {
                 uint256 fbRelCeiling = (uint256(sf.relCapBps) * extTVL) / 1e4;
                 if (fbRelCeiling < fbCeiling) fbCeiling = fbRelCeiling;

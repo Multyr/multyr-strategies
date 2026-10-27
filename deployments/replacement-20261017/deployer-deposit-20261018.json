@@ -1,0 +1,22 @@
+{
+  "deployer": "0x908756f36954f2853134259B8846c49F90E84ECe",
+  "vault": "0x5e0cdb76487BD96Ff069Ef7F78eaDF5b5909C8cb",
+  "assets": "7300000",
+  "shares": "7270259",
+  "usdcBefore": "8135558",
+  "usdcAfter": "835558",
+  "transactions": [
+    {
+      "action": "approve",
+      "hash": "0x41a049ea555897cd2086e0f303256d51c9ab29dd76c417e4eb01215e538ed827",
+      "block": "515784918",
+      "gasUsed": "55607"
+    },
+    {
+      "action": "deposit",
+      "hash": "0x7182a34925acbcb8e030b3229f6fa9527b5baa7406915299f0228a058ff9567f",
+      "block": "515784933",
+      "gasUsed": "858826"
+    }
+  ]
+}

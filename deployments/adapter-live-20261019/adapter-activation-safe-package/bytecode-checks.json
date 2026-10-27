@@ -1,0 +1,30 @@
+[
+  {
+    "adapter": "venusAdapter",
+    "address": "0xB8fed94A1A7dc046402de039c0143aC48396eb7a",
+    "expectedRuntimeCodeHash": "0x6a387780ea0a2f54030460446b6a95d81058100c8f5de7edc83f61481d9c5c4c",
+    "liveRuntimeCodeHash": "0x6a387780ea0a2f54030460446b6a95d81058100c8f5de7edc83f61481d9c5c4c",
+    "match": true
+  },
+  {
+    "adapter": "morphoAdapter",
+    "address": "0x3e2E4eFE18909E614e74f197f5907d9f74dAdCc9",
+    "expectedRuntimeCodeHash": "0x9aec9c539a18d90000d375c1e6826fb5a1fb7439034d52c59c6d9c2bcaa8ecbd",
+    "liveRuntimeCodeHash": "0x9aec9c539a18d90000d375c1e6826fb5a1fb7439034d52c59c6d9c2bcaa8ecbd",
+    "match": true
+  },
+  {
+    "adapter": "dolomiteAdapter",
+    "address": "0x17ff34D3ecE99Ee79F7ed0aC85809efDD34FC543",
+    "expectedRuntimeCodeHash": "0x3ec670e2c6be0a08a74221688b49e2b801db575c9d3e83830b7cad640558a769",
+    "liveRuntimeCodeHash": "0x3ec670e2c6be0a08a74221688b49e2b801db575c9d3e83830b7cad640558a769",
+    "match": true
+  },
+  {
+    "adapter": "fluidAdapter",
+    "address": "0x066200e9bbd1F2Bf191ed88cFf2Ab477220f5125",
+    "expectedRuntimeCodeHash": "0x2d3a258a8d3418e4e04818ca9b6ffba0c541d5d9d294d39e0144af0ab8c70b5d",
+    "liveRuntimeCodeHash": "0x2d3a258a8d3418e4e04818ca9b6ffba0c541d5d9d294d39e0144af0ab8c70b5d",
+    "match": true
+  }
+]

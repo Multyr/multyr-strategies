@@ -40,13 +40,15 @@ contract StrategyAdapterOpsModule is StrategyStorageLayout {
         if (!depositModeKnown[adapter]) revert DepositModeNotSet();
 
         bool countFailure = !_retryMode;
+        uint256 balanceBefore = ASSET.balanceOf(address(this));
         uint256 gasBefore = gasleft();
 
         if (pushDepositMode[adapter]) {
             ASSET.safeTransfer(adapter, amount);
             try ILendingAdapter(adapter).deposit(amount) {
+                uint256 measured = gasBefore - gasleft();
+                if (ASSET.balanceOf(address(this)) < balanceBefore) _updateGasEma(adapter, measured, true);
                 _recordAdapterSuccess(adapter);
-                _updateGasEma(adapter, gasBefore - gasleft(), true);
                 return true;
             } catch (bytes memory reason) {
                 emit AdapterDepositFailed(adapter, amount, reason);
@@ -75,8 +77,9 @@ contract StrategyAdapterOpsModule is StrategyStorageLayout {
             ASSET.forceApprove(adapter, amount);
             try ILendingAdapter(adapter).deposit(amount) {
                 ASSET.forceApprove(adapter, 0);
+                uint256 measured = gasBefore - gasleft();
+                if (ASSET.balanceOf(address(this)) < balanceBefore) _updateGasEma(adapter, measured, true);
                 _recordAdapterSuccess(adapter);
-                _updateGasEma(adapter, gasBefore - gasleft(), true);
                 return true;
             } catch (bytes memory reason) {
                 ASSET.forceApprove(adapter, 0);
@@ -94,6 +97,8 @@ contract StrategyAdapterOpsModule is StrategyStorageLayout {
         if (amount == 0) return;
         if (!depositModeKnown[adapter]) revert DepositModeNotSet();
 
+        uint256 balanceBefore = ASSET.balanceOf(address(this));
+        uint256 gasBefore = gasleft();
         if (pushDepositMode[adapter]) {
             ASSET.safeTransfer(adapter, amount);
             ILendingAdapter(adapter).deposit(amount);
@@ -102,6 +107,8 @@ contract StrategyAdapterOpsModule is StrategyStorageLayout {
             ILendingAdapter(adapter).deposit(amount);
             ASSET.forceApprove(adapter, 0);
         }
+        uint256 measured = gasBefore - gasleft();
+        if (ASSET.balanceOf(address(this)) < balanceBefore) _recordExecutionGas(adapter, measured, true);
     }
 
     /// @notice Record adapter failure with temporal decay. Called via delegatecall.
@@ -163,28 +170,13 @@ contract StrategyAdapterOpsModule is StrategyStorageLayout {
     /// @dev KEEPER_ROLE only.
     function recordWithdrawGas(address adapter, uint256 gasUsed) external onlyDelegateCall onlyRoleOrRevert(KEEPER_ROLE) {
         _updateGasEma(adapter, gasUsed, false);
+        // Keeper-supplied legacy samples are not execution evidence.
+        delete withdrawGasObservation[adapter];
     }
 
     /// @dev Update per-adapter gas EMA. alpha = gasEmaSmoothingBps / 10000.
     function _updateGasEma(address adapter, uint256 gasUsed, bool isDeposit) internal {
-        if (gasUsed == 0) return;
-        uint256 alpha = gasEmaSmoothingBps;
-        if (alpha == 0) alpha = 2000; // default 0.2
-
-        uint64 old = isDeposit ? emaDepositGas[adapter] : emaWithdrawGas[adapter];
-        uint64 updated;
-        if (old == 0) {
-            updated = uint64(gasUsed); // first observation
-        } else {
-            updated = uint64((uint256(old) * (10000 - alpha) + gasUsed * alpha) / 10000);
-        }
-
-        if (isDeposit) {
-            emaDepositGas[adapter] = updated;
-        } else {
-            emaWithdrawGas[adapter] = updated;
-        }
-        emit GasEmaUpdated(adapter, updated, isDeposit);
+        _recordExecutionGas(adapter, gasUsed, isDeposit);
     }
 
     // ═══════════════════════════════════════════════════════════════════════
@@ -270,7 +262,10 @@ contract StrategyAdapterOpsModule is StrategyStorageLayout {
                 uint256 w = pass == 0 ? (need * pos) / tvl : need;
                 if (w > pos) w = pos;
                 if (w < 1) continue;
+                uint256 gasBefore = gasleft();
                 try ILendingAdapter(a).withdraw(w, address(this)) returns (uint256 got) {
+                    uint256 observed = gasBefore - gasleft();
+                    if (got > 0) _recordExecutionGas(a, observed, false);
                     positionAssets[a] -= got;
                     totalRealized += got;
                     _recordAdapterSuccess(a);

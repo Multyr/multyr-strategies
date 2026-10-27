@@ -1,0 +1,24 @@
+{
+  "previousTaskDefinition": "arn:aws:ecs:eu-north-1:820140266807:task-definition/multyr-keeper-simulation:3",
+  "newTaskDefinition": "arn:aws:ecs:eu-north-1:820140266807:task-definition/multyr-keeper-simulation:4",
+  "image": "820140266807.dkr.ecr.eu-north-1.amazonaws.com/multyr-keeper@sha256:99aae44ad8e78180a8723a9e9d561b16be034d63f2853407d1c48bffc86ca40e",
+  "service": "multyr-keeper-simulation",
+  "cluster": "arn:aws:ecs:eu-north-1:820140266807:cluster/multyr-keeper",
+  "status": "replacement-running-first-cycle-confirmed",
+  "validation": "typecheck, 32 tests and live preflight passed",
+  "strategy": "0xa9E676D15976A1332905238ca609Dff9A484Efe0",
+  "upkeep": "0xbcaC314E7237b14E11644FC6Ba73675c8c0612DF",
+  "task": "abf59fdded6444ab8dd0c3d6299df46c",
+  "runningWorkers": 1,
+  "investmentTransaction": "0x471052742773d3bc404f9f34271b72b95b148eb45ea0df84a773a7181b958b6d",
+  "fundsAtBlock515783071": {
+    "strategyAssetsUSDC": "14.125160",
+    "strategyIdleUSDC": "0",
+    "venue": "Venus",
+    "coreIdleUSDC": "0.642054",
+    "coreCanDeploy": false
+  },
+  "canRebalance": false,
+  "health": "HEALTHY",
+  "ecsRolloutState": "COMPLETED"
+}

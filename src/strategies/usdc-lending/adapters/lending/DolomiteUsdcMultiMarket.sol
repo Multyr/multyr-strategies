@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.28;
+import { PpsRateLib } from "./PpsRateLib.sol";
 
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
@@ -442,6 +443,7 @@ contract DolomiteUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reent
             if (!m.enabled) continue;
             if (m.mtype != MarketType.ERC4626) continue;
             uint256 pps = IERC4626Like(m.addr).convertToAssets(1e18);
+            PpsRateLib.update(rateSamples[m.addr], IERC4626Like(m.addr).convertToAssets(1e24));
             ppsSnap[m.addr] = PpsSnap({ pps: pps, ts: nowTs });
         }
     }
@@ -587,37 +589,15 @@ contract DolomiteUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reent
         return sum;
     }
 
+    mapping(address => PpsRateLib.Sample) internal rateSamples;
     function currentAPYBps() external view returns (uint16) {
-        // Prefer override set via PARAM_ROLE (e.g., keeper-fed from Dolomite rate sources)
         if (apyOverrideBps != 0) return apyOverrideBps;
-        // If active market is ERC-4626 with snapshot, estimate APY from pps change
-        if (
-            activeIdx < mkts.length && mkts[activeIdx].enabled
-                && mkts[activeIdx].mtype == MarketType.ERC4626
-        ) {
+        if (activeIdx < mkts.length && mkts[activeIdx].enabled
+            && mkts[activeIdx].mtype == MarketType.ERC4626) {
             address m = mkts[activeIdx].addr;
-            PpsSnap memory s = ppsSnap[m];
-            if (s.ts != 0) {
-                uint256 p0 = s.pps; // assets per 1e18 shares
-                uint256 p1 = IERC4626Like(m).convertToAssets(1e18);
-                if (p1 > p0) {
-                    uint256 dt = block.timestamp - uint256(s.ts);
-                    if (dt > 0) {
-                        uint256 fracWad = (p1 * 1e18) / p0;
-                        if (fracWad > 1e18) {
-                            unchecked {
-                                fracWad -= 1e18;
-                            }
-                            uint256 aprWad = (fracWad * 31_536_000) / dt;
-                            uint256 bps = aprWad / 1e14; // (apr/1e18)*1e4
-                            if (bps > type(uint16).max) return type(uint16).max;
-                            // casting to uint16 is safe because overflow is checked above
-                            // forge-lint: disable-next-line(unsafe-typecast)
-                            return uint16(bps);
-                        }
-                    }
-                }
-            }
+            try IERC4626Like(m).convertToAssets(1e24) returns (uint256 pps) {
+                return PpsRateLib.read(rateSamples[m], pps);
+            } catch { return 0; }
         }
         // Else if Pool-like and rate provider configured, use provider
         if (
@@ -650,7 +630,7 @@ contract DolomiteUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reent
     }
 
     function maxCapacity() external view returns (uint256) {
-        return capacity;
+        return capacity == 0 ? type(uint256).max : capacity;
     }
 
     /// @notice Returns sum of totalAssets() for ERC4626 markets, or USDC balance for PoolLike markets

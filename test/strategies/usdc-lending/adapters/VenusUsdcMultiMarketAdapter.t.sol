@@ -477,6 +477,23 @@ contract VenusUsdcMultiMarketAdapterTest is Test {
     // YIELD VIEWS
     // ═══════════════════════════════════════════════════════════════════════
 
+    function test_timeBasedMarketOverridesLegacyBlockCadence() public {
+        vm.mockCall(address(vToken), abi.encodeWithSignature("blocksOrSecondsPerYear()"), abi.encode(uint256(365 days)));
+        VenusUsdcMultiMarketAdapter fixedAdapter = new VenusUsdcMultiMarketAdapter();
+        fixedAdapter.initialize(address(usdc), admin, vault, 0, address(vToken), 126_144_000);
+        vToken.setSupplyRate(1_407_003_203); // observed live per-second rate
+        assertEq(fixedAdapter.blocksPerYear(), 31_536_000);
+        assertEq(fixedAdapter.currentAPYBps(), 443);
+        assertEq(adapter.currentAPYBps(), 1774); // reproduces the previous 4x error
+    }
+
+    function test_marketNormalizationRejectsZero() public {
+        vm.mockCall(address(vToken), abi.encodeWithSignature("blocksOrSecondsPerYear()"), abi.encode(uint256(0)));
+        VenusUsdcMultiMarketAdapter fixedAdapter = new VenusUsdcMultiMarketAdapter();
+        vm.expectRevert(bytes("market slots/year"));
+        fixedAdapter.initialize(address(usdc), admin, vault, 0, address(vToken), 126_144_000);
+    }
+
     function test_currentAPYBps_zeroByDefault() public view {
         assertEq(adapter.currentAPYBps(), 0);
     }

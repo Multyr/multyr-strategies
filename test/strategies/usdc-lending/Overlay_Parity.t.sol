@@ -104,6 +104,10 @@ contract Overlay_Parity is UsdcMultiLendingVaultTestBase {
         uint16 globalCeiling,
         uint16 floorOverride
     ) internal pure returns (uint16) {
+        if (globalCeiling > 0) {
+            uint16 required = uint16((11000 + uint256(globalCeiling) - 1) / globalCeiling);
+            if (required > dMax) dMax = required;
+        }
         if (dMax == 0) return 0;
         if (dMax == 1) return 10000; // T1 short-circuit (TIER_MODEL §4.1)
 
@@ -135,6 +139,7 @@ contract Overlay_Parity is UsdcMultiLendingVaultTestBase {
         cap = (cap * liqMult) / 10000;
 
         if (floorOverride > 0 && cap < uint256(floorOverride)) cap = uint256(floorOverride);
+        if (globalCeiling > 0 && cap > globalCeiling) cap = globalCeiling;
         return uint16(cap);
     }
 
@@ -271,7 +276,7 @@ contract Overlay_Parity is UsdcMultiLendingVaultTestBase {
             abi.encodeWithSignature("effectiveAbsCapBps(address)", address(adapterA))
         );
         require(ok);
-        assertEq(abi.decode(ret, (uint16)), 3000, "T1 must respect a set global governance ceiling");
+        assertEq(abi.decode(ret, (uint16)), 2750, "Ceiling enables four slots with 110% structural coverage");
         _clearGlobalCeiling();
     }
 
@@ -388,7 +393,7 @@ contract Overlay_Parity is UsdcMultiLendingVaultTestBase {
     // agree on this (I-ALLOC-06 overlay parity) -- verified below with a
     // ceiling set AND with overlays maxed out, to prove the overlays really
     // are ignored while the ceiling really is respected.
-    function test_AUDIT_FINDING_13_T1_overlays_shortcircuit_but_ceiling_applies_in_both_paths() public {
+    function test_smallVaultCeilingEnablesDiversificationAndRiskOverlays() public {
         // T1 state: vault is empty (TVL=0 < 25K) → dMax=1
         _setRiskScore(address(adapterA), 10000);
         _setFailures(address(adapterA), 7);
@@ -400,7 +405,7 @@ contract Overlay_Parity is UsdcMultiLendingVaultTestBase {
         );
         require(ok, "T1 staticcall failed");
         uint16 actual = abi.decode(ret, (uint16));
-        assertEq(actual, 3000, "T1 overlays are ignored but the set ceiling must still apply");
+        assertEq(actual, 0, "Diversified small vault must not bypass failure and risk overlays");
 
         _clearGlobalCeiling();
         _setFailures(address(adapterA), 0);
