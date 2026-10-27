@@ -426,7 +426,8 @@ contract DolomiteUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reent
                 IDolomiteMargin.Wei memory
             ) {
                 // success — continue probing other markets
-            } catch {
+            } catch (bytes memory reason) {
+                emit AdapterOperationFailed(msg.sig, reason);
                 revert InvalidDolomiteConfig(mkts[i].addr, usdcMarketId, accountNumber);
             }
         }
@@ -1059,7 +1060,8 @@ contract DolomiteUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reent
                     }
                 }
             }
-        } catch {
+        } catch (bytes memory reason) {
+                emit AdapterOperationFailed(msg.sig, reason);
             // Registry call failed - adapter will start with empty markets
         }
     }
@@ -1111,13 +1113,15 @@ contract DolomiteUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reent
                 if (m.mtype == MarketType.ERC4626) {
                     try IERC4626Like(m.addr).withdraw(bal, address(this), address(this)) returns (uint256 _sharesBurned) {
                         emit EmergencyDolomiteMarketWithdrawn(i, m.addr, uint8(m.mtype), bal, _sharesBurned);
-                    } catch {
+                    } catch (bytes memory reason) {
+                emit AdapterOperationFailed(msg.sig, reason);
                         emit EmergencyDolomiteMarketWithdrawn(i, m.addr, uint8(m.mtype), bal, 0);
                     }
                 } else {
                     try IDolomiteLike(m.addr).withdraw(asset, bal) {
                         emit EmergencyDolomiteMarketWithdrawn(i, m.addr, uint8(m.mtype), bal, 0);
-                    } catch {
+                    } catch (bytes memory reason) {
+                emit AdapterOperationFailed(msg.sig, reason);
                         emit EmergencyDolomiteMarketWithdrawn(i, m.addr, uint8(m.mtype), bal, 0);
                     }
                 }
@@ -1141,4 +1145,5 @@ contract DolomiteUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reent
     fallback() external payable {
         revert("NO_FALLBACK");
     }
+    event AdapterOperationFailed(bytes4 indexed operation, bytes reason);
 }

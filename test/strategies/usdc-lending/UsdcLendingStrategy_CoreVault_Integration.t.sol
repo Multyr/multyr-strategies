@@ -6,6 +6,7 @@ import { IERC20Metadata } from "@openzeppelin/contracts/token/ERC20/extensions/I
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import { ERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
+import { EpochedQueueModule } from "@multyr-core/core/modules/EpochedQueueModule.sol";
 import { CoreHarness } from "../../helpers/CoreHarness.sol";
 import { MockParamsProvider } from "../../helpers/MockParamsProvider.sol";
 import { MockBufferManagerForTests } from "../../helpers/MockBufferManagerForTests.sol";
@@ -344,6 +345,13 @@ contract MockStrategyRouter is IStrategyRouter {
         return false;
     }
 
+    function navValidity() external view returns (uint256 sum, uint8 issue) {
+        for (uint256 i; i < strategies.length; ++i) {
+            try strategies[i].totalAssets() returns (uint256 assets) { sum += assets; }
+            catch { issue = 4; }
+        }
+    }
+
     function totalStrategyAssetsSafe() external view override returns (uint256 sum) {
         for (uint256 i = 0; i < strategies.length; i++) {
             (bool ok, bytes memory data) = address(strategies[i])
@@ -443,6 +451,26 @@ contract UsdcLendingStrategy_CoreVault_Integration is Test {
 
     // Constants
     uint256 constant INITIAL_BALANCE = 1_000_000e6; // 1M USDC
+
+    /// @dev Exercise the current economic-exit queue; a failed call must fail the test.
+    function _exitAll(address who) internal {
+        vm.stopPrank();
+        uint256 shares = coreVault.balanceOf(who);
+        if (shares == 0) return;
+        coreVault.bufferManager().refreshWarmNav();
+        EpochedQueueModule queue = EpochedQueueModule(address(coreVault));
+        vm.prank(who);
+        (uint256 epoch, uint256 claim) = queue.requestEpochWithdrawal(shares);
+        uint256 owed = queue.epochClaim(epoch, claim).assetsOwed;
+        vm.warp(block.timestamp + 8 days);
+        coreVault.bufferManager().refreshWarmNav();
+        queue.closeCurrentEpoch();
+        queue.fundEpoch(epoch);
+        uint256 beforeBalance = usdc.balanceOf(who);
+        vm.prank(who); queue.claimEpochAssets(epoch, claim);
+        assertEq(usdc.balanceOf(who) - beforeBalance, owed, "exact fixed claim paid");
+        assertTrue(queue.epochClaim(epoch, claim).claimed);
+    }
 
     function setUp() public {
         // Deploy mock USDC
@@ -544,8 +572,7 @@ contract UsdcLendingStrategy_CoreVault_Integration is Test {
 
         // User withdraws
         uint256 withdrawnPre_ = usdc.balanceOf(user1);
-        vm.prank(user1);
-        address(coreVault).call(abi.encodeWithSignature("forceWithdrawAll(address)", user1));
+        _exitAll(user1);
         uint256 withdrawn = usdc.balanceOf(user1) - withdrawnPre_;
 
         assertGt(withdrawn, 0, "Should withdraw assets");
@@ -602,13 +629,11 @@ contract UsdcLendingStrategy_CoreVault_Integration is Test {
 
         // Both users withdraw
         uint256 withdrawn1Pre_ = usdc.balanceOf(user1);
-        vm.prank(user1);
-        address(coreVault).call(abi.encodeWithSignature("forceWithdrawAll(address)", user1));
+        _exitAll(user1);
         uint256 withdrawn1 = usdc.balanceOf(user1) - withdrawn1Pre_;
 
         uint256 withdrawn2Pre_ = usdc.balanceOf(user2);
-        vm.prank(user2);
-        address(coreVault).call(abi.encodeWithSignature("forceWithdrawAll(address)", user2));
+        _exitAll(user2);
         uint256 withdrawn2 = usdc.balanceOf(user2) - withdrawn2Pre_;
 
         // User1 should have proportionally more yield due to longer deposit
@@ -635,8 +660,7 @@ contract UsdcLendingStrategy_CoreVault_Integration is Test {
         assertEq(coreVault.balanceOf(user1), totalShares, "Total shares should match");
 
         // Withdraw all
-        vm.prank(user1);
-        address(coreVault).call(abi.encodeWithSignature("forceWithdrawAll(address)", user1));
+        _exitAll(user1);
 
         assertLe(coreVault.balanceOf(user1), 1, "Should have minimal shares left");
     }
@@ -663,18 +687,15 @@ contract UsdcLendingStrategy_CoreVault_Integration is Test {
 
         // All users withdraw
         uint256 withdrawn1Pre_ = usdc.balanceOf(user1);
-        vm.prank(user1);
-        address(coreVault).call(abi.encodeWithSignature("forceWithdrawAll(address)", user1));
+        _exitAll(user1);
         uint256 withdrawn1 = usdc.balanceOf(user1) - withdrawn1Pre_;
 
         uint256 withdrawn2Pre_ = usdc.balanceOf(user2);
-        vm.prank(user2);
-        address(coreVault).call(abi.encodeWithSignature("forceWithdrawAll(address)", user2));
+        _exitAll(user2);
         uint256 withdrawn2 = usdc.balanceOf(user2) - withdrawn2Pre_;
 
         uint256 withdrawn3Pre_ = usdc.balanceOf(user3);
-        vm.prank(user3);
-        address(coreVault).call(abi.encodeWithSignature("forceWithdrawAll(address)", user3));
+        _exitAll(user3);
         uint256 withdrawn3 = usdc.balanceOf(user3) - withdrawn3Pre_;
 
         // All should withdraw approximately equal amounts
@@ -712,13 +733,9 @@ contract UsdcLendingStrategy_CoreVault_Integration is Test {
 
         // User attempts full withdraw - should get what's available
         uint256 withdrawnPre__ = usdc.balanceOf(user1);
-        vm.prank(user1);
-        (bool ok__,) = address(coreVault).call(abi.encodeWithSignature("forceWithdrawAll(address)", user1));
-        if (ok__) {
-            uint256 withdrawn = usdc.balanceOf(user1) - withdrawnPre__;
-            // Withdraw succeeded
-            assertGt(withdrawn, 0, "Should withdraw something");
-        }
+        _exitAll(user1);
+        uint256 withdrawn = usdc.balanceOf(user1) - withdrawnPre__;
+        assertGt(withdrawn, 0, "Should withdraw something");
     }
 
     // ========================================================================
@@ -791,8 +808,7 @@ contract UsdcLendingStrategy_CoreVault_Integration is Test {
 
         // Withdraw should work
         uint256 withdrawnPre_ = usdc.balanceOf(user1);
-        vm.prank(user1);
-        address(coreVault).call(abi.encodeWithSignature("forceWithdrawAll(address)", user1));
+        _exitAll(user1);
         uint256 withdrawn = usdc.balanceOf(user1) - withdrawnPre_;
 
         assertApproxEqRel(withdrawn, maxDeposit, 0.05e18, "Should recover most of large deposit");
@@ -840,8 +856,7 @@ contract UsdcLendingStrategy_CoreVault_Integration is Test {
 
         // Day 30: User1 partial withdraw
         vm.warp(block.timestamp + 9 days);
-        vm.prank(user1);
-        address(coreVault).call(abi.encodeWithSignature("forceWithdrawAll(address)", user1));
+        _exitAll(user1);
 
         // Day 45: Harvest again
         vm.warp(block.timestamp + 15 days);
@@ -852,18 +867,15 @@ contract UsdcLendingStrategy_CoreVault_Integration is Test {
 
         // User1 withdraws remaining
         uint256 user1RemainingShares = coreVault.balanceOf(user1);
-        vm.prank(user1);
-        address(coreVault).call(abi.encodeWithSignature("forceWithdrawAll(address)", user1));
+        _exitAll(user1);
 
         // User2 withdraws - need to check current balance as shares2 may have been modified
         uint256 user2Shares = coreVault.balanceOf(user2);
-        vm.prank(user2);
-        address(coreVault).call(abi.encodeWithSignature("forceWithdrawAll(address)", user2));
+        _exitAll(user2);
 
         // User3 withdraws
         uint256 user3Shares = coreVault.balanceOf(user3);
-        vm.prank(user3);
-        address(coreVault).call(abi.encodeWithSignature("forceWithdrawAll(address)", user3));
+        _exitAll(user3);
 
         // Vault should be nearly empty
         assertLe(coreVault.totalSupply(), 1e6, "Vault should be nearly empty");
@@ -929,6 +941,26 @@ contract UsdcLendingStrategy_CoreVault_Integration_Fuzz is Test {
     address public owner = makeAddr("owner");
     address public feeCollector = makeAddr("feeCollector");
 
+    /// @dev Exercise the current economic-exit queue; a failed call must fail the test.
+    function _exitAll(address who) internal {
+        vm.stopPrank();
+        uint256 shares = coreVault.balanceOf(who);
+        if (shares == 0) return;
+        coreVault.bufferManager().refreshWarmNav();
+        EpochedQueueModule queue = EpochedQueueModule(address(coreVault));
+        vm.prank(who);
+        (uint256 epoch, uint256 claim) = queue.requestEpochWithdrawal(shares);
+        uint256 owed = queue.epochClaim(epoch, claim).assetsOwed;
+        vm.warp(block.timestamp + 8 days);
+        coreVault.bufferManager().refreshWarmNav();
+        queue.closeCurrentEpoch();
+        queue.fundEpoch(epoch);
+        uint256 beforeBalance = usdc.balanceOf(who);
+        vm.prank(who); queue.claimEpochAssets(epoch, claim);
+        assertEq(usdc.balanceOf(who) - beforeBalance, owed, "exact fixed claim paid");
+        assertTrue(queue.epochClaim(epoch, claim).claimed);
+    }
+
     function setUp() public {
         usdc = new MockUSDC();
         params = new MockParamsProvider();
@@ -980,8 +1012,7 @@ contract UsdcLendingStrategy_CoreVault_Integration_Fuzz is Test {
         assertGt(shares, 0, "Should receive shares");
 
         uint256 withdrawnPre_ = usdc.balanceOf(user);
-        vm.prank(user);
-        address(coreVault).call(abi.encodeWithSignature("forceWithdrawAll(address)", user));
+        _exitAll(user);
         uint256 withdrawn = usdc.balanceOf(user) - withdrawnPre_;
 
         // Should get back at least 95% (accounting for fees)
@@ -1014,7 +1045,7 @@ contract UsdcLendingStrategy_CoreVault_Integration_Fuzz is Test {
 
         // Full withdraw (forceWithdrawAll redeems all shares)
         uint256 withdrawnPre_ = usdc.balanceOf(user);
-        address(coreVault).call(abi.encodeWithSignature("forceWithdrawAll(address)", user));
+        _exitAll(user);
         uint256 withdrawn = usdc.balanceOf(user) - withdrawnPre_;
         vm.stopPrank();
 

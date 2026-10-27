@@ -110,6 +110,7 @@ contract VenusUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
     event RealizedRewardAPRUpdated(uint16 bps);
     event IncentiveHaircutUpdated(uint16 bps);
     event RewardsClaimed(uint256 amount);
+    event RewardClaimFailed(address indexed controller, address indexed market, bytes reason);
     event HarvestExecuted(address rewardToken, uint256 amountIn, uint256 usdcOut, address receiver);
     event SwapDeferred(address rewardToken, uint256 pendingBalance, string reason);
 
@@ -321,7 +322,9 @@ contract VenusUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
         // 1. Claim from Comptroller
         address[] memory vTokens = new address[](1);
         vTokens[0] = vToken;
-        try IVenusComptroller(comptroller).claimVenus(address(this), vTokens) {} catch {}
+        try IVenusComptroller(comptroller).claimVenus(address(this), vTokens) {} catch (bytes memory reason) {
+            emit RewardClaimFailed(comptroller, vToken, reason);
+        }
 
         uint256 bal = IERC20(rewardToken).balanceOf(address(this));
         if (bal > 0) emit RewardsClaimed(bal);
@@ -334,7 +337,8 @@ contract VenusUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
         }
         bool ok;
         try IRewardSwapHelper(swapHelper).canSwap(rewardToken) returns (bool v) { ok = v; }
-        catch { ok = false; }
+        catch (bytes memory reason) {
+                emit AdapterOperationFailed(msg.sig, reason); ok = false; }
         if (!ok) {
             emit SwapDeferred(rewardToken, bal, "oracle-stale");
             return 0;
@@ -344,7 +348,8 @@ contract VenusUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
         try IRewardSwapHelper(swapHelper).swapToUSDC(rewardToken, bal, receiver) returns (uint256 out) {
             realized = out;
             emit HarvestExecuted(rewardToken, bal, out, receiver);
-        } catch {
+        } catch (bytes memory reason) {
+                emit AdapterOperationFailed(msg.sig, reason);
             emit SwapDeferred(rewardToken, bal, "swap-revert");
             realized = 0;
         }
@@ -439,7 +444,8 @@ contract VenusUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
         if (vBal > 0) {
             try IVToken(vToken).redeem(vBal) returns (uint256 err) {
                 require(err == 0, "Venus:emergency redeem failed");
-            } catch {
+            } catch (bytes memory reason) {
+                emit AdapterOperationFailed(msg.sig, reason);
                 // Redeem failed - still sweep whatever idle exists
             }
         }
@@ -461,4 +467,5 @@ contract VenusUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
     fallback() external payable {
         revert("NO_FALLBACK");
     }
+    event AdapterOperationFailed(bytes4 indexed operation, bytes reason);
 }

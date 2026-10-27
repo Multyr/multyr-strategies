@@ -130,6 +130,7 @@ contract CometUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
     event IncentiveHaircutUpdated(uint16 bps);
     event RealizedRewardAPRUpdated(uint16 bps);
     event RewardsClaimed(uint256 amount);
+    event RewardClaimFailed(address indexed controller, address indexed market, bytes reason);
     event HarvestExecuted(address rewardToken, uint256 amountIn, uint256 usdcOut, address receiver);
     event SwapDeferred(address rewardToken, uint256 pendingBalance, string reason);
 
@@ -339,7 +340,9 @@ contract CometUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
         uint256 nMkt = mkts.length;
         for (uint256 i = 0; i < nMkt; ) {
             if (mkts[i].enabled) {
-                try ICometRewards(rewardsController).claim(mkts[i].comet, address(this), true) {} catch {}
+                try ICometRewards(rewardsController).claim(mkts[i].comet, address(this), true) {} catch (bytes memory reason) {
+                    emit RewardClaimFailed(rewardsController, mkts[i].comet, reason);
+                }
             }
             unchecked { ++i; }
         }
@@ -352,7 +355,8 @@ contract CometUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
         }
         // (2) M1 pre-flight: defer if oracle stale (no LINK burn on doomed swap)
         bool ok;
-        try IRewardSwapHelperComet(swapHelper_).canSwap(rewardToken_) returns (bool v) { ok = v; } catch { ok = false; }
+        try IRewardSwapHelperComet(swapHelper_).canSwap(rewardToken_) returns (bool v) { ok = v; } catch (bytes memory reason) {
+                emit AdapterOperationFailed(msg.sig, reason); ok = false; }
         if (!ok) {
             emit SwapDeferred(rewardToken_, bal, "oracle-stale");
             return 0;
@@ -363,7 +367,8 @@ contract CometUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
         try IRewardSwapHelperComet(swapHelper_).swapToUSDC(rewardToken_, bal, receiver) returns (uint256 out) {
             realized = out;
             emit HarvestExecuted(rewardToken_, bal, out, receiver);
-        } catch {
+        } catch (bytes memory reason) {
+                emit AdapterOperationFailed(msg.sig, reason);
             emit SwapDeferred(rewardToken_, bal, "swap-revert");
         }
         IERC20(rewardToken_).forceApprove(swapHelper_, 0);
@@ -755,7 +760,8 @@ contract CometUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
                     principal.push(0);
                 }
             }
-        } catch {
+        } catch (bytes memory reason) {
+                emit AdapterOperationFailed(msg.sig, reason);
             // Registry call failed - adapter will start with empty markets or use manual addMarket()
         }
     }
@@ -789,7 +795,8 @@ contract CometUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
             uint256 bal = _assetsOn(i);
             if (bal > 0) {
                 try IComet(mkts[i].comet).withdraw(underlying, bal) {
-                } catch {
+                } catch (bytes memory reason) {
+                emit AdapterOperationFailed(msg.sig, reason);
                     // Withdraw failed - skip this market
                 }
                 principal[i] = 0;
@@ -846,4 +853,5 @@ contract CometUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
         return IERC20(rewardToken).balanceOf(address(this));
     }
 
+    event AdapterOperationFailed(bytes4 indexed operation, bytes reason);
 }

@@ -213,7 +213,8 @@ contract MorphoUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentra
                     principal.push(0);
                 }
             }
-        } catch {
+        } catch (bytes memory reason) {
+                emit AdapterOperationFailed(msg.sig, reason);
             // Registry call failed - adapter will start with empty markets (use addMarket manually)
         }
     }
@@ -1023,7 +1024,8 @@ contract MorphoUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentra
             if (shares < 1) continue; // slither: incorrect-equality - use < 1 instead of == 0
             try IERC4626Like(m).redeem(shares, address(this), address(this)) returns (uint256 _assetsOut) {
                 emit EmergencyMarketRedeemed(i, m, shares, _assetsOut);
-            } catch {
+            } catch (bytes memory reason) {
+                emit AdapterOperationFailed(msg.sig, reason);
                 emit EmergencyMarketRedeemed(i, m, shares, 0);
             }
             principal[i] = 0;
@@ -1042,4 +1044,5 @@ contract MorphoUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentra
     receive() external payable {
         revert("MorphoAdapter: no ether");
     }
+    event AdapterOperationFailed(bytes4 indexed operation, bytes reason);
 }
