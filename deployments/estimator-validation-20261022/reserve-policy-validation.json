@@ -1,0 +1,51 @@
+{
+  "status": "local policy implementation validated; no live changes; fresh fork/native-fee calibration required before deployment",
+  "tests": {
+    "targetedPassed": 53,
+    "scoringRegressionPassed": 80,
+    "failed": 0
+  },
+  "configuration": {
+    "targetIdleBufferBps": 1000,
+    "setter": "setTargetIdleBufferBps(uint16)",
+    "unconfiguredStorageValue": 0
+  },
+  "example": {
+    "fluidUSDC": "20.55",
+    "idleUSDC": "4.45",
+    "totalUSDC": "25",
+    "eulerTargetUSDC": "22.5",
+    "remainingIdleUSDC": "2.5",
+    "operations": 2,
+    "transactionsAtTwoActionsPerStep": 2
+  },
+  "notes": [
+    "Controlled mock protocol/rate fixtures, not a current on-chain score/balance assertion",
+    "High-fee fixture rejects the same move; low-fee fixture executes",
+    "Disabled and quarantined positions are recalled without permitting new deposits",
+    "Positive reserve disables legacy safety overflow and above-target safety-tranche preservation",
+    "Existing governance/overlay caps remain effective",
+    "Previous calibration tables predate these policy changes"
+  ],
+  "newStorage": {
+    "targetIdleBufferBps": 87
+  },
+  "sha256": {
+    "src/strategies/usdc-lending/adapters/lending/MorphoUsdcMultiMarket.sol": "2246f739c0e383b715b809ca06e1a3eec7bb8752647fe5024d537494ab0fb168",
+    "src/strategies/usdc-lending/controller/StrategyAdapterOpsModule.sol": "c9f3ede474b179f22910b91fa7f4fdbc139617f4e67b5164e6c61711c72efaa3",
+    "src/strategies/usdc-lending/controller/StrategyAllocCalcModule.sol": "7998f93851eb69ae4245690131540dc4327cb4a9abf8a1ddf345b7649ceb96c4",
+    "src/strategies/usdc-lending/controller/StrategyRebalanceGateModule.sol": "2f8a1b265d7177517970db5cb9ad22c266fda3f10180dd5f61fe75f2fa5373d3",
+    "src/strategies/usdc-lending/controller/StrategyRebalancePlanModule.sol": "99fd4d057f867d79d137e0f48b4caf7156b024fc37df65f38ae2b4d8d4640ac1",
+    "src/strategies/usdc-lending/controller/StrategySafetyOverflowModule.sol": "957bfbc6aadf54fdb6f60464b9799561af2fb046373843618ca1989c1c66baae",
+    "src/strategies/usdc-lending/controller/StrategyScoringModule.sol": "92970bd396382b67b6811fde3916b2219527b4ed5a512350cf197b383e7f36aa",
+    "src/strategies/usdc-lending/controller/StrategySettingsModule.sol": "f1c11e79b06068a3014343649ea064cd29b3d82adc80f0b49a6d057569a348bd",
+    "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol": "a5a8ec96a591edf362f5aff8b5a7ede7c55adacb06a72c5f0d65a4cfe3a586d1",
+    "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol": "d9dbc46b9da2fa7df3f38f9ede966e0ca1fc82dbf13caeaa34426e7586f61f97",
+    "src/strategies/usdc-lending/gas/CandidateActions.sol": "04ab9ce428a885d37c964cba3b708a0207e1a59a1ef473612f3977fb0646fb02",
+    "src/strategies/usdc-lending/gas/ReadOnlyGasEstimator.sol": "7f2e921b7ec11908465792f8112f1b074083709fe8237b6a4846684f6e085820",
+    "test/strategies/usdc-lending/ReadOnlyGasEstimator.t.sol": "4c2168f2ec58a65e1e77f67827b2554d40a29661dbca3f8308badc2cd4627543",
+    "test/strategies/usdc-lending/ReadOnlyGasIntegration.t.sol": "9ddc59f2435356f0247632f54ec4ea331fa59d5b9e04c6721d3e082dcd9e3fed",
+    "test/strategies/usdc-lending/PlanEstimatorRequirements.t.sol": "566959af78246670ec1ca719e8c0f2cdb6b87c5789e5c8bce83c5cd076ad25e5",
+    "docs/gas-estimation/target-reserve-policy.md": "6dcfed6c3aa2559318da11ed0ce393d2ce5cfd392733b3925a8de91b535415be"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "chainId": 42161,
+  "donor": "0x908756f36954f2853134259B8846c49F90E84ECe",
+  "seedUSDC": "0.001",
+  "oldAdapter": "0xAba3D7015fFC9b8dEEb404389296864A1607E828",
+  "transactions": [
+    {
+      "functionName": "approve",
+      "hash": "0x1ce0f5e787dcb9c702cdf5f6965e045b4a82350671ee2411ed6b7b595c49601e",
+      "status": "success",
+      "block": "516578806"
+    },
+    {
+      "functionName": "mint",
+      "hash": "0x9edfe7757f44ab9daae7845fea5bf0102f569af5ce0430f346d098ecbd7f6ee0",
+      "status": "success",
+      "block": "516578811"
+    },
+    {
+      "functionName": "transfer",
+      "hash": "0x9609a280f9c8a0957c30cb3b25b18f5c15a0276b756fedcefc2415d7e5e4f884",
+      "status": "success",
+      "block": "516578816"
+    }
+  ],
+  "mintedShares": "89546",
+  "seedActualAssets": "999",
+  "status": "Seed funded; Safe reconciliation pending"
+}

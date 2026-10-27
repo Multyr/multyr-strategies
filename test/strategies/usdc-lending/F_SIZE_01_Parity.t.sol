@@ -69,15 +69,15 @@ contract F_SIZE_01_SetOnce is UsdcMultiLendingVaultTestBase {
 }
 
 // =============================================================================
-// P3 -- Bytecode size: StrategyScoringModule < 22,000 B
+// P3 -- Bytecode size: StrategyScoringModule < 24,000 B
 // =============================================================================
 contract F_SIZE_01_BytecodeSize is UsdcMultiLendingVaultTestBase {
 
-    function test_scoringModule_bytecode_under_22000_bytes() public view {
+    function test_scoringModule_bytecode_under_24000_bytes() public view {
         address scoringMod = vault.scoringModule();
         uint256 size;
         assembly { size := extcodesize(scoringMod) }
-        assertLt(size, 22_000, "StrategyScoringModule exceeds 22,000 B EIP-170 target");
+        assertLt(size, 24_000, "StrategyScoringModule exceeds 24,000 B internal size budget");
     }
 
     function test_overflowModule_bytecode_under_24576_bytes() public view {

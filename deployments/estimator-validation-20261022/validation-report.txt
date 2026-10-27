@@ -1,0 +1,207 @@
+HISTORICAL BENCHMARK: this report predates the configurable idle-reserve and excluded-adapter recall changes. Do not treat these gas measurements as calibration of the latest working tree. See docs/gas-estimation/target-reserve-policy.md.
+
+READ-ONLY ESTIMATOR IMPLEMENTATION AND VALIDATION — 22 OCTOBER 2026
+Status: local implementation and fork validation completed; no live deployment or configuration changes. Deployment approval remains pending.
+
+IMPLEMENTATION
+1. Reliable per-adapter, per-direction EMA drives the estimate, even below the default. Reliability requires at least three stable execution observations, no more than seven days old. Gas below 21,000 is rejected as evidence. A >1.25x regime change or stale history resets the evidence. Legacy keeper-reported values cannot establish reliability.
+2. Cold-start defaults are rounded measured maxima for each operation; a single 50% margin applies to the resulting total. Defaults are not permanent EMA floors.
+3. The planner selects top composite-score adapters using the 1–2–3–4–5 TVL limits, bounded by maxAdaptersPerAllocation. Exposure caps remain independent and can leave idle capital. The estimator contains no scoring logic.
+4. The shared candidate action builder supplies the gate and prepared plan. Withdrawal liquidity is clamped before funded deposit amounts are calculated. Batch count comes from the actual action list. Preparation, withdrawal-only, deposit-only, mixed steps and finalization are priced separately; finalization is not an extra transaction.
+5. Remaining-plan validation rechecks prices, economics, liquidity, cash and caps, and now cancels deposits into adapters excluded by freshly computed targets. Existing expiry and TVL-drift guards remain. It does not promise an optimal trade search or continuously replace a profitable stored plan with new target weights.
+6. Morpho sorts a snapshot of market APYs instead of repeatedly querying valuations inside comparisons. The original trace had 23 convertToAssets calls costing 2,018,378 gas and a failed first deposit attempt followed by a successful fallback. The optimization preserves fallback behavior.
+
+VALIDATION SCOPE
+Pinned Arbitrum state: block 516950276. Five profitable hypothetical books at 10K, 100K, 500K, 2M and 6M USDC used explicit APY overrides to exercise allocation paths. Each quote matched the prepared action list and each plan completed without failures in separate local transactions.
+Five additional actual-rate replays removed the APY overrides. Four required a local economic-rejection override to measure otherwise-blocked execution; only the 100K actual-rate case originally passed the economic gate. These conditional runs are NOT profitability approvals.
+70 additional local transactions cover five deposit/full-recall cycles on each of seven adapters. These include first and repeated deposits; the tier plans also exercise partial withdrawals. This is finite coverage at one block, not a worst-case gas guarantee.
+The exact illustrative 500K Aave/Venus -> Morpho/Euler/Fluid case is covered by a mocked-adapter integration test: five operations, one preparation plus three execution transactions. A 40% cap override is explicit because 200K/500K exceeds the ordinary three-adapter ~36.7% cap. The real-protocol 500K fork uses a different starting book and has seven operations; do not confuse the two.
+
+ACCOUNTING
+Gross transaction gas = adapter measurements + strategy overhead + separate finalization + intrinsic/calldata. Adapter gas uses the strategy measurement boundaries. Finalization is identified from matching compiled program counters and subtracted from the last execution step. Intrinsic/calldata is 21,612 per tested upkeep wrapper. Receipt gas is gross less refunds; estimates conservatively do not credit refunds.
+L2 gas is multiplied by pinned L2 price 20,118,000 wei. ETH/USD = 2505.9; USDC/USD = 0.99990035. Poster fees are added once using the existing model (164-byte allowance). The EVM fork does not execute native ArbOS poster accounting. Therefore these USDC figures are measured EVM gas priced with pinned inputs plus MODELED poster fees, not live total-fee receipts. Native Arbitrum reconciliation remains a deployment validation item.
+
+CANDIDATE CONFIGURATION (NOT LIVE)
+{
+  "prepareGas": 2300000,
+  "stepGas": 1700000,
+  "finalizeGas": 600000,
+  "defaultDepositGas": 2000000,
+  "defaultWithdrawGas": 3000000,
+  "intrinsicGas": 21612,
+  "calldataBytes": 164,
+  "marginBps": 5000,
+  "maxPriceAge": 7200,
+  "usdcMaxPriceAge": 90000,
+  "sequencerGrace": 3600,
+  "fallbackUSDC": "100000000"
+}
+Path overhead: {"preparation": 2300000, "withdrawalStep": 1450000, "depositStep": 1500000, "mixedStep": 1700000, "finalization": 600000}
+
+Operation | measured deposit maximum -> default | measured withdrawal maximum -> default
+aaveAdapter | 329,866 -> 330,000 | 168,911 -> 170,000
+morphoAdapter | 1,856,099 -> 1,860,000 | 2,035,497 -> 2,040,000
+cometAdapter | 282,915 -> 290,000 | 156,959 -> 160,000
+eulerAdapter | 544,224 -> 550,000 | 233,196 -> 240,000
+dolomiteAdapter | 780,450 -> 790,000 | 387,270 -> 390,000
+fluidAdapter | 218,544 -> 220,000 | 136,209 -> 140,000
+venusAdapter | 411,841 -> 420,000 | 238,322 -> 240,000
+
+Current ten-scenario overhead maxima: preparation 1,914,239; withdrawal step 1,416,791; mixed step 1,383,913; deposit step 1,391,004; finalization 431,827.
+Current ten-scenario component maxima plus earlier measured preparation/mixed-step/finalization backstops (2,238,560 / 1,676,009 / 590,192). Rounded allowances, not a separate percentage margin. Older backstops are retained conservatively until corresponding revised-code paths are demonstrated cheaper.
+The 5.8M configured / 8.595M measured overhead figures refer to the earlier implementation and plan. They must not be reused as measurements of the revised planner.
+
+EMA-FIRST PROOF
+Venus after repeated operations: EMA 292,794, four reliable observations. The same local deposit quote uses 292,794 rather than the 420,000 default. Clearing only evidence metadata increases priced gas by exactly 127,206. Quote after margin: 0.358892 USDC using EMA versus 0.368513 with cold-start default.
+
+PROFITABLE HYPOTHETICAL BOOKS
+TVL | operations / transactions | candidate USDC before / after 50% | measured-net-priced USDC before / after 50% | gross / receipt / refund gas
+10,000 | 4 / 3 | 0.430527 / 0.645791 | 0.307847 / 0.461771 | 6,286,524 / 6,091,624 / 194,900
+100,000 | 5 / 4 | 0.527650 / 0.791475 | 0.397641 / 0.596462 | 8,150,768 / 7,867,868 / 282,900
+500,000 | 7 / 5 | 0.639899 / 0.959849 | 0.510796 / 0.766194 | 10,548,437 / 10,107,437 / 441,000
+2,000,000 | 6 / 4 | 0.547818 / 0.821727 | 0.430053 / 0.645080 | 8,851,317 / 8,510,717 / 340,600
+6,000,000 | 5 / 4 | 0.551851 / 0.827777 | 0.416158 / 0.624237 | 8,568,129 / 8,235,129 / 333,000
+
+Per-plan details (gas values exclude refunds):
+TVL 10,000
+  Withdraw 2,500.000000 USDC: aave
+  Withdraw 5,500.000000 USDC: euler
+  Withdraw 1,900.000000 USDC: fluid
+  Deposit 5,500.000000 USDC: morpho
+  Transaction 0: preparation overhead measured 1,624,659 / candidate 2,300,000; finalization 0 / 0; intrinsic 21,612; gross 1,646,271; refund 2,800
+  Transaction 1: withdrawalStep overhead measured 1,092,954 / candidate 1,450,000; finalization 0 / 0; intrinsic 21,612; gross 1,465,274; refund 53,900
+    aave withdrawal measured 142,958 / cold default 170,000
+    euler withdrawal measured 207,750 / cold default 240,000
+  Transaction 2: mixedStep overhead measured 1,033,860 / candidate 1,700,000; finalization 183,614 / 600,000; intrinsic 21,612; gross 3,174,979; refund 138,200
+    fluid withdrawal measured 117,094 / cold default 140,000
+    morpho deposit measured 1,818,799 / cold default 1,860,000
+TVL 100,000
+  Withdraw 7,570.877355 USDC: euler
+  Withdraw 25,000.000000 USDC: fluid
+  Withdraw 4,936.950629 USDC: venus
+  Deposit 51,054.176674 USDC: morpho
+  Deposit 23,945.823325 USDC: aave
+  Transaction 0: preparation overhead measured 1,728,216 / candidate 2,300,000; finalization 0 / 0; intrinsic 21,612; gross 1,749,828; refund 2,800
+  Transaction 1: withdrawalStep overhead measured 1,119,937 / candidate 1,450,000; finalization 0 / 0; intrinsic 21,612; gross 1,466,396; refund 79,400
+    euler withdrawal measured 212,550 / cold default 240,000
+    fluid withdrawal measured 112,297 / cold default 140,000
+  Transaction 2: mixedStep overhead measured 1,042,167 / candidate 1,700,000; finalization 0 / 0; intrinsic 21,612; gross 3,099,285; refund 130,600
+    venus withdrawal measured 216,707 / cold default 240,000
+    morpho deposit measured 1,818,799 / cold default 1,860,000
+  Transaction 3: depositStep overhead measured 1,368,547 / candidate 1,500,000; finalization 184,430 / 600,000; intrinsic 21,612; gross 1,835,259; refund 70,100
+    aave deposit measured 260,670 / cold default 330,000
+TVL 500,000
+  Withdraw 183,350.000000 USDC: comet
+  Withdraw 7,570.877355 USDC: euler
+  Withdraw 125,000.000000 USDC: fluid
+  Withdraw 4,936.950629 USDC: venus
+  Deposit 171,507.979200 USDC: morpho
+  Deposit 164,066.702528 USDC: dolomite
+  Deposit 39,425.318271 USDC: aave
+  Transaction 0: preparation overhead measured 1,914,239 / candidate 2,300,000; finalization 0 / 0; intrinsic 21,612; gross 1,935,851; refund 2,800
+  Transaction 1: withdrawalStep overhead measured 1,196,239 / candidate 1,450,000; finalization 0 / 0; intrinsic 21,612; gross 1,561,670; refund 93,700
+    comet withdrawal measured 136,069 / cold default 160,000
+    euler withdrawal measured 207,750 / cold default 240,000
+  Transaction 2: withdrawalStep overhead measured 1,107,245 / candidate 1,450,000; finalization 0 / 0; intrinsic 21,612; gross 1,463,230; refund 61,400
+    fluid withdrawal measured 122,466 / cold default 140,000
+    venus withdrawal measured 211,907 / cold default 240,000
+  Transaction 3: depositStep overhead measured 1,087,787 / candidate 1,500,000; finalization 0 / 0; intrinsic 21,612; gross 3,689,158; refund 213,000
+    morpho deposit measured 1,823,599 / cold default 1,860,000
+    dolomite deposit measured 756,160 / cold default 790,000
+  Transaction 4: depositStep overhead measured 1,391,004 / candidate 1,500,000; finalization 225,242 / 600,000; intrinsic 21,612; gross 1,898,528; refund 70,100
+    aave deposit measured 260,670 / cold default 330,000
+TVL 2,000,000
+  Withdraw 43,719.806764 USDC: aave
+  Withdraw 550,000.000000 USDC: comet
+  Withdraw 7,570.877355 USDC: euler
+  Withdraw 4,936.950629 USDC: venus
+  Deposit 374,518.967888 USDC: dolomite
+  Deposit 279,355.928123 USDC: morpho
+  Transaction 0: preparation overhead measured 1,854,747 / candidate 2,300,000; finalization 0 / 0; intrinsic 21,612; gross 1,876,359; refund 2,800
+  Transaction 1: withdrawalStep overhead measured 1,194,872 / candidate 1,450,000; finalization 0 / 0; intrinsic 21,612; gross 1,490,711; refund 53,000
+    aave withdrawal measured 142,958 / cold default 170,000
+    comet withdrawal measured 131,269 / cold default 160,000
+  Transaction 2: withdrawalStep overhead measured 1,118,842 / candidate 1,450,000; finalization 0 / 0; intrinsic 21,612; gross 1,565,158; refund 71,800
+    euler withdrawal measured 212,797 / cold default 240,000
+    venus withdrawal measured 211,907 / cold default 240,000
+  Transaction 3: depositStep overhead measured 1,105,625 / candidate 1,500,000; finalization 212,093 / 600,000; intrinsic 21,612; gross 3,919,089; refund 213,000
+    dolomite deposit measured 760,960 / cold default 790,000
+    morpho deposit measured 1,818,799 / cold default 1,860,000
+TVL 6,000,000
+  Withdraw 717,129.674471 USDC: comet
+  Withdraw 7,570.877355 USDC: euler
+  Withdraw 4,936.950629 USDC: venus
+  Deposit 374,518.967888 USDC: dolomite
+  Deposit 279,355.928123 USDC: morpho
+  Transaction 0: preparation overhead measured 1,790,484 / candidate 2,300,000; finalization 0 / 0; intrinsic 21,612; gross 1,812,096; refund 2,800
+  Transaction 1: withdrawalStep overhead measured 1,162,960 / candidate 1,450,000; finalization 0 / 0; intrinsic 21,612; gross 1,528,391; refund 88,900
+    comet withdrawal measured 136,069 / cold default 160,000
+    euler withdrawal measured 207,750 / cold default 240,000
+  Transaction 2: mixedStep overhead measured 1,102,683 / candidate 1,700,000; finalization 0 / 0; intrinsic 21,612; gross 2,097,152; refund 136,200
+    venus withdrawal measured 216,707 / cold default 240,000
+    dolomite deposit measured 756,150 / cold default 790,000
+  Transaction 3: depositStep overhead measured 1,018,448 / candidate 1,500,000; finalization 266,831 / 600,000; intrinsic 21,612; gross 3,130,490; refund 105,100
+    morpho deposit measured 1,823,599 / cold default 1,860,000
+
+ACTUAL-RATE CONDITIONAL BENCHMARKS
+TVL | operations / transactions | candidate USDC before / after 50% | measured-net-priced USDC before / after 50% | gross / receipt / refund gas
+10,000 | 2 / 2 | 0.237608 / 0.356412 | 0.185120 / 0.277680 | 3,708,498 / 3,662,198 / 46,300
+100,000 | 4 / 3 | 0.351369 / 0.527054 | 0.288273 / 0.432410 | 5,860,391 / 5,703,391 / 157,000
+500,000 | 3 / 3 | 0.320110 / 0.480165 | 0.268129 / 0.402194 | 5,395,552 / 5,303,852 / 91,700
+2,000,000 | 3 / 3 | 0.320110 / 0.480165 | 0.271423 / 0.407135 | 5,456,091 / 5,369,191 / 86,900
+6,000,000 | 1 / 2 | 0.237103 / 0.355655 | 0.194068 / 0.291102 | 3,916,174 / 3,839,674 / 76,500
+
+Per-plan details (gas values exclude refunds):
+TVL 10,000
+  Withdraw 2,500.000000 USDC: aave
+  Withdraw 1,900.000000 USDC: fluid
+  Transaction 0: preparation overhead measured 1,672,749 / candidate 2,300,000; finalization 0 / 0; intrinsic 21,612; gross 1,694,361; refund 2,800
+  Transaction 1: withdrawalStep overhead measured 1,357,729 / candidate 1,450,000; finalization 379,544 / 600,000; intrinsic 21,612; gross 2,014,137; refund 43,500
+    aave withdrawal measured 142,958 / cold default 170,000
+    fluid withdrawal measured 112,294 / cold default 140,000
+TVL 100,000
+  Withdraw 25,000.000000 USDC: aave
+  Withdraw 25,000.000000 USDC: fluid
+  Withdraw 4,936.950629 USDC: venus
+  Deposit 45,166.620765 USDC: comet
+  Transaction 0: preparation overhead measured 1,860,333 / candidate 2,300,000; finalization 0 / 0; intrinsic 21,612; gross 1,881,945; refund 2,800
+  Transaction 1: withdrawalStep overhead measured 1,410,473 / candidate 1,450,000; finalization 0 / 0; intrinsic 21,612; gross 1,687,340; refund 43,500
+    aave withdrawal measured 142,958 / cold default 170,000
+    fluid withdrawal measured 112,297 / cold default 140,000
+  Transaction 2: mixedStep overhead measured 1,383,913 / candidate 1,700,000; finalization 420,259 / 600,000; intrinsic 21,612; gross 2,291,106; refund 110,700
+    venus withdrawal measured 216,707 / cold default 240,000
+    comet deposit measured 248,615 / cold default 290,000
+TVL 500,000
+  Withdraw 125,000.000000 USDC: aave
+  Withdraw 27,783.872503 USDC: comet
+  Withdraw 125,000.000000 USDC: fluid
+  Transaction 0: preparation overhead measured 1,812,943 / candidate 2,300,000; finalization 0 / 0; intrinsic 21,612; gross 1,834,555; refund 2,800
+  Transaction 1: withdrawalStep overhead measured 1,399,009 / candidate 1,450,000; finalization 0 / 0; intrinsic 21,612; gross 1,694,848; refund 53,000
+    aave withdrawal measured 142,958 / cold default 170,000
+    comet withdrawal measured 131,269 / cold default 160,000
+  Transaction 2: withdrawalStep overhead measured 1,296,047 / candidate 1,450,000; finalization 426,024 / 600,000; intrinsic 21,612; gross 1,866,149; refund 35,900
+    fluid withdrawal measured 122,466 / cold default 140,000
+TVL 2,000,000
+  Withdraw 92,168.674699 USDC: aave
+  Withdraw 72,774.022921 USDC: comet
+  Withdraw 500,000.000000 USDC: fluid
+  Transaction 0: preparation overhead measured 1,832,725 / candidate 2,300,000; finalization 0 / 0; intrinsic 21,612; gross 1,854,337; refund 2,800
+  Transaction 1: withdrawalStep overhead measured 1,416,791 / candidate 1,450,000; finalization 0 / 0; intrinsic 21,612; gross 1,712,630; refund 48,200
+    aave withdrawal measured 142,958 / cold default 170,000
+    comet withdrawal measured 131,269 / cold default 160,000
+  Transaction 2: withdrawalStep overhead measured 1,315,848 / candidate 1,450,000; finalization 429,198 / 600,000; intrinsic 21,612; gross 1,889,124; refund 35,900
+    fluid withdrawal measured 122,466 / cold default 140,000
+TVL 6,000,000
+  Withdraw 246,102.434988 USDC: comet
+  Transaction 0: preparation overhead measured 1,773,741 / candidate 2,300,000; finalization 0 / 0; intrinsic 21,612; gross 1,795,353; refund 2,800
+  Transaction 1: withdrawalStep overhead measured 1,413,668 / candidate 1,450,000; finalization 431,827 / 600,000; intrinsic 21,612; gross 2,120,821; refund 73,700
+    comet withdrawal measured 136,069 / cold default 160,000
+    fluid withdrawal measured 117,645 / cold default 140,000
+
+TESTS AND DEPLOYMENT SEPARATION
+239 targeted test executions passed; 80 scoring regression test executions passed. The five-tier fork test passed. Storage comparison found no changes to existing slots/offsets/types; evidence mappings append at slots 85 and 86. All checked runtime sizes remain below 24,576 bytes.
+Solidity changes: estimator EMA selection/evidence and path overhead; evidence storage and recording; top-N rebalance targeting and one-adapter static ceiling; canonical liquidity clamping; selected-target invalidation; Morpho APY snapshot optimization.
+Configuration changes: candidate-calibration.json contains proposed defaults, path overhead, intrinsic/calldata, price ages, fallback and margin. Values are local only. All addresses in this evidence directory are simulation addresses unless explicitly labeled historical deployed addresses.
+Deployment steps: review source/calibration, deploy matching replacement modules/strategy/estimator (the active estimator pointer is write-once), and a replacement Morpho adapter if this optimization is included. Rehearse migration and generate current-state Safe transactions only after selecting the reviewed release. Then execute the approved migration and repoint keeper/indexing configuration. Preserve no settings implicitly: review an explicit configuration manifest.
+Before live approval: independent review; native Arbitrum fee reconciliation; migration rehearsal against current balances; review conservative overhead backstops and per-direction/path EMA limitations. A sampled EMA can still underpredict an unseen expensive execution path; count/freshness checks and the 50% margin are not a mathematical upper bound.
+No deployment, Safe transaction execution, AWS rollout or live configuration change was performed for this validation.

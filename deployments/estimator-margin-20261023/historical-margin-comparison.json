@@ -1,0 +1,40 @@
+{
+  "scope": "Historical pre-reserve code; arithmetic comparison only, not current-code calibration",
+  "rows": [
+    {
+      "tvlUSDC": 10000,
+      "candidateBeforeMargin": 0.430527,
+      "candidate30Percent": 0.559685,
+      "measuredGrossPriced": 0.317674,
+      "measuredNetPriced": 0.307847
+    },
+    {
+      "tvlUSDC": 100000,
+      "candidateBeforeMargin": 0.52765,
+      "candidate30Percent": 0.685945,
+      "measuredGrossPriced": 0.411905,
+      "measuredNetPriced": 0.397641
+    },
+    {
+      "tvlUSDC": 500000,
+      "candidateBeforeMargin": 0.639899,
+      "candidate30Percent": 0.831869,
+      "measuredGrossPriced": 0.53303,
+      "measuredNetPriced": 0.510796
+    },
+    {
+      "tvlUSDC": 2000000,
+      "candidateBeforeMargin": 0.547818,
+      "candidate30Percent": 0.712163,
+      "measuredGrossPriced": 0.447226,
+      "measuredNetPriced": 0.430053
+    },
+    {
+      "tvlUSDC": 6000000,
+      "candidateBeforeMargin": 0.551851,
+      "candidate30Percent": 0.717406,
+      "measuredGrossPriced": 0.432948,
+      "measuredNetPriced": 0.416158
+    }
+  ]
+}

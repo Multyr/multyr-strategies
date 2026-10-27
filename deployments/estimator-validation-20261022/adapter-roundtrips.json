@@ -1,0 +1,468 @@
+{
+  "block": 516950276,
+  "scope": "Cold separate local EVM transactions; 1,000 USDC first and repeated deposits/full recalls, real protocol code and rate reads; gas observations exclude outer strategy and intrinsic costs",
+  "adapters": [
+    {
+      "adapter": "aaveAdapter",
+      "address": "0x22Fa441d14C7b8D8b9E9F66D4c351F47c481dadB",
+      "cycles": [
+        [
+          {
+            "deposit": true,
+            "gasUsed": "329866",
+            "receiptGas": 395807
+          },
+          {
+            "deposit": false,
+            "gasUsed": "168911",
+            "receiptGas": 295289
+          }
+        ],
+        [
+          {
+            "deposit": true,
+            "gasUsed": "280150",
+            "receiptGas": 312934
+          },
+          {
+            "deposit": false,
+            "gasUsed": "159378",
+            "receiptGas": 252520
+          }
+        ],
+        [
+          {
+            "deposit": true,
+            "gasUsed": "289683",
+            "receiptGas": 322467
+          },
+          {
+            "deposit": false,
+            "gasUsed": "159378",
+            "receiptGas": 252520
+          }
+        ],
+        [
+          {
+            "deposit": true,
+            "gasUsed": "280150",
+            "receiptGas": 312934
+          },
+          {
+            "deposit": false,
+            "gasUsed": "159378",
+            "receiptGas": 252520
+          }
+        ],
+        [
+          {
+            "deposit": true,
+            "gasUsed": "280150",
+            "receiptGas": 312934
+          },
+          {
+            "deposit": false,
+            "gasUsed": "168911",
+            "receiptGas": 262513
+          }
+        ]
+      ]
+    },
+    {
+      "adapter": "morphoAdapter",
+      "address": "0x68F1Ccc020c543295B717D8fCf4070d58f77F13B",
+      "cycles": [
+        [
+          {
+            "deposit": true,
+            "gasUsed": "1856099",
+            "receiptGas": 1882240
+          },
+          {
+            "deposit": false,
+            "gasUsed": "1994044",
+            "receiptGas": 2104229
+          }
+        ],
+        [
+          {
+            "deposit": true,
+            "gasUsed": "813984",
+            "receiptGas": 826373
+          },
+          {
+            "deposit": false,
+            "gasUsed": "2035497",
+            "receiptGas": 2108106
+          }
+        ],
+        [
+          {
+            "deposit": true,
+            "gasUsed": "797475",
+            "receiptGas": 810359
+          },
+          {
+            "deposit": false,
+            "gasUsed": "1816555",
+            "receiptGas": 1874764
+          }
+        ],
+        [
+          {
+            "deposit": true,
+            "gasUsed": "845943",
+            "receiptGas": 858827
+          },
+          {
+            "deposit": false,
+            "gasUsed": "1994044",
+            "receiptGas": 2066653
+          }
+        ],
+        [
+          {
+            "deposit": true,
+            "gasUsed": "816195",
+            "receiptGas": 829079
+          },
+          {
+            "deposit": false,
+            "gasUsed": "1910344",
+            "receiptGas": 1968553
+          }
+        ]
+      ]
+    },
+    {
+      "adapter": "cometAdapter",
+      "address": "0xa2781F0226C1A4c0FCA9e61C02AdbF52FF11b0e9",
+      "cycles": [
+        [
+          {
+            "deposit": true,
+            "gasUsed": "282915",
+            "receiptGas": 332925
+          },
+          {
+            "deposit": false,
+            "gasUsed": "156959",
+            "receiptGas": 235340
+          }
+        ],
+        [
+          {
+            "deposit": true,
+            "gasUsed": "255507",
+            "receiptGas": 284473
+          },
+          {
+            "deposit": false,
+            "gasUsed": "156959",
+            "receiptGas": 203812
+          }
+        ],
+        [
+          {
+            "deposit": true,
+            "gasUsed": "255507",
+            "receiptGas": 284473
+          },
+          {
+            "deposit": false,
+            "gasUsed": "144444",
+            "receiptGas": 194274
+          }
+        ],
+        [
+          {
+            "deposit": true,
+            "gasUsed": "255507",
+            "receiptGas": 284473
+          },
+          {
+            "deposit": false,
+            "gasUsed": "156959",
+            "receiptGas": 206052
+          }
+        ],
+        [
+          {
+            "deposit": true,
+            "gasUsed": "255507",
+            "receiptGas": 284473
+          },
+          {
+            "deposit": false,
+            "gasUsed": "144444",
+            "receiptGas": 194274
+          }
+        ]
+      ]
+    },
+    {
+      "adapter": "eulerAdapter",
+      "address": "0xaAf2d7e9a56738eF19aD2Dbe27BBbDD08b300E00",
+      "cycles": [
+        [
+          {
+            "deposit": true,
+            "gasUsed": "544224",
+            "receiptGas": 621647
+          },
+          {
+            "deposit": false,
+            "gasUsed": "233196",
+            "receiptGas": 360327
+          }
+        ],
+        [
+          {
+            "deposit": true,
+            "gasUsed": "507888",
+            "receiptGas": 552154
+          },
+          {
+            "deposit": false,
+            "gasUsed": "219876",
+            "receiptGas": 314742
+          }
+        ],
+        [
+          {
+            "deposit": true,
+            "gasUsed": "508620",
+            "receiptGas": 552886
+          },
+          {
+            "deposit": false,
+            "gasUsed": "219876",
+            "receiptGas": 314742
+          }
+        ],
+        [
+          {
+            "deposit": true,
+            "gasUsed": "489988",
+            "receiptGas": 534254
+          },
+          {
+            "deposit": false,
+            "gasUsed": "219876",
+            "receiptGas": 314742
+          }
+        ],
+        [
+          {
+            "deposit": true,
+            "gasUsed": "489988",
+            "receiptGas": 534254
+          },
+          {
+            "deposit": false,
+            "gasUsed": "232419",
+            "receiptGas": 331328
+          }
+        ]
+      ]
+    },
+    {
+      "adapter": "dolomiteAdapter",
+      "address": "0x9D0d40F7F62623dfE5F3FDCA04f63ac396B496FA",
+      "cycles": [
+        [
+          {
+            "deposit": true,
+            "gasUsed": "780450",
+            "receiptGas": 800991
+          },
+          {
+            "deposit": false,
+            "gasUsed": "387270",
+            "receiptGas": 509520
+          }
+        ],
+        [
+          {
+            "deposit": true,
+            "gasUsed": "763372",
+            "receiptGas": 750756
+          },
+          {
+            "deposit": false,
+            "gasUsed": "367024",
+            "receiptGas": 456388
+          }
+        ],
+        [
+          {
+            "deposit": true,
+            "gasUsed": "730937",
+            "receiptGas": 718321
+          },
+          {
+            "deposit": false,
+            "gasUsed": "367024",
+            "receiptGas": 456388
+          }
+        ],
+        [
+          {
+            "deposit": true,
+            "gasUsed": "730937",
+            "receiptGas": 718321
+          },
+          {
+            "deposit": false,
+            "gasUsed": "387200",
+            "receiptGas": 476654
+          }
+        ],
+        [
+          {
+            "deposit": true,
+            "gasUsed": "730957",
+            "receiptGas": 718341
+          },
+          {
+            "deposit": false,
+            "gasUsed": "367154",
+            "receiptGas": 456558
+          }
+        ]
+      ]
+    },
+    {
+      "adapter": "fluidAdapter",
+      "address": "0x3CF80a75C5C5908272Bc61BF2251fb97b3c8c29F",
+      "cycles": [
+        [
+          {
+            "deposit": true,
+            "gasUsed": "218544",
+            "receiptGas": 281428
+          },
+          {
+            "deposit": false,
+            "gasUsed": "136209",
+            "receiptGas": 225831
+          }
+        ],
+        [
+          {
+            "deposit": true,
+            "gasUsed": "218536",
+            "receiptGas": 254896
+          },
+          {
+            "deposit": false,
+            "gasUsed": "136193",
+            "receiptGas": 193039
+          }
+        ],
+        [
+          {
+            "deposit": true,
+            "gasUsed": "218536",
+            "receiptGas": 254896
+          },
+          {
+            "deposit": false,
+            "gasUsed": "136209",
+            "receiptGas": 190255
+          }
+        ],
+        [
+          {
+            "deposit": true,
+            "gasUsed": "218536",
+            "receiptGas": 254896
+          },
+          {
+            "deposit": false,
+            "gasUsed": "136193",
+            "receiptGas": 193039
+          }
+        ],
+        [
+          {
+            "deposit": true,
+            "gasUsed": "218536",
+            "receiptGas": 254896
+          },
+          {
+            "deposit": false,
+            "gasUsed": "136193",
+            "receiptGas": 193039
+          }
+        ]
+      ]
+    },
+    {
+      "adapter": "venusAdapter",
+      "address": "0x4E9646e4eDCC576225E81aDdB447E1FfC0B8EF59",
+      "cycles": [
+        [
+          {
+            "deposit": true,
+            "gasUsed": "411841",
+            "receiptGas": 467382
+          },
+          {
+            "deposit": false,
+            "gasUsed": "238322",
+            "receiptGas": 349209
+          }
+        ],
+        [
+          {
+            "deposit": true,
+            "gasUsed": "309456",
+            "receiptGas": 338945
+          },
+          {
+            "deposit": false,
+            "gasUsed": "187080",
+            "receiptGas": 264570
+          }
+        ],
+        [
+          {
+            "deposit": true,
+            "gasUsed": "275314",
+            "receiptGas": 305298
+          },
+          {
+            "deposit": false,
+            "gasUsed": "187080",
+            "receiptGas": 262391
+          }
+        ],
+        [
+          {
+            "deposit": true,
+            "gasUsed": "275314",
+            "receiptGas": 305298
+          },
+          {
+            "deposit": false,
+            "gasUsed": "221222",
+            "receiptGas": 299333
+          }
+        ],
+        [
+          {
+            "deposit": true,
+            "gasUsed": "275314",
+            "receiptGas": 305298
+          },
+          {
+            "deposit": false,
+            "gasUsed": "187080",
+            "receiptGas": 265191
+          }
+        ]
+      ]
+    }
+  ]
+}

@@ -1,0 +1,109 @@
+{
+  "updatedAt": "2026-10-26T16:35:34.793101+00:00",
+  "clockStarted": false,
+  "releaseFrozen": false,
+  "capitalAuthorization": {
+    "perWalletUSDC": 2,
+    "totalUSDC": 8,
+    "gas": "As much as needed, per user"
+  },
+  "depositChecks": [
+    {
+      "wallet": "0x908756f36954f2853134259B8846c49F90E84ECe",
+      "hash": "0x681ea2629aa99dccf1a5062ca932aedd24b9f6d8290d67028318db1cdae30d50",
+      "assetsDebit": "2000000",
+      "sharesReceived": "1989514",
+      "feeAssets": "5000",
+      "feeShares": "4986",
+      "matchesApprovedAmount": true,
+      "feeCorrect": true,
+      "mintedSupplyDelta": "1994500"
+    },
+    {
+      "wallet": "0xCca806D42FA303c4ef80AD9B55746996Ee3C37AB",
+      "hash": "0xdb706639edaa94b861abebe01ca47ade5321d3d4f57bbdd0b86a3e8ec92dbac6",
+      "assetsDebit": "2000000",
+      "sharesReceived": "1989514",
+      "feeAssets": "5000",
+      "feeShares": "4986",
+      "matchesApprovedAmount": true,
+      "feeCorrect": true,
+      "mintedSupplyDelta": "1994500"
+    },
+    {
+      "wallet": "0x4c0c87A82EBaf883C26fC08d002686A0a5CbbD95",
+      "hash": "0xa1e78b64f6a45f41bea2bb298eaec0300187f82a95d9abbae032341e994bed66",
+      "assetsDebit": "2000000",
+      "sharesReceived": "1989514",
+      "feeAssets": "5000",
+      "feeShares": "4986",
+      "matchesApprovedAmount": true,
+      "feeCorrect": true,
+      "mintedSupplyDelta": "1994500"
+    },
+    {
+      "wallet": "0x1136032EDFf7f62DF91456c75d5347125d47DCCc",
+      "hash": "0x9ffb6957a5075db47dbed5b76024808dd51a7e263e983ee9c1a3a533403df0c4",
+      "assetsDebit": "2000000",
+      "sharesReceived": "1989514",
+      "feeAssets": "5000",
+      "feeShares": "4986",
+      "matchesApprovedAmount": true,
+      "feeCorrect": true,
+      "mintedSupplyDelta": "1994500"
+    }
+  ],
+  "forceWithdrawal": {
+    "initialAttempt": "FAIL",
+    "initialHash": "0x5eaaebab06b8abc1045bd644c9b8a5c21a7b3a395a388d0bf49dce8940d11fc9",
+    "retryStatus": "success",
+    "retryHash": "0xf551af8dff44700cd0d9badc227d1c95b3472570208d9bda65e7dc31f414f6fd",
+    "retryGasLimit": 3000000,
+    "interpretation": "Same-block replay succeeds with higher gas. Insufficient original transaction gas is supported; detailed execution trace unavailable. No contract/config changes made.",
+    "assetsReceived": "250000"
+  },
+  "roleCoverage": {
+    "reads": 95,
+    "deployerPositiveMemberships": [],
+    "limitation": "Named candidate accounts only; not exhaustive historical membership enumeration"
+  },
+  "aws": {
+    "running": 1,
+    "desired": 1,
+    "taskDefinition": "arn:aws:ecs:eu-north-1:820140266807:task-definition/multyr-keeper-simulation:6"
+  },
+  "withdrawalUnlocks": [
+    {
+      "wallet": "0x908756f36954f2853134259B8846c49F90E84ECe",
+      "depositTimestamp": "1793032117",
+      "earliestUnlockUTC": "2026-10-27T16:28:37.000Z",
+      "condition": "Assumes no later deposit resets lastDepositTs and unchanged 24h lock"
+    },
+    {
+      "wallet": "0xCca806D42FA303c4ef80AD9B55746996Ee3C37AB",
+      "depositTimestamp": "1793032130",
+      "earliestUnlockUTC": "2026-10-27T16:28:50.000Z",
+      "condition": "Assumes no later deposit resets lastDepositTs and unchanged 24h lock"
+    },
+    {
+      "wallet": "0x4c0c87A82EBaf883C26fC08d002686A0a5CbbD95",
+      "depositTimestamp": "1793032143",
+      "earliestUnlockUTC": "2026-10-27T16:29:03.000Z",
+      "condition": "Assumes no later deposit resets lastDepositTs and unchanged 24h lock"
+    },
+    {
+      "wallet": "0x1136032EDFf7f62DF91456c75d5347125d47DCCc",
+      "depositTimestamp": "1793032156",
+      "earliestUnlockUTC": "2026-10-27T16:29:16.000Z",
+      "condition": "Assumes no later deposit resets lastDepositTs and unchanged 24h lock"
+    }
+  ],
+  "acceptance": "PENDING FULL RECONCILIATION / FROZEN CANDIDATE / MULTYR REVIEW",
+  "remaining": [
+    "Queued and instant withdrawals blocked by 24h deposit lock until 27 October 2026 21:58:37\u201321:59:16 IST, assuming unchanged settings/no later deposits.",
+    "Complete epoch close/funding/claim and autonomous fee distribution not evidenced.",
+    "Partial/full strategy undeploy and independent external-position reconciliation remain.",
+    "Privileged Safe execution and unauthorized mainnet test remain; read-only simulations are recorded separately.",
+    "Complete bytecode/source/module matching, full role enumeration and final candidate freeze/review remain."
+  ]
+}
