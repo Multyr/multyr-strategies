@@ -1,9 +1,0 @@
-Yes, I’m comfortable with 30% for the calibrated profile. I reran the five TVL scenarios using the revised reserve/planner code, and all five completed with the quoted action lists. The final 30% quotes were approximately 57–83% above measured costs before refunds, because the underlying allowances remain conservative.
-
-I found one component to correct: deposit-step overhead measured 1,577,015 gas against 1,500,000 configured, so I raised that allowance to 1,600,000 rather than relying on overestimates elsewhere. With that correction, the 500K case quotes 0.573531 USDC before margin and 0.745591 with 30%, versus 0.474014 measured before refunds using the same pricing inputs.
-
-The native Arbitrum L1-envelope check also passed for both keeper operations at the pinned and recent blocks. These are fork measurements plus separate native fee estimates, not live replacement-strategy receipts. Unseen execution paths remain possible, so pre-submit simulation and estimate-versus-actual monitoring stay in place; I don’t see a measured reason to keep 50%.
-
-I have set marginBps=3000 in the candidate release configuration and progressed the deployment checks. No live contracts or settings have changed yet.
-
-The fresh-state migration rehearsal also passed at block 517327742, including old-fund recall and the drain guard. Live deployment and Safe execution remain separate release steps.

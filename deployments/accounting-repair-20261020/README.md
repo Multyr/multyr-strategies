@@ -1,6 +1,8 @@
 # Retired Venus accounting repair — 20 October 2026
 
-Status: original three-call batch superseded after reproducing ADAPTER_NOT_DRAINED at block 516655973. Safe execution remains pending.
+Historical repair record for the retired strategy. The instructions and pending status below describe the 20 October preparation snapshot, not the current deployment. Do not execute these old batches as part of the current pre-burn handoff.
+
+At preparation: the original three-call batch was superseded after reproducing ADAPTER_NOT_DRAINED at block 516655973.
 
 Use only `02-reconcile-retired-venus-v2.safe.json`. It replaces the original batch; it is not a second step to execute after it. The original file is retained as evidence. No additional seed is needed.
 

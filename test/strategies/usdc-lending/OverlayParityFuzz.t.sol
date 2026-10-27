@@ -61,7 +61,7 @@ contract OverlayParityFuzz_Test is UsdcMultiLendingVaultTestBase {
 
         vm.prank(admin);
         StrategySettingsModule(address(vault)).setRebalanceParams(
-            7, 2, 50, 21600, 80,
+            10, 2, 50, 21600, 80,
             0,    // adapterMaxExposureBps=0 -- no global ceiling by default
             3400
         );

@@ -8,7 +8,7 @@ contract StrictExposureCapTest is UsdcMultiLendingVaultTestBase {
         vm.prank(admin);
         StrategySettingsModule(address(vault)).setRebalanceParams(7,2,50,86400,80,0,500);
         assertEq(StrategyScoringModule(address(vault)).effectiveMaxAdaptersPerAllocation(), 1);
-        assertLe(StrategyScoringModule(address(vault)).effectiveAbsCapBps(address(adapter1)), 10000);
+        assertEq(StrategyScoringModule(address(vault)).effectiveAbsCapBps(address(adapter1)), 9000, "uncached liquidity still limits the single-adapter tier");
     }
     function testSingleEligibleAdapterMayDeployFullSmallVaultWithoutReserveOrCeiling() public {
         _addAndEnableAdapter(adapter1);
@@ -30,7 +30,7 @@ contract StrictExposureCapTest is UsdcMultiLendingVaultTestBase {
         StrategySettingsModule(address(vault)).setAdapterAbsCapOverride(address(a), 8000);
         vm.stopPrank();
         assertEq(StrategyScoringModule(address(vault)).effectiveMaxAdaptersPerAllocation(), 1);
-        assertLe(StrategyScoringModule(address(vault)).effectiveAbsCapBps(address(a)), 2500);
+        assertEq(StrategyScoringModule(address(vault)).effectiveAbsCapBps(address(a)), 2500);
     }
     function testSafetyFallbackCannotDepositAboveGlobalCeiling() public {
         _addAndEnableAdapter(adapter1);

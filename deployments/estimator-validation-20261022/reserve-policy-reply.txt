@@ -1,7 +1,0 @@
-Understood. The destination is selected by composite score, not APY alone. I have aligned the local implementation so the below-25K tier selects one destination, with a configurable idle reserve set to 10% in the proposed configuration. Independent exposure and risk caps still apply.
-
-The planner calculates the ending Euler position first, subtracts any existing Euler balance, then funds only that deposit using idle USDC plus actual withdrawal proceeds while retaining the reserve. Disabled, flagged, quarantined and lower-ranked adapters with existing positions remain available for withdrawals. The estimator and profitability gate use that exact action list.
-
-For example, 20.55 USDC in Fluid plus 4.45 idle produces a 20.55 withdrawal and 22.50 Euler deposit, leaving 2.50 idle. With no existing idle, the Euler deposit would be 18.495 and the reserve 2.055. These are validated test examples, not a fresh mainnet balance read.
-
-All 53 targeted tests and 80 scoring regressions passed. The tests cover recall from excluded adapters, quote/plan agreement, reserve-preserving new deposits, buffer changes and rejection when gas makes the move uneconomic. Nothing has changed live. The earlier gas tables predate these changes, so final fork and native Arbitrum fee calibration must be refreshed before deployment approval.
