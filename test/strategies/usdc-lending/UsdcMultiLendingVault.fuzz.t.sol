@@ -531,7 +531,7 @@ contract UsdcMultiLendingVault_Fuzz_Parameters is UsdcMultiLendingVaultFuzzBase 
         uint16 rampBps
     ) public {
         maxAdapters = uint16(bound(maxAdapters, 2, 100));
-        minAdapters = uint16(bound(minAdapters, 2, maxAdapters));
+        minAdapters = 1; // Only the neutral deprecated value is supported.
         minMoveBps = uint16(bound(minMoveBps, 1, 5000));         // C-03: max 50%
         minSeconds = uint32(bound(minSeconds, 3600, 604800)); // range: 1h-7d
         driftBps = uint16(bound(driftBps, 1, 2000));             // C-03: max 20%

@@ -45,7 +45,7 @@ contract OverlayParityRegression_PoC is UsdcMultiLendingVaultTestBase {
         vm.prank(paramSetter);
         (bool ok, ) = address(vault).call(
             abi.encodeWithSignature("setRebalanceParams(uint16,uint16,uint16,uint32,uint16,uint16,uint16)",
-                uint16(3), uint16(2), uint16(50), uint32(21600), uint16(80),
+                uint16(3), uint16(1), uint16(50), uint32(21600), uint16(80),
                 uint16(3000),  // adapterMaxExposureBps = 30%
                 uint16(5000)   // newAdapterRampBps
             )

@@ -580,14 +580,7 @@ contract StrategyAllocCalcModule is StrategyStorageLayout {
     }
 
     function _effectiveMinSeed(uint256 tvl) internal view returns (uint256) {
-        uint256 staticSeed = minNewAdapterSeed;
-        uint256 dynamicSeed;
-        if (tvl < 250_000e6) dynamicSeed = 100e6;
-        else if (tvl < 1_000_000e6) dynamicSeed = 1_000e6;
-        else if (tvl < 5_000_000e6) dynamicSeed = 5_000e6;
-        else if (tvl < 25_000_000e6) dynamicSeed = 25_000e6;
-        else dynamicSeed = (tvl * 200) / 1e4;
-        return staticSeed > dynamicSeed ? staticSeed : dynamicSeed;
+        return StrategyConfigLib.effectiveMinNewAdapterSeed(tvl, minNewAdapterSeed);
     }
 
     // ── Liquidity cache helper ───────────────────────────────────────────────

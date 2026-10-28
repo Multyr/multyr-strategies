@@ -18,3 +18,11 @@ Scope: F0-F13 from the review of deployed tag a3f15a2. This is a new source cand
 This does not change contracts holding funds. A corrected lens can be deployed separately. Corrected strategy/modules and adapters require their own deployment/binding review and migration plan. Never attach newly compiled delegatecall modules to an old strategy merely because slot names match. Keep the existing burn-in candidate distinct; any replacement/configuration change requires acceptance-clock review. No Safe transaction, production deployment, branch merge or tag move is part of this change.
 
 Existing constructor/setter consumers must supply the neutral compatibility values. Retained public getters are historical compatibility/telemetry, not new risk controls. Changes deliberately fail loudly on unsupported settings instead of accepting ineffective values.
+
+## Validation — 28 October 2026
+
+Final command: `forge test --match-path 'test/strategies/usdc-lending/*.t.sol'` with Solidity 0.8.28 and the repository configuration. Result: **2,717 passed, 0 failed, 15 skipped** across 195 suites (2,732 tests). This includes allocator/scoring tier parity, gate, adversarial/invariant, bytecode-size and adapter admission coverage. Conditional fork/deployment tests were skipped; this run is local regression evidence, not live deployment acceptance.
+
+The storage-layout source was compared with parent `df9f8fc` after removing comments and whitespace: identical. Occupied slots and declaration order are preserved. `git diff --check` passes. A post-test warning about writing the local Foundry signature cache does not affect the successful test result.
+
+PR #14 must still be reviewed and merged to resolve main-branch alignment. PR #15 contains the separately reviewed, undeployed fixes; no mainnet configuration or bytecode was changed.

@@ -78,7 +78,7 @@ contract Overlay_Parity is UsdcMultiLendingVaultTestBase {
         vm.prank(admin);
         StrategySettingsModule(address(vault)).setRebalanceParams(
             10,     // maxAdaptersPerAllocation — unconstrained (dMax driven by TVL tiers)
-            2,      // minAdaptersActive — unchanged
+            1,      // deprecated neutral minimum; no diversification floor
             50,     // rebalanceMinMoveBps — unchanged
             21600,  // minSecondsBetweenRebalances — unchanged
             80,     // driftToleranceBps — unchanged
