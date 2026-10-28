@@ -201,7 +201,7 @@ contract UsdcMultiLendingVaultFuzzBase is Test {
         // to avoid noise from allocator heuristics; routing/slippage is covered by integration/E2E suites.
         p = UsdcMultiLendingVault.StrategyInitParams({
             maxAdaptersPerAllocation: 2,
-            minAdaptersActive: 2,
+            minAdaptersActive: 1,
             // Set to minimal nonzero to avoid edge branches that treat 0 specially.
             rebalanceMinMoveBps: 1,
             minSecondsBetweenRebalances: 1,

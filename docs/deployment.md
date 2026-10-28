@@ -520,7 +520,7 @@ Source: `multyr-strategies/script/DeployUsdcLendingStrategy.s.sol`, `_defaultPar
 | Parameter | Value | Note |
 |---|---|---|
 | `maxAdaptersPerAllocation` | 3 | Max adapters active in one rebalance |
-| `minAdaptersActive` | 2 | Degraded mode trigger |
+| `minAdaptersActive` | 1 | Deprecated compatibility argument; no diversification floor or degraded-mode trigger. Other values revert in the cleanup candidate. |
 | `rebalanceMinMoveBps` | 50 | 0.5% minimum capital move |
 | `minSecondsBetweenRebalances` | 86400 | 24h cooldown |
 | `driftToleranceBps` | 80 | 0.8% before rebalance trigger |

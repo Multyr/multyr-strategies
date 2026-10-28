@@ -172,7 +172,7 @@ contract StrategyStorageLayout is AccessControl, Pausable, ReentrancyGuard {
     // ── Storage: Parameters ─────────────────────────────────────────────────
 
     uint16 public maxAdaptersPerAllocation;
-    uint16 public minAdaptersActive;
+    uint16 public minAdaptersActive; // Deprecated ABI compatibility slot; fixed to 1. TVL tiers/caps govern diversification.
 
     uint16 public rebalanceMinMoveBps;
     uint32 public minSecondsBetweenRebalances;
@@ -194,7 +194,7 @@ contract StrategyStorageLayout is AccessControl, Pausable, ReentrancyGuard {
     /// @notice DegradedMode: true when system in defensive mode (auto-set by _isDegradedMode check).
     /// @dev bool + uint64 + uint64 pack into one slot (1+8+8 = 17 bytes < 32).
     bool public degradedModeActive;
-    uint64 public degradedModeEnteredAt;
+    uint64 public degradedModeEnteredAt; // Telemetry only: time degraded mode latched; does not implement a timeout.
     /// @notice Advisory withdrawal lock in seconds. effectiveWithdrawalLockSeconds() returns this × 7 in degraded mode.
     /// @dev Does NOT enforce CoreVault lockPeriod — governance must act on signal. Default 86400 (1 day).
     uint64 public withdrawalLockSeconds;
@@ -288,23 +288,23 @@ contract StrategyStorageLayout is AccessControl, Pausable, ReentrancyGuard {
     mapping(address => uint64) public emaDepositGas;       // per-adapter EMA of deposit gas used
     mapping(address => uint64) public emaWithdrawGas;      // per-adapter EMA of withdraw gas used
     uint16 public gasEmaSmoothingBps;                      // EMA alpha in bps (default 2000 = 0.2)
-    uint256 public estimatedGasCostUSDC;                   // precomputed gas cost, updated by keeper
+    uint256 public estimatedGasCostUSDC; // Deprecated layout slot; never used. Read-only estimator or gasCostUSDC prices plans.
 
     // === V10 P1: Hysteresis + benefit/cost ratio ===
     uint16 public minBenefitCostRatioBps;                  // e.g., 15000 = 1.5x (in bps scaling)
     uint16 public entryDriftBps;                           // min drift to trigger rebalance
-    uint16 public exitDriftBps;                            // drift below which stop (< entryDriftBps)
+    uint16 public exitDriftBps; // Deprecated ABI compatibility slot; must remain 0. No exit-band control.
     uint256 public minMoveUsd;                             // absolute floor in USDC (6 decimals)
 
     // === V10 P2: Coordination hooks ===
     uint16 public recentRebalancePenaltyBps;               // score penalty if strategy recently rebalanced
     uint32 public recentRebalanceWindowSeconds;             // "recently" = within this many seconds
-    uint16 public minLiquidityReadinessBps;                 // below this, penalize benefit estimate
+    uint16 public minLiquidityReadinessBps; // Deprecated ABI compatibility slot; must remain 0. No liquidity penalty control.
 
     // === V10 P3: Regime controller ===
     uint8 public currentRegime;                            // 0=STABLE, 1=VOLATILE, 2=STRESS
-    uint16 public regimeHysteresisMultBps;                 // multiplier on hysteresis (10000 = 1x)
-    uint16 public regimeBudgetMultBps;                     // scales move budget (10000 = 1x)
+    uint16 public regimeHysteresisMultBps; // Deprecated ABI compatibility slot; only neutral 10000 accepted.
+    uint16 public regimeBudgetMultBps; // Deprecated ABI compatibility slot; only neutral 10000 accepted.
     uint16 public regimeHorizonDays;                       // overrides gateHorizonDays when > 0
     uint16 public regimeConfidenceMultBps;                 // multiplied into benefit estimate (10000 = 1x)
 

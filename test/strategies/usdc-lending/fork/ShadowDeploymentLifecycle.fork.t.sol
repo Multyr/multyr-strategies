@@ -435,7 +435,7 @@ contract ShadowDeploymentLifecycle_Fork_Test is Test {
         config.setVaultGovCaps(
             CORE_VAULT, 2 days, 0.5e18, 500, 200, 200, 7 days, 1e6, 1_000_000, 3000
         );
-        strategy.setRebalanceParams(3, 2, 50, 1 days, 80, 0, 500);
+        strategy.setRebalanceParams(3, 1, 50, 1 days, 80, 0, 500);
         IHealthRegistrySmoke(HEALTH_REGISTRY).setAuthorizedCaller(address(r.strategy), true);
         router.proposeStrategyAllowlist(address(r.strategy));
         vm.stopPrank();

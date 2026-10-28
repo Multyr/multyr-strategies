@@ -68,9 +68,7 @@ contract MorphoUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentra
 
     // ===== Constants =====
     uint16 public constant BPS_DENOM = 10000;
-    uint8 public constant USDC_DECIMALS = 6;
     uint8 public constant MARKET_QUARANTINE_THRESHOLD = 3;
-    uint64 public constant PPS_SNAP_TTL = uint64(2 days);
 
     // ===== State: Addresses =====
     // --- V10 Storage (was immutable in V9.x; logically immutable post-initialize) ---
@@ -204,8 +202,7 @@ contract MorphoUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentra
         ) {
             for (uint256 i = 0; i < vaults.length; i++) {
                 if (vaults[i] != address(0)) {
-                    // Registry is trusted source - no validation needed
-                    // Vaults from registry are pre-validated and whitelisted
+                    require(IERC4626Like(vaults[i]).asset() == underlying, "asset mismatch");
                     mkts.push(
                         Market({
                             addr: vaults[i], enabled: true, flagged: false, riskScoreBps: BPS_DENOM

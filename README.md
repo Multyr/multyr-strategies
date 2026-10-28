@@ -1,3 +1,12 @@
+> **Audit source / default-branch warning (28 October 2026):** the deployed release is
+> `usdc-lending-ema-first-20261023-deployment`, commit
+> `a3f15a2cbd7dda055e28fad887908249429890fa` (Solidity implementation ancestor
+> `407b3df677e97c8e523ae11948d534ec9fed11cc`). At verification, `origin/main`
+> was `b77629a1` and did not contain this release. This cleanup branch contains
+> the deployed history plus **undeployed** corrections. Review and merge its PR
+> into `main` before cutting a new audit candidate. Do not move the existing
+> deployment tag or represent this cleanup as the deployed bytecode.
+
 # multyr-strategies
 
 > Production strategies for Multyr Protocol — USDC Lending V10

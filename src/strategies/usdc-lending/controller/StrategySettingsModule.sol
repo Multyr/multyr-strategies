@@ -141,7 +141,7 @@ contract StrategySettingsModule is StrategyStorageLayout {
         uint16 _newAdapterRampBps
     ) external onlyRoleOrRevert(PARAM_ROLE) {
         if (_maxAdaptersPerAllocation < 1) revert MinAdaptersTooLow();
-        if (_minAdaptersActive < 2) revert MinAdaptersTooLow();
+        if (_minAdaptersActive != 1) revert ParamOutOfRange(); // Deprecated minimum: no diversification floor.
         if (!(_minSecondsBetweenRebalances >= 3600 && _minSecondsBetweenRebalances <= 604800)) revert ParamOutOfRange(); // "range: 1h-7d"
         // C-03: bounds on previously-unbounded params (P0.7 mandate-gate integrity).
         if (_driftToleranceBps > 2000) revert ParamOutOfRange();                                       // max 20%
@@ -329,7 +329,7 @@ contract StrategySettingsModule is StrategyStorageLayout {
         uint16 _minBCR, uint16 _entryDrift, uint16 _exitDrift, uint256 _minMoveUsd
     ) external onlyRoleOrRevert(PARAM_ROLE) {
         if (!(_minBCR <= 50000)) revert ParamOutOfRange(); // "BCR max 5x"
-        if (!(_entryDrift >= _exitDrift)) revert ParamOutOfRange(); // "entry >= exit"
+        if (_exitDrift != 0) revert ParamOutOfRange(); // Deprecated, not an active control. // "entry >= exit"
         if (!(_entryDrift <= 2000)) revert ParamOutOfRange(); // "entry max 20%"
         minBenefitCostRatioBps = _minBCR;
         entryDriftBps = _entryDrift;
@@ -343,7 +343,7 @@ contract StrategySettingsModule is StrategyStorageLayout {
     ) external onlyRoleOrRevert(PARAM_ROLE) {
         if (!(_penalty <= 5000)) revert ParamOutOfRange(); // "penalty max 50%"
         if (!(_window <= 604800)) revert ParamOutOfRange(); // "window max 7d"
-        if (!(_minLiqReadiness <= 10000)) revert ParamOutOfRange(); // "readiness max 100%"
+        if (_minLiqReadiness != 0) revert ParamOutOfRange(); // "readiness max 100%"
         recentRebalancePenaltyBps = _penalty;
         recentRebalanceWindowSeconds = _window;
         minLiquidityReadinessBps = _minLiqReadiness;
@@ -358,8 +358,8 @@ contract StrategySettingsModule is StrategyStorageLayout {
         uint16 _confidenceMult
     ) external onlyRoleOrRevert(PARAM_ROLE) {
         if (!(_regime <= 2)) revert ParamOutOfRange(); // "invalid regime"
-        if (!(_hysteresisMult <= 30000)) revert ParamOutOfRange(); // "hysteresis max 3x"
-        if (!(_budgetMult <= 30000)) revert ParamOutOfRange(); // "budget max 3x"
+        if (_hysteresisMult != 10000) revert ParamOutOfRange(); // "hysteresis max 3x"
+        if (_budgetMult != 10000) revert ParamOutOfRange(); // "budget max 3x"
         if (!(_horizonDays <= 365)) revert ParamOutOfRange(); // "horizon max 1y"
         if (!(_confidenceMult <= 10000)) revert ParamOutOfRange(); // "confidence max 1x"
         if (!(_confidenceMult > 0)) revert ParamOutOfRange(); // "confidence=0"

@@ -87,7 +87,7 @@ contract ReadOnlyGasIntegrationTest is UsdcMultiLendingVaultTestBase {
         deal(address(usdc), address(vault), 0);
         vm.startPrank(admin);
         StrategySettingsModule(address(vault)).setCapDriftTolerance(1);
-        StrategySettingsModule(address(vault)).setRebalanceParams(3, 2, 0, 3600, 1000, 3000, 5000);
+        StrategySettingsModule(address(vault)).setRebalanceParams(3, 1, 0, 3600, 1000, 3000, 5000);
         vm.stopPrank();
         prepare();
         for (uint256 i; i < vault.rebalancePlanTotalActions(); ++i) {
@@ -216,7 +216,7 @@ contract ReadOnlyGasIntegrationTest is UsdcMultiLendingVaultTestBase {
     function test_changedSelectedSetCancelsBeforeSpending() public {
         // Limit the 300K book to one target, then change which venue wins.
         vm.prank(admin);
-        StrategySettingsModule(address(vault)).setRebalanceParams(1, 2, 0, 3600, 1000, 0, 5000);
+        StrategySettingsModule(address(vault)).setRebalanceParams(1, 1, 0, 3600, 1000, 0, 5000);
         prepare();
         uint256 before = vault.positionAssets(address(adapter1));
         adapter1.setAPY(6000);
@@ -240,7 +240,7 @@ contract ReadOnlyGasIntegrationTest is UsdcMultiLendingVaultTestBase {
         adapter1.setAPY(100); adapter2.setAPY(1674); adapter3.setAPY(500);
         vm.startPrank(admin);
         StrategySettingsModule(address(vault)).setRiskWeights(10000,0,0,0,0);
-        StrategySettingsModule(address(vault)).setRebalanceParams(7,2,0,3600,1000,0,5000);
+        StrategySettingsModule(address(vault)).setRebalanceParams(7,1,0,3600,1000,0,5000);
         StrategySettingsModule(address(vault)).setTargetIdleBufferBps(1000);
         StrategySettingsModule(address(vault)).setDustTolerance(1);
         if (excludeFluid) StrategySettingsModule(address(vault)).setQuarantined(address(adapter1),true);
@@ -341,7 +341,7 @@ contract ReadOnlyGasIntegrationTest is UsdcMultiLendingVaultTestBase {
         adapter1.setAPY(10); adapter2.setAPY(10); adapter3.setAPY(800); euler.setAPY(700); fluid.setAPY(500);
         vm.startPrank(admin);
         StrategySettingsModule(address(vault)).setRiskWeights(10000,0,0,0,0);
-        StrategySettingsModule(address(vault)).setRebalanceParams(7,2,0,3600,1000,5000,5000);
+        StrategySettingsModule(address(vault)).setRebalanceParams(7,1,0,3600,1000,5000,5000);
         // Illustrative 40% target needs an explicit cap override; the normal tier ceiling is ~36.7%.
         StrategySettingsModule(address(vault)).setAdapterAbsCapOverride(address(adapter3),4000);
         StrategySettingsModule(address(vault)).setAdapterAbsCapOverride(address(euler),4000);

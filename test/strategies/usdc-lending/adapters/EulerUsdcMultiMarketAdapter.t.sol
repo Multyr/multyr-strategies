@@ -708,3 +708,29 @@ contract S22_EulerGapTest is EulerAdapter_Test {
         assertFalse(ok, "fallback must revert");
     }
 }
+
+contract EulerAssetValidationTest is EulerAdapter_Test {
+    function test_rejectsForeignAssetOnInitialize() public {
+        address[] memory markets = new address[](1);
+        markets[0] = address(new MockEulerVault(address(0xBEEF)));
+        EulerUsdcMultiMarketAdapter next = new EulerUsdcMultiMarketAdapter();
+        vm.expectRevert(bytes("asset mismatch"));
+        next.initialize(vault, address(usdc), markets, address(0), admin);
+    }
+    function test_rejectsForeignAssetOnUpdate() public {
+        MockEulerVault foreign = new MockEulerVault(address(0xBEEF));
+        vm.prank(admin);
+        vm.expectRevert(bytes("asset mismatch"));
+        adapter.updateMarketAddress(0, address(foreign));
+    }
+}
+
+contract EulerRegistryAssetValidationTest is EulerAdapter_RefreshFromRegistry_Test {
+    function test_rejectsForeignAssetOnRegistryRefresh() public {
+        address[] memory markets = new address[](1);
+        markets[0] = address(new MockEulerVault(address(0xBEEF)));
+        registry.setVaults(markets);
+        vm.expectRevert(bytes("asset mismatch"));
+        adapter.refreshFromRegistry();
+    }
+}

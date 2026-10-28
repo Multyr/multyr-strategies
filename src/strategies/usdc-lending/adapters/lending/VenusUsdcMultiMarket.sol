@@ -70,7 +70,6 @@ contract VenusUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
 
     // --- Constants ---
     /// @dev Arbitrum One chain ID (informational; chain guard removed in V10 for portability).
-    uint256 public constant ARBITRUM_CHAIN_ID = 42161;
 
     // --- Immutable Storage ---
     // --- V10 Storage (was immutable in V9.x; logically immutable post-initialize) ---

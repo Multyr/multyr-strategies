@@ -149,7 +149,7 @@ contract V92_SafetyTierE2E is Test {
     function _baseParams() internal pure returns (UsdcMultiLendingVault.StrategyInitParams memory p) {
         p = UsdcMultiLendingVault.StrategyInitParams({
             maxAdaptersPerAllocation: 3,
-            minAdaptersActive: 2,
+            minAdaptersActive: 1,
             rebalanceMinMoveBps: 50,
             minSecondsBetweenRebalances: 21600,
             driftToleranceBps: 80,

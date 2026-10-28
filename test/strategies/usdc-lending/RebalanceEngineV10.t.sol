@@ -59,7 +59,7 @@ contract RebalanceEngineV10_Test is Test {
         UsdcMultiLendingVault.StrategyInitParams memory params = UsdcMultiLendingVault
             .StrategyInitParams({
             maxAdaptersPerAllocation: 5,
-            minAdaptersActive: 2,
+            minAdaptersActive: 1,
             rebalanceMinMoveBps: 50,
             minSecondsBetweenRebalances: 21600,
             driftToleranceBps: 80,
@@ -332,10 +332,10 @@ contract RebalanceEngineV10_Test is Test {
 
     function test_hysteresisParamsGovernance() public {
         vm.startPrank(admin);
-        StrategySettingsModule(address(vault)).setHysteresisParams(15000, 500, 200, 5000e6);
+        StrategySettingsModule(address(vault)).setHysteresisParams(15000, 500, 0, 5000e6);
         assertEq(vault.minBenefitCostRatioBps(), 15000);
         assertEq(vault.entryDriftBps(), 500);
-        assertEq(vault.exitDriftBps(), 200);
+        assertEq(vault.exitDriftBps(), 0);
         assertEq(vault.minMoveUsd(), 5000e6);
 
         // entry must be >= exit
@@ -385,10 +385,10 @@ contract RebalanceEngineV10_Test is Test {
 
     function test_coordinationParamsGovernance() public {
         vm.startPrank(admin);
-        StrategySettingsModule(address(vault)).setCoordinationParams(3000, 43200, 5000);
+        StrategySettingsModule(address(vault)).setCoordinationParams(3000, 43200, 0);
         assertEq(vault.recentRebalancePenaltyBps(), 3000);
         assertEq(vault.recentRebalanceWindowSeconds(), 43200);
-        assertEq(vault.minLiquidityReadinessBps(), 5000);
+        assertEq(vault.minLiquidityReadinessBps(), 0);
 
         // penalty max 5000
         vm.expectRevert();
@@ -485,7 +485,7 @@ contract RebalanceEngineV10_Test is Test {
     function test_regimeParamsNotAppliedForNonActiveRegime() public {
         // Current regime is 0 (STABLE). Set params for regime 1 (VOLATILE).
         vm.prank(admin);
-        StrategySettingsModule(address(vault)).setRegimeParams(1, 5000, 20000, 7, 7000);
+        StrategySettingsModule(address(vault)).setRegimeParams(1, 10000, 10000, 7, 7000);
 
         // Active regime multipliers should NOT change (still regime 0 = STABLE)
         assertEq(vault.regimeHorizonDays(), 0, "horizon should not change for non-active regime");
@@ -499,7 +499,7 @@ contract RebalanceEngineV10_Test is Test {
 
         // Fix: set params again now that regime 1 is active
         vm.prank(admin);
-        StrategySettingsModule(address(vault)).setRegimeParams(1, 5000, 20000, 7, 7000);
+        StrategySettingsModule(address(vault)).setRegimeParams(1, 10000, 10000, 7, 7000);
 
         assertEq(vault.regimeHorizonDays(), 7, "now params applied because regime is active");
         assertEq(vault.regimeConfidenceMultBps(), 7000, "confidence applied");

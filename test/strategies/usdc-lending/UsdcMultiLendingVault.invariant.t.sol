@@ -278,7 +278,7 @@ contract UsdcMultiLendingVault_Invariant_Test is StdInvariant, Test {
         UsdcMultiLendingVault.StrategyInitParams memory params =
             UsdcMultiLendingVault.StrategyInitParams({
                 maxAdaptersPerAllocation: 3,
-                minAdaptersActive: 2,
+                minAdaptersActive: 1,
                 rebalanceMinMoveBps: 50,
                 minSecondsBetweenRebalances: 21600,
                 driftToleranceBps: 80,
@@ -692,7 +692,7 @@ contract UsdcMultiLendingVault_Adversarial_Invariant_Test is StdInvariant, Test 
         UsdcMultiLendingVault.StrategyInitParams memory params =
             UsdcMultiLendingVault.StrategyInitParams({
                 maxAdaptersPerAllocation: 3,
-                minAdaptersActive: 2,
+                minAdaptersActive: 1,
                 rebalanceMinMoveBps: 50,
                 minSecondsBetweenRebalances: 21600,
                 driftToleranceBps: 80,
@@ -892,7 +892,7 @@ contract UsdcMultiLendingVault_Scoring_Invariant_Test is StdInvariant, Test {
 
         UsdcMultiLendingVault.StrategyInitParams memory params = UsdcMultiLendingVault.StrategyInitParams({
             maxAdaptersPerAllocation: 5,
-            minAdaptersActive: 2,
+            minAdaptersActive: 1,
             rebalanceMinMoveBps: 50,
             minSecondsBetweenRebalances: 21600,
             driftToleranceBps: 80,

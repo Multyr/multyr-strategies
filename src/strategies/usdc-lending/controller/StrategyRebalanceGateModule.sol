@@ -279,7 +279,7 @@ contract StrategyRebalanceGateModule is StrategyStorageLayout {
         }
         // ─────────────────────────────────────────────────────────────────
 
-        uint256 cost = estimatedGasCostUSDC > 0 ? estimatedGasCostUSDC : gasCostUSDC;
+        uint256 cost = gasCostUSDC;
         if (rebalanceGasEstimator != address(0)) {
             bool valid;
             (valid, targetAllocs, moved) = _actionTargets(enabledAdapters, actions, tvl);

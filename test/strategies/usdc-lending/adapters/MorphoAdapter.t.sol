@@ -1079,3 +1079,14 @@ contract S22_MorphoGapTest is MorphoAdapter_Test {
         adapter.refreshNavCache();
     }
 }
+
+contract MorphoRegistryAssetValidationTest is MorphoAdapter_RefreshFromRegistry_Test {
+    function test_rejectsForeignAssetFromRegistry() public {
+        address[] memory markets = new address[](1);
+        markets[0] = address(new MockMorphoVault(address(0xBEEF)));
+        registry.setVaults(markets);
+        vm.prank(admin);
+        vm.expectRevert(bytes("asset mismatch"));
+        adapter.refreshFromRegistry();
+    }
+}

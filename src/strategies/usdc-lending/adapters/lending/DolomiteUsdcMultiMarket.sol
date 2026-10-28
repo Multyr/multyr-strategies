@@ -102,7 +102,6 @@ interface IDolomiteRateProvider {
 error AmbiguousMarketType(address market);
 error UnsupportedMarketType(address market);
 error InvalidDolomiteConfig(address market, uint256 marketId, uint256 accountNumber);
-error DolomiteConfigInvalid();
 
 // ===== Adapter Contract =====
 

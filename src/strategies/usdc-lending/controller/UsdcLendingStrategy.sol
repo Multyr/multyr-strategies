@@ -14,7 +14,7 @@ import { IERC20Metadata } from "@openzeppelin/contracts/token/ERC20/extensions/I
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
 import { ILendingAdapter, IAdapterEmergency } from "../interfaces/ILendingAdapter.sol";
-import { StrategyStorageLayout, Unauthorized, Frozen, InvalidAdapter, ZeroAddress, InvalidAsset, AssetMismatch, AdapterFlaggedIncrement, InvalidInput, RebalanceCooldown, InsufficientAdapters, MoveTooSmall, GateNotMet, NoCashInvariant, Overflow, DepositsDisabled, DeployIdleCooldown, BootstrapIdleTooHigh, DurationTooLong, BackfillTooLarge, QueryFailed, DepositModeNotSet, WeightsSumInvalid, MinAdaptersTooLow, RiskScoreTooHigh, BootstrapInactive, ZeroAmount, InsufficientBalance, ScoringDelegateFailed, DegradedViews, InvalidModule } from "./StrategyStorageLayout.sol";
+import { StrategyStorageLayout, Unauthorized, Frozen, InvalidAdapter, ZeroAddress, InvalidAsset, AssetMismatch, AdapterFlaggedIncrement, InvalidInput, RebalanceCooldown, InsufficientAdapters, MoveTooSmall, GateNotMet, NoCashInvariant, Overflow, DepositsDisabled, DeployIdleCooldown, BootstrapIdleTooHigh, DurationTooLong, BackfillTooLarge, QueryFailed, DepositModeNotSet, WeightsSumInvalid, MinAdaptersTooLow, RiskScoreTooHigh, BootstrapInactive, ZeroAmount, InsufficientBalance, ScoringDelegateFailed, DegradedViews, InvalidModule, ParamOutOfRange } from "./StrategyStorageLayout.sol";
 
 // -----------------------------
 //         CONTRACT
@@ -213,6 +213,7 @@ contract UsdcMultiLendingVault is StrategyStorageLayout {
     function _setStrategyParams(StrategyInitParams memory params) internal {
         // Allocation
         maxAdaptersPerAllocation = params.maxAdaptersPerAllocation;
+        if (params.minAdaptersActive != 1) revert ParamOutOfRange();
         minAdaptersActive = params.minAdaptersActive;
         // Rebalance
         rebalanceMinMoveBps = params.rebalanceMinMoveBps;

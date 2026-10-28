@@ -25,6 +25,23 @@ library StrategyConfigLib {
     uint256 internal constant CONFIDENCE_HIGH  = 9500;
     uint256 internal constant CONFIDENCE_VHIGH = 10000;
 
+    /// @notice TVL tiers cap target count; governance may only lower the maximum.
+    function effectiveMaxAdapters(uint256 tvl, uint16 staticMax) internal pure returns (uint16) {
+        uint16 n;
+        if (tvl < 25_000e6) n = 1;
+        else if (tvl < 250_000e6) n = 2;
+        else if (tvl < 1_000_000e6) n = 3;
+        else if (tvl < 5_000_000e6) n = 4;
+        else n = 5;
+        return staticMax > 0 && staticMax < n ? staticMax : n;
+    }
+
+    /// @notice Minimum seed in six-decimal asset units, with governance floor.
+    function effectiveMinNewAdapterSeed(uint256 tvl, uint256 staticSeed) internal pure returns (uint256) {
+        uint256 seed = tvl < 250_000e6 ? 100e6 : tvl < 1_000_000e6 ? 1_000e6 : tvl < 5_000_000e6 ? 5_000e6 : tvl < 25_000_000e6 ? 25_000e6 : tvl * 200 / 1e4;
+        return staticSeed > seed ? staticSeed : seed;
+    }
+
     // ── Pure helpers ─────────────────────────────────────────────────────────
 
     /// @dev Dynamic relative exposure cap -- scales with external market depth.

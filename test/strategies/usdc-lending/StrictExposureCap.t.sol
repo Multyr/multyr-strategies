@@ -6,7 +6,7 @@ import { StrategyScoringModule } from "../../../src/strategies/usdc-lending/cont
 contract StrictExposureCapTest is UsdcMultiLendingVaultTestBase {
     function testSmallVaultWithoutGlobalCeilingUsesSingleAdapterTier() public {
         vm.prank(admin);
-        StrategySettingsModule(address(vault)).setRebalanceParams(7,2,50,86400,80,0,500);
+        StrategySettingsModule(address(vault)).setRebalanceParams(7,1,50,86400,80,0,500);
         assertEq(StrategyScoringModule(address(vault)).effectiveMaxAdaptersPerAllocation(), 1);
         assertEq(StrategyScoringModule(address(vault)).effectiveAbsCapBps(address(adapter1)), 9000, "uncached liquidity still limits the single-adapter tier");
     }
@@ -14,7 +14,7 @@ contract StrictExposureCapTest is UsdcMultiLendingVaultTestBase {
         _addAndEnableAdapter(adapter1);
         _prepareCache();
         vm.startPrank(admin);
-        StrategySettingsModule(address(vault)).setRebalanceParams(7,2,50,86400,80,0,500);
+        StrategySettingsModule(address(vault)).setRebalanceParams(7,1,50,86400,80,0,500);
         StrategySettingsModule(address(vault)).setMaxIdleAfterDepositBps(10000);
         vm.stopPrank();
         _mintAndTransferToVault(core,1000e6);
@@ -25,7 +25,7 @@ contract StrictExposureCapTest is UsdcMultiLendingVaultTestBase {
     }
     function testSmallVaultCeilingDoesNotExpandTargetCountAndOverrideCannotBypassIt() public {
         vm.startPrank(admin);
-        StrategySettingsModule(address(vault)).setRebalanceParams(7,2,50,86400,80,2500,500);
+        StrategySettingsModule(address(vault)).setRebalanceParams(7,1,50,86400,80,2500,500);
         MockLendingAdapter a = new MockLendingAdapter(ARBITRUM_USDC);
         StrategySettingsModule(address(vault)).setAdapterAbsCapOverride(address(a), 8000);
         vm.stopPrank();
@@ -36,7 +36,7 @@ contract StrictExposureCapTest is UsdcMultiLendingVaultTestBase {
         _addAndEnableAdapter(adapter1);
         _prepareCache();
         vm.startPrank(admin);
-        StrategySettingsModule(address(vault)).setRebalanceParams(7,2,50,86400,80,2500,500);
+        StrategySettingsModule(address(vault)).setRebalanceParams(7,1,50,86400,80,2500,500);
         StrategySettingsModule(address(vault)).addSafetyFallbackAdapter(address(adapter1),8000,1000);
         StrategySettingsModule(address(vault)).setMaxIdleBps(100);
         StrategySettingsModule(address(vault)).setMaxIdleAfterDepositBps(10000);

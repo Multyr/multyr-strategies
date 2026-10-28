@@ -970,3 +970,13 @@ contract S22_CometGapTest is CometAdapter_Test {
         assertFalse(ok, "fallback must revert");
     }
 }
+
+contract CometRegistryAssetValidationTest is CometAdapter_Test {
+    function test_rejectsForeignAssetFromRegistry() public {
+        MockComet foreign = new MockComet(address(0xBEEF));
+        registry.addVault(SimpleProtocolRegistry.ProtocolType.COMPOUND_V3, address(foreign), "Foreign", 10000, 100_000_000e6);
+        vm.prank(admin);
+        vm.expectRevert(bytes("asset mismatch"));
+        adapter.refreshFromRegistry();
+    }
+}
