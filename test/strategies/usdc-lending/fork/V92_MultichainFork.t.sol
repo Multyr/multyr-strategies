@@ -179,7 +179,7 @@ abstract contract MultichainForkBase is Test {
 
     function _defaultParams() internal pure returns (UsdcMultiLendingVault.StrategyInitParams memory p) {
         p.maxAdaptersPerAllocation    = 2;
-        p.minAdaptersActive           = 2;
+        p.minAdaptersActive           = 1;
         p.rebalanceMinMoveBps         = 50;
         p.minSecondsBetweenRebalances = 21600;
         p.driftToleranceBps           = 80;

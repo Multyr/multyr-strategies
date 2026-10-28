@@ -162,7 +162,7 @@ contract Scoring_Model is Test {
         UsdcMultiLendingVault.StrategyInitParams memory params = UsdcMultiLendingVault
             .StrategyInitParams({
             maxAdaptersPerAllocation: 5,
-            minAdaptersActive: 2,
+            minAdaptersActive: 1,
             rebalanceMinMoveBps: 50,
             minSecondsBetweenRebalances: 21600,
             driftToleranceBps: 80,
@@ -1133,7 +1133,7 @@ contract LensInternalsTest is Scoring_Model {
         // newAdapterRampBps = 5000 (50%) — ramp=50% > cap=30% -> cap wins.
         // posA = 30% * 1000 USDC = 300 USDC exactly.
         vm.prank(admin);
-        StrategySettingsModule(address(vault)).setRebalanceParams(5, 2, 50, 21600, 80, 3000, 5000);
+        StrategySettingsModule(address(vault)).setRebalanceParams(5, 1, 50, 21600, 80, 3000, 5000);
 
         // maxIdleAfterDepositBps raised to 100% — 70% stays idle, expected at T1 with 30% cap
         vm.prank(admin);

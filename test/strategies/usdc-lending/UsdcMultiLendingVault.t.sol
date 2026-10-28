@@ -319,7 +319,7 @@ contract UsdcMultiLendingVaultTestBase is Test {
         // Default params
         defaultParams = UsdcMultiLendingVault.StrategyInitParams({
             maxAdaptersPerAllocation: 3,
-            minAdaptersActive: 2,
+            minAdaptersActive: 1,
             rebalanceMinMoveBps: 50,
             minSecondsBetweenRebalances: 21600, // 6 hours
             driftToleranceBps: 80,
@@ -512,7 +512,7 @@ contract UsdcMultiLendingVault_Constructor_Test is UsdcMultiLendingVaultTestBase
 
     function test_constructor_sets_parameters() public view {
         assertEq(vault.maxAdaptersPerAllocation(), 3);
-        assertEq(vault.minAdaptersActive(), 2);
+        assertEq(vault.minAdaptersActive(), 1);
         assertEq(vault.dustTolerance(), 3e6); // Updated to match test setup
         assertEq(vault.wAPY(), 4000);
     }
@@ -783,19 +783,19 @@ contract UsdcMultiLendingVault_Roles_Test is UsdcMultiLendingVaultTestBase {
 
     function test_setRegimeParams_validInputs_accepted() public {
         vm.prank(paramSetter);
-        StrategySettingsModule(address(vault)).setRegimeParams(0, 5000, 10000, 30, 10000);
+        StrategySettingsModule(address(vault)).setRegimeParams(0, 10000, 10000, 30, 10000);
     }
 
     function test_setRegimeParams_confidenceZero_reverts() public {
         vm.expectRevert(ParamOutOfRange.selector);
         vm.prank(paramSetter);
-        StrategySettingsModule(address(vault)).setRegimeParams(0, 5000, 10000, 30, 0);
+        StrategySettingsModule(address(vault)).setRegimeParams(0, 10000, 10000, 30, 0);
     }
 
     function test_setRegimeParams_horizonZero_reverts() public {
         vm.expectRevert(ParamOutOfRange.selector);
         vm.prank(paramSetter);
-        StrategySettingsModule(address(vault)).setRegimeParams(0, 5000, 10000, 0, 10000);
+        StrategySettingsModule(address(vault)).setRegimeParams(0, 10000, 10000, 0, 10000);
     }
 
     function test_setRegimeParams_hysteresisExceedsBudget_reverts() public {
@@ -857,7 +857,7 @@ contract UsdcMultiLendingVault_ParamsFinalized_Test is UsdcMultiLendingVaultTest
 
         // Operational params remain editable post-seal
         vm.prank(paramSetter);
-        StrategySettingsModule(address(vault)).setRebalanceParams(3, 2, 50, 86400, 80, 5000, 500);
+        StrategySettingsModule(address(vault)).setRebalanceParams(3, 1, 50, 86400, 80, 5000, 500);
     }
 
     function test_finalizeParameters_does_NOT_block_setHarvestParams() public {
@@ -937,23 +937,23 @@ contract UsdcMultiLendingVault_ParamSetters_Test is UsdcMultiLendingVaultTestBas
 
     function test_setRebalanceParams_updates_values() public {
         vm.prank(paramSetter);
-        StrategySettingsModule(address(vault)).setRebalanceParams(4, 3, 100, 43200, 100, 5000, 600);
+        StrategySettingsModule(address(vault)).setRebalanceParams(4, 1, 100, 43200, 100, 5000, 600);
 
         assertEq(vault.maxAdaptersPerAllocation(), 4);
-        assertEq(vault.minAdaptersActive(), 3);
+        assertEq(vault.minAdaptersActive(), 1);
         assertEq(vault.rebalanceMinMoveBps(), 100);
         assertEq(vault.minSecondsBetweenRebalances(), 43200);
     }
 
-    function test_setRebalanceParams_reverts_minAdapters_too_low() public {
-        vm.expectRevert(MinAdaptersTooLow.selector);
+    function test_setRebalanceParams_reverts_deprecatedMinimum() public {
+        vm.expectRevert(ParamOutOfRange.selector);
         vm.prank(paramSetter);
-        StrategySettingsModule(address(vault)).setRebalanceParams(3, 1, 50, 21600, 80, 5000, 500);
+        StrategySettingsModule(address(vault)).setRebalanceParams(3, 2, 50, 21600, 80, 5000, 500);
     }
 
     function test_setRebalanceParams_accepts_single_target_adapter() public {
         vm.prank(paramSetter);
-        StrategySettingsModule(address(vault)).setRebalanceParams(1, 2, 50, 21600, 80, 5000, 500);
+        StrategySettingsModule(address(vault)).setRebalanceParams(1, 1, 50, 21600, 80, 5000, 500);
         assertEq(vault.maxAdaptersPerAllocation(), 1);
     }
 
@@ -961,25 +961,25 @@ contract UsdcMultiLendingVault_ParamSetters_Test is UsdcMultiLendingVaultTestBas
     function test_setRebalanceParams_reverts_driftTolerance_too_high() public {
         vm.expectRevert(ParamOutOfRange.selector);
         vm.prank(paramSetter);
-        StrategySettingsModule(address(vault)).setRebalanceParams(3, 2, 50, 21600, 2001, 5000, 500);
+        StrategySettingsModule(address(vault)).setRebalanceParams(3, 1, 50, 21600, 2001, 5000, 500);
     }
 
     function test_setRebalanceParams_reverts_adapterMaxExposure_too_high() public {
         vm.expectRevert(ParamOutOfRange.selector);
         vm.prank(paramSetter);
-        StrategySettingsModule(address(vault)).setRebalanceParams(3, 2, 50, 21600, 80, 5001, 500);
+        StrategySettingsModule(address(vault)).setRebalanceParams(3, 1, 50, 21600, 80, 5001, 500);
     }
 
     function test_setRebalanceParams_reverts_newAdapterRamp_too_high() public {
         vm.expectRevert(ParamOutOfRange.selector);
         vm.prank(paramSetter);
-        StrategySettingsModule(address(vault)).setRebalanceParams(3, 2, 50, 21600, 80, 5000, 5001);
+        StrategySettingsModule(address(vault)).setRebalanceParams(3, 1, 50, 21600, 80, 5000, 5001);
     }
 
     function test_setRebalanceParams_reverts_rebalanceMinMove_too_high() public {
         vm.expectRevert(ParamOutOfRange.selector);
         vm.prank(paramSetter);
-        StrategySettingsModule(address(vault)).setRebalanceParams(3, 2, 5001, 21600, 80, 5000, 500);
+        StrategySettingsModule(address(vault)).setRebalanceParams(3, 1, 5001, 21600, 80, 5000, 500);
     }
 
     function test_setHarvestParams_updates_values() public {
@@ -2425,7 +2425,7 @@ contract UsdcMultiLendingVault_MutationKiller_Test is UsdcMultiLendingVaultTestB
 
     function test_setRebalanceParams_sets_newAdapterRampBps() public {
         vm.prank(paramSetter);
-        StrategySettingsModule(address(vault)).setRebalanceParams(3, 2, 50, 21600, 80, 5000, 1000); // newAdapterRampBps = 1000 (10%)
+        StrategySettingsModule(address(vault)).setRebalanceParams(3, 1, 50, 21600, 80, 5000, 1000); // newAdapterRampBps = 1000 (10%)
 
         assertEq(vault.newAdapterRampBps(), 1000);
     }

@@ -71,7 +71,7 @@ contract DelegatecallEquivalence is Test {
         UsdcMultiLendingVault.StrategyInitParams memory params = UsdcMultiLendingVault
             .StrategyInitParams({
             maxAdaptersPerAllocation: 5,
-            minAdaptersActive: 2,
+            minAdaptersActive: 1,
             rebalanceMinMoveBps: 50,
             minSecondsBetweenRebalances: 21600,
             driftToleranceBps: 80,

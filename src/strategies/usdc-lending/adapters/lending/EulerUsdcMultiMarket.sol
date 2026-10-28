@@ -172,6 +172,7 @@ contract EulerUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
         uint256 marketCount = _markets.length;
         for (uint256 i = 0; i < marketCount; ++i) {
             require(_markets[i] != address(0), "market zero");
+            require(IEulerUsdcMarket(_markets[i]).asset() == address(USDC), "asset mismatch");
             for (uint256 j = 0; j < i; ++j) {
                 require(_markets[i] != _markets[j], "market dup");
             }
@@ -999,6 +1000,7 @@ contract EulerUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
     function updateMarketAddress(uint256 idx, address newAddr) external onlyParamRole {
         require(idx < mkts.length, "idx out of bounds");
         require(newAddr != address(0), "zero");
+        require(IEulerUsdcMarket(newAddr).asset() == address(USDC), "asset mismatch");
         address old = mkts[idx].addr;
         mkts[idx].addr = newAddr;
         emit MarketAddressUpdated(idx, old, newAddr);
@@ -1028,8 +1030,7 @@ contract EulerUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
                         }
                     }
                     if (!isDuplicate) {
-                        // Registry is trusted source - no validation needed
-                        // Vaults from registry are pre-validated and whitelisted
+                        require(IEulerUsdcMarket(vaults[i]).asset() == address(USDC), "asset mismatch");
                         mkts.push(
                             Market({
                                 addr: vaults[i], enabled: true, flagged: false, riskScoreBps: 0

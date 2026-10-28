@@ -750,8 +750,7 @@ contract CometUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
         ) {
             for (uint256 i = 0; i < vaults.length; i++) {
                 if (vaults[i] != address(0)) {
-                    // Registry is trusted source - no validation needed
-                    // Vaults from registry are pre-validated and whitelisted
+                    require(IComet(vaults[i]).baseToken() == underlying, "asset mismatch");
                     mkts.push(
                         Market({
                             comet: vaults[i], enabled: true, flagged: false, riskScoreBps: 10000

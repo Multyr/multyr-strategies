@@ -79,7 +79,7 @@ contract Allocation_Consistency is Test {
         UsdcMultiLendingVault.StrategyInitParams memory params = UsdcMultiLendingVault
             .StrategyInitParams({
             maxAdaptersPerAllocation: 5,
-            minAdaptersActive: 2,
+            minAdaptersActive: 1,
             rebalanceMinMoveBps: 50,
             minSecondsBetweenRebalances: 21600,
             driftToleranceBps: 80,
@@ -204,7 +204,7 @@ contract Allocation_Consistency is Test {
     function _setMaxExposure(uint16 bps) internal {
         vm.prank(admin);
         StrategySettingsModule(address(vault)).setRebalanceParams(
-            5, 2, 50, 21600, 80, bps, 5000
+            5, 1, 50, 21600, 80, bps, 5000
         );
     }
 

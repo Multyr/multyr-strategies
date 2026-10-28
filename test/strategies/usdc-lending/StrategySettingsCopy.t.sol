@@ -19,17 +19,17 @@ contract StrategySettingsCopyTest is UsdcMultiLendingVaultTestBase {
     function test_preservesConstructorAndNonDefaultSettingsIncludingRegime() public {
         vm.startPrank(admin);
         Settings(address(vault)).setDustTolerance(3000);
-        Settings(address(vault)).setHysteresisParams(18000, 250, 100, 1234e6);
+        Settings(address(vault)).setHysteresisParams(18000, 250, 0, 1234e6);
         Settings(address(vault)).setLiquidityStalenessSeconds(7200);
         Settings(address(vault)).setMaxRebalanceActionsPerTx(3);
-        Settings(address(vault)).setCoordinationParams(2500, 2 days, 8000);
+        Settings(address(vault)).setCoordinationParams(2500, 2 days, 0);
         Settings(address(vault)).setScoringStalenessParams(7200, 2 days);
         Settings(address(vault)).setDepositsDisabled(true);
         vm.stopPrank();
         vm.prank(keeper);
         Settings(address(vault)).setRegime(2);
         vm.prank(admin);
-        Settings(address(vault)).setRegimeParams(2, 18000, 20000, 14, 7500);
+        Settings(address(vault)).setRegimeParams(2, 10000, 10000, 14, 7500);
         Strategy next = replacement(address(vault));
         bytes32 beforeHash = Copy.globals(address(vault), address(0), false);
         vm.startPrank(admin);

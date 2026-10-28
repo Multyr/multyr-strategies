@@ -68,7 +68,7 @@ contract TVL_Confidence is Test {
         UsdcMultiLendingVault.StrategyInitParams memory params = UsdcMultiLendingVault
             .StrategyInitParams({
             maxAdaptersPerAllocation: 5,
-            minAdaptersActive: 2,
+            minAdaptersActive: 1,
             rebalanceMinMoveBps: 50,
             minSecondsBetweenRebalances: 21600,
             driftToleranceBps: 80,
@@ -391,7 +391,7 @@ contract TVL_Confidence is Test {
         // Lower maxExposure to 40% so 3 adapters can all get allocation
         vm.prank(admin);
         StrategySettingsModule(address(vault)).setRebalanceParams(
-            5, 2, 50, 21600, 80, 4000, 5000
+            5, 1, 50, 21600, 80, 4000, 5000
         );
 
         _addAndEnable(adapterBig);   // 50M

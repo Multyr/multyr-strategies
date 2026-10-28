@@ -503,7 +503,7 @@ The deployer receives **no roles** (security note at L117):
 
 | Parameter Group | Key Fields | Storage Variable |
 |-----------------|-----------|-----------------|
-| **Allocation** | `maxAdaptersPerAllocation`, `minAdaptersActive` | `src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:164` |
+| **Allocation** | `maxAdaptersPerAllocation` (active); `minAdaptersActive=1` (deprecated compatibility only) | `src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:164` |
 | **Rebalance** | `rebalanceMinMoveBps`, `minSecondsBetweenRebalances`, `driftToleranceBps` | `src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:167` |
 | **Scoring weights** | `wAPY`, `wLiq`, `wRisk`, `wStability`, `wIncentive` (sum=10000) | `src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:171` |
 | **Exposure** | `adapterMaxExposureBps`, `newAdapterRampBps`, `maxRelativeExposureBps` | `src/strategies/usdc-lending/controller/StrategyStorageLayout.sol:179` |

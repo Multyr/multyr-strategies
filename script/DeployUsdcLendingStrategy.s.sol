@@ -1247,7 +1247,7 @@ contract DeployUsdcLendingStrategy is Script {
         } catch {}
         return UsdcMultiLendingVault.StrategyInitParams({
             maxAdaptersPerAllocation: 7,
-            minAdaptersActive: 2,
+            minAdaptersActive: 1,
             rebalanceMinMoveBps: 50,
             minSecondsBetweenRebalances: 86400,
             driftToleranceBps: 80,

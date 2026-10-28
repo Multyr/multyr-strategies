@@ -303,72 +303,68 @@ contract StrategyAllocCalcModule is StrategyStorageLayout {
             totalScore += scores[best].score;
         }
         if (totalScore < 1) return allocs;
-        uint16 maxRelGov = maxRelativeExposureBps;
-
-        // P0.7 (2026-06-11) — conditional safety margin applied ONLY when a cap
-        // binds. Prevents the post-rebalance position from sitting exactly at
-        // the cap, which would re-trigger the mandate as soon as the external
-        // TVL fluctuated. See docs/SAFETY_ADAPTER_TIER.md.
-        uint256 marginBps = uint256(targetSafetyMarginBps);
-        uint256 safetyMult = 10_000 - marginBps;
-
-        for (uint256 i = 0; i < n;) {
-            if (!selected[i]) { unchecked { ++i; } continue; }
-            address adapter = scores[i].adapter;
-            // Scoring path always uses NORMAL caps. The fallback caps are
-            // intentionally NOT honoured here — opportunistic allocation must
-            // not target above the regular cap; only the safety-overflow path
-            // can push above it.
-            uint256 maxExp = (_effectiveAbsCapBps(adapter, tvl) * tvl) / 1e4;
+        for (uint256 i; i < n; ++i) {
+            if (!selected[i]) continue;
             uint256 raw = (scores[i].score * (tvl * (10000 - targetIdleBufferBps) / 10000)) / totalScore;
-            uint256 capped = raw > maxExp ? (maxExp * safetyMult) / 10_000 : raw;
-
-            uint256 extTVL = cachedExternalTVL[adapter];
-            if (extTVL > 0) {
-                uint16 dynRel = _effectiveRelativeCapBps(extTVL);
-                uint16 effRel = (maxRelGov > 0 && maxRelGov < dynRel)
-                    ? maxRelGov : dynRel;
-                uint256 relCap = (uint256(effRel) * extTVL) / 1e4;
-                if (capped > relCap) capped = (relCap * safetyMult) / 10_000;
-            }
-
-            // === PRESERVE SAFETY TRANCHE (P0.7 — the critical architectural rule)
-            // For safety adapters, if the current position is between the
-            // normal scoring target and the fallback ceiling, HOLD the
-            // position. The overflow path is the ONLY mechanism that grows
-            // the safety tranche above the normal target; the rebalance plan
-            // must never unwind that legitimate tranche, otherwise the gain
-            // from routing overflow to the safety adapter is immediately
-            // given back at the next rebalance.
-            SafetyFallback memory sf = safetyFallback[adapter];
-            if (sf.absCapBps != 0 && targetIdleBufferBps == 0) {
-                uint256 current = positionAssets[adapter];
-                if (current > capped) {
-                    uint256 fbCeiling = (uint256(sf.absCapBps) * tvl) / 1e4;
-                    if (adapterMaxExposureBps > 0 && sf.absCapBps > adapterMaxExposureBps)
-                        fbCeiling = uint256(adapterMaxExposureBps) * tvl / 1e4;
-                    if (extTVL > 0 && sf.relCapBps > 0) {
-                        uint256 fbRelCeiling = (uint256(sf.relCapBps) * extTVL) / 1e4;
-                        if (fbRelCeiling < fbCeiling) fbCeiling = fbRelCeiling;
-                    }
-                    if (current <= fbCeiling) {
-                        capped = current;
-                    }
-                }
-            }
-
-            // Dynamic-cost plans must be executable at the quoted capacity.
-            // A target above maxCapacity otherwise makes every plan fail its
-            // preflight even when other venues have a profitable opportunity.
-            if (rebalanceGasEstimator != address(0)) {
-                try ILendingAdapter(adapter).maxCapacity() returns (uint256 capacity) {
-                    if (capped > capacity) capped = capacity;
-                } catch { if (capped > positionAssets[adapter]) capped = positionAssets[adapter]; }
-            }
-            allocs[i] = capped;
-            unchecked { ++i; }
+            allocs[i] = _cappedTarget(scores[i].adapter, raw, tvl);
         }
         return allocs;
+    }
+
+    /// @dev Apply unchanged cap, safety-tranche and capacity rules to one selected target.
+    function _cappedTarget(address adapter, uint256 raw, uint256 tvl) internal view returns (uint256) {
+        uint16 maxRelGov = maxRelativeExposureBps;
+        uint256 safetyMult = 10_000 - uint256(targetSafetyMarginBps);
+        // Scoring path always uses NORMAL caps. The fallback caps are
+        // intentionally NOT honoured here — opportunistic allocation must
+        // not target above the regular cap; only the safety-overflow path
+        // can push above it.
+        uint256 maxExp = (_effectiveAbsCapBps(adapter, tvl) * tvl) / 1e4;
+        uint256 capped = raw > maxExp ? (maxExp * safetyMult) / 10_000 : raw;
+
+        uint256 extTVL = cachedExternalTVL[adapter];
+        if (extTVL > 0) {
+            uint16 dynRel = _effectiveRelativeCapBps(extTVL);
+            uint16 effRel = (maxRelGov > 0 && maxRelGov < dynRel)
+                ? maxRelGov : dynRel;
+            uint256 relCap = (uint256(effRel) * extTVL) / 1e4;
+            if (capped > relCap) capped = (relCap * safetyMult) / 10_000;
+        }
+
+        // === PRESERVE SAFETY TRANCHE (P0.7 — the critical architectural rule)
+        // For safety adapters, if the current position is between the
+        // normal scoring target and the fallback ceiling, HOLD the
+        // position. The overflow path is the ONLY mechanism that grows
+        // the safety tranche above the normal target; the rebalance plan
+        // must never unwind that legitimate tranche, otherwise the gain
+        // from routing overflow to the safety adapter is immediately
+        // given back at the next rebalance.
+        SafetyFallback memory sf = safetyFallback[adapter];
+        if (sf.absCapBps != 0 && targetIdleBufferBps == 0) {
+            uint256 current = positionAssets[adapter];
+            if (current > capped) {
+                uint256 fbCeiling = (uint256(sf.absCapBps) * tvl) / 1e4;
+                if (adapterMaxExposureBps > 0 && sf.absCapBps > adapterMaxExposureBps)
+                    fbCeiling = uint256(adapterMaxExposureBps) * tvl / 1e4;
+                if (extTVL > 0 && sf.relCapBps > 0) {
+                    uint256 fbRelCeiling = (uint256(sf.relCapBps) * extTVL) / 1e4;
+                    if (fbRelCeiling < fbCeiling) fbCeiling = fbRelCeiling;
+                }
+                if (current <= fbCeiling) {
+                    capped = current;
+                }
+            }
+        }
+
+        // Dynamic-cost plans must be executable at the quoted capacity.
+        // A target above maxCapacity otherwise makes every plan fail its
+        // preflight even when other venues have a profitable opportunity.
+        if (rebalanceGasEstimator != address(0)) {
+            try ILendingAdapter(adapter).maxCapacity() returns (uint256 capacity) {
+                if (capped > capacity) capped = capacity;
+            } catch { if (capped > positionAssets[adapter]) capped = positionAssets[adapter]; }
+        }
+        return capped;
     }
 
     // ── Allocation plan builder (no state writes, bestEffort is advisory) ────
@@ -545,14 +541,7 @@ contract StrategyAllocCalcModule is StrategyStorageLayout {
     // positionAssets) was pure redundant work, paid up to MAX_ADAPTERS times
     // per deployIdle()/prepareRebalance() cycle.
     function _effectiveMaxAdapters(uint256 tvl) internal view returns (uint16) {
-        uint16 staticMax = maxAdaptersPerAllocation;
-        uint16 dynamicMax;
-        if (tvl < 25_000e6) dynamicMax = 1;
-        else if (tvl < 250_000e6) dynamicMax = 2;
-        else if (tvl < 1_000_000e6) dynamicMax = 3;
-        else if (tvl < 5_000_000e6) dynamicMax = 4;
-        else dynamicMax = 5;
-        return (staticMax > 0 && staticMax < dynamicMax) ? staticMax : dynamicMax;
+        return StrategyConfigLib.effectiveMaxAdapters(tvl, maxAdaptersPerAllocation);
     }
 
     function _effectiveAbsCapBps(address adapter, uint256 tvl) internal view returns (uint256) {
@@ -591,14 +580,7 @@ contract StrategyAllocCalcModule is StrategyStorageLayout {
     }
 
     function _effectiveMinSeed(uint256 tvl) internal view returns (uint256) {
-        uint256 staticSeed = minNewAdapterSeed;
-        uint256 dynamicSeed;
-        if (tvl < 250_000e6) dynamicSeed = 100e6;
-        else if (tvl < 1_000_000e6) dynamicSeed = 1_000e6;
-        else if (tvl < 5_000_000e6) dynamicSeed = 5_000e6;
-        else if (tvl < 25_000_000e6) dynamicSeed = 25_000e6;
-        else dynamicSeed = (tvl * 200) / 1e4;
-        return staticSeed > dynamicSeed ? staticSeed : dynamicSeed;
+        return StrategyConfigLib.effectiveMinNewAdapterSeed(tvl, minNewAdapterSeed);
     }
 
     // ── Liquidity cache helper ───────────────────────────────────────────────

@@ -360,22 +360,11 @@ contract StrategyExplainabilityLens {
     // FIX P1.L6: _decayedIncentive deleted (P0.L1A forces wIncentive=0).
 
     function _effectiveMaxAdapters(uint256 tvl) internal view returns (uint16) {
-        uint16 staticMax = strategy.maxAdaptersPerAllocation();
-        uint16 dynamicMax;
-        if (tvl < 150_000e6) dynamicMax = 2;
-        else if (tvl < 650_000e6) dynamicMax = 3;
-        else if (tvl < 3_000_000e6) dynamicMax = 4;
-        else dynamicMax = 5;
-        return (staticMax > 0 && staticMax < dynamicMax) ? staticMax : dynamicMax;
+        return StrategyConfigLib.effectiveMaxAdapters(tvl, strategy.maxAdaptersPerAllocation());
     }
 
     function _effectiveMinNewAdapterSeed(uint256 tvl) internal view returns (uint256) {
-        uint256 staticSeed = strategy.minNewAdapterSeed();
-        uint256 dynamicSeed;
-        if (tvl < 1_000_000e6) dynamicSeed = 10_000e6;
-        else if (tvl < 10_000_000e6) dynamicSeed = 50_000e6;
-        else dynamicSeed = (tvl * 200) / 1e4;
-        return staticSeed > dynamicSeed ? staticSeed : dynamicSeed;
+        return StrategyConfigLib.effectiveMinNewAdapterSeed(tvl, strategy.minNewAdapterSeed());
     }
 
     function _computeNormScores(

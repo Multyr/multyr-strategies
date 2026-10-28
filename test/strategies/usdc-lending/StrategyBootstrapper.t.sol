@@ -129,7 +129,7 @@ contract StrategyBootstrapperTestBase is Test {
         UsdcMultiLendingVault.StrategyInitParams memory params = UsdcMultiLendingVault
             .StrategyInitParams({
                 maxAdaptersPerAllocation: 3,
-                minAdaptersActive: 2,
+                minAdaptersActive: 1,
                 rebalanceMinMoveBps: 50,
                 minSecondsBetweenRebalances: 21600,
                 driftToleranceBps: 80,

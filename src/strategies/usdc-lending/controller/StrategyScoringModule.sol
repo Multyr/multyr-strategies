@@ -225,15 +225,7 @@ contract StrategyScoringModule is StrategyStorageLayout {
     }
 
     function _minSeedInternal() internal view returns (uint256) {
-        uint256 tvl = _tvl();
-        uint256 staticSeed = minNewAdapterSeed;
-        uint256 dynamicSeed;
-        if (tvl < 250_000e6) dynamicSeed = 100e6;           // T1+T2: 100 USDC (= min deposit)
-        else if (tvl < 1_000_000e6) dynamicSeed = 1_000e6;  // T3: 1K USDC
-        else if (tvl < 5_000_000e6) dynamicSeed = 5_000e6;  // T4: 5K USDC
-        else if (tvl < 25_000_000e6) dynamicSeed = 25_000e6; // T5: 25K USDC
-        else dynamicSeed = (tvl * 200) / 1e4;                // T_overflow: 2% TVL
-        return staticSeed > dynamicSeed ? staticSeed : dynamicSeed;
+        return StrategyConfigLib.effectiveMinNewAdapterSeed(_tvl(), minNewAdapterSeed);
     }
 
     /// @notice Dynamic max adapters per allocation — scales with TVL.
@@ -245,15 +237,7 @@ contract StrategyScoringModule is StrategyStorageLayout {
     // WHAT COULD BREAK: tests asserting old thresholds (150K→2, 650K→3). PROMPT 3 fixes cascade.
     // VERIFY: sum(effectiveAbsCapBps) >= 110% TVL at each tier (STRUCTURAL_BASE invariant).
     function effectiveMaxAdaptersPerAllocation() public view onlyDelegateCall returns (uint16) {
-        uint256 tvl = _tvl();
-        uint16 staticMax = maxAdaptersPerAllocation;
-        uint16 dynamicMax;
-        if (tvl < 25_000e6) dynamicMax = 1;
-        else if (tvl < 250_000e6) dynamicMax = 2;
-        else if (tvl < 1_000_000e6) dynamicMax = 3;      // T3 triple:  250K - 1M
-        else if (tvl < 5_000_000e6) dynamicMax = 4;      // T4 quad:    1M - 5M
-        else dynamicMax = 5;                              // T5 max:     5M+
-        return (staticMax > 0 && staticMax < dynamicMax) ? staticMax : dynamicMax;
+        return StrategyConfigLib.effectiveMaxAdapters(_tvl(), maxAdaptersPerAllocation);
     }
 
     /// @notice Adaptive per-adapter cap (docs/TIER_MODEL.md Section 4).
