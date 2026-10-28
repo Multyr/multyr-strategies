@@ -919,8 +919,8 @@ contract UsdcMultiLendingVault_Fuzz_AccessControl is UsdcMultiLendingVaultFuzzBa
     }
 
     /// @notice Fuzz: random addresses cannot call harvest
-    function testFuzz_harvest_onlyKeeper(address caller) public {
-        vm.assume(caller != keeper);
+    function testFuzz_harvest_onlyKeeperOrCore(address caller) public {
+        vm.assume(caller != keeper && caller != core && caller != router);
 
         vm.prank(caller);
         vm.expectRevert();

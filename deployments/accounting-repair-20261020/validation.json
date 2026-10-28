@@ -1,0 +1,16 @@
+{
+  "status": "seed confirmed; Safe execution required",
+  "safe": "0x70ef444799D6FBbE0865bA598Bee6795e064a326",
+  "file": "01-reconcile-retired-venus.safe.json",
+  "sha256": "32cc7693911cf14d50e89e8f2a377f37f09e0cacab115539ff24c620b2770217",
+  "calls": 3,
+  "seedReceiptBlock": 516578816,
+  "forkTest": "RetiredAdapterAccountingTest.test_reconcileRetiredPosition",
+  "originalForkBlock": 516577617,
+  "originalForkResult": "passed; stale position zero; seven funded candidate actions",
+  "liveStateForkBlock": 516578816,
+  "liveStateForkResult": "passed: retired recorded and actual balances zero; all seven candidate actions funded",
+  "safeBatchGasExcludingSafeOverhead": 577800,
+  "candidateRemainingCashRawUSDC": 3,
+  "liveRebalanceProfitability": "not confirmed; must recheck after Safe execution"
+}

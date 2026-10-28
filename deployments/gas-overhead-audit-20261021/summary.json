@@ -1,0 +1,42 @@
+{
+  "forkBlock": 516950276,
+  "sourceCommit": "abdb3e908d95f8f0460989832244c75b65eab5ae",
+  "scope": "Conditional localhost fork benchmark; economic rejection overridden, fee precompile stubbed. Not a live execution or native ArbOS fee receipt.",
+  "totals": {
+    "receiptGas": 13307445,
+    "grossGas": 13828745,
+    "refund": 521300,
+    "strategyOverhead": 8004947,
+    "intrinsic": 108060,
+    "adapterGas": 5125546,
+    "finalizationGas": 590192
+  },
+  "configured": {
+    "prepareGas": 1500000,
+    "stepGas": 1000000,
+    "steps": 4,
+    "finalizeGas": 300000,
+    "adapterGasSum": 5400000,
+    "intrinsicGasSum": 105000,
+    "totalGas": 11305000,
+    "posterWei": 475328757760
+  },
+  "nodeInterfacePosterWei": 441434106000,
+  "configuredQuote": {
+    "beforeMarginUSDC": "0.571175",
+    "with50PercentMarginUSDC": "0.856763"
+  },
+  "measuredNetGasPricedAtPinnedFees": {
+    "beforeMarginUSDC": "0.672051",
+    "with50PercentMarginUSDC": "1.008077"
+  },
+  "measuredGrossGasPricedAtPinnedFees": {
+    "beforeMarginUSDC": "0.698334",
+    "with50PercentMarginUSDC": "1.047501"
+  },
+  "limitations": [
+    "One current seven-action scenario, not sufficient to certify defaults or reliable EMAs.",
+    "Separate transactions with deterministic timestamps; Morpho deposit notably exceeds configured floor.",
+    "No production configuration or contracts changed."
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "date": "2026-10-17",
+  "generalStrategyTests": {
+    "command": "forge test --match-path 'test/strategies/usdc-lending/*.t.sol' -vv",
+    "suites": 177,
+    "passed": 2542,
+    "failed": 0,
+    "skipped": 8
+  },
+  "pinnedFork": {
+    "chainId": 42161,
+    "blockNumber": 515526090,
+    "routerHarvestIntegrationAndFork": {
+      "passed": 7,
+      "failed": 0
+    },
+    "settingsCopyIncludingFork": {
+      "passed": 6,
+      "failed": 0
+    }
+  },
+  "deploymentScriptsCompile": true,
+  "coreSourceModified": false,
+  "transactionsBroadcast": false,
+  "productionReady": false,
+  "remaining": [
+    "Calibrated estimator/feed configuration and cold full-plan wrapper receipt comparisons",
+    "Adapter-internal configuration and historical role parity",
+    "Funded seven-adapter deployment/migration rehearsal",
+    "AWS keeper cutover and on-chain governance migration"
+  ]
+}

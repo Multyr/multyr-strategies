@@ -1,0 +1,35 @@
+{
+  "block": "515047018",
+  "timestamp": "1792064103",
+  "prices": [
+    "13404746880",
+    "95748192",
+    "400000000000",
+    "20000000",
+    "0",
+    "20000000"
+  ],
+  "rows": [
+    {
+      "label": "prepare-direct",
+      "bytes": 4,
+      "modeledPosterWei": "13787739648",
+      "rpcPosterWei": "15518580000",
+      "ratioBps": "8884"
+    },
+    {
+      "label": "prepare-upkeep",
+      "bytes": 132,
+      "modeledPosterWei": "26043508224",
+      "rpcPosterWei": "27006360000",
+      "ratioBps": "9643"
+    },
+    {
+      "label": "execute-upkeep",
+      "bytes": 132,
+      "modeledPosterWei": "26043508224",
+      "rpcPosterWei": "27006360000",
+      "ratioBps": "9643"
+    }
+  ]
+}

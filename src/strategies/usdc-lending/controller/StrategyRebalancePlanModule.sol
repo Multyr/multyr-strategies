@@ -34,6 +34,7 @@ pragma solidity 0.8.28;
 // once in UsdcLendingStrategy constructor, no setter).
 // ═══════════════════════════════════════════════════════════════════════════════
 
+import {ReadOnlyGasEstimator as GasEstimator} from "../gas/ReadOnlyGasEstimator.sol";
 import { ILendingAdapter } from "../interfaces/ILendingAdapter.sol";
 import {
     StrategyStorageLayout,
@@ -71,7 +72,7 @@ contract StrategyRebalancePlanModule is StrategyStorageLayout {
     bytes4 private constant DEPLOY_IDLE_TO_ADAPTERS_SEL =
         bytes4(keccak256("deployIdleToAdapters(uint256,bool)"));
     bytes4 private constant CHECK_GATE_SEL =
-        bytes4(keccak256("checkGate(uint16[],address[],uint256[],uint256,uint256)"));
+        bytes4(keccak256("checkCandidateGate(uint16[],address[],uint256[],uint256[],uint256,uint256)"));
     bytes4 private constant SAFE_DEPOSIT_SEL =
         bytes4(keccak256("safeAdapterDeposit(address,uint256)"));
     bytes4 private constant RECORD_FAILURE_SEL =
@@ -156,77 +157,26 @@ contract StrategyRebalancePlanModule is StrategyStorageLayout {
         }
 
         uint256 len = enabledList.length;
-        if (len < minAdaptersActive) revert InsufficientAdapters();
+        if (len == 0) revert InsufficientAdapters();
         if (len > 10) revert TooManyAdapters();
 
-        // Gate check via rebalanceGateModule_addr delegatecall.
+        // One canonical action builder is shared by preview, gate and execution.
+        GasEstimator.Action[] memory actions = _candidateActions(enabledList, targetAllocs, normScores, tvl);
+        if (actions.length == 0) revert GateNotMet();
         {
             (bool gOk, bytes memory gRes) = rebalanceGateModule_addr.delegatecall(
-                abi.encodeWithSelector(CHECK_GATE_SEL, apys, enabledList, targetAllocs, tvl, moved)
+                abi.encodeWithSelector(CHECK_GATE_SEL, apys, enabledList, targetAllocs, normScores, tvl, moved)
             );
             if (!gOk) revert GateNotMet();
-            (bool pass,) = abi.decode(gRes, (bool, int256));
+            (bool pass,, bool safety) = abi.decode(gRes, (bool, int256, bool));
             if (!pass) revert GateNotMet();
+            _gasPlanSafety = safety;
         }
-
-        // Build action plan (local storage writes).
-        uint256 _dust = dustTolerance;
-        uint256 _minDelta = (tvl * rebalanceMinMoveBps) / 1e4;
-        if (len > 0) _minDelta = _minDelta / len;
-        if (_minDelta < _dust) _minDelta = _dust;
-
-        uint8 actionCount = 0;
-
-        // Withdrawals in enabled order.
-        for (uint256 i = 0; i < len && actionCount < 10;) {
-            uint256 curr = positionAssets[enabledList[i]];
-            uint256 tgt = targetAllocs[i];
-            if (curr > tgt) {
-                uint256 toWithdraw = curr - tgt;
-                if (toWithdraw >= _minDelta) {
-                    rebalancePlanAdapters[actionCount] = enabledList[i];
-                    rebalancePlanAmounts[actionCount] = toWithdraw; // MSB=0 → withdraw
-                    actionCount++;
-                }
-            }
-            unchecked { ++i; }
-        }
-
-        // Deposits sorted by deficit × normalized-score (insertion sort, len ≤ 10).
-        uint256[] memory deficitScores = new uint256[](len);
-        uint256[] memory order = new uint256[](len);
-        for (uint256 i = 0; i < len;) {
-            uint256 tgt = targetAllocs[i];
-            uint256 curr = positionAssets[enabledList[i]];
-            uint256 deficit = tgt > curr ? tgt - curr : 0;
-            deficitScores[i] = deficit * normScores[i];
-            order[i] = i;
-            unchecked { ++i; }
-        }
-        for (uint256 i = 1; i < len;) {
-            uint256 key = order[i];
-            uint256 keyVal = deficitScores[key];
-            uint256 j = i;
-            while (j > 0 && deficitScores[order[j - 1]] < keyVal) {
-                order[j] = order[j - 1];
-                j--;
-            }
-            order[j] = key;
-            unchecked { ++i; }
-        }
-        for (uint256 k = 0; k < len && actionCount < 10;) {
-            uint256 idx = order[k];
-            uint256 curr = positionAssets[enabledList[idx]];
-            uint256 tgt = targetAllocs[idx];
-            if (tgt > curr) {
-                uint256 toDeposit = tgt - curr;
-                if (toDeposit >= _minDelta) {
-                    rebalancePlanAdapters[actionCount] = enabledList[idx];
-                    rebalancePlanAmounts[actionCount] = toDeposit | (1 << 255); // MSB=1 → deposit
-                    actionCount++;
-                }
-            }
-            unchecked { ++k; }
+        uint8 actionCount = uint8(actions.length);
+        for (uint256 i; i < actions.length; ++i) {
+            require(actions[i].amount < (1 << 255), "plan-amount");
+            rebalancePlanAdapters[i] = actions[i].adapter;
+            rebalancePlanAmounts[i] = actions[i].amount | (actions[i].deposit ? (1 << 255) : 0);
         }
 
         rebalancePlanPhase = 1;
@@ -235,6 +185,11 @@ contract StrategyRebalancePlanModule is StrategyStorageLayout {
         rebalancePlanTotalActions = actionCount;
         rebalancePlanTvl = tvl;
 
+        uint8 batch = maxRebalanceActionsPerTx == 0 ? 2 : maxRebalanceActionsPerTx;
+        emit RebalanceScores(
+            keccak256(abi.encode(block.chainid, address(this), actions, batch, true)),
+            enabledList, normScores, apys, targetAllocs, tvl
+        );
         emit RebalancePlanCreated(actionCount, moved, tvl);
     }
 
@@ -275,6 +230,19 @@ contract StrategyRebalancePlanModule is StrategyStorageLayout {
             }
         }
 
+        if (rebalanceGasEstimator != address(0) && !_gasPlanSafety) {
+            (bool ok, bytes memory result) = rebalanceGateModule_addr.delegatecall(abi.encodeWithSignature("checkRemainingPlan()"));
+            if (!ok || result.length < 32 || !abi.decode(result, (bool))) {
+                _clearPlan();
+                _bumpRebalanceBackoff();
+                // Prevent repeated paid prepare/cancel cycles during volatile fees.
+                lastRebalanceTs = uint64(block.timestamp);
+                emit RebalanceEconomicsInvalidated();
+                emit RebalancePlanCancelled();
+                return;
+            }
+        }
+
         rebalancePlanPhase = 2;
         uint8 start = rebalancePlanNextAction;
         uint8 maxPerTx = maxRebalanceActionsPerTx;
@@ -282,20 +250,34 @@ contract StrategyRebalancePlanModule is StrategyStorageLayout {
         uint8 end = start + maxPerTx;
         if (end > rebalancePlanTotalActions) end = rebalancePlanTotalActions;
 
+        bool incomplete;
         for (uint8 i = start; i < end;) {
             address adapter = rebalancePlanAdapters[i];
             uint256 rawAmount = rebalancePlanAmounts[i];
             bool isDeposit = (rawAmount >> 255) == 1;
             uint256 amount = rawAmount & ((1 << 255) - 1);
 
-            if (!enabled[adapter] || quarantined[adapter]) {
+            if (isDeposit && (!enabled[adapter] || quarantined[adapter])) {
                 unchecked { ++i; }
                 continue;
             }
 
             if (isDeposit) {
                 uint256 idle = ASSET.balanceOf(address(this));
-                if (amount > idle) amount = idle;
+                uint256 spendable = targetIdleBufferBps > 0 ? _deployableIdle() : idle;
+                if (amount > spendable) { incomplete = true; amount = spendable; }
+                // Safety mandates waive profitability, never deposit controls. Check each
+                // deposit against current state without preventing protective withdrawals.
+                if (amount > 0 && rebalanceGasEstimator != address(0) && _gasPlanSafety) {
+                    (bool valid, bytes memory response) = allocCalcModule_addr.delegatecall(
+                        abi.encodeWithSignature("validateRebalanceDeposit(address,uint256,uint256)",
+                            adapter, positionAssets[adapter] + amount, _tvlLocal())
+                    );
+                    if (!valid || response.length < 32 || !abi.decode(response, (bool))) {
+                        emit RebalanceDepositSkipped(adapter, amount);
+                        amount = 0;
+                    }
+                }
                 if (amount > 0) {
                     bool ok = _safeAdapterDepositViaOps(adapter, amount);
                     if (ok) {
@@ -304,18 +286,31 @@ contract StrategyRebalancePlanModule is StrategyStorageLayout {
                         uint256 actualDeposited = idle - ASSET.balanceOf(address(this));
                         positionAssets[adapter] += actualDeposited;
                         if (actualDeposited < amount) {
+                            incomplete = true;
                             emit RebalanceDepositPartial(adapter, amount, actualDeposited);
                         }
-                    }
+                    } else { incomplete = true; }
                 }
             } else {
+                uint256 gasBefore = gasleft();
                 try ILendingAdapter(adapter).withdraw(amount, address(this)) returns (uint256 withdrawn) {
+                    if (withdrawn > 0) _recordExecutionGas(adapter, gasBefore - gasleft(), false);
+                    if (withdrawn != amount) incomplete = true;
                     positionAssets[adapter] -= withdrawn;
                     _recordAdapterSuccessViaOps(adapter);
                 } catch (bytes memory reason) {
+                    incomplete = true;
                     emit AdapterWithdrawFailed(adapter, amount, reason);
                     _recordAdapterFailureViaOps(adapter);
                 }
+            }
+            if (incomplete && rebalanceGasEstimator != address(0) && !_gasPlanSafety) {
+                _clearPlan();
+                _bumpRebalanceBackoff();
+                lastRebalanceTs = uint64(block.timestamp);
+                emit RebalanceEconomicsInvalidated();
+                emit RebalancePlanCancelled();
+                return;
             }
             unchecked { ++i; }
         }
@@ -339,7 +334,7 @@ contract StrategyRebalancePlanModule is StrategyStorageLayout {
         uint256 idle = ASSET.balanceOf(address(this));
         uint256 threshold = _idleDeployThresholdLocal(idle);
         // Force deploy if idle is very high (2x threshold)
-        if (idle > threshold * 2) {
+        if (rebalanceGasEstimator == address(0) && idle > threshold * 2) {
             // Auto-redeploy via ScoringModule (preserves all cap/ramp invariants).
             (bool ok,) = scoringModule.delegatecall(
                 abi.encodeWithSelector(DEPLOY_IDLE_TO_ADAPTERS_SEL, idle, true)
@@ -358,6 +353,7 @@ contract StrategyRebalancePlanModule is StrategyStorageLayout {
     }
 
     function _clearPlan() internal {
+        _gasPlanSafety = false;
         rebalancePlanPhase = 0;
         rebalancePlanNextAction = 0;
         rebalancePlanTotalActions = 0;

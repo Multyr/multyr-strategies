@@ -1,0 +1,1218 @@
+{
+  "storage": [
+    {
+      "astId": 73645,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "_roles",
+      "offset": 0,
+      "slot": "0",
+      "type": "t_mapping(t_bytes32,t_struct(RoleData)73640_storage)"
+    },
+    {
+      "astId": 74477,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "_paused",
+      "offset": 0,
+      "slot": "1",
+      "type": "t_bool"
+    },
+    {
+      "astId": 74578,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "_status",
+      "offset": 0,
+      "slot": "2",
+      "type": "t_uint256"
+    },
+    {
+      "astId": 116888,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "adapters",
+      "offset": 0,
+      "slot": "3",
+      "type": "t_array(t_address)dyn_storage"
+    },
+    {
+      "astId": 116892,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "isAdapter",
+      "offset": 0,
+      "slot": "4",
+      "type": "t_mapping(t_address,t_bool)"
+    },
+    {
+      "astId": 116896,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "enabled",
+      "offset": 0,
+      "slot": "5",
+      "type": "t_mapping(t_address,t_bool)"
+    },
+    {
+      "astId": 116900,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "flagged",
+      "offset": 0,
+      "slot": "6",
+      "type": "t_mapping(t_address,t_bool)"
+    },
+    {
+      "astId": 116904,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "positionAssets",
+      "offset": 0,
+      "slot": "7",
+      "type": "t_mapping(t_address,t_uint256)"
+    },
+    {
+      "astId": 116908,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "pushDepositMode",
+      "offset": 0,
+      "slot": "8",
+      "type": "t_mapping(t_address,t_bool)"
+    },
+    {
+      "astId": 116912,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "depositModeKnown",
+      "offset": 0,
+      "slot": "9",
+      "type": "t_mapping(t_address,t_bool)"
+    },
+    {
+      "astId": 116914,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "maxAdaptersPerAllocation",
+      "offset": 0,
+      "slot": "10",
+      "type": "t_uint16"
+    },
+    {
+      "astId": 116916,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "minAdaptersActive",
+      "offset": 2,
+      "slot": "10",
+      "type": "t_uint16"
+    },
+    {
+      "astId": 116918,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "rebalanceMinMoveBps",
+      "offset": 4,
+      "slot": "10",
+      "type": "t_uint16"
+    },
+    {
+      "astId": 116920,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "minSecondsBetweenRebalances",
+      "offset": 6,
+      "slot": "10",
+      "type": "t_uint32"
+    },
+    {
+      "astId": 116922,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "driftToleranceBps",
+      "offset": 10,
+      "slot": "10",
+      "type": "t_uint16"
+    },
+    {
+      "astId": 116924,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "wAPY",
+      "offset": 12,
+      "slot": "10",
+      "type": "t_uint16"
+    },
+    {
+      "astId": 116926,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "wLiq",
+      "offset": 14,
+      "slot": "10",
+      "type": "t_uint16"
+    },
+    {
+      "astId": 116928,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "wRisk",
+      "offset": 16,
+      "slot": "10",
+      "type": "t_uint16"
+    },
+    {
+      "astId": 116930,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "wStability",
+      "offset": 18,
+      "slot": "10",
+      "type": "t_uint16"
+    },
+    {
+      "astId": 116932,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "wIncentive",
+      "offset": 20,
+      "slot": "10",
+      "type": "t_uint16"
+    },
+    {
+      "astId": 116934,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "incentiveDecayHalfLife",
+      "offset": 22,
+      "slot": "10",
+      "type": "t_uint32"
+    },
+    {
+      "astId": 116936,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "adapterMaxExposureBps",
+      "offset": 26,
+      "slot": "10",
+      "type": "t_uint16"
+    },
+    {
+      "astId": 116938,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "newAdapterRampBps",
+      "offset": 28,
+      "slot": "10",
+      "type": "t_uint16"
+    },
+    {
+      "astId": 116942,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "adapterAbsCapOverrideBps",
+      "offset": 0,
+      "slot": "11",
+      "type": "t_mapping(t_address,t_uint16)"
+    },
+    {
+      "astId": 116945,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "degradedModeActive",
+      "offset": 0,
+      "slot": "12",
+      "type": "t_bool"
+    },
+    {
+      "astId": 116947,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "degradedModeEnteredAt",
+      "offset": 1,
+      "slot": "12",
+      "type": "t_uint64"
+    },
+    {
+      "astId": 116950,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "withdrawalLockSeconds",
+      "offset": 9,
+      "slot": "12",
+      "type": "t_uint64"
+    },
+    {
+      "astId": 116952,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "gateHorizonDays",
+      "offset": 17,
+      "slot": "12",
+      "type": "t_uint16"
+    },
+    {
+      "astId": 116954,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "gateMinNetBenefitBps",
+      "offset": 19,
+      "slot": "12",
+      "type": "t_uint16"
+    },
+    {
+      "astId": 116956,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "slippageBpsEstimate",
+      "offset": 21,
+      "slot": "12",
+      "type": "t_uint16"
+    },
+    {
+      "astId": 116958,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "withdrawalSpreadBpsEstimate",
+      "offset": 23,
+      "slot": "12",
+      "type": "t_uint16"
+    },
+    {
+      "astId": 116960,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "gasCostUSDC",
+      "offset": 0,
+      "slot": "13",
+      "type": "t_uint256"
+    },
+    {
+      "astId": 116962,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "harvestThresholdBps",
+      "offset": 0,
+      "slot": "14",
+      "type": "t_uint16"
+    },
+    {
+      "astId": 116964,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "minSecondsBetweenHarvests",
+      "offset": 2,
+      "slot": "14",
+      "type": "t_uint32"
+    },
+    {
+      "astId": 116966,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "dustTolerance",
+      "offset": 0,
+      "slot": "15",
+      "type": "t_uint256"
+    },
+    {
+      "astId": 116968,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "rolesFrozen",
+      "offset": 0,
+      "slot": "16",
+      "type": "t_bool"
+    },
+    {
+      "astId": 116970,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "paramsFinalized",
+      "offset": 1,
+      "slot": "16",
+      "type": "t_bool"
+    },
+    {
+      "astId": 116972,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "lastHarvestTs",
+      "offset": 2,
+      "slot": "16",
+      "type": "t_uint64"
+    },
+    {
+      "astId": 116974,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "lastRebalanceTs",
+      "offset": 10,
+      "slot": "16",
+      "type": "t_uint64"
+    },
+    {
+      "astId": 116978,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "stabilityEMA",
+      "offset": 0,
+      "slot": "17",
+      "type": "t_mapping(t_address,t_uint256)"
+    },
+    {
+      "astId": 116980,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "stabilityEMAPeriod",
+      "offset": 0,
+      "slot": "18",
+      "type": "t_uint16"
+    },
+    {
+      "astId": 116984,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "riskScoreBps",
+      "offset": 0,
+      "slot": "19",
+      "type": "t_mapping(t_address,t_uint16)"
+    },
+    {
+      "astId": 116988,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "quarantined",
+      "offset": 0,
+      "slot": "20",
+      "type": "t_mapping(t_address,t_bool)"
+    },
+    {
+      "astId": 116992,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "adapterConsecutiveFailures",
+      "offset": 0,
+      "slot": "21",
+      "type": "t_mapping(t_address,t_uint8)"
+    },
+    {
+      "astId": 116994,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "adapterQuarantineThreshold",
+      "offset": 0,
+      "slot": "22",
+      "type": "t_uint8"
+    },
+    {
+      "astId": 116996,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "depositsDisabled",
+      "offset": 1,
+      "slot": "22",
+      "type": "t_bool"
+    },
+    {
+      "astId": 117000,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "adapterActivatedAt",
+      "offset": 0,
+      "slot": "23",
+      "type": "t_mapping(t_address,t_uint64)"
+    },
+    {
+      "astId": 117002,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "minNewAdapterSeed",
+      "offset": 0,
+      "slot": "24",
+      "type": "t_uint256"
+    },
+    {
+      "astId": 117004,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "newAdapterRampDuration",
+      "offset": 0,
+      "slot": "25",
+      "type": "t_uint64"
+    },
+    {
+      "astId": 117006,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "maxIdleAfterDepositBps",
+      "offset": 8,
+      "slot": "25",
+      "type": "t_uint16"
+    },
+    {
+      "astId": 117008,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "bootstrapEndsAt",
+      "offset": 10,
+      "slot": "25",
+      "type": "t_uint64"
+    },
+    {
+      "astId": 117010,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "maxIdleBootstrapBps",
+      "offset": 18,
+      "slot": "25",
+      "type": "t_uint16"
+    },
+    {
+      "astId": 117012,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "degradedViewThresholdBps",
+      "offset": 20,
+      "slot": "25",
+      "type": "t_uint16"
+    },
+    {
+      "astId": 117016,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "adapterLastFailureTs",
+      "offset": 0,
+      "slot": "26",
+      "type": "t_mapping(t_address,t_uint64)"
+    },
+    {
+      "astId": 117018,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "failureDecaySeconds",
+      "offset": 0,
+      "slot": "27",
+      "type": "t_uint32"
+    },
+    {
+      "astId": 117020,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "lastDeployIdleTs",
+      "offset": 4,
+      "slot": "27",
+      "type": "t_uint64"
+    },
+    {
+      "astId": 117022,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "minSecondsBetweenDeployIdle",
+      "offset": 12,
+      "slot": "27",
+      "type": "t_uint32"
+    },
+    {
+      "astId": 117024,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "maxRelativeExposureBps",
+      "offset": 16,
+      "slot": "27",
+      "type": "t_uint16"
+    },
+    {
+      "astId": 117028,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "cachedExternalTVL",
+      "offset": 0,
+      "slot": "28",
+      "type": "t_mapping(t_address,t_uint256)"
+    },
+    {
+      "astId": 117032,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "cachedExternalTVLTs",
+      "offset": 0,
+      "slot": "29",
+      "type": "t_mapping(t_address,t_uint64)"
+    },
+    {
+      "astId": 117034,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "externalTVLStalenessSeconds",
+      "offset": 0,
+      "slot": "30",
+      "type": "t_uint32"
+    },
+    {
+      "astId": 117038,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "lastExtTVLSnapshot",
+      "offset": 0,
+      "slot": "31",
+      "type": "t_mapping(t_address,t_uint256)"
+    },
+    {
+      "astId": 117042,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "lastExtTVLSnapshotTs",
+      "offset": 0,
+      "slot": "32",
+      "type": "t_mapping(t_address,t_uint64)"
+    },
+    {
+      "astId": 117044,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "lastSyncTs",
+      "offset": 0,
+      "slot": "33",
+      "type": "t_uint64"
+    },
+    {
+      "astId": 117046,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "minSecondsBetweenSync",
+      "offset": 8,
+      "slot": "33",
+      "type": "t_uint32"
+    },
+    {
+      "astId": 117050,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "cachedLiquidityBps",
+      "offset": 0,
+      "slot": "34",
+      "type": "t_mapping(t_address,t_uint16)"
+    },
+    {
+      "astId": 117054,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "cachedLiquidityTs",
+      "offset": 0,
+      "slot": "35",
+      "type": "t_mapping(t_address,t_uint64)"
+    },
+    {
+      "astId": 117056,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "liquidityStalenessSeconds",
+      "offset": 0,
+      "slot": "36",
+      "type": "t_uint32"
+    },
+    {
+      "astId": 117058,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "rebalancePlanPhase",
+      "offset": 4,
+      "slot": "36",
+      "type": "t_uint8"
+    },
+    {
+      "astId": 117060,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "rebalancePlanTs",
+      "offset": 5,
+      "slot": "36",
+      "type": "t_uint64"
+    },
+    {
+      "astId": 117062,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "rebalancePlanNextAction",
+      "offset": 13,
+      "slot": "36",
+      "type": "t_uint8"
+    },
+    {
+      "astId": 117064,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "rebalancePlanTotalActions",
+      "offset": 14,
+      "slot": "36",
+      "type": "t_uint8"
+    },
+    {
+      "astId": 117066,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "maxRebalanceActionsPerTx",
+      "offset": 15,
+      "slot": "36",
+      "type": "t_uint8"
+    },
+    {
+      "astId": 117068,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "rebalancePlanMaxAge",
+      "offset": 16,
+      "slot": "36",
+      "type": "t_uint32"
+    },
+    {
+      "astId": 117070,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "rebalancePlanTvl",
+      "offset": 0,
+      "slot": "37",
+      "type": "t_uint256"
+    },
+    {
+      "astId": 117072,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "rebalancePlanMinDrift",
+      "offset": 0,
+      "slot": "38",
+      "type": "t_uint256"
+    },
+    {
+      "astId": 117076,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "rebalancePlanAdapters",
+      "offset": 0,
+      "slot": "39",
+      "type": "t_array(t_address)10_storage"
+    },
+    {
+      "astId": 117080,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "rebalancePlanAmounts",
+      "offset": 0,
+      "slot": "49",
+      "type": "t_array(t_uint256)10_storage"
+    },
+    {
+      "astId": 117082,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "_retryMode",
+      "offset": 0,
+      "slot": "59",
+      "type": "t_bool"
+    },
+    {
+      "astId": 117086,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "lastPokedAPY",
+      "offset": 0,
+      "slot": "60",
+      "type": "t_mapping(t_address,t_uint16)"
+    },
+    {
+      "astId": 117090,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "lastStabilityUpdateTs",
+      "offset": 0,
+      "slot": "61",
+      "type": "t_mapping(t_address,t_uint64)"
+    },
+    {
+      "astId": 117092,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "apyFloorBps",
+      "offset": 0,
+      "slot": "62",
+      "type": "t_uint16"
+    },
+    {
+      "astId": 117094,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "minStabilityUpdateInterval",
+      "offset": 2,
+      "slot": "62",
+      "type": "t_uint32"
+    },
+    {
+      "astId": 117098,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "emaDepositGas",
+      "offset": 0,
+      "slot": "63",
+      "type": "t_mapping(t_address,t_uint64)"
+    },
+    {
+      "astId": 117102,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "emaWithdrawGas",
+      "offset": 0,
+      "slot": "64",
+      "type": "t_mapping(t_address,t_uint64)"
+    },
+    {
+      "astId": 117104,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "gasEmaSmoothingBps",
+      "offset": 0,
+      "slot": "65",
+      "type": "t_uint16"
+    },
+    {
+      "astId": 117106,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "estimatedGasCostUSDC",
+      "offset": 0,
+      "slot": "66",
+      "type": "t_uint256"
+    },
+    {
+      "astId": 117108,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "minBenefitCostRatioBps",
+      "offset": 0,
+      "slot": "67",
+      "type": "t_uint16"
+    },
+    {
+      "astId": 117110,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "entryDriftBps",
+      "offset": 2,
+      "slot": "67",
+      "type": "t_uint16"
+    },
+    {
+      "astId": 117112,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "exitDriftBps",
+      "offset": 4,
+      "slot": "67",
+      "type": "t_uint16"
+    },
+    {
+      "astId": 117114,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "minMoveUsd",
+      "offset": 0,
+      "slot": "68",
+      "type": "t_uint256"
+    },
+    {
+      "astId": 117116,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "recentRebalancePenaltyBps",
+      "offset": 0,
+      "slot": "69",
+      "type": "t_uint16"
+    },
+    {
+      "astId": 117118,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "recentRebalanceWindowSeconds",
+      "offset": 2,
+      "slot": "69",
+      "type": "t_uint32"
+    },
+    {
+      "astId": 117120,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "minLiquidityReadinessBps",
+      "offset": 6,
+      "slot": "69",
+      "type": "t_uint16"
+    },
+    {
+      "astId": 117122,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "currentRegime",
+      "offset": 8,
+      "slot": "69",
+      "type": "t_uint8"
+    },
+    {
+      "astId": 117124,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "regimeHysteresisMultBps",
+      "offset": 9,
+      "slot": "69",
+      "type": "t_uint16"
+    },
+    {
+      "astId": 117126,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "regimeBudgetMultBps",
+      "offset": 11,
+      "slot": "69",
+      "type": "t_uint16"
+    },
+    {
+      "astId": 117128,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "regimeHorizonDays",
+      "offset": 13,
+      "slot": "69",
+      "type": "t_uint16"
+    },
+    {
+      "astId": 117130,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "regimeConfidenceMultBps",
+      "offset": 15,
+      "slot": "69",
+      "type": "t_uint16"
+    },
+    {
+      "astId": 117132,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "rebalanceGateModule_addr",
+      "offset": 0,
+      "slot": "70",
+      "type": "t_address"
+    },
+    {
+      "astId": 117136,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "whitelistedAdapters",
+      "offset": 0,
+      "slot": "71",
+      "type": "t_mapping(t_address,t_bool)"
+    },
+    {
+      "astId": 117140,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "cachedAdapterCapacity",
+      "offset": 0,
+      "slot": "72",
+      "type": "t_mapping(t_address,t_uint256)"
+    },
+    {
+      "astId": 117143,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "rebalancePlanModule_addr",
+      "offset": 0,
+      "slot": "73",
+      "type": "t_address"
+    },
+    {
+      "astId": 117146,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "settingsModule_addr",
+      "offset": 0,
+      "slot": "74",
+      "type": "t_address"
+    },
+    {
+      "astId": 117149,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "allocCalcModule_addr",
+      "offset": 0,
+      "slot": "75",
+      "type": "t_address"
+    },
+    {
+      "astId": 117151,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "overCapRiskPremiumBps",
+      "offset": 20,
+      "slot": "75",
+      "type": "t_uint16"
+    },
+    {
+      "astId": 117153,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "stabilityEMAStalenessSeconds",
+      "offset": 22,
+      "slot": "75",
+      "type": "t_uint32"
+    },
+    {
+      "astId": 117155,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "riskScoreStalenessSeconds",
+      "offset": 26,
+      "slot": "75",
+      "type": "t_uint32"
+    },
+    {
+      "astId": 117157,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "rebalancePlanConsecutiveFailures",
+      "offset": 30,
+      "slot": "75",
+      "type": "t_uint8"
+    },
+    {
+      "astId": 117159,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "rebalancePlanBackoffThreshold",
+      "offset": 31,
+      "slot": "75",
+      "type": "t_uint8"
+    },
+    {
+      "astId": 117163,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "isSeasoned",
+      "offset": 0,
+      "slot": "76",
+      "type": "t_mapping(t_address,t_bool)"
+    },
+    {
+      "astId": 117167,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "lastRiskScoreUpdateTs",
+      "offset": 0,
+      "slot": "77",
+      "type": "t_mapping(t_address,t_uint64)"
+    },
+    {
+      "astId": 117169,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "capDriftToleranceBps",
+      "offset": 0,
+      "slot": "78",
+      "type": "t_uint16"
+    },
+    {
+      "astId": 117171,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "maxIdleBps",
+      "offset": 2,
+      "slot": "78",
+      "type": "t_uint16"
+    },
+    {
+      "astId": 117173,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "targetSafetyMarginBps",
+      "offset": 4,
+      "slot": "78",
+      "type": "t_uint16"
+    },
+    {
+      "astId": 117175,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "mandateRedeployCooldownSeconds",
+      "offset": 6,
+      "slot": "78",
+      "type": "t_uint32"
+    },
+    {
+      "astId": 117179,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "safetyFallbackAdapters",
+      "offset": 0,
+      "slot": "79",
+      "type": "t_array(t_address)dyn_storage"
+    },
+    {
+      "astId": 117190,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "safetyFallback",
+      "offset": 0,
+      "slot": "80",
+      "type": "t_mapping(t_address,t_struct(SafetyFallback)117185_storage)"
+    },
+    {
+      "astId": 117195,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "lastRelCapMandateTs",
+      "offset": 0,
+      "slot": "81",
+      "type": "t_mapping(t_address,t_uint64)"
+    },
+    {
+      "astId": 117197,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "lastSnapshotTotalAssets",
+      "offset": 0,
+      "slot": "82",
+      "type": "t_uint128"
+    },
+    {
+      "astId": 117199,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "lastSnapshotTs",
+      "offset": 16,
+      "slot": "82",
+      "type": "t_uint64"
+    },
+    {
+      "astId": 117201,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "lastSnapshotPredictedAPYBps",
+      "offset": 24,
+      "slot": "82",
+      "type": "t_uint16"
+    },
+    {
+      "astId": 117204,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "safetyOverflowModule_addr",
+      "offset": 0,
+      "slot": "83",
+      "type": "t_address"
+    },
+    {
+      "astId": 117206,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "rebalanceGasEstimator",
+      "offset": 0,
+      "slot": "84",
+      "type": "t_address"
+    },
+    {
+      "astId": 117208,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "_gasPlanSafety",
+      "offset": 20,
+      "slot": "84",
+      "type": "t_bool"
+    },
+    {
+      "astId": 117475,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "depositGasObservation",
+      "offset": 0,
+      "slot": "85",
+      "type": "t_mapping(t_address,t_struct(GasObservation)117470_storage)"
+    },
+    {
+      "astId": 117480,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "withdrawGasObservation",
+      "offset": 0,
+      "slot": "86",
+      "type": "t_mapping(t_address,t_struct(GasObservation)117470_storage)"
+    },
+    {
+      "astId": 117483,
+      "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+      "label": "targetIdleBufferBps",
+      "offset": 0,
+      "slot": "87",
+      "type": "t_uint16"
+    }
+  ],
+  "types": {
+    "t_address": {
+      "encoding": "inplace",
+      "label": "address",
+      "numberOfBytes": "20"
+    },
+    "t_array(t_address)10_storage": {
+      "base": "t_address",
+      "encoding": "inplace",
+      "label": "address[10]",
+      "numberOfBytes": "320"
+    },
+    "t_array(t_address)dyn_storage": {
+      "base": "t_address",
+      "encoding": "dynamic_array",
+      "label": "address[]",
+      "numberOfBytes": "32"
+    },
+    "t_array(t_uint256)10_storage": {
+      "base": "t_uint256",
+      "encoding": "inplace",
+      "label": "uint256[10]",
+      "numberOfBytes": "320"
+    },
+    "t_bool": {
+      "encoding": "inplace",
+      "label": "bool",
+      "numberOfBytes": "1"
+    },
+    "t_bytes32": {
+      "encoding": "inplace",
+      "label": "bytes32",
+      "numberOfBytes": "32"
+    },
+    "t_mapping(t_address,t_bool)": {
+      "encoding": "mapping",
+      "key": "t_address",
+      "label": "mapping(address => bool)",
+      "numberOfBytes": "32",
+      "value": "t_bool"
+    },
+    "t_mapping(t_address,t_struct(GasObservation)117470_storage)": {
+      "encoding": "mapping",
+      "key": "t_address",
+      "label": "mapping(address => struct StrategyStorageLayout.GasObservation)",
+      "numberOfBytes": "32",
+      "value": "t_struct(GasObservation)117470_storage"
+    },
+    "t_mapping(t_address,t_struct(SafetyFallback)117185_storage)": {
+      "encoding": "mapping",
+      "key": "t_address",
+      "label": "mapping(address => struct StrategyStorageLayout.SafetyFallback)",
+      "numberOfBytes": "32",
+      "value": "t_struct(SafetyFallback)117185_storage"
+    },
+    "t_mapping(t_address,t_uint16)": {
+      "encoding": "mapping",
+      "key": "t_address",
+      "label": "mapping(address => uint16)",
+      "numberOfBytes": "32",
+      "value": "t_uint16"
+    },
+    "t_mapping(t_address,t_uint256)": {
+      "encoding": "mapping",
+      "key": "t_address",
+      "label": "mapping(address => uint256)",
+      "numberOfBytes": "32",
+      "value": "t_uint256"
+    },
+    "t_mapping(t_address,t_uint64)": {
+      "encoding": "mapping",
+      "key": "t_address",
+      "label": "mapping(address => uint64)",
+      "numberOfBytes": "32",
+      "value": "t_uint64"
+    },
+    "t_mapping(t_address,t_uint8)": {
+      "encoding": "mapping",
+      "key": "t_address",
+      "label": "mapping(address => uint8)",
+      "numberOfBytes": "32",
+      "value": "t_uint8"
+    },
+    "t_mapping(t_bytes32,t_struct(RoleData)73640_storage)": {
+      "encoding": "mapping",
+      "key": "t_bytes32",
+      "label": "mapping(bytes32 => struct AccessControl.RoleData)",
+      "numberOfBytes": "32",
+      "value": "t_struct(RoleData)73640_storage"
+    },
+    "t_struct(GasObservation)117470_storage": {
+      "encoding": "inplace",
+      "label": "struct StrategyStorageLayout.GasObservation",
+      "members": [
+        {
+          "astId": 117467,
+          "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+          "label": "count",
+          "offset": 0,
+          "slot": "0",
+          "type": "t_uint32"
+        },
+        {
+          "astId": 117469,
+          "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+          "label": "updatedAt",
+          "offset": 4,
+          "slot": "0",
+          "type": "t_uint64"
+        }
+      ],
+      "numberOfBytes": "32"
+    },
+    "t_struct(RoleData)73640_storage": {
+      "encoding": "inplace",
+      "label": "struct AccessControl.RoleData",
+      "members": [
+        {
+          "astId": 73637,
+          "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+          "label": "members",
+          "offset": 0,
+          "slot": "0",
+          "type": "t_mapping(t_address,t_bool)"
+        },
+        {
+          "astId": 73639,
+          "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+          "label": "adminRole",
+          "offset": 0,
+          "slot": "1",
+          "type": "t_bytes32"
+        }
+      ],
+      "numberOfBytes": "64"
+    },
+    "t_struct(SafetyFallback)117185_storage": {
+      "encoding": "inplace",
+      "label": "struct StrategyStorageLayout.SafetyFallback",
+      "members": [
+        {
+          "astId": 117182,
+          "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+          "label": "absCapBps",
+          "offset": 0,
+          "slot": "0",
+          "type": "t_uint16"
+        },
+        {
+          "astId": 117184,
+          "contract": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol:UsdcMultiLendingVault",
+          "label": "relCapBps",
+          "offset": 2,
+          "slot": "0",
+          "type": "t_uint16"
+        }
+      ],
+      "numberOfBytes": "32"
+    },
+    "t_uint128": {
+      "encoding": "inplace",
+      "label": "uint128",
+      "numberOfBytes": "16"
+    },
+    "t_uint16": {
+      "encoding": "inplace",
+      "label": "uint16",
+      "numberOfBytes": "2"
+    },
+    "t_uint256": {
+      "encoding": "inplace",
+      "label": "uint256",
+      "numberOfBytes": "32"
+    },
+    "t_uint32": {
+      "encoding": "inplace",
+      "label": "uint32",
+      "numberOfBytes": "4"
+    },
+    "t_uint64": {
+      "encoding": "inplace",
+      "label": "uint64",
+      "numberOfBytes": "8"
+    },
+    "t_uint8": {
+      "encoding": "inplace",
+      "label": "uint8",
+      "numberOfBytes": "1"
+    }
+  }
+}

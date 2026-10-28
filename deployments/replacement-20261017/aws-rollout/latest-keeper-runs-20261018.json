@@ -1,0 +1,296 @@
+{
+  "events": [
+    {
+      "timestamp": 1792271849561,
+      "message": "{\"ts\":\"2026-10-17T21:17:29.561Z\",\"level\":\"info\",\"msg\":\"keeper starting\",\"instance\":\"primary\",\"network\":\"arbitrum-one\",\"mode\":\"run\",\"keeper\":\"0x404da3B474b8b4C87d5e3c39230c71A7237630da\",\"jobs\":[\"W1\",\"W2\",\"W3\",\"W4\",\"W5\",\"W6\"]}",
+      "ingestionTime": 1792271850604
+    },
+    {
+      "timestamp": 1792271849758,
+      "message": "{\"ts\":\"2026-10-17T21:17:29.758Z\",\"level\":\"debug\",\"msg\":\"job tick\",\"instance\":\"primary\",\"network\":\"arbitrum-one\",\"mode\":\"run\",\"job\":\"W1\",\"due\":false,\"actions\":0,\"ms\":81}",
+      "ingestionTime": 1792271850604
+    },
+    {
+      "timestamp": 1792271850476,
+      "message": "{\"ts\":\"2026-10-17T21:17:30.476Z\",\"level\":\"info\",\"msg\":\"tx sent\",\"instance\":\"primary\",\"network\":\"arbitrum-one\",\"mode\":\"run\",\"label\":\"W2:DEPLOY_IDLE\",\"hash\":\"0x471052742773d3bc404f9f34271b72b95b148eb45ea0df84a773a7181b958b6d\",\"gasEstimate\":\"1773617\",\"gasLimit\":\"2660425\"}",
+      "ingestionTime": 1792271850604
+    },
+    {
+      "timestamp": 1792271851081,
+      "message": "{\"ts\":\"2026-10-17T21:17:31.081Z\",\"level\":\"info\",\"msg\":\"tx mined\",\"instance\":\"primary\",\"network\":\"arbitrum-one\",\"mode\":\"run\",\"label\":\"W2:DEPLOY_IDLE\",\"hash\":\"0x471052742773d3bc404f9f34271b72b95b148eb45ea0df84a773a7181b958b6d\",\"status\":\"success\",\"block\":\"515782924\",\"gasUsed\":\"1747637\",\"effectiveGasPrice\":\"20000000\",\"actualFeeWei\":\"34952740000000\"}",
+      "ingestionTime": 1792271855580
+    },
+    {
+      "timestamp": 1792271851091,
+      "message": "{\"ts\":\"2026-10-17T21:17:31.091Z\",\"level\":\"debug\",\"msg\":\"upkeep receipt inspected\",\"instance\":\"primary\",\"network\":\"arbitrum-one\",\"mode\":\"run\",\"job\":\"W2\",\"op\":\"DEPLOY_IDLE\",\"strategyIndex\":\"0\",\"events\":1}",
+      "ingestionTime": 1792271855580
+    },
+    {
+      "timestamp": 1792271851445,
+      "message": "{\"ts\":\"2026-10-17T21:17:31.445Z\",\"level\":\"info\",\"msg\":\"tx sent\",\"instance\":\"primary\",\"network\":\"arbitrum-one\",\"mode\":\"run\",\"label\":\"W2:HARVEST\",\"hash\":\"0xd6da5fbab95e8ef3ec634727204509036151db5912d8a82ca7f84fc620ca4a3c\",\"gasEstimate\":\"593724\",\"gasLimit\":\"890586\"}",
+      "ingestionTime": 1792271855580
+    },
+    {
+      "timestamp": 1792271851644,
+      "message": "{\"ts\":\"2026-10-17T21:17:31.644Z\",\"level\":\"info\",\"msg\":\"tx mined\",\"instance\":\"primary\",\"network\":\"arbitrum-one\",\"mode\":\"run\",\"label\":\"W2:HARVEST\",\"hash\":\"0xd6da5fbab95e8ef3ec634727204509036151db5912d8a82ca7f84fc620ca4a3c\",\"status\":\"success\",\"block\":\"515782927\",\"gasUsed\":\"586424\",\"effectiveGasPrice\":\"20000000\",\"actualFeeWei\":\"11728480000000\"}",
+      "ingestionTime": 1792271855580
+    },
+    {
+      "timestamp": 1792271851645,
+      "message": "{\"ts\":\"2026-10-17T21:17:31.645Z\",\"level\":\"debug\",\"msg\":\"upkeep receipt inspected\",\"instance\":\"primary\",\"network\":\"arbitrum-one\",\"mode\":\"run\",\"job\":\"W2\",\"op\":\"HARVEST\",\"strategyIndex\":\"0\",\"events\":1}",
+      "ingestionTime": 1792271855580
+    },
+    {
+      "timestamp": 1792271851677,
+      "message": "{\"ts\":\"2026-10-17T21:17:31.676Z\",\"level\":\"info\",\"msg\":\"job tick\",\"instance\":\"primary\",\"network\":\"arbitrum-one\",\"mode\":\"run\",\"job\":\"W2\",\"due\":true,\"actions\":2,\"ms\":1918}",
+      "ingestionTime": 1792271855580
+    },
+    {
+      "timestamp": 1792271851701,
+      "message": "{\"ts\":\"2026-10-17T21:17:31.701Z\",\"level\":\"debug\",\"msg\":\"job tick\",\"instance\":\"primary\",\"network\":\"arbitrum-one\",\"mode\":\"run\",\"job\":\"W3\",\"due\":false,\"actions\":0,\"ms\":24}",
+      "ingestionTime": 1792271855580
+    },
+    {
+      "timestamp": 1792271851772,
+      "message": "{\"ts\":\"2026-10-17T21:17:31.772Z\",\"level\":\"debug\",\"msg\":\"job tick\",\"instance\":\"primary\",\"network\":\"arbitrum-one\",\"mode\":\"run\",\"job\":\"W4\",\"due\":false,\"actions\":0,\"deferred\":false,\"ms\":71}",
+      "ingestionTime": 1792271855580
+    },
+    {
+      "timestamp": 1792271852149,
+      "message": "{\"ts\":\"2026-10-17T21:17:32.149Z\",\"level\":\"info\",\"msg\":\"tx sent\",\"instance\":\"primary\",\"network\":\"arbitrum-one\",\"mode\":\"run\",\"label\":\"W5:pokeLiquidityBatch\",\"hash\":\"0x035100a3edd88a183817015e116f12c642f75b29fe405add11d3065eade7a3e8\",\"gasEstimate\":\"341030\",\"gasLimit\":\"511545\"}",
+      "ingestionTime": 1792271855580
+    },
+    {
+      "timestamp": 1792271852349,
+      "message": "{\"ts\":\"2026-10-17T21:17:32.349Z\",\"level\":\"info\",\"msg\":\"tx mined\",\"instance\":\"primary\",\"network\":\"arbitrum-one\",\"mode\":\"run\",\"label\":\"W5:pokeLiquidityBatch\",\"hash\":\"0x035100a3edd88a183817015e116f12c642f75b29fe405add11d3065eade7a3e8\",\"status\":\"success\",\"block\":\"515782930\",\"gasUsed\":\"333354\",\"effectiveGasPrice\":\"20048000\",\"actualFeeWei\":\"6683080992000\"}",
+      "ingestionTime": 1792271855580
+    },
+    {
+      "timestamp": 1792271852624,
+      "message": "{\"ts\":\"2026-10-17T21:17:32.623Z\",\"level\":\"info\",\"msg\":\"tx sent\",\"instance\":\"primary\",\"network\":\"arbitrum-one\",\"mode\":\"run\",\"label\":\"W5:pokeLiquidityBatch\",\"hash\":\"0xd902a5bbe0ea31d9cb509059bd04bde92d9f07ac2192b79609368fb94af7cfd6\",\"gasEstimate\":\"330389\",\"gasLimit\":\"495583\"}",
+      "ingestionTime": 1792271855580
+    },
+    {
+      "timestamp": 1792271853219,
+      "message": "{\"ts\":\"2026-10-17T21:17:33.219Z\",\"level\":\"info\",\"msg\":\"tx mined\",\"instance\":\"primary\",\"network\":\"arbitrum-one\",\"mode\":\"run\",\"label\":\"W5:pokeLiquidityBatch\",\"hash\":\"0xd902a5bbe0ea31d9cb509059bd04bde92d9f07ac2192b79609368fb94af7cfd6\",\"status\":\"success\",\"block\":\"515782932\",\"gasUsed\":\"322879\",\"effectiveGasPrice\":\"20030000\",\"actualFeeWei\":\"6467266370000\"}",
+      "ingestionTime": 1792271855580
+    },
+    {
+      "timestamp": 1792271853220,
+      "message": "{\"ts\":\"2026-10-17T21:17:33.219Z\",\"level\":\"info\",\"msg\":\"job tick\",\"instance\":\"primary\",\"network\":\"arbitrum-one\",\"mode\":\"run\",\"job\":\"W5\",\"due\":true,\"actions\":2,\"ms\":1447}",
+      "ingestionTime": 1792271855580
+    },
+    {
+      "timestamp": 1792271853244,
+      "message": "{\"ts\":\"2026-10-17T21:17:33.244Z\",\"level\":\"debug\",\"msg\":\"job tick\",\"instance\":\"primary\",\"network\":\"arbitrum-one\",\"mode\":\"run\",\"job\":\"W6\",\"due\":false,\"actions\":0,\"ms\":24}",
+      "ingestionTime": 1792271855580
+    },
+    {
+      "timestamp": 1792271973345,
+      "message": "{\"ts\":\"2026-10-17T21:19:33.345Z\",\"level\":\"debug\",\"msg\":\"job tick\",\"instance\":\"primary\",\"network\":\"arbitrum-one\",\"mode\":\"run\",\"job\":\"W6\",\"due\":false,\"actions\":0,\"ms\":101}",
+      "ingestionTime": 1792271975592
+    },
+    {
+      "timestamp": 1792272089858,
+      "message": "{\"ts\":\"2026-10-17T21:21:29.858Z\",\"level\":\"debug\",\"msg\":\"job tick\",\"instance\":\"primary\",\"network\":\"arbitrum-one\",\"mode\":\"run\",\"job\":\"W1\",\"due\":false,\"actions\":0,\"ms\":100}",
+      "ingestionTime": 1792272090591
+    },
+    {
+      "timestamp": 1792272091727,
+      "message": "{\"ts\":\"2026-10-17T21:21:31.726Z\",\"level\":\"debug\",\"msg\":\"job tick\",\"instance\":\"primary\",\"network\":\"arbitrum-one\",\"mode\":\"run\",\"job\":\"W3\",\"due\":false,\"actions\":0,\"ms\":24}",
+      "ingestionTime": 1792272095576
+    },
+    {
+      "timestamp": 1792272094349,
+      "message": "{\"ts\":\"2026-10-17T21:21:34.349Z\",\"level\":\"debug\",\"msg\":\"job tick\",\"instance\":\"primary\",\"network\":\"arbitrum-one\",\"mode\":\"run\",\"job\":\"W5\",\"due\":false,\"actions\":0,\"ms\":130}",
+      "ingestionTime": 1792272095576
+    },
+    {
+      "timestamp": 1792272094374,
+      "message": "{\"ts\":\"2026-10-17T21:21:34.373Z\",\"level\":\"debug\",\"msg\":\"job tick\",\"instance\":\"primary\",\"network\":\"arbitrum-one\",\"mode\":\"run\",\"job\":\"W6\",\"due\":false,\"actions\":0,\"ms\":24}",
+      "ingestionTime": 1792272095576
+    },
+    {
+      "timestamp": 1792272214483,
+      "message": "{\"ts\":\"2026-10-17T21:23:34.483Z\",\"level\":\"debug\",\"msg\":\"job tick\",\"instance\":\"primary\",\"network\":\"arbitrum-one\",\"mode\":\"run\",\"job\":\"W6\",\"due\":false,\"actions\":0,\"ms\":107}",
+      "ingestionTime": 1792272215593
+    },
+    {
+      "timestamp": 1792272329955,
+      "message": "{\"ts\":\"2026-10-17T21:25:29.955Z\",\"level\":\"debug\",\"msg\":\"job tick\",\"instance\":\"primary\",\"network\":\"arbitrum-one\",\"mode\":\"run\",\"job\":\"W1\",\"due\":false,\"actions\":0,\"ms\":96}",
+      "ingestionTime": 1792272330593
+    },
+    {
+      "timestamp": 1792272331754,
+      "message": "{\"ts\":\"2026-10-17T21:25:31.753Z\",\"level\":\"debug\",\"msg\":\"job tick\",\"instance\":\"primary\",\"network\":\"arbitrum-one\",\"mode\":\"run\",\"job\":\"W3\",\"due\":false,\"actions\":0,\"ms\":25}",
+      "ingestionTime": 1792272335577
+    },
+    {
+      "timestamp": 1792272334474,
+      "message": "{\"ts\":\"2026-10-17T21:25:34.474Z\",\"level\":\"debug\",\"msg\":\"job tick\",\"instance\":\"primary\",\"network\":\"arbitrum-one\",\"mode\":\"run\",\"job\":\"W5\",\"due\":false,\"actions\":0,\"ms\":125}",
+      "ingestionTime": 1792272335577
+    },
+    {
+      "timestamp": 1792272335854,
+      "message": "{\"ts\":\"2026-10-17T21:25:35.854Z\",\"level\":\"info\",\"msg\":\"tx sent\",\"instance\":\"primary\",\"network\":\"arbitrum-one\",\"mode\":\"run\",\"label\":\"W6:refreshWarmNav\",\"hash\":\"0x004abc71f626ef476b485c97920fd1f84fd13ae6720d91f404f7cee1e7cdd012\",\"gasEstimate\":\"104762\",\"gasLimit\":\"157143\"}",
+      "ingestionTime": 1792272340577
+    },
+    {
+      "timestamp": 1792272336449,
+      "message": "{\"ts\":\"2026-10-17T21:25:36.449Z\",\"level\":\"info\",\"msg\":\"tx mined\",\"instance\":\"primary\",\"network\":\"arbitrum-one\",\"mode\":\"run\",\"label\":\"W6:refreshWarmNav\",\"hash\":\"0x004abc71f626ef476b485c97920fd1f84fd13ae6720d91f404f7cee1e7cdd012\",\"status\":\"success\",\"block\":\"515784590\",\"gasUsed\":\"99649\",\"effectiveGasPrice\":\"20016000\",\"actualFeeWei\":\"1994574384000\"}",
+      "ingestionTime": 1792272340577
+    },
+    {
+      "timestamp": 1792272336449,
+      "message": "{\"ts\":\"2026-10-17T21:25:36.449Z\",\"level\":\"info\",\"msg\":\"warm NAV refreshed\",\"instance\":\"primary\",\"network\":\"arbitrum-one\",\"mode\":\"run\",\"job\":\"W6\",\"nav\":\"1284126\",\"tx\":\"0x004abc71f626ef476b485c97920fd1f84fd13ae6720d91f404f7cee1e7cdd012\"}",
+      "ingestionTime": 1792272340577
+    },
+    {
+      "timestamp": 1792272336449,
+      "message": "{\"ts\":\"2026-10-17T21:25:36.449Z\",\"level\":\"info\",\"msg\":\"job tick\",\"instance\":\"primary\",\"network\":\"arbitrum-one\",\"mode\":\"run\",\"job\":\"W6\",\"due\":true,\"actions\":1,\"ms\":974}",
+      "ingestionTime": 1792272340577
+    },
+    {
+      "timestamp": 1792272451863,
+      "message": "{\"ts\":\"2026-10-17T21:27:31.863Z\",\"level\":\"debug\",\"msg\":\"job tick\",\"instance\":\"primary\",\"network\":\"arbitrum-one\",\"mode\":\"run\",\"job\":\"W2\",\"due\":false,\"actions\":0,\"ms\":92}",
+      "ingestionTime": 1792272455596
+    },
+    {
+      "timestamp": 1792272456531,
+      "message": "{\"ts\":\"2026-10-17T21:27:36.531Z\",\"level\":\"debug\",\"msg\":\"job tick\",\"instance\":\"primary\",\"network\":\"arbitrum-one\",\"mode\":\"run\",\"job\":\"W6\",\"due\":false,\"actions\":0,\"ms\":81}",
+      "ingestionTime": 1792272460576
+    },
+    {
+      "timestamp": 1792272570970,
+      "message": "{\"ts\":\"2026-10-17T21:29:30.970Z\",\"level\":\"info\",\"msg\":\"tx sent\",\"instance\":\"primary\",\"network\":\"arbitrum-one\",\"mode\":\"run\",\"label\":\"W1:DEPLOY\",\"hash\":\"0xb65be0031009bd0bf035cc45caa022a1a44befb2dfcbd5c616bd2982d9df5c4a\",\"gasEstimate\":\"683876\",\"gasLimit\":\"1025814\"}",
+      "ingestionTime": 1792272575590
+    },
+    {
+      "timestamp": 1792272571574,
+      "message": "{\"ts\":\"2026-10-17T21:29:31.574Z\",\"level\":\"info\",\"msg\":\"tx mined\",\"instance\":\"primary\",\"network\":\"arbitrum-one\",\"mode\":\"run\",\"label\":\"W1:DEPLOY\",\"hash\":\"0xb65be0031009bd0bf035cc45caa022a1a44befb2dfcbd5c616bd2982d9df5c4a\",\"status\":\"success\",\"block\":\"515785442\",\"gasUsed\":\"668042\",\"effectiveGasPrice\":\"20118000\",\"actualFeeWei\":\"13439668956000\"}",
+      "ingestionTime": 1792272575590
+    },
+    {
+      "timestamp": 1792272571575,
+      "message": "{\"ts\":\"2026-10-17T21:29:31.575Z\",\"level\":\"info\",\"msg\":\"vault op ok\",\"instance\":\"primary\",\"network\":\"arbitrum-one\",\"mode\":\"run\",\"job\":\"W1\",\"op\":\"DEPLOY\",\"arg\":\"1000000000000\",\"tx\":\"0xb65be0031009bd0bf035cc45caa022a1a44befb2dfcbd5c616bd2982d9df5c4a\"}",
+      "ingestionTime": 1792272575590
+    },
+    {
+      "timestamp": 1792272571575,
+      "message": "{\"ts\":\"2026-10-17T21:29:31.575Z\",\"level\":\"debug\",\"msg\":\"upkeep receipt inspected\",\"instance\":\"primary\",\"network\":\"arbitrum-one\",\"mode\":\"run\",\"job\":\"W1\",\"op\":\"DEPLOY\",\"arg\":\"0\",\"events\":1}",
+      "ingestionTime": 1792272575590
+    },
+    {
+      "timestamp": 1792272571603,
+      "message": "{\"ts\":\"2026-10-17T21:29:31.603Z\",\"level\":\"info\",\"msg\":\"job tick\",\"instance\":\"primary\",\"network\":\"arbitrum-one\",\"mode\":\"run\",\"job\":\"W1\",\"due\":true,\"actions\":1,\"ms\":1648}",
+      "ingestionTime": 1792272575590
+    },
+    {
+      "timestamp": 1792272572630,
+      "message": "{\"ts\":\"2026-10-17T21:29:32.630Z\",\"level\":\"debug\",\"msg\":\"job tick\",\"instance\":\"primary\",\"network\":\"arbitrum-one\",\"mode\":\"run\",\"job\":\"W3\",\"due\":false,\"actions\":0,\"ms\":26}",
+      "ingestionTime": 1792272575590
+    },
+    {
+      "timestamp": 1792272574614,
+      "message": "{\"ts\":\"2026-10-17T21:29:34.614Z\",\"level\":\"debug\",\"msg\":\"job tick\",\"instance\":\"primary\",\"network\":\"arbitrum-one\",\"mode\":\"run\",\"job\":\"W5\",\"due\":false,\"actions\":0,\"ms\":139}",
+      "ingestionTime": 1792272575590
+    },
+    {
+      "timestamp": 1792272576558,
+      "message": "{\"ts\":\"2026-10-17T21:29:36.558Z\",\"level\":\"debug\",\"msg\":\"job tick\",\"instance\":\"primary\",\"network\":\"arbitrum-one\",\"mode\":\"run\",\"job\":\"W6\",\"due\":false,\"actions\":0,\"ms\":27}",
+      "ingestionTime": 1792272580580
+    },
+    {
+      "timestamp": 1792272696670,
+      "message": "{\"ts\":\"2026-10-17T21:31:36.670Z\",\"level\":\"debug\",\"msg\":\"job tick\",\"instance\":\"primary\",\"network\":\"arbitrum-one\",\"mode\":\"run\",\"job\":\"W6\",\"due\":false,\"actions\":0,\"ms\":111}",
+      "ingestionTime": 1792272700591
+    },
+    {
+      "timestamp": 1792272811706,
+      "message": "{\"ts\":\"2026-10-17T21:33:31.706Z\",\"level\":\"debug\",\"msg\":\"job tick\",\"instance\":\"primary\",\"network\":\"arbitrum-one\",\"mode\":\"run\",\"job\":\"W1\",\"due\":false,\"actions\":0,\"ms\":101}",
+      "ingestionTime": 1792272815590
+    },
+    {
+      "timestamp": 1792272812731,
+      "message": "{\"ts\":\"2026-10-17T21:33:32.731Z\",\"level\":\"debug\",\"msg\":\"job tick\",\"instance\":\"primary\",\"network\":\"arbitrum-one\",\"mode\":\"run\",\"job\":\"W3\",\"due\":false,\"actions\":0,\"ms\":24}",
+      "ingestionTime": 1792272815590
+    },
+    {
+      "timestamp": 1792272814738,
+      "message": "{\"ts\":\"2026-10-17T21:33:34.738Z\",\"level\":\"debug\",\"msg\":\"job tick\",\"instance\":\"primary\",\"network\":\"arbitrum-one\",\"mode\":\"run\",\"job\":\"W5\",\"due\":false,\"actions\":0,\"ms\":122}",
+      "ingestionTime": 1792272815590
+    },
+    {
+      "timestamp": 1792272817010,
+      "message": "{\"ts\":\"2026-10-17T21:33:37.010Z\",\"level\":\"info\",\"msg\":\"tx sent\",\"instance\":\"primary\",\"network\":\"arbitrum-one\",\"mode\":\"run\",\"label\":\"W6:refreshWarmNav\",\"hash\":\"0xce8e1a75be049e02daeb97f2680e89d0c37fab676f31f22821367359684ff0a9\",\"gasEstimate\":\"107533\",\"gasLimit\":\"161299\"}",
+      "ingestionTime": 1792272820576
+    },
+    {
+      "timestamp": 1792272817605,
+      "message": "{\"ts\":\"2026-10-17T21:33:37.605Z\",\"level\":\"info\",\"msg\":\"tx mined\",\"instance\":\"primary\",\"network\":\"arbitrum-one\",\"mode\":\"run\",\"label\":\"W6:refreshWarmNav\",\"hash\":\"0xce8e1a75be049e02daeb97f2680e89d0c37fab676f31f22821367359684ff0a9\",\"status\":\"success\",\"block\":\"515786396\",\"gasUsed\":\"102404\",\"effectiveGasPrice\":\"20128000\",\"actualFeeWei\":\"2061187712000\"}",
+      "ingestionTime": 1792272820576
+    },
+    {
+      "timestamp": 1792272817605,
+      "message": "{\"ts\":\"2026-10-17T21:33:37.605Z\",\"level\":\"info\",\"msg\":\"warm NAV refreshed\",\"instance\":\"primary\",\"network\":\"arbitrum-one\",\"mode\":\"run\",\"job\":\"W6\",\"nav\":\"1284127\",\"tx\":\"0xce8e1a75be049e02daeb97f2680e89d0c37fab676f31f22821367359684ff0a9\"}",
+      "ingestionTime": 1792272820576
+    },
+    {
+      "timestamp": 1792272817605,
+      "message": "{\"ts\":\"2026-10-17T21:33:37.605Z\",\"level\":\"info\",\"msg\":\"job tick\",\"instance\":\"primary\",\"network\":\"arbitrum-one\",\"mode\":\"run\",\"job\":\"W6\",\"due\":true,\"actions\":1,\"ms\":933}",
+      "ingestionTime": 1792272820576
+    },
+    {
+      "timestamp": 1792272937726,
+      "message": "{\"ts\":\"2026-10-17T21:35:37.726Z\",\"level\":\"debug\",\"msg\":\"job tick\",\"instance\":\"primary\",\"network\":\"arbitrum-one\",\"mode\":\"run\",\"job\":\"W6\",\"due\":false,\"actions\":0,\"ms\":116}",
+      "ingestionTime": 1792272940590
+    },
+    {
+      "timestamp": 1792273051873,
+      "message": "{\"ts\":\"2026-10-17T21:37:31.873Z\",\"level\":\"debug\",\"msg\":\"job tick\",\"instance\":\"primary\",\"network\":\"arbitrum-one\",\"mode\":\"run\",\"job\":\"W1\",\"due\":false,\"actions\":0,\"ms\":71}",
+      "ingestionTime": 1792273055590
+    },
+    {
+      "timestamp": 1792273052524,
+      "message": "{\"ts\":\"2026-10-17T21:37:32.524Z\",\"level\":\"info\",\"msg\":\"tx sent\",\"instance\":\"primary\",\"network\":\"arbitrum-one\",\"mode\":\"run\",\"label\":\"W2:DEPLOY_IDLE\",\"hash\":\"0x0982d1207561044c6172ce83564676e438126b7744550490e7e82ca5dc3566ca\",\"gasEstimate\":\"1685481\",\"gasLimit\":\"2528221\"}",
+      "ingestionTime": 1792273055590
+    },
+    {
+      "timestamp": 1792273053123,
+      "message": "{\"ts\":\"2026-10-17T21:37:33.123Z\",\"level\":\"info\",\"msg\":\"tx mined\",\"instance\":\"primary\",\"network\":\"arbitrum-one\",\"mode\":\"run\",\"label\":\"W2:DEPLOY_IDLE\",\"hash\":\"0x0982d1207561044c6172ce83564676e438126b7744550490e7e82ca5dc3566ca\",\"status\":\"success\",\"block\":\"515787283\",\"gasUsed\":\"1673067\",\"effectiveGasPrice\":\"20002000\",\"actualFeeWei\":\"33464686134000\"}",
+      "ingestionTime": 1792273055590
+    },
+    {
+      "timestamp": 1792273053124,
+      "message": "{\"ts\":\"2026-10-17T21:37:33.124Z\",\"level\":\"debug\",\"msg\":\"upkeep receipt inspected\",\"instance\":\"primary\",\"network\":\"arbitrum-one\",\"mode\":\"run\",\"job\":\"W2\",\"op\":\"DEPLOY_IDLE\",\"strategyIndex\":\"0\",\"events\":1}",
+      "ingestionTime": 1792273055590
+    },
+    {
+      "timestamp": 1792273053155,
+      "message": "{\"ts\":\"2026-10-17T21:37:33.155Z\",\"level\":\"info\",\"msg\":\"job tick\",\"instance\":\"primary\",\"network\":\"arbitrum-one\",\"mode\":\"run\",\"job\":\"W2\",\"due\":true,\"actions\":1,\"ms\":1282}",
+      "ingestionTime": 1792273055590
+    },
+    {
+      "timestamp": 1792273053180,
+      "message": "{\"ts\":\"2026-10-17T21:37:33.180Z\",\"level\":\"debug\",\"msg\":\"job tick\",\"instance\":\"primary\",\"network\":\"arbitrum-one\",\"mode\":\"run\",\"job\":\"W3\",\"due\":false,\"actions\":0,\"ms\":25}",
+      "ingestionTime": 1792273055590
+    },
+    {
+      "timestamp": 1792273054861,
+      "message": "{\"ts\":\"2026-10-17T21:37:34.861Z\",\"level\":\"debug\",\"msg\":\"job tick\",\"instance\":\"primary\",\"network\":\"arbitrum-one\",\"mode\":\"run\",\"job\":\"W5\",\"due\":false,\"actions\":0,\"ms\":121}",
+      "ingestionTime": 1792273055590
+    },
+    {
+      "timestamp": 1792273057754,
+      "message": "{\"ts\":\"2026-10-17T21:37:37.754Z\",\"level\":\"debug\",\"msg\":\"job tick\",\"instance\":\"primary\",\"network\":\"arbitrum-one\",\"mode\":\"run\",\"job\":\"W6\",\"due\":false,\"actions\":0,\"ms\":26}",
+      "ingestionTime": 1792273060576
+    },
+    {
+      "timestamp": 1792273177860,
+      "message": "{\"ts\":\"2026-10-17T21:39:37.859Z\",\"level\":\"debug\",\"msg\":\"job tick\",\"instance\":\"primary\",\"network\":\"arbitrum-one\",\"mode\":\"run\",\"job\":\"W6\",\"due\":false,\"actions\":0,\"ms\":99}",
+      "ingestionTime": 1792273180589
+    }
+  ],
+  "nextForwardToken": "f/39969027465616616542573003673034047747756396209770070016/s",
+  "nextBackwardToken": "b/39968997843559070079544813786427984628081886609838571520/s"
+}

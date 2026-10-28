@@ -1,0 +1,56 @@
+{
+  "marginBps": 3000,
+  "scope": "Current reserve-policy code; hypothetical profitable books at pinned Arbitrum block 516950276, separate EVM transactions. Prices pinned; measured costs include modeled poster fee once. Native L1-only envelope cross-check separately recorded; not live receipts.",
+  "rows": [
+    {
+      "tvlUSDC": 10000,
+      "operations": 2,
+      "transactions": 2,
+      "estimateBeforeMargin": 0.340462,
+      "estimate30Percent": 0.442601,
+      "measuredGrossPriced": 0.241395,
+      "measuredNetPriced": 0.233762,
+      "coverageOverGrossPercent": 83.35
+    },
+    {
+      "tvlUSDC": 100000,
+      "operations": 4,
+      "transactions": 3,
+      "estimateBeforeMargin": 0.438594,
+      "estimate30Percent": 0.570173,
+      "measuredGrossPriced": 0.334142,
+      "measuredNetPriced": 0.32193,
+      "coverageOverGrossPercent": 70.64
+    },
+    {
+      "tvlUSDC": 500000,
+      "operations": 6,
+      "transactions": 4,
+      "estimateBeforeMargin": 0.573531,
+      "estimate30Percent": 0.745591,
+      "measuredGrossPriced": 0.474014,
+      "measuredNetPriced": 0.453832,
+      "coverageOverGrossPercent": 57.29
+    },
+    {
+      "tvlUSDC": 2000000,
+      "operations": 7,
+      "transactions": 5,
+      "estimateBeforeMargin": 0.666621,
+      "estimate30Percent": 0.866608,
+      "measuredGrossPriced": 0.546458,
+      "measuredNetPriced": 0.522701,
+      "coverageOverGrossPercent": 58.59
+    },
+    {
+      "tvlUSDC": 6000000,
+      "operations": 7,
+      "transactions": 5,
+      "estimateBeforeMargin": 0.666621,
+      "estimate30Percent": 0.866608,
+      "measuredGrossPriced": 0.549829,
+      "measuredNetPriced": 0.526313,
+      "coverageOverGrossPercent": 57.61
+    }
+  ]
+}

@@ -1,0 +1,131 @@
+{
+  "block": "516450004",
+  "aave": {
+    "liquidityRateRay": "22840492244293598670525134",
+    "simpleBps": "228",
+    "cached": [
+      "23301703552916304403650083",
+      "1792393095"
+    ]
+  },
+  "morpho": {
+    "pps": "1050525",
+    "historical": {
+      "oldBlock": "516104404",
+      "seconds": "95663",
+      "oldPps": "1050456362483",
+      "newPps": "1050525576341",
+      "simpleBps": 217.20891809420314
+    },
+    "snapshot": [
+      "1050478",
+      "1792393786"
+    ],
+    "cachedRates": [
+      {
+        "market": "0x7e97fa6893871A2751B5fE961978DCCb2c201E65",
+        "rate": 0,
+        "updated": "1792393786"
+      },
+      {
+        "market": "0x4B6F1C9E5d470b97181786b26da0d0945A7cf027",
+        "rate": 0,
+        "updated": "1792393786"
+      },
+      {
+        "market": "0x5c0C306Aaa9F877de636f4d5822cA9F2E81563BA",
+        "rate": 0,
+        "updated": "1792393786"
+      },
+      {
+        "market": "0x7c574174DA4b2be3f705c6244B4BfA0815a8B3Ed",
+        "rate": 0,
+        "updated": "1792393786"
+      },
+      {
+        "market": "0x36b69949d60d06ECcC14DE0Ae63f4E00cc2cd8B9",
+        "rate": 0,
+        "updated": "1792393786"
+      }
+    ]
+  },
+  "comet": {
+    "util": "868788564019185402",
+    "ratePerSecond": "991767766",
+    "computedBps": "312"
+  },
+  "euler": {
+    "markets": [
+      {
+        "market": "0x6aFB8d3F6D4A34e9cB2f217317f4dc8e05Aa673b",
+        "interestRate() view returns(uint256)": "1847466386218104870",
+        "interestFee() view returns(uint16)": 1000,
+        "totalAssets() view returns(uint256)": "354249388788",
+        "totalBorrows() view returns(uint256)": "204816475857",
+        "maxDeposit(address) view returns(uint256)": "149645750611211",
+        "simpleSupplyBps": "303"
+      },
+      {
+        "market": "0x44C10DA836d2aBe881b77bbB0b3DCE5f85C0C1Cc",
+        "interestRate() view returns(uint256)": "1402340367525485575",
+        "interestFee() view returns(uint16)": 1000,
+        "totalAssets() view returns(uint256)": "17269408740",
+        "totalBorrows() view returns(uint256)": "8938745810",
+        "maxDeposit(address) view returns(uint256)": "99982730591259",
+        "simpleSupplyBps": "205"
+      },
+      {
+        "market": "0x05d28A86E057364F6ad1a88944297E58Fc6160b3",
+        "interestRate() view returns(uint256)": "0",
+        "interestFee() view returns(uint16)": 1000,
+        "totalAssets() view returns(uint256)": "90609249616",
+        "totalBorrows() view returns(uint256)": "0",
+        "maxDeposit(address) view returns(uint256)": "5192296858534827628530405719970478",
+        "simpleSupplyBps": "0"
+      },
+      {
+        "market": "0x0a1eCC5Fe8C9be3C809844fcBe615B46A869b899",
+        "interestRate() view returns(uint256)": "1168135255682388384",
+        "interestFee() view returns(uint16)": 1000,
+        "totalAssets() view returns(uint256)": "34225089456",
+        "totalBorrows() view returns(uint256)": "28950925738",
+        "maxDeposit(address) view returns(uint256)": "99965774910543",
+        "simpleSupplyBps": "280"
+      }
+    ]
+  },
+  "dolomite": {
+    "pps": "1285184438661466760",
+    "historical": {
+      "oldBlock": "516104404",
+      "seconds": "95663",
+      "oldPps": "1285035872560393225000000",
+      "newPps": "1285184438661466760000000",
+      "simpleBps": 381.1246909826332
+    },
+    "snapshot": [
+      "1285083666682912304",
+      "1792393807"
+    ]
+  },
+  "fluid": {
+    "pps": "1135192088168000000",
+    "historical": {
+      "oldBlock": "516104404",
+      "seconds": "95663",
+      "oldPps": "1134988748477000000000000",
+      "newPps": "1135192088168000000000000",
+      "simpleBps": 590.5996886588981
+    },
+    "snapshot": [
+      "1135057235734000000",
+      "1792393820"
+    ]
+  },
+  "venus": {
+    "ratePerSlot": "1399257921",
+    "isTimeBased": true,
+    "slotsPerYear": "31536000",
+    "simpleBps": "441"
+  }
+}

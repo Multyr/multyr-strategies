@@ -590,6 +590,24 @@ contract MorphoAdapter_Test is Test {
         assertGe(apy, 0);
     }
 
+    function test_snapshotUpdatesCacheWithoutZeroReset() public {
+        vm.warp(100_000);
+        vm.prank(admin); adapter.pokeAPYSnapshots();
+        vm.warp(block.timestamp + 1 days);
+        vm.mockCall(address(vault1), abi.encodeWithSignature("convertToAssets(uint256)", 1e24), abi.encode(uint256(1.0001e24)));
+        assertEq(adapter.currentAPYBps(), 365);
+        vm.prank(admin); adapter.pokeAPYSnapshots();
+        assertEq(adapter.lastGoodApyBps(address(vault1)), 365);
+        assertEq(adapter.currentAPYBps(), 365);
+        vm.warp(block.timestamp + 2 days + 1);
+        assertEq(adapter.currentAPYBps(), 0);
+    }
+
+    function test_zeroCapacityMeansUnlimited() public {
+        vm.prank(admin); adapter.setCapacity(0);
+        assertEq(adapter.maxCapacity(), type(uint256).max);
+    }
+
     function test_setAPYOverrideBps_overrides() public {
         // vault1 is already at index 0 from registry
 

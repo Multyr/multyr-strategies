@@ -182,8 +182,8 @@ contract UsdcLendingDeploy_Test is Test {
         );
         assertEq(
             cfg.venusBlocksPerYear,
-            126_144_000,
-            "Arbitrum Venus blocksPerYear: expected 126_144_000 (0.25s blocks)"
+            31_536_000,
+            "Arbitrum Venus rate is per second: annualize with 31_536_000 seconds"
         );
 
         // Governance fields

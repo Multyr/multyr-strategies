@@ -1,0 +1,15 @@
+Hi Stefano, the corrected Venus, Morpho, Dolomite and Fluid adapters are now deployed on Arbitrum and bound to the existing strategy. The Safe owns their admin/parameter roles; the deployer roles have been removed. Source verification succeeded on Sourcify; Arbiscan verification is pending because its API is returning gateway errors.
+
+The Venus correction uses the market's seconds-based annualisation. The other replacements fix the PPS observation/cache issues found in the adapter review. Aave and Comet stay in place; Euler needs a capacity-setting correction, which is included in the Safe batch.
+
+This is an adapter upgrade, not another strategy/vault migration. The final live-address fork rehearsal passed, including NAV preservation and a subsequent keeper deployment. I have prepared one atomic Safe transaction to recall the affected adapters into the same strategy, verify they are drained, register the replacements, update the existing upkeep's APY-poke targets and apply the measured per-adapter gas allowances. No user withdrawal or share conversion is required. The correction becomes active after the Safe batch executes; deployment alone has not switched the live adapters.
+
+The AWS keeper keeps the same strategy and upkeep addresses. Its liquidity job discovers enabled adapters automatically; the on-chain upkeep wiring changes in the Safe batch. The repository config/instructions are pushed to multyr-periphery. Today's ECS task/logs still need live verification because this session has no AWS credentials.
+
+Separately, the current strategy has the governance cap disabled and retains the documented one-adapter tier below $25k. This repair does not silently change allocation policy or introduce a 25% rule. Removing that tier requires a strategy change; setting a nonzero governance cap is a separate settings decision.
+
+The first keeper deployment was https://arbiscan.io/tx/0x471052742773d3bc404f9f34271b72b95b148eb45ea0df84a773a7181b958b6d and the deployment after my extra deposit was https://arbiscan.io/tx/0x0982d1207561044c6172ce83564676e438126b7744550490e7e82ca5dc3566ca.
+
+The pending fee balance checked earlier was 96,339 raw Core shares, with zero USDC. W4 is configured to distribute both during Monday's 10:00–16:00 UTC window. The roughly eight-minute warm-NAV cadence is intentional: ten-minute TTL with a two-minute refresh margin.
+
+Gas calibration check: the live per-adapter overrides are still unset. The same activation Safe batch already sets all seven measured allowances. The estimator takes the larger of its EMA and the configured floor, so waiting for EMAs alone cannot reduce the quote below the 2M/3M defaults. We retain the 50% margin and use 4M for Morpho withdrawals because the latest fork measured about 2.97M. No extra Safe JSON is needed.

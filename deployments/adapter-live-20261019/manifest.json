@@ -1,0 +1,244 @@
+{
+  "status": "Deployed; exact activation fork rehearsal passed; awaiting Safe execution",
+  "chainId": 42161,
+  "strategy": "0xa9E676D15976A1332905238ca609Dff9A484Efe0",
+  "upkeep": "0xbcaC314E7237b14E11644FC6Ba73675c8c0612DF",
+  "factory": "0x695a5EDD49259eB644a8e6014C6A2404F5eB6127",
+  "guard": "0x97b2292104CFA7a5BF8742188f27a6eFCC6a7727",
+  "replacements": [
+    {
+      "key": "venusAdapter",
+      "old": "0xAba3D7015fFC9b8dEEb404389296864A1607E828",
+      "fresh": "0xB8fed94A1A7dc046402de039c0143aC48396eb7a",
+      "creationCodeHash": "0x3154ea07f6460f32c6aa6c7ea358bb56fbe10f3e2bde97041f4e5db331a56f01",
+      "runtimeCodeHash": "0x6a387780ea0a2f54030460446b6a95d81058100c8f5de7edc83f61481d9c5c4c"
+    },
+    {
+      "key": "morphoAdapter",
+      "old": "0x5A8ac17B80694ACE43F8c38a9cC13B7B08cc8555",
+      "fresh": "0x3e2E4eFE18909E614e74f197f5907d9f74dAdCc9",
+      "creationCodeHash": "0x0861a36d1c23f59f97a4656bb711294efd08e586cd8eaac288d65248bb687301",
+      "runtimeCodeHash": "0x9aec9c539a18d90000d375c1e6826fb5a1fb7439034d52c59c6d9c2bcaa8ecbd"
+    },
+    {
+      "key": "dolomiteAdapter",
+      "old": "0x6099803838D1bA17Cc03e7f2BDFe71C86924Fc0D",
+      "fresh": "0x17ff34D3ecE99Ee79F7ed0aC85809efDD34FC543",
+      "creationCodeHash": "0xbae1623fbe3562e06c5c49395c1f2fb4738733c0ac95dbcd7be2b13307c631d8",
+      "runtimeCodeHash": "0x3ec670e2c6be0a08a74221688b49e2b801db575c9d3e83830b7cad640558a769"
+    },
+    {
+      "key": "fluidAdapter",
+      "old": "0x862415F76ff11231De1B8833Ba5590Bc71b46957",
+      "fresh": "0x066200e9bbd1F2Bf191ed88cFf2Ab477220f5125",
+      "creationCodeHash": "0x42452077eef1d2f551b2521db7c842600ff24a8fdf5f4a51612e8deab168dc66",
+      "runtimeCodeHash": "0x2d3a258a8d3418e4e04818ca9b6ffba0c541d5d9d294d39e0144af0ab8c70b5d"
+    }
+  ],
+  "batches": [
+    {
+      "file": "01-activate-adapter-fixes.safe.json",
+      "count": 51
+    }
+  ],
+  "blockNumber": "516215599",
+  "allocationPolicyChanged": false,
+  "deploymentTransactions": [
+    {
+      "hash": "0x0990757e18dc0f9707f40ae0d8b134d5dc6172d4686751ce9905f87fa63cdaa4",
+      "blockNumber": "516215234"
+    },
+    {
+      "hash": "0x236d875190e83046c6ea35c121c5f9c5db8a2e6d6624666fd27b7b3d38fe792b",
+      "blockNumber": "516215243"
+    },
+    {
+      "hash": "0xcb85e7524767f3c688b38ddaed46b1ad06fabf3255b1d3672c145636524002c3",
+      "blockNumber": "516215253"
+    },
+    {
+      "hash": "0x9002509a66524af2b05b18007b3cefdac1856891e32c02de5765b9ebcebea553",
+      "blockNumber": "516215260"
+    },
+    {
+      "hash": "0xc1e3bbef1390bde0f7312364d20d7091b959157676c948ac0b14b45cc078b696",
+      "blockNumber": "516215267"
+    },
+    {
+      "hash": "0x0de51f851cac6daac2b340cd9b72d4ee84386bc5e817b5d1aa11f6f75c3f5bd3",
+      "blockNumber": "516215273"
+    },
+    {
+      "hash": "0xfbecc7df11bc0776b589f7c2f01fb34b46e6e8ed919794db7ef11fbad1d4b2ae",
+      "blockNumber": "516215277"
+    },
+    {
+      "hash": "0x54108759374376893efb07ba87b567eb6204b37c24446d27017dd30b4547781e",
+      "blockNumber": "516215283"
+    },
+    {
+      "hash": "0xb6d68c164ec88b4792205978c055cfa140ac396eafc1d2a61afa1ce175a7a0b0",
+      "blockNumber": "516215292"
+    },
+    {
+      "hash": "0xc7f778bb5311ec3f07d3f9f76ae0a1eef70d53afdf148f3940eb0da46c9179d0",
+      "blockNumber": "516215301"
+    },
+    {
+      "hash": "0x26dd37025de6f2998c21798f8048fb4584519df62bc3f17d73c6400a540c36c2",
+      "blockNumber": "516215307"
+    },
+    {
+      "hash": "0x3bb721df2bee21ec100c29678361eecbb4e1cce8f3e2d954d02ca66593a59081",
+      "blockNumber": "516215313"
+    },
+    {
+      "hash": "0x329dd02f415cc0163db22462198f1ed88ef207fd3bf99286d3a46efa624af037",
+      "blockNumber": "516215321"
+    },
+    {
+      "hash": "0xc3691c8ca886589ab1c05efaf053df79df13ca5cf24cea0e8749f6303e32e53b",
+      "blockNumber": "516215327"
+    },
+    {
+      "hash": "0x41052008f3edbb2ea8ba7182aa5ec783fd351fb2e286f0b641e14964396a1ae4",
+      "blockNumber": "516215334"
+    },
+    {
+      "hash": "0x84707c2c57d96913b1a0bb788eb361407ca9072d3138762feb228d56d10c51f8",
+      "blockNumber": "516215343"
+    },
+    {
+      "hash": "0x719d5f0ca483d129f061ceac07d679b0fbc1d3d6302ad457deeb387fabcb3932",
+      "blockNumber": "516215350"
+    },
+    {
+      "hash": "0x654689961403de51138c1b449d8aff1113505f4e3d8bb9aad5fcc3fc07298dca",
+      "blockNumber": "516215354"
+    },
+    {
+      "hash": "0xd288efbac142e447f82c673c24d02ca100cf91d9f73a7885d086b36a815418bd",
+      "blockNumber": "516215364"
+    },
+    {
+      "hash": "0x70021782582e785b029df921d20c1341d751896dcb625c06e78511eccbbee524",
+      "blockNumber": "516215374"
+    },
+    {
+      "hash": "0x23e31e4229eb4af1bbe660976ed9de1b06c69296042e2f97fb3e5ec7b646dab4",
+      "blockNumber": "516215382"
+    },
+    {
+      "hash": "0x13c7eef22cd5b8f4fd547a367c3d93889f8eba5ae63e7f1ab8dc18b6500f2539",
+      "blockNumber": "516215389"
+    },
+    {
+      "hash": "0xaa4d35d0d795bfb661b3e28328494c1bdb4c56a28be08db4557b7194cdbdd014",
+      "blockNumber": "516215395"
+    },
+    {
+      "hash": "0xd7661675ad8608dbdbc63099b1a8a7fc6d48bda1034f0e9899d49700ec7446a5",
+      "blockNumber": "516215403"
+    },
+    {
+      "hash": "0xeedfca05853679dea495c97d73568c24cc3452bc741454038aae80b0e0e4eff0",
+      "blockNumber": "516215406"
+    },
+    {
+      "hash": "0x342d21f7f6a6c4c7175049c4570562c8c4d646519aacaaa7a9db55ac78969581",
+      "blockNumber": "516215413"
+    },
+    {
+      "hash": "0x444b4106ebc83e3855d817ed5e490f12a534cf7c1d10391717bcb5dd1559b467",
+      "blockNumber": "516215419"
+    },
+    {
+      "hash": "0x347f8393e0b8a68d2bf0351a1493a5843a5fca77eca0c62f01d83ec0337ec2ea",
+      "blockNumber": "516215425"
+    },
+    {
+      "hash": "0x63c4fd11463803c1d42f0938bb0137fb6806703b8700804aa077257c9bf3eaff",
+      "blockNumber": "516215431"
+    },
+    {
+      "hash": "0xdc470875104296d2d7d341265e0f0f9ffff4597a894c9b8f8f947003f5f5e5c8",
+      "blockNumber": "516215438"
+    },
+    {
+      "hash": "0xcd662b66fc1b257bf92f86ad051511dd100fcdd96367fbc1f57fd25a99f4c484",
+      "blockNumber": "516215446"
+    },
+    {
+      "hash": "0x6c361708160925a20679a112e240c7e87886dd21fcdae82ef7b2db4f800e1225",
+      "blockNumber": "516215452"
+    },
+    {
+      "hash": "0x41adad73ba8f00418de68f1982e9c85106591c3448ac75ead12836c5d675edc8",
+      "blockNumber": "516215455"
+    },
+    {
+      "hash": "0x51aa60af003f01e3db455cd069148c5a4ad980e6a179207242647c9f427cb3bb",
+      "blockNumber": "516215465"
+    },
+    {
+      "hash": "0x856cff4f918128891aff6c9d04962aa011cc72a4004f3fbdad01504344d8aae6",
+      "blockNumber": "516215474"
+    }
+  ],
+  "governance": "0x70ef444799D6FBbE0865bA598Bee6795e064a326",
+  "validation": {
+    "forkBlock": 516215599,
+    "exactSafeBatch": "passed",
+    "calls": 51,
+    "navBeforeRawUsdc": "20550044",
+    "deployedAfterKeeperCallRawUsdc": "20552697",
+    "activationExecutedOnMainnet": false,
+    "adapterRuntimeBytecodeMatches": 4,
+    "guardTestsPassed": 3,
+    "keeperTestsPassed": 32,
+    "keeperTypecheck": "passed"
+  },
+  "sourceVerification": {
+    "sourcify": "six successful source matches",
+    "arbiscan": "API unavailable: repeated HTTP 502/timeouts; verification not confirmed",
+    "contracts": [
+      {
+        "name": "DolomiteUsdcMultiMarketAdapter",
+        "address": "0x17ff34d3ece99ee79f7ed0ac85809efdd34fc543",
+        "status": "match",
+        "verificationUrl": "https://sourcify.dev/server/verify-ui/jobs/3854d79f-7e83-4811-a8d7-be404d78e7a0"
+      },
+      {
+        "name": "VenusUsdcMultiMarketAdapter",
+        "address": "0xb8fed94a1a7dc046402de039c0143ac48396eb7a",
+        "status": "match",
+        "verificationUrl": "https://sourcify.dev/server/verify-ui/jobs/3c55659d-9be1-4690-9380-34efa878d396"
+      },
+      {
+        "name": "FluidUsdcMultiMarketAdapter",
+        "address": "0x066200e9bbd1f2bf191ed88cff2ab477220f5125",
+        "status": "match",
+        "verificationUrl": "https://sourcify.dev/server/verify-ui/jobs/426e5749-f646-41fe-9d05-935f3457e6dd"
+      },
+      {
+        "name": "MorphoUsdcMultiMarketAdapter",
+        "address": "0x3e2e4efe18909e614e74f197f5907d9f74dadcc9",
+        "status": "match",
+        "verificationUrl": "https://sourcify.dev/server/verify-ui/jobs/3a7cce5b-5247-4d2f-bb69-c3e1d3c19c8a"
+      },
+      {
+        "name": "AdapterSwapGuard",
+        "address": "0x97b2292104cfa7a5bf8742188f27a6efcc6a7727",
+        "status": "match",
+        "verificationUrl": "https://sourcify.dev/server/verify-ui/jobs/ad1ec36c-6161-47c8-93cf-b3db036654cd"
+      },
+      {
+        "name": "AdapterFactory",
+        "address": "0x695a5edd49259eb644a8e6014c6a2404f5eb6127",
+        "status": "match",
+        "verificationUrl": "https://sourcify.dev/server/verify-ui/jobs/7b6de992-dab2-41f2-adfe-f5d606b791a0"
+      }
+    ]
+  },
+  "safeFileSha256": "e660230ce0950aa3c2afdb02b2e1f1d9630dc9cd80a016c18915d593beb5ce6a"
+}

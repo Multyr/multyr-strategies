@@ -1,0 +1,9 @@
+{
+  "UsdcMultiLendingVault": 22721,
+  "StrategyAllocCalcModule": 21713,
+  "StrategyRebalanceGateModule": 22805,
+  "StrategyRebalancePlanModule": 22551,
+  "StrategyAdapterOpsModule": 18196,
+  "MorphoUsdcMultiMarketAdapter": 22768,
+  "ReadOnlyGasEstimator": 7854
+}

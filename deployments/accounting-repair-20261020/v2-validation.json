@@ -1,0 +1,16 @@
+{
+  "originalFailureBlock": 516655973,
+  "originalError": "ADAPTER_NOT_DRAINED",
+  "originalResidualUsdcRaw": 1,
+  "v2PassedBlocks": [
+    516655973,
+    516689420
+  ],
+  "positionAssetsAfterRaw": 0,
+  "totalAssetsAfterRaw": 0,
+  "currentBlockResidualVTokenRaw": 3,
+  "candidateActions": 7,
+  "candidateDepositsFunded": true,
+  "liveExecution": false,
+  "profitabilityConfirmed": false
+}

@@ -1,0 +1,10 @@
+{
+  "UsdcMultiLendingVault": 21959,
+  "StrategyScoringModule": 21591,
+  "StrategyAllocCalcModule": 21127,
+  "StrategySettingsModule": 22939,
+  "StrategyRebalanceGateModule": 21751,
+  "StrategyRebalancePlanModule": 21202,
+  "StrategyAdapterOpsModule": 17135,
+  "StrategySafetyOverflowModule": 13156
+}

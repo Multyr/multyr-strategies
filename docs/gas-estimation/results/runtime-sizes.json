@@ -1,0 +1,11 @@
+{
+  "UsdcMultiLendingVault": 21813,
+  "StrategyScoringModule": 21591,
+  "StrategyRebalancePlanModule": 21202,
+  "StrategyRebalanceGateModule": 21751,
+  "StrategyAdapterOpsModule": 17135,
+  "StrategySettingsModule": 22939,
+  "StrategyAllocCalcModule": 20960,
+  "ReadOnlyGasEstimator": 6245,
+  "StrategySafetyOverflowModule": 13156
+}

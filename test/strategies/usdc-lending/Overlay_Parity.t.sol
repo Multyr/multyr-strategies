@@ -105,7 +105,6 @@ contract Overlay_Parity is UsdcMultiLendingVaultTestBase {
         uint16 floorOverride
     ) internal pure returns (uint16) {
         if (dMax == 0) return 0;
-        if (dMax == 1) return 10000; // T1 short-circuit (TIER_MODEL §4.1)
 
         uint256 cap = (11000 + uint256(dMax) - 1) / uint256(dMax); // ceil(11000/dMax)
         if (cap > 10000) cap = 10000;
@@ -135,6 +134,7 @@ contract Overlay_Parity is UsdcMultiLendingVaultTestBase {
         cap = (cap * liqMult) / 10000;
 
         if (floorOverride > 0 && cap < uint256(floorOverride)) cap = uint256(floorOverride);
+        if (globalCeiling > 0 && cap > globalCeiling) cap = globalCeiling;
         return uint16(cap);
     }
 
@@ -247,8 +247,8 @@ contract Overlay_Parity is UsdcMultiLendingVaultTestBase {
     // T1 TESTS (dMax=1 -- vault empty, TVL < 25K)
     // ══════════════════════════════════════════════════════════════════════════
 
-    function test_parity_T1_short_circuit_no_overlays_applied() public {
-        // T1: always returns 10000 regardless of any overlay state
+    function test_parity_T1_applies_failure_and_risk_overlays() public {
+        // Seven failures reduce capacity to zero even in the single-adapter tier.
         _setRiskScore(address(adapterA), 10000);
         _setFailures(address(adapterA), 7);
         _setLiquidityCache(address(adapterA), 100);
@@ -256,22 +256,21 @@ contract Overlay_Parity is UsdcMultiLendingVaultTestBase {
             abi.encodeWithSignature("effectiveAbsCapBps(address)", address(adapterA))
         );
         require(ok, "T1 staticcall failed");
-        assertEq(abi.decode(ret, (uint16)), 10000, "T1: must always return 10000");
+        assertEq(abi.decode(ret, (uint16)), 0, "T1: failure overlay must remain binding");
     }
 
     // Fix: F-SCORING-INV2 (audit Wave 2) -- a set governance ceiling (a
     // deliberate emergency conservatism lever) DOES apply in T1, in both
     // StrategyAllocCalcModule (the real allocation engine) and
     // StrategyScoringModule (the public getter, I-ALLOC-06 overlay parity).
-    // Only an UNSET ceiling (0 = sentinel for "no constraint") preserves the
-    // 100% T1 short-circuit -- see test_parity_T1_short_circuit_no_overlays_applied.
+    // An unset ceiling removes only the governance clamp; overlays still apply at T1.
     function test_parity_T1_respects_set_global_ceiling() public {
         _setGlobalCeiling(3000);
         (bool ok, bytes memory ret) = address(vault).staticcall(
             abi.encodeWithSignature("effectiveAbsCapBps(address)", address(adapterA))
         );
         require(ok);
-        assertEq(abi.decode(ret, (uint16)), 3000, "T1 must respect a set global governance ceiling");
+        assertEq(abi.decode(ret, (uint16)), 3000, "Ceiling tightens capacity without increasing the TVL adapter limit");
         _clearGlobalCeiling();
     }
 
@@ -388,7 +387,7 @@ contract Overlay_Parity is UsdcMultiLendingVaultTestBase {
     // agree on this (I-ALLOC-06 overlay parity) -- verified below with a
     // ceiling set AND with overlays maxed out, to prove the overlays really
     // are ignored while the ceiling really is respected.
-    function test_AUDIT_FINDING_13_T1_overlays_shortcircuit_but_ceiling_applies_in_both_paths() public {
+    function test_smallVaultCeilingEnablesDiversificationAndRiskOverlays() public {
         // T1 state: vault is empty (TVL=0 < 25K) → dMax=1
         _setRiskScore(address(adapterA), 10000);
         _setFailures(address(adapterA), 7);
@@ -400,7 +399,7 @@ contract Overlay_Parity is UsdcMultiLendingVaultTestBase {
         );
         require(ok, "T1 staticcall failed");
         uint16 actual = abi.decode(ret, (uint16));
-        assertEq(actual, 3000, "T1 overlays are ignored but the set ceiling must still apply");
+        assertEq(actual, 0, "Diversified small vault must not bypass failure and risk overlays");
 
         _clearGlobalCeiling();
         _setFailures(address(adapterA), 0);

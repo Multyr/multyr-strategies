@@ -9,7 +9,7 @@ pragma solidity 0.8.28;
 //
 // Pre-fix: _effectiveAbsCapBps() returned 10000 unconditionally at T1,
 //          silently overriding the governance ceiling (adapterMaxExposureBps).
-// Post-fix: returns adapterMaxExposureBps if set, 10000 only as sentinel fallback.
+// Current policy: the governance ceiling and all overlays bind, including at T1.
 //
 // Tests:
 //   1. test_T1_singleAdapter_respects_governance_cap        (direct logic)
@@ -99,7 +99,7 @@ contract F_SCORING_INV2_CapLogic is Test {
 
     // ── Test 1 ──────────────────────────────────────────────────────────────
     // T1 TVL (< 25K), governance ceiling set: must be respected.
-    // Pre-fix: returned 10000 (100%). Post-fix: returns adapterMaxExposureBps.
+    // The uncached-liquidity overlay further tightens the governance ceiling.
     function test_T1_singleAdapter_respects_governance_cap() public {
         usdc.mint(address(harness), 10_000e6); // T1: 10K < 25K
         harness.setAdapterMaxExposureBps(5000);
@@ -107,13 +107,13 @@ contract F_SCORING_INV2_CapLogic is Test {
         assertEq(harness.exposedEffectiveMaxAdapters(), 1, "T1: dynamicMax must be 1");
         assertEq(
             harness.exposedEffectiveAbsCapBps(DUMMY_ADAPTER),
-            5000,
-            "T1: adapterMaxExposureBps=5000 must override default 10000"
+            4500,
+            "T1: ceiling 5000 times uncached-liquidity factor 90%"
         );
     }
 
     // ── Test 2 ──────────────────────────────────────────────────────────────
-    // T1 TVL, sentinel 0: original unconstrained 100% preserved.
+    // T1 TVL, sentinel 0: no governance ceiling, but liquidity overlay still applies.
     // Sentinel (adapterMaxExposureBps == 0) means "no governance constraint".
     function test_T1_singleAdapter_unconstrained_when_zero_sentinel() public {
         usdc.mint(address(harness), 10_000e6); // T1
@@ -122,8 +122,8 @@ contract F_SCORING_INV2_CapLogic is Test {
         assertEq(harness.exposedEffectiveMaxAdapters(), 1, "T1: dynamicMax must be 1");
         assertEq(
             harness.exposedEffectiveAbsCapBps(DUMMY_ADAPTER),
-            10000,
-            "T1: sentinel 0 must preserve original 10000 unconstrained cap"
+            9000,
+            "T1: sentinel removes ceiling, not the uncached-liquidity overlay"
         );
     }
 

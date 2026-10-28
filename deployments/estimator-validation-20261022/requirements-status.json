@@ -1,0 +1,31 @@
+{
+  "status": "local policy implementation validated; no live changes; fresh fork/native-fee calibration required before deployment",
+  "solidityChanges": [
+    "EMA-first below cold-start defaults with >=3 stable observations and <=7-day freshness; reset on >1.25x gas-regime change or stale history",
+    "Append per-direction execution evidence; external keeper-reported samples cannot establish reliability",
+    "Configurable withdrawal-only/deposit-only/mixed transaction overheads; dynamic batch count",
+    "Top-N composite-score rebalance targeting with 1-2-3-4-5 TVL tiers and static ceiling",
+    "Cancel remaining deposits no longer selected by fresh target computation",
+    "Morpho APY sort snapshots each market once instead of repeatedly valuing it"
+  ],
+  "configurationChanges": [
+    "Retained setAdapterFloors ABI now means cold-start defaults; governance tooling must describe new semantics",
+    "Separate path-overhead configuration calibrated in candidate-calibration.json",
+    "Safety margin remains separately applied at 50%; intrinsic/calldata and L1 accounted separately"
+  ],
+  "deploymentSteps": [
+    "Review final tests, calibration and bytecode/storage-layout consistency",
+    "Deploy matching replacement strategy modules and estimator; existing write-once estimator pointer prevents in-place logic replacement",
+    "Morpho optimization requires replacement adapter if included",
+    "Simulate migration and governance transactions against current state before approval",
+    "Execute approved governance migration, then repoint keeper configuration and indexing; verify first real receipts"
+  ],
+  "limitations": [
+    "Native Arbitrum receipt reconciliation is not available from an Anvil EVM fork",
+    "Existing baseline is a different strategy implementation; do not promote its measurements as revised-code production calibration",
+    "Single-path EMA reliability does not prove worst-case protocol execution cost",
+    "Exact illustrative 500K allocation covered by mocked-adapter integration; real-protocol 500K uses a different book",
+    "Four actual-rate paths are conditional economic-gate overrides, not gate acceptance evidence"
+  ],
+  "latestPolicyValidation": "reserve-policy-validation.json"
+}

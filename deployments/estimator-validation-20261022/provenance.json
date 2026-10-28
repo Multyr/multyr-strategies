@@ -1,0 +1,28 @@
+{
+  "baseCommit": "0ffda7df8b01b2d07359d56830a89a7514f4bbc1",
+  "status": "uncommitted local review candidate; no deployment",
+  "sha256": {
+    "src/strategies/usdc-lending/adapters/lending/MorphoUsdcMultiMarket.sol": "2246f739c0e383b715b809ca06e1a3eec7bb8752647fe5024d537494ab0fb168",
+    "src/strategies/usdc-lending/controller/StrategyAdapterOpsModule.sol": "c9f3ede474b179f22910b91fa7f4fdbc139617f4e67b5164e6c61711c72efaa3",
+    "src/strategies/usdc-lending/controller/StrategyAllocCalcModule.sol": "2229eef87923f414e33b85a02eca60008750666911ef25a8e298e286993a07c5",
+    "src/strategies/usdc-lending/controller/StrategyRebalanceGateModule.sol": "9b84bb3509467dcf22091200a288a6fcf8bde80053e0fec774dfd05f4f85dfbb",
+    "src/strategies/usdc-lending/controller/StrategySettingsModule.sol": "95b6893281a66b49a5268d26c816fd1dbed6dd9b0eb54ea47409472813d79f80",
+    "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol": "5f57972170cb217a7fb3c88572bae48167530f44dde020d5be4cf2bc20e37824",
+    "src/strategies/usdc-lending/gas/ReadOnlyGasEstimator.sol": "7f2e921b7ec11908465792f8112f1b074083709fe8237b6a4846684f6e085820",
+    "test/strategies/usdc-lending/ReadOnlyGasEstimator.t.sol": "4c2168f2ec58a65e1e77f67827b2554d40a29661dbca3f8308badc2cd4627543",
+    "test/strategies/usdc-lending/ReadOnlyGasIntegration.t.sol": "b74f4d8cc7439745fa8bcdff17d09dad37373e57ccee8e64e330ad85d04936f7",
+    "script/benchmark-estimator-tiers.mjs": "5bc38d3277ac20fb75a7df4382caa2404204f887dc9e4bd040743215ef513e35",
+    "script/analyze-estimator-tiers.mjs": "cca64ddd618fb1d330ee0fe1ca2d935aa9cb66c3ca828ade538cf6db440a3647",
+    "script/benchmark-adapter-gas.mjs": "e8103dc3885bac582a5db72bb9b65dc7325ea3bdaa018417ffa71d70586b3f39",
+    "script/validate-estimator-calibration.mjs": "31e6eec0d639b8513570c5ed61a5ed0799a4f9ccc76cb8d49176cbcb91340419",
+    "script/run-estimator-tier-fork.py": "9e5ef1034e8c2e991f83bb36af370c4873facd0b307c34cc4ade61f4d08bc8ee",
+    "test/strategies/usdc-lending/PlanEstimatorRequirements.t.sol": "642675210bf5521ba840ebd67d57caba45bae1f00e92055853c4f91f43be0ea2",
+    "test/strategies/usdc-lending/fork/EstimatorTierCalibration.fork.t.sol": "fcab196dcdc33fe6f219fa701187a4c4d43ea75f6a4949196f2884c950a7778f",
+    "deployments/estimator-validation-20261022/candidate-calibration.json": "1e6e8b66b283d382120e13068900cf616a7e9198cd67fc724135cd0510bd646a",
+    "deployments/estimator-validation-20261022/calibrated-quotes.json": "64d825bfdb6d7bb94266f1e1ff452545c4a68c14d5bfab0e0a59b20d68f2d182",
+    "deployments/estimator-validation-20261022/component-results.json": "609476a8ccddd91eaf02b04e2b51b8e093080498e1c5c13fd4419b83b55f1be5",
+    "deployments/estimator-validation-20261022/real-rate-component-results.json": "50e34cd60152fe527c8b5761716918235188ffb2f749b6d8fc4025592a2262fd",
+    "deployments/estimator-validation-20261022/adapter-roundtrips.json": "3dcc9430c28a7338f5c94116d81e1520ad300061fcc75ed4a663b4e38ae633e6",
+    "deployments/estimator-validation-20261022/validation-report.txt": "7c7c26beb9ed0dcb93c8912546bd65976d233e65308a62ccc34b715aa3af4a24"
+  }
+}

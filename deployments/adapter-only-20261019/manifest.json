@@ -1,0 +1,71 @@
+{
+  "status": "SUPERSEDED: adapters now deployed at different addresses; use adapter-live-20261019 activation file",
+  "strategy": "0xa9E676D15976A1332905238ca609Dff9A484Efe0",
+  "upkeep": "0xbcaC314E7237b14E11644FC6Ba73675c8c0612DF",
+  "factory": "0x9f8bd6432a1BEB8A8159859f26CD531C575424a1",
+  "guard": "0x6240faF084942377d3EE740fAE31ae1f9f683bfA",
+  "replacements": [
+    {
+      "key": "venusAdapter",
+      "old": "0xAba3D7015fFC9b8dEEb404389296864A1607E828",
+      "fresh": "0xAfa2368d422Cb2455060EB86FBBD32F6C82a87f8",
+      "creationCodeHash": "0x3154ea07f6460f32c6aa6c7ea358bb56fbe10f3e2bde97041f4e5db331a56f01"
+    },
+    {
+      "key": "morphoAdapter",
+      "old": "0x5A8ac17B80694ACE43F8c38a9cC13B7B08cc8555",
+      "fresh": "0xd8f7f3eb35c33517B91b85bbcfa1589e0978b9D3",
+      "creationCodeHash": "0x0861a36d1c23f59f97a4656bb711294efd08e586cd8eaac288d65248bb687301"
+    },
+    {
+      "key": "dolomiteAdapter",
+      "old": "0x6099803838D1bA17Cc03e7f2BDFe71C86924Fc0D",
+      "fresh": "0x2696c2161Db3240d1f0C6B1677A0D478089Fb81c",
+      "creationCodeHash": "0xbae1623fbe3562e06c5c49395c1f2fb4738733c0ac95dbcd7be2b13307c631d8"
+    },
+    {
+      "key": "fluidAdapter",
+      "old": "0x862415F76ff11231De1B8833Ba5590Bc71b46957",
+      "fresh": "0x256A7140893F5dd5c940a5AdB2aafd8B53A75288",
+      "creationCodeHash": "0x42452077eef1d2f551b2521db7c842600ff24a8fdf5f4a51612e8deab168dc66"
+    }
+  ],
+  "batches": [
+    {
+      "file": "00-deploy-drain-guard.safe.json",
+      "count": 1
+    },
+    {
+      "file": "01-deploy-venus.safe.json",
+      "count": 1
+    },
+    {
+      "file": "02-deploy-morpho.safe.json",
+      "count": 3
+    },
+    {
+      "file": "03-deploy-dolomite.safe.json",
+      "count": 6
+    },
+    {
+      "file": "04-deploy-fluid.safe.json",
+      "count": 3
+    },
+    {
+      "file": "05-atomic-adapter-swap.safe.json",
+      "count": 51
+    }
+  ],
+  "blockNumber": "516204716",
+  "allocationPolicyChanged": false,
+  "validation": {
+    "forkBlock": 516204716,
+    "forkTestsPassed": 1,
+    "guardTestsPassed": 3,
+    "keeperTestsPassed": 32,
+    "keeperTypecheck": "passed",
+    "navPreservedRawUsdc": "20550044",
+    "mainnetExecuted": false,
+    "keeperDocumentationCommit": "a4dc63b"
+  }
+}

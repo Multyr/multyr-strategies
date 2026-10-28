@@ -421,23 +421,19 @@ contract FluidUsdcMultiMarketAdapterTest is Test {
     }
 
     function test_currentAPYBps_computedFromPPSDelta() public {
-        // Start: PPS=1e18, ts=t0
-        // Skip 30 days, PPS=1.005e18 (0.5% over 30d)
-        // annualBps = (5e15 * 365d * 10000) / (1e18 * 30d)
-        //           = (5e15 * 31536000 * 10000) / (1e18 * 2592000)
-        //           = (5e15 * 365 * 10000) / (1e18 * 30)
-        //           = 1.825e22 / 3e19
-        //           = 608 bps approximately
-        skip(30 days);
-        fToken.setPPS(1.005e18);
-        uint16 apy = adapter.currentAPYBps();
-        assertApproxEqAbs(uint256(apy), 608, 2);
+        skip(1 days);
+        fToken.setPPS(1.0001e18);
+        assertEq(adapter.currentAPYBps(), 365);
+        vm.prank(admin);
+        adapter.pokeAPYSnapshots();
+        assertEq(adapter.currentAPYBps(), 365, "refresh must preserve measured rate");
+        skip(2 days + 1);
+        assertEq(adapter.currentAPYBps(), 0, "stale rate must not influence allocation");
     }
 
     function test_currentAPYBps_clampedToUint16Max() public {
-        // Massive PPS jump over 1 second → astronomic APY → clamps
-        skip(1);
-        fToken.setPPS(1000e18); // 1000x
+        skip(1 hours);
+        fToken.setPPS(1000e18);
         assertEq(adapter.currentAPYBps(), type(uint16).max);
     }
 

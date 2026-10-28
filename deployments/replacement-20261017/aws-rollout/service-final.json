@@ -1,0 +1,12 @@
+[
+  {
+    "running": 1,
+    "pending": 0,
+    "deployments": [
+      {
+        "revision": "arn:aws:ecs:eu-north-1:820140266807:task-definition/multyr-keeper-simulation:4",
+        "state": "COMPLETED"
+      }
+    ]
+  }
+]

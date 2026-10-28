@@ -1,0 +1,27 @@
+{
+  "rows": [
+    {
+      "hash": "0x471052742773d3bc404f9f34271b72b95b148eb45ea0df84a773a7181b958b6d",
+      "status": "success",
+      "blockNumber": "515782924",
+      "from": "0x404da3b474b8b4c87d5e3c39230c71a7237630da",
+      "to": "0xbcac314e7237b14e11644fc6ba73675c8c0612df"
+    },
+    {
+      "hash": "0x7182a34925acbcb8e030b3229f6fa9527b5baa7406915299f0228a058ff9567f",
+      "status": "success",
+      "blockNumber": "515784933",
+      "from": "0x908756f36954f2853134259b8846c49f90e84ece",
+      "to": "0x5e0cdb76487bd96ff069ef7f78eadf5b5909c8cb"
+    },
+    {
+      "hash": "0x0982d1207561044c6172ce83564676e438126b7744550490e7e82ca5dc3566ca",
+      "status": "success",
+      "blockNumber": "515787283",
+      "from": "0x404da3b474b8b4c87d5e3c39230c71a7237630da",
+      "to": "0xbcac314e7237b14e11644fc6ba73675c8c0612df"
+    }
+  ],
+  "feeCollectorUsdcRaw": "0",
+  "feeCollectorCoreSharesRaw": "96339"
+}

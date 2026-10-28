@@ -1,6 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.28;
+import {StrategySettingsCopy} from "./StrategySettingsCopy.sol";
+import {UsdcMultiLendingVault as Strategy} from "../src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol";
+import {GasEstimatorPreflight} from "./GasEstimatorPreflight.sol";
 
+import {ReadOnlyGasEstimator} from "../src/strategies/usdc-lending/gas/ReadOnlyGasEstimator.sol";
 import {Script} from "forge-std/Script.sol";
 import {console} from "forge-std/console.sol";
 import {stdJson} from "forge-std/StdJson.sol";
@@ -16,6 +20,7 @@ import {
 
 interface IStrategyView {
     function asset() external view returns (address);
+    function rebalanceGasEstimator() external view returns (address);
     function adapterCount() external view returns (uint256);
     function paused() external view returns (bool);
     function hasRole(bytes32 role, address account) external view returns (bool);
@@ -48,6 +53,8 @@ interface IOwnableView {
 }
 
 interface IUpkeepView is IOwnableView {
+    function enabled(address strategy) external view returns (bool);
+    function isStrategy(address strategy) external view returns (bool);
     function aavePool() external view returns (address);
     function aaveRateProvider() external view returns (address);
     function usdc() external view returns (address);
@@ -108,6 +115,9 @@ contract PostflightUsdcLendingShadow is Script {
         string memory bookPath =
             vm.envOr("STRATEGY_OUTPUT_JSON", string.concat(dir, "/addresses.json"));
         Addrs memory a = _readAddressBook(bookPath);
+        string memory book = vm.readFile(bookPath);
+        require(book.readAddress(".settingsSourceStrategy") == vm.envAddress("SOURCE_STRATEGY"), "POSTFLIGHT: wrong source strategy");
+        require(book.readAddress(".settingsSourceUpkeep") == vm.envAddress("SOURCE_STRATEGY_UPKEEP"), "POSTFLIGHT: wrong source upkeep");
 
         UsdcLendingChainConfig memory cc = UsdcLendingConfigArbitrum.get();
         address usdc = cc.usdc;
@@ -123,12 +133,23 @@ contract PostflightUsdcLendingShadow is Script {
 
         // ── wiring ──────────────────────────────────────────────────────
         require(a.strategy.code.length > 0, "POSTFLIGHT: strategy has no code");
+        address estimator = s.rebalanceGasEstimator();
+        GasEstimatorPreflight.validate(estimator, governance,
+            vm.envAddress("GAS_ETH_USD_FEED"), vm.envAddress("GAS_USDC_USD_FEED"),
+            vm.envAddress("GAS_SEQUENCER_FEED"), vm.envBytes32("GAS_CONFIG_HASH"));
         require(s.asset() == usdc, "POSTFLIGHT: strategy.asset() != USDC");
         require(s.adapterCount() == 7, "POSTFLIGHT: adapterCount != 7");
-        require(!s.paused(), "POSTFLIGHT: strategy is paused");
+        address source = vm.envAddress("SOURCE_STRATEGY");
+        StrategySettingsCopy.verifyInit(source, a.strategy);
+        StrategySettingsCopy.globals(source, a.strategy, false);
+        StrategySettingsCopy.verifyAdapters(source, a.strategy);
+        require(s.paused() == IStrategyView(source).paused(), "POSTFLIGHT: pause setting mismatch");
+        require(Strategy(payable(a.strategy)).safetyOverflowModule_addr().code.length > 0, "POSTFLIGHT: missing safety overflow");
+        require(Strategy(payable(source)).paramsFinalized() == Strategy(payable(a.strategy)).paramsFinalized(), "POSTFLIGHT: finalization mismatch");
+        require(Strategy(payable(source)).rolesFrozen() == Strategy(payable(a.strategy)).rolesFrozen(), "POSTFLIGHT: freeze mismatch");
         require(s.hasRole(CORE_ROLE, vault), "POSTFLIGHT: CoreVault missing CORE_ROLE");
         require(s.hasRole(CORE_ROLE, router), "POSTFLIGHT: StrategyRouter missing CORE_ROLE");
-        console.log("  [ok] code + asset + 7 adapters + not paused + CORE_ROLE x2");
+        console.log("  [ok] code + asset + 7 adapters + preserved settings + CORE_ROLE x2");
 
         // ── complete governance handoff ─────────────────────────────────
         require(
@@ -246,11 +267,25 @@ contract PostflightUsdcLendingShadow is Script {
             "POSTFLIGHT: upkeep Aave rate provider mismatch"
         );
         require(upkeep.usdc() == cc.usdc, "POSTFLIGHT: upkeep USDC mismatch");
-        require(upkeep.pokeInterval() == 1 days, "POSTFLIGHT: upkeep poke interval != 1 day");
-        require(upkeep.getPokeTargets().length == 3, "POSTFLIGHT: upkeep poke target count != 3");
-        require(upkeep.isPokeTarget(a.morphoAdapter), "POSTFLIGHT: Morpho not a poke target");
-        require(upkeep.isPokeTarget(a.dolomiteAdapter), "POSTFLIGHT: Dolomite not a poke target");
-        require(upkeep.isPokeTarget(a.fluidAdapter), "POSTFLIGHT: Fluid not a poke target");
+        IUpkeepView old = IUpkeepView(vm.envAddress("SOURCE_STRATEGY_UPKEEP"));
+        require(upkeep.pokeInterval() == old.pokeInterval(), "POSTFLIGHT: upkeep interval mismatch");
+        address[] memory oldTargets = old.getPokeTargets();
+        address[] memory newTargets = upkeep.getPokeTargets();
+        require(oldTargets.length == newTargets.length, "POSTFLIGHT: poke target count mismatch");
+        Strategy source = Strategy(payable(vm.envAddress("SOURCE_STRATEGY")));
+        Strategy target = Strategy(payable(a.strategy));
+        require(old.isStrategy(address(source)) && upkeep.isStrategy(a.strategy), "POSTFLIGHT: upkeep membership mismatch");
+        require(old.enabled(address(source)) == upkeep.enabled(a.strategy), "POSTFLIGHT: upkeep enabled mismatch");
+        for (uint256 i; i < oldTargets.length; ++i) {
+            bool matched;
+            for (uint256 j; j < source.adapterCount(); ++j) {
+                if (oldTargets[i] == source.adapters(j)) {
+                    require(newTargets[i] == target.adapters(j), "POSTFLIGHT: poke target mapping mismatch");
+                    matched = true;
+                }
+            }
+            require(matched, "POSTFLIGHT: unmapped poke target");
+        }
     }
 
     function _checkAdapterRolesAndRegistry(Addrs memory a, address governance, address deployer)

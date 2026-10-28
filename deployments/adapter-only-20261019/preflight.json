@@ -1,0 +1,76 @@
+{
+  "blockNumber": "516204716",
+  "strategy": "0xa9E676D15976A1332905238ca609Dff9A484Efe0",
+  "upkeep": "0xbcaC314E7237b14E11644FC6Ba73675c8c0612DF",
+  "settings": {
+    "adapterCount": "7",
+    "adapterMaxExposureBps": 0,
+    "rebalancePlanPhase": 0,
+    "maxAdaptersPerAllocation": 3,
+    "minAdaptersActive": 2,
+    "rebalanceMinMoveBps": 50,
+    "minSecondsBetweenRebalances": 86400,
+    "driftToleranceBps": 80,
+    "newAdapterRampBps": 500,
+    "depositsDisabled": false,
+    "maxIdleAfterDepositBps": 500,
+    "maxIdleBootstrapBps": 5000
+  },
+  "adapters": [
+    {
+      "address": "0xd510EA3F3463c2dC3c06c80C94B32FCcb9564A5B",
+      "totalAssets": "0",
+      "maxCapacity": "50000000000000",
+      "vault": "0xa9E676D15976A1332905238ca609Dff9A484Efe0",
+      "enabled": true
+    },
+    {
+      "address": "0x5A8ac17B80694ACE43F8c38a9cC13B7B08cc8555",
+      "totalAssets": "0",
+      "maxCapacity": "50000000000000",
+      "vault": "0xa9E676D15976A1332905238ca609Dff9A484Efe0",
+      "enabled": true
+    },
+    {
+      "address": "0xaA42AC31eEa373299B1984BA29E8b05ea1E3D048",
+      "totalAssets": "0",
+      "maxCapacity": "50000000000000",
+      "vault": "0xa9E676D15976A1332905238ca609Dff9A484Efe0",
+      "enabled": true
+    },
+    {
+      "address": "0x543E0Bb27FDb271Ac87A9c0963C9498131549059",
+      "totalAssets": "0",
+      "maxCapacity": "0",
+      "vault": "0xa9E676D15976A1332905238ca609Dff9A484Efe0",
+      "enabled": true
+    },
+    {
+      "address": "0x6099803838D1bA17Cc03e7f2BDFe71C86924Fc0D",
+      "totalAssets": "0",
+      "maxCapacity": "50000000000000",
+      "vault": "0xa9E676D15976A1332905238ca609Dff9A484Efe0",
+      "enabled": true
+    },
+    {
+      "address": "0x862415F76ff11231De1B8833Ba5590Bc71b46957",
+      "totalAssets": "0",
+      "maxCapacity": "50000000000000",
+      "vault": "0xa9E676D15976A1332905238ca609Dff9A484Efe0",
+      "enabled": true
+    },
+    {
+      "address": "0xAba3D7015fFC9b8dEEb404389296864A1607E828",
+      "totalAssets": "20550044",
+      "maxCapacity": "50000000000000",
+      "vault": "0xa9E676D15976A1332905238ca609Dff9A484Efe0",
+      "enabled": true
+    }
+  ],
+  "pokeTargets": [
+    "0x5A8ac17B80694ACE43F8c38a9cC13B7B08cc8555",
+    "0x6099803838D1bA17Cc03e7f2BDFe71C86924Fc0D",
+    "0x862415F76ff11231De1B8833Ba5590Bc71b46957"
+  ],
+  "upkeepOwner": "0x70ef444799D6FBbE0865bA598Bee6795e064a326"
+}

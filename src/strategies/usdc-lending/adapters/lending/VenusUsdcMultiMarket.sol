@@ -17,6 +17,7 @@ interface IVToken {
     function exchangeRateCurrent() external returns (uint256); // NOT view - accrues interest
     function exchangeRateStored() external view returns (uint256); // view version
     function supplyRatePerBlock() external view returns (uint256);
+    function blocksOrSecondsPerYear() external view returns (uint256);
     function accrueInterest() external returns (uint256); // 0 = success, Compound error code otherwise
     function getCash() external view returns (uint256);
     function totalSupply() external view returns (uint256);
@@ -93,8 +94,8 @@ contract VenusUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
     ///         Default 7500 = 75% loss -> retain 25%. Range [0, 10000].
     uint16 public incentiveHaircutBps = 7500;
 
-    /// @notice Blocks per year for this chain, set at initialize(). Range (0, 200_000_000].
-    ///         Arbitrum: 126_144_000 (0.25s), Optimism/Base: 15_768_000 (2s), BNB: 10_512_000 (3s).
+    /// @notice Rate slots per year (seconds for time-based Venus markets).
+    /// @dev Legacy getter name retained. Modern markets supply their own normalization.
     uint256 public blocksPerYear;
 
     // --- Events ---
@@ -144,7 +145,14 @@ contract VenusUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
         vault = vault_;
         vToken = vToken_;
         capacity = capacity_;
-        blocksPerYear = blocksPerYear_;
+        // Venus retains supplyRatePerBlock() even on time-based deployments.
+        // Prefer the market normalization; the argument is only for legacy markets.
+        uint256 slots = blocksPerYear_;
+        try IVToken(vToken_).blocksOrSecondsPerYear() returns (uint256 marketSlots) {
+            require(marketSlots > 0 && marketSlots <= 200_000_000, "market slots/year");
+            slots = marketSlots;
+        } catch {}
+        blocksPerYear = slots;
 
         _grantRole(DEFAULT_ADMIN_ROLE, admin_);
         _grantRole(PARAM_ROLE, admin_);
@@ -283,8 +291,8 @@ contract VenusUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
     //  ILendingAdapter: YIELD
     // ═══════════════════════════════════════════════════════════
 
-    /// @notice APY from supplyRatePerBlock annualized (simple, not compound)
-    /// @dev rate * blocksPerYear / 1e14 → bps
+    /// @notice Simple annualized supply rate (APR), exposed through the adapter APY API.
+    /// @dev The rate is per slot: second on modern Arbitrum Venus, block on legacy markets.
     function currentAPYBps() external view override returns (uint16) {
         uint256 rate = IVToken(vToken).supplyRatePerBlock();
         uint256 apyWad = rate * blocksPerYear; // 1e18 scale
@@ -361,7 +369,7 @@ contract VenusUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
     // ═══════════════════════════════════════════════════════════
 
     function maxCapacity() external view override returns (uint256) {
-        return capacity;
+        return capacity == 0 ? type(uint256).max : capacity;
     }
 
     function setCapacity(uint256 capacity_) external onlyRole(PARAM_ROLE) {

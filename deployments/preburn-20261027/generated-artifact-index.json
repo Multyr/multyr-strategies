@@ -1,0 +1,122 @@
+{
+  "retainedCommit": "1a930e769917bb24c517904d7fbaf181ba60bfcd",
+  "reason": "Generated replay states/compiler inputs, duplicate source reference copies and communication/debug drafts excluded from the final PR diff. Runtime source, tests and benchmark result evidence retained.",
+  "files": [
+    {
+      "path": "deployments/estimator-margin-20261023/deployment-state.json",
+      "bytes": 2692262,
+      "sha256": "5aac372df0a117067e37150a8f9b9ccf8c6cccbae6fc68bce6a33a1cb72e8a03"
+    },
+    {
+      "path": "deployments/estimator-margin-20261023/tier-0-state.json",
+      "bytes": 2787181,
+      "sha256": "1fdd1e428734122d875f811fbc5cc5036bf27e254af195a34b790984155c5c58"
+    },
+    {
+      "path": "deployments/estimator-margin-20261023/tier-1-state.json",
+      "bytes": 2990827,
+      "sha256": "56b58085630336369a296baa545601fb0e3c9688354121646ac055f5fdb1efdd"
+    },
+    {
+      "path": "deployments/estimator-margin-20261023/tier-2-state.json",
+      "bytes": 2993311,
+      "sha256": "5c2feac4501db55fd0a12af9d93261e1043e1cabdc6bc2ef91fc53ed7af1e586"
+    },
+    {
+      "path": "deployments/estimator-margin-20261023/tier-3-state.json",
+      "bytes": 3079614,
+      "sha256": "d3e01ede59d453ec1edc72ef926681f84d0e754c2d3d314ee021b74990073e2a"
+    },
+    {
+      "path": "deployments/estimator-margin-20261023/tier-4-state.json",
+      "bytes": 3104638,
+      "sha256": "d4decf8ff92f5c79d71395b54e42fd8e254adfb97fd910b8da27f83be8c862ab"
+    },
+    {
+      "path": "deployments/estimator-validation-20261022/deployment-state.json",
+      "bytes": 2683356,
+      "sha256": "1278f8bd8d071ba7c96aff11c8b7b8f89c300751f8d35501f6845da37a52620e"
+    },
+    {
+      "path": "deployments/estimator-validation-20261022/tier-0-state.json",
+      "bytes": 2889740,
+      "sha256": "a44a9cf6b6951daec6a3ff3d3570e2bbffb72548c070d88900c8aaab5a04e89e"
+    },
+    {
+      "path": "deployments/estimator-validation-20261022/tier-1-state.json",
+      "bytes": 3092834,
+      "sha256": "e2751072b23864bd013608df8690554367490eed15482c522ec1158675316fa6"
+    },
+    {
+      "path": "deployments/estimator-validation-20261022/tier-2-state.json",
+      "bytes": 3095456,
+      "sha256": "2792f633fe9ae607a6ba3f19d731e3a2b27428d3eb88de80c02023ad7f04014c"
+    },
+    {
+      "path": "deployments/estimator-validation-20261022/tier-3-state.json",
+      "bytes": 3095732,
+      "sha256": "fe2e18b8fe4a0f6985b704aa7516313f9233425186e5574b0bcdad42efc513c1"
+    },
+    {
+      "path": "deployments/estimator-validation-20261022/tier-4-state.json",
+      "bytes": 3095732,
+      "sha256": "aac8c8ad89288b46f16bac590043055fbaeeb628bfa0b189ef345f5a93d743ce"
+    },
+    {
+      "path": "deployments/estimator-margin-20261023/plan-debug-input.json",
+      "bytes": 2311391,
+      "sha256": "a3c1b1641e9157991a15b07c37f2eba5623d43bec0148693c926d77c4708f36f"
+    },
+    {
+      "path": "deployments/estimator-validation-20261022/plan-debug-input.json",
+      "bytes": 2308043,
+      "sha256": "d0ab4a9de2e0071158dadd9f6a5ff3b857ac92f65e346d4c579e10d739222b7f"
+    },
+    {
+      "path": "deployments/estimator-validation-20261022/real-rate-gate-input.json",
+      "bytes": 2307955,
+      "sha256": "caa7e786dad0312005bcf8e60ac04024d29859683b802dd543eb5a4640bb8834"
+    },
+    {
+      "path": "deployments/gas-overhead-audit-20261021/plan-debug-input.json",
+      "bytes": 2303262,
+      "sha256": "c91e72183a492c8a176b2e861f49c95562f00cade059e49d65a9059a4263ef07"
+    },
+    {
+      "path": "deployments/gas-overhead-audit-20261021/benchmark-gate-input.json",
+      "bytes": 2303205,
+      "sha256": "f6e971c977e0dc4d45fb73d3b3699da882612b2a96f98319c50096051388815c"
+    },
+    {
+      "path": "deployments/estimator-margin-20261023/reply.txt",
+      "bytes": 1400,
+      "sha256": "f92a9c6459a825928a5c4a0005b37ca8fefd556f55fbc5912039e9bfde27fee9"
+    },
+    {
+      "path": "deployments/estimator-validation-20261022/reply.txt",
+      "bytes": 2066,
+      "sha256": "bfd5f9fae1a25306d731f09df463b1551820a8486665aeeb4b8a2fd68aad83a1"
+    },
+    {
+      "path": "deployments/estimator-validation-20261022/reserve-policy-reply.txt",
+      "bytes": 1329,
+      "sha256": "5c41f47efc7a0585c446325137ab218337c0fcea1914157cb7721c89df344b1e"
+    },
+    {
+      "path": "deployments/estimator-code-reference-20261021/ReadOnlyGasEstimator.sol",
+      "bytes": 9994,
+      "sha256": "14d6d2551b1fd5cdeb694a5ff48efc4e86588dcace90d3b5e3fadddb811b5966"
+    },
+    {
+      "path": "deployments/estimator-code-reference-20261021/StrategyRebalanceGateModule.sol",
+      "bytes": 31312,
+      "sha256": "ab752e89f6d690b19d940f5d7949e30b5de833959a9e5ddf388204a41867f917"
+    },
+    {
+      "path": "deployments/adapter-live-20261019/post-repair-gate-trace.json",
+      "bytes": 123321,
+      "sha256": "ca52d4437e5b7cfb9d439c158e975ad5ad103bc0a37b9b76d83cc4a7d8ff06d8"
+    }
+  ],
+  "archiveSHA256": "e15fd4f77790451518273f77ad118ab1760763237171ef3d2870307804cc5bb5"
+}

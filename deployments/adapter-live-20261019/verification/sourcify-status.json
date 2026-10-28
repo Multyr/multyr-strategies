@@ -1,0 +1,38 @@
+[
+  {
+    "name": "DolomiteUsdcMultiMarketAdapter",
+    "job": "3854d79f-7e83-4811-a8d7-be404d78e7a0",
+    "returncode": 0,
+    "output": "Checking verification status on arbitrum\nContract successfully verified:\nStatus: `match`\n"
+  },
+  {
+    "name": "VenusUsdcMultiMarketAdapter",
+    "job": "3c55659d-9be1-4690-9380-34efa878d396",
+    "returncode": 0,
+    "output": "Checking verification status on arbitrum\nContract successfully verified:\nStatus: `match`\n"
+  },
+  {
+    "name": "FluidUsdcMultiMarketAdapter",
+    "job": "426e5749-f646-41fe-9d05-935f3457e6dd",
+    "returncode": 0,
+    "output": "Checking verification status on arbitrum\nContract successfully verified:\nStatus: `match`\n"
+  },
+  {
+    "name": "MorphoUsdcMultiMarketAdapter",
+    "job": "3a7cce5b-5247-4d2f-bb69-c3e1d3c19c8a",
+    "returncode": 0,
+    "output": "Checking verification status on arbitrum\nContract successfully verified:\nStatus: `match`\n"
+  },
+  {
+    "name": "AdapterSwapGuard",
+    "job": "ad1ec36c-6161-47c8-93cf-b3db036654cd",
+    "returncode": 0,
+    "output": "Checking verification status on arbitrum\nContract successfully verified:\nStatus: `match`\n"
+  },
+  {
+    "name": "AdapterFactory",
+    "job": "7b6de992-dab2-41f2-adfe-f5d606b791a0",
+    "returncode": 0,
+    "output": "Checking verification status on arbitrum\nContract successfully verified:\nStatus: `match`\n"
+  }
+]

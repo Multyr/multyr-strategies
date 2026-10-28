@@ -415,7 +415,8 @@ contract UsdcMultiLendingVault is StrategyStorageLayout {
                 emit IdleCashRemaining(idle, dustTolerance);
             }
             uint256 tvlAfter = totalAssets();
-            uint256 maxIdle = (uint256(maxIdleBootstrapBps) * tvlAfter) / 1e4;
+            uint256 allowedIdleBps = maxIdleBootstrapBps > targetIdleBufferBps ? maxIdleBootstrapBps : targetIdleBufferBps;
+            uint256 maxIdle = (allowedIdleBps * tvlAfter) / 1e4;
             if (maxIdle < dustTolerance) maxIdle = dustTolerance;
             if (idle > maxIdle) revert BootstrapIdleTooHigh();
         } else {
@@ -437,7 +438,8 @@ contract UsdcMultiLendingVault is StrategyStorageLayout {
             _delegateToScoring(abi.encodeWithSelector(bytes4(keccak256("deployIdleToAdapters(uint256,bool)")), assets, false));
             uint256 idle = idleCash();
             uint256 tvlTarget = tvlBefore + assets;
-            uint256 maxIdle = (uint256(maxIdleAfterDepositBps) * tvlTarget) / 1e4;
+            uint256 allowedIdleBps = maxIdleAfterDepositBps > targetIdleBufferBps ? maxIdleAfterDepositBps : targetIdleBufferBps;
+            uint256 maxIdle = (allowedIdleBps * tvlTarget) / 1e4;
             if (maxIdle < dustTolerance) maxIdle = dustTolerance;
             if (idle > maxIdle) revert NoCashInvariant();
         }
@@ -551,11 +553,19 @@ contract UsdcMultiLendingVault is StrategyStorageLayout {
 
     /**
      * @notice Harvest yield from adapters, auto-deploys idle.
-     * @dev    Only KEEPER_ROLE. "No cash": idle ≤ dustTolerance after.
+     * @dev    KEEPER_ROLE or CORE_ROLE (CoreVault/StrategyRouter). Existing upkeep
+     *         callers may ignore the return values; the selector is unchanged.
+     * @return pnl Signed change in strategy NAV during this call, including redeployment.
+     *             Previously accrued interest is already in NAV and is not reported again.
+     * @return realized Adapter-reported USDC rewards realized into the strategy, before
+     *                  redeployment. This is not a transfer to Core.
      */
-    function harvest() external nonReentrant onlyRoleOrRevert(KEEPER_ROLE) whenNotPaused {
+    function harvest() external nonReentrant onlyKeeperOrCore whenNotPaused
+        returns (int256 pnl, uint256 realized)
+    {
         (bool degraded,) = _checkAndEmitDegradedViews();
         if (degraded) revert DegradedViews();
+        uint256 navBefore = totalAssets();
 
         uint256 adaptersTouched = 0;
         uint256 totalRealized = 0;
@@ -566,8 +576,8 @@ contract UsdcMultiLendingVault is StrategyStorageLayout {
             if (!enabled[adapter]) continue;
             try ILendingAdapter(adapter).harvestableProfit() returns (uint256 profit) {
                 if (profit > 0) {
-                    try ILendingAdapter(adapter).harvest(address(this)) returns (uint256 realized) {
-                        totalRealized += realized;
+                    try ILendingAdapter(adapter).harvest(address(this)) returns (uint256 received) {
+                        totalRealized += received;
                         adaptersTouched++;
                         _recordAdapterSuccess(adapter);
                     } catch (bytes memory reason) {
@@ -593,6 +603,11 @@ contract UsdcMultiLendingVault is StrategyStorageLayout {
             emit IdleCashRemaining(remainingIdle, dustTolerance);
         }
         emit Harvest(totalRealized, adaptersTouched);
+        realized = totalRealized;
+        uint256 navAfter = totalAssets();
+        uint256 delta = navAfter >= navBefore ? navAfter - navBefore : navBefore - navAfter;
+        if (delta > uint256(type(int256).max)) revert Overflow();
+        pnl = navAfter >= navBefore ? int256(delta) : -int256(delta);
     }
 
     // pokeExternalTVL() → delegated to StrategyParamsModule via fallback
@@ -666,18 +681,29 @@ contract UsdcMultiLendingVault is StrategyStorageLayout {
         if (withdrawn > 0) ASSET.safeTransfer(receiver, withdrawn);
     }
 
+    /// @dev Include yield accrued since the last cached-position sync. View failure
+    /// retains the cached fallback so emergency exits remain best effort.
+    function _fullRecallAmount(address adapter) internal view returns (uint256 amount) {
+        amount = positionAssets[adapter];
+        try ILendingAdapter(adapter).totalAssets() returns (uint256 actual) {
+            if (actual > amount) amount = actual;
+        } catch {}
+    }
+
     function _emergencyRecallAll() internal {
         uint256 totalRecalled = 0;
         uint256 n = adapters.length;
         unchecked {
             for (uint256 i = 0; i < n; ++i) {
                 address adapter = adapters[i];
-                uint256 pos = positionAssets[adapter];
+                uint256 pos = _fullRecallAmount(adapter);
                 if (pos < 1) continue; // slither: incorrect-equality - use < 1 instead of == 0
+                uint256 gasBefore = gasleft();
                 try ILendingAdapter(adapter).withdraw(pos, address(this)) returns (
                     uint256 withdrawn
                 ) {
-                    positionAssets[adapter] -= withdrawn;
+                    if (withdrawn > 0) _recordExecutionGas(adapter, gasBefore - gasleft(), false);
+                    positionAssets[adapter] = withdrawn >= pos ? 0 : pos - withdrawn;
                     totalRecalled += withdrawn;
                 } catch (bytes memory reason) {
                     emit AdapterWithdrawFailed(adapter, pos, reason);
@@ -703,12 +729,14 @@ contract UsdcMultiLendingVault is StrategyStorageLayout {
         for (uint256 i = 0; i < n; ++i) {
             address adapter = targets[i];
             if (!isAdapter[adapter]) revert InvalidAdapter();
-            uint256 pos = positionAssets[adapter];
+            uint256 pos = _fullRecallAmount(adapter);
             if (pos < 1) continue; // slither: incorrect-equality - use < 1 instead of == 0
+            uint256 gasBefore = gasleft();
             try ILendingAdapter(adapter).withdraw(pos, address(this)) returns (
                 uint256 withdrawn
             ) {
-                positionAssets[adapter] -= withdrawn;
+                if (withdrawn > 0) _recordExecutionGas(adapter, gasBefore - gasleft(), false);
+                positionAssets[adapter] = withdrawn >= pos ? 0 : pos - withdrawn;
                 totalRecalled += withdrawn;
             } catch (bytes memory reason) {
                 emit AdapterWithdrawFailed(adapter, pos, reason);

@@ -411,7 +411,7 @@ contract AaveV3USDCAdapter is ILendingAdapter, AccessControl, ReentrancyGuard, I
 
     // --- ILendingAdapter: Limits ---
     function maxCapacity() external view override returns (uint256) {
-        return maxCap;
+        return maxCap == 0 ? type(uint256).max : maxCap;
     }
 
     function setMaxCap(uint256 newCap) external onlyRole(DEFAULT_ADMIN_ROLE) {

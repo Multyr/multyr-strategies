@@ -1,0 +1,23 @@
+30% GAS MARGIN — VALIDATION, 23 OCTOBER 2026
+
+Decision: use marginBps=3000 in the candidate release. No measured evidence requires retaining 5000 for this calibrated profile. No live deployment/configuration change has been performed.
+
+TVL | operations / transactions | estimate before / with 30% (USDC) | measured gross / net priced (USDC) | headroom over gross
+10,000 | 2 / 2 | 0.340462 / 0.442601 | 0.241395 / 0.233762 | 83.35%
+100,000 | 4 / 3 | 0.438594 / 0.570173 | 0.334142 / 0.321930 | 70.64%
+500,000 | 6 / 4 | 0.573531 / 0.745591 | 0.474014 / 0.453832 | 57.29%
+2,000,000 | 7 / 5 | 0.666621 / 0.866608 | 0.546458 / 0.522701 | 58.59%
+6,000,000 | 7 / 5 | 0.666621 / 0.866608 | 0.549829 / 0.526313 | 57.61%
+
+Calibration correction: deposit-only step overhead is 1,600,000 (measured maximum 1,577,015), replacing 1,500,000. Other component allowances remain independently conservative across these runs. Final quotes were re-read on localhost with the corrected allowance and 30% margin. The cold execution receipts precede this numeric-only overhead correction; no Solidity execution path changed.
+All five prepared action lists matched their previews and completed with zero failures. Counts vary with the plan; the 500K book has six actions/four transactions, unlike the earlier seven-action book or the illustrative mocked five-action example.
+The margin unit test confirms one application with upward rounding for one through seven actions.
+
+Native poster fee check: NodeInterface gasEstimateL1Component was queried for generic performUpkeep operation 5/6, strategy index 0, on the existing public upkeep address. Calldata has no adapter amounts or adapter addresses. At blocks 516950276 and 517327153, the model covered native L1-only estimates before adding any margin. This validates the tested wrapper envelope, not arbitrary calldata or future deployed-address receipts.
+Reference: https://developer.arbitrum.io/arbitrum-essentials/nodeinterface/reference
+
+Limitations: five synthetic profitable starting books at one pinned protocol state, finite execution-path coverage, and a two-block L1-envelope sample. EMA reliability checks do not guarantee unseen path costs. Keep pre-submit simulation, quote/actual telemetry, and revalidation before later execution steps. Review outliers and recalibrate individual components; a blanket 50% is not a substitute for those checks.
+
+Deployment process: complete migration rehearsal using the release configuration; freeze/tag reviewed sources and verify bytecode; deploy replacement strategy/modules/estimator and necessary adapters; configure path overhead and actual adapter defaults through governance; simulate current-state Safe migration; only after successful migration repoint keepers/indexing and reconcile the first real receipts. The required TARGET_IDLE_BUFFER_BPS=1000 setting is checked before governance handoff. This file is not an executable Safe transaction.
+
+Migration validation: pinned and fresh-state rehearsals passed. Fresh block 517327742 (0x402370266b9df15170b22791fb4237100cb967594db23fd2ee233c05e927e1bd) recalled 20.563589 USDC from the old strategy, passed the drain guard, registered the replacement and tested deposit/recall amounts of the old book, 10K and 200K USDC. Core and router code hashes remained unchanged. All of this was local simulation.

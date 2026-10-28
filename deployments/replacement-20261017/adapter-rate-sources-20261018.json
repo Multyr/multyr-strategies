@@ -1,0 +1,107 @@
+{
+  "block": "516016660",
+  "aave": {
+    "liquidityRateRay": "23056601341142064881975284",
+    "simpleBps": "230",
+    "cached": [
+      "23013894487174656437551973",
+      "1792306664"
+    ]
+  },
+  "morpho": {
+    "pps": "1050439",
+    "snapshot": [
+      "1050416",
+      "1792306664"
+    ],
+    "cachedRates": [
+      {
+        "market": "0x7e97fa6893871A2751B5fE961978DCCb2c201E65",
+        "rate": 0,
+        "updated": "1792306664"
+      },
+      {
+        "market": "0x4B6F1C9E5d470b97181786b26da0d0945A7cf027",
+        "rate": 0,
+        "updated": "1792306664"
+      },
+      {
+        "market": "0x5c0C306Aaa9F877de636f4d5822cA9F2E81563BA",
+        "rate": 0,
+        "updated": "1792306664"
+      },
+      {
+        "market": "0x7c574174DA4b2be3f705c6244B4BfA0815a8B3Ed",
+        "rate": 0,
+        "updated": "1792306664"
+      },
+      {
+        "market": "0x36b69949d60d06ECcC14DE0Ae63f4E00cc2cd8B9",
+        "rate": 0,
+        "updated": "1792306664"
+      }
+    ]
+  },
+  "comet": {
+    "util": "867430059709680235",
+    "ratePerSecond": "990216962",
+    "computedBps": "312"
+  },
+  "euler": {
+    "markets": [
+      {
+        "market": "0x6aFB8d3F6D4A34e9cB2f217317f4dc8e05Aa673b",
+        "interestRate() view returns(uint256)": "1861745781332871800",
+        "interestFee() view returns(uint16)": 1000,
+        "totalAssets() view returns(uint256)": "354204344662",
+        "totalBorrows() view returns(uint256)": "206386901814",
+        "maxDeposit(address) view returns(uint256)": "149645795655337",
+        "simpleSupplyBps": "307"
+      },
+      {
+        "market": "0x44C10DA836d2aBe881b77bbB0b3DCE5f85C0C1Cc",
+        "interestRate() view returns(uint256)": "1402340367525485575",
+        "interestFee() view returns(uint16)": 1000,
+        "totalAssets() view returns(uint256)": "17267904359",
+        "totalBorrows() view returns(uint256)": "8937241429",
+        "maxDeposit(address) view returns(uint256)": "99982732095640",
+        "simpleSupplyBps": "205"
+      },
+      {
+        "market": "0x05d28A86E057364F6ad1a88944297E58Fc6160b3",
+        "interestRate() view returns(uint256)": "0",
+        "interestFee() view returns(uint16)": 1000,
+        "totalAssets() view returns(uint256)": "92910894602",
+        "totalBorrows() view returns(uint256)": "0",
+        "maxDeposit(address) view returns(uint256)": "5192296858534827628530403418325492",
+        "simpleSupplyBps": "0"
+      },
+      {
+        "market": "0x0a1eCC5Fe8C9be3C809844fcBe615B46A869b899",
+        "interestRate() view returns(uint256)": "1153256219940369152",
+        "interestFee() view returns(uint16)": 1000,
+        "totalAssets() view returns(uint256)": "34221098166",
+        "totalBorrows() view returns(uint256)": "28579554448",
+        "maxDeposit(address) view returns(uint256)": "99965778901833",
+        "simpleSupplyBps": "272"
+      }
+    ]
+  },
+  "dolomite": {
+    "pps": "1284997860307831045",
+    "snapshot": [
+      "1284936347220909053",
+      "1792306664"
+    ]
+  },
+  "fluid": {
+    "pps": {
+      "error": "The request took too long to respond."
+    },
+    "snapshot": [
+      "1134851963230000000",
+      "1792306664"
+    ]
+  },
+  "venus": {}
+}
