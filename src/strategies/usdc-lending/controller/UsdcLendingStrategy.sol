@@ -140,8 +140,13 @@ contract UsdcMultiLendingVault is StrategyStorageLayout {
         // V10: Set-once gate module address (no public setter)
         rebalanceGateModule_addr = _rebalanceGateModule;
         emit RebalanceGateModuleSet(_rebalanceGateModule);
-        // Enforce Arbitrum native USDC
-        if (asset_ != 0xaf88d065e77c8cC2239327C5EDb3A432268e5831) revert InvalidAsset();
+        // Asset sanity. The strategy is token-agnostic: the tier ladder scales from
+        // ASSET.decimals() (see StrategyStorageLayout.referenceUnit). What is enforced
+        // here is only that the asset is a real ERC-20 with a usable precision --
+        // the chain-specific address belongs in config/, not in bytecode.
+        // NOTE: rebasing and fee-on-transfer assets are OUT OF SUPPORT (see SECURITY.md);
+        // they are not detectable here and are excluded by audit scope, not by a check.
+        if (IERC20Metadata(asset_).decimals() == 0) revert InvalidAsset();
 
         // SECURITY: All admin roles go DIRECTLY to ROOT_TIMELOCK
         // Deployer (msg.sender) receives NOTHING - eliminates "privileged deployer" finding
@@ -421,7 +426,6 @@ contract UsdcMultiLendingVault is StrategyStorageLayout {
             if (maxIdle < dustTolerance) maxIdle = dustTolerance;
             if (idle > maxIdle) revert BootstrapIdleTooHigh();
         } else {
-            uint256 tvlBefore = totalAssets();
             // DegradedMode auto-update: if majority of adapters ineligible or failure velocity hit,
             // accept deposit but skip auto-deployIdle (capital preserved in idle reserve).
             // See docs/TIER_MODEL.md Section 6. Cleared by governance via clearDegradedMode().
@@ -438,9 +442,9 @@ contract UsdcMultiLendingVault is StrategyStorageLayout {
             }
             _delegateToScoring(abi.encodeWithSelector(bytes4(keccak256("deployIdleToAdapters(uint256,bool)")), assets, false));
             uint256 idle = idleCash();
-            uint256 tvlTarget = tvlBefore + assets;
+            uint256 tvlAfter = totalAssets();
             uint256 allowedIdleBps = maxIdleAfterDepositBps > targetIdleBufferBps ? maxIdleAfterDepositBps : targetIdleBufferBps;
-            uint256 maxIdle = (allowedIdleBps * tvlTarget) / 1e4;
+            uint256 maxIdle = (allowedIdleBps * tvlAfter) / 1e4;
             if (maxIdle < dustTolerance) maxIdle = dustTolerance;
             if (idle > maxIdle) revert NoCashInvariant();
         }
@@ -481,7 +485,7 @@ contract UsdcMultiLendingVault is StrategyStorageLayout {
         // ASSET.balanceOf calls on every withdrawal that leaves idle > dust.
         uint256 idleAfter = idle - assets;
         if (idleAfter > dustTolerance) {
-            _delegateToScoring(abi.encodeWithSelector(bytes4(keccak256("deployIdleToAdapters(uint256,bool)")), idleAfter, true));
+            _tryRedeployAfterWithdrawal(idleAfter);
         }
     }
 
@@ -519,8 +523,32 @@ contract UsdcMultiLendingVault is StrategyStorageLayout {
         // idleCash() external call.
         uint256 idleAfter = idle - assets;
         if (idleAfter > dustTolerance) {
-            _delegateToScoring(abi.encodeWithSelector(bytes4(keccak256("deployIdleToAdapters(uint256,bool)")), idleAfter, true));
+            _tryRedeployAfterWithdrawal(idleAfter);
         }
+    }
+
+    event WithdrawalRedeployDeferred(uint256 idleAssets, bytes reason);
+
+    /// @dev Optional allocation must never roll back an otherwise successful withdrawal.
+    ///      Reverting delegatecall state is rolled back; recovered assets stay idle.
+    function _tryRedeployAfterWithdrawal(uint256 idleAssets) internal {
+        // Keep caller gas and bound copied revert data: optional allocation must
+        // not exhaust the withdrawal's remaining gas through an external dependency.
+        if (gasleft() < 50_000) return;
+        bytes memory payload = abi.encodeWithSignature("deployIdleToAdapters(uint256,bool)", idleAssets, true);
+        address target = scoringModule;
+        bool ok;
+        bytes memory reason;
+        assembly ("memory-safe") {
+            ok := delegatecall(div(gas(), 2), target, add(payload, 32), mload(payload), 0, 0)
+            let size := returndatasize()
+            if gt(size, 256) { size := 256 }
+            reason := mload(0x40)
+            mstore(reason, size)
+            returndatacopy(add(reason, 32), 0, size)
+            mstore(0x40, and(add(add(reason, size), 63), not(31)))
+        }
+        if (!ok) emit WithdrawalRedeployDeferred(idleAssets, reason);
     }
 
     // -----------------------------
@@ -545,7 +573,10 @@ contract UsdcMultiLendingVault is StrategyStorageLayout {
         (bool ok, bytes memory ret) = adapterOpsModule.delegatecall(
             abi.encodeWithSelector(REALIZE_LIQUIDITY_SEL, amountNeeded)
         );
-        if (!ok && ret.length > 0) assembly { revert(add(ret, 0x20), mload(ret)) }
+        if (!ok) {
+            if (ret.length > 0) assembly { revert(add(ret, 0x20), mload(ret)) }
+            revert QueryFailed();
+        }
     }
 
     // -----------------------------
@@ -682,13 +713,55 @@ contract UsdcMultiLendingVault is StrategyStorageLayout {
         if (withdrawn > 0) ASSET.safeTransfer(receiver, withdrawn);
     }
 
-    /// @dev Include yield accrued since the last cached-position sync. View failure
-    /// retains the cached fallback so emergency exits remain best effort.
-    function _fullRecallAmount(address adapter) internal view returns (uint256 amount) {
-        amount = positionAssets[adapter];
-        try ILendingAdapter(adapter).totalAssets() returns (uint256 actual) {
-            if (actual > amount) amount = actual;
-        } catch {}
+    /// @dev Full-receipt pull for one adapter. Three phases:
+    ///      1. emergencyPullAllToVault() — redeems all shares; NOT fed into withdraw EMA
+    ///         (different execution path from normal withdraw(uint256,address)).
+    ///      2. Compute remaining live position via totalAssets(); delta fallback if view fails.
+    ///      3. If remaining > 0: one salvage normal withdraw for partial liquidity
+    ///         (e.g. Aave when full position illiquid). Manual/emergency execution
+    ///         does not seed ordinary withdrawal EMA: prior phases warm its accesses.
+    ///      Actual ASSET balance delta used throughout; trusted return values ignored.
+    ///      On any per-phase failure: AdapterWithdrawFailed emitted, cache preserved.
+    function _recallAdapterAll(address adapter) internal returns (uint256 received) {
+        uint256 balBefore = ASSET.balanceOf(address(this));
+        uint256 cached = positionAssets[adapter];
+        bool fullPullFailed;
+
+        try IAdapterEmergency(adapter).emergencyPullAllToVault() {}
+        catch (bytes memory reason) {
+            fullPullFailed = true;
+            emit AdapterWithdrawFailed(adapter, cached, reason);
+        }
+
+        uint256 balMid = ASSET.balanceOf(address(this));
+        received = balMid > balBefore ? balMid - balBefore : 0;
+
+        uint256 remaining;
+        try ILendingAdapter(adapter).totalAssets() returns (uint256 live) {
+            remaining = live;
+        } catch {
+            remaining = received <= cached ? cached - received : 0;
+        }
+
+        if (remaining > 0) {
+            try ILendingAdapter(adapter).withdraw(remaining, address(this)) returns (uint256) {
+                uint256 balAfter = ASSET.balanceOf(address(this));
+                uint256 salvaged = balAfter > balMid ? balAfter - balMid : 0;
+                received += salvaged;
+                try ILendingAdapter(adapter).totalAssets() returns (uint256 lv) {
+                    positionAssets[adapter] = lv;
+                } catch {
+                    positionAssets[adapter] = salvaged <= remaining ? remaining - salvaged : 0;
+                }
+            } catch (bytes memory r2) {
+                emit AdapterWithdrawFailed(adapter, remaining, r2);
+                positionAssets[adapter] = remaining;
+            }
+        } else {
+            // A failed pull plus a zero view cannot erase known exposure. A
+            // successful empty pull must still clear an obsolete cached balance.
+            positionAssets[adapter] = fullPullFailed && received == 0 ? cached : 0;
+        }
     }
 
     function _emergencyRecallAll() internal {
@@ -696,20 +769,7 @@ contract UsdcMultiLendingVault is StrategyStorageLayout {
         uint256 n = adapters.length;
         unchecked {
             for (uint256 i = 0; i < n; ++i) {
-                address adapter = adapters[i];
-                uint256 pos = _fullRecallAmount(adapter);
-                if (pos < 1) continue; // slither: incorrect-equality - use < 1 instead of == 0
-                uint256 gasBefore = gasleft();
-                try ILendingAdapter(adapter).withdraw(pos, address(this)) returns (
-                    uint256 withdrawn
-                ) {
-                    if (withdrawn > 0) _recordExecutionGas(adapter, gasBefore - gasleft(), false);
-                    positionAssets[adapter] = withdrawn >= pos ? 0 : pos - withdrawn;
-                    totalRecalled += withdrawn;
-                } catch (bytes memory reason) {
-                    emit AdapterWithdrawFailed(adapter, pos, reason);
-                    // No auto-quarantine in emergency path — just continue
-                }
+                totalRecalled += _recallAdapterAll(adapters[i]);
             }
         }
         emit EmergencyRecalled(totalRecalled);
@@ -730,20 +790,7 @@ contract UsdcMultiLendingVault is StrategyStorageLayout {
         for (uint256 i = 0; i < n; ++i) {
             address adapter = targets[i];
             if (!isAdapter[adapter]) revert InvalidAdapter();
-            uint256 pos = _fullRecallAmount(adapter);
-            if (pos < 1) continue; // slither: incorrect-equality - use < 1 instead of == 0
-            uint256 gasBefore = gasleft();
-            try ILendingAdapter(adapter).withdraw(pos, address(this)) returns (
-                uint256 withdrawn
-            ) {
-                if (withdrawn > 0) _recordExecutionGas(adapter, gasBefore - gasleft(), false);
-                positionAssets[adapter] = withdrawn >= pos ? 0 : pos - withdrawn;
-                totalRecalled += withdrawn;
-            } catch (bytes memory reason) {
-                emit AdapterWithdrawFailed(adapter, pos, reason);
-                // No auto-quarantine: this is a manual recall path. Caller
-                // sets quarantine explicitly if needed.
-            }
+            totalRecalled += _recallAdapterAll(adapter);
         }
         emit SelectiveRecallExecuted(targets, totalRecalled);
     }
@@ -810,7 +857,8 @@ contract UsdcMultiLendingVault is StrategyStorageLayout {
         (bool ok, bytes memory ret) = safetyOverflowModule_addr.delegatecall(
             abi.encodeWithSelector(CHECK_EMIT_DEGRADED_SEL)
         );
-        if (!ok || ret.length == 0) return (false, 0);
+        // Missing or failed risk checks must not be interpreted as healthy.
+        if (!ok || ret.length < 64) revert QueryFailed();
         (degraded, bps) = abi.decode(ret, (bool, uint16));
     }
 
@@ -823,7 +871,7 @@ contract UsdcMultiLendingVault is StrategyStorageLayout {
         (bool ok, bytes memory ret) = safetyOverflowModule_addr.delegatecall(
             abi.encodeWithSelector(CHECK_DEGRADED_LOCAL_SEL)
         );
-        if (!ok || ret.length == 0) return "";
+        if (!ok || ret.length < 64) revert QueryFailed();
         reason = abi.decode(ret, (string));
     }
 

@@ -147,6 +147,30 @@ contract ReadOnlyGasEstimatorTest is Test {
         return e.estimate(address(samples), actions, 2, true);
     }
 
+    /// @dev Controlled replay, not native ArbOS integration. Official and Blast
+    /// RPC both returned zero poster price at Arbitrum block 0x1f046f38.
+    function test_actualZeroPosterPricePreservesReliableExecutionCost() public {
+        fees.set(20_002_000, 0);
+        E.Quote memory q = quote(plan(2));
+        assertTrue(q.reliable, "valid zero posting price must not disable dynamic estimates");
+        assertEq(q.posterWei, 0);
+        assertEq(q.executionWei, q.l2Gas * 20_002_000);
+        uint256 usdWei = (q.executionWei * 3000e18 + 1e18 - 1) / 1e18;
+        uint256 usd6 = (usdWei + 1e12 - 1) / 1e12;
+        assertEq(q.costUSDC, (usd6 * 12500 + 9999) / 10000);
+        fees.set(0, 0);
+        assertFalse(quote(plan(2)).reliable, "zero execution price still invalid");
+    }
+
+    function test_actualZeroPosterPricePassesNativeSourcePreflight() public {
+        // Local controlled fixture, matching existing preflight unit tests.
+        vm.etch(address(0x6c), address(fees).code);
+        Fees(address(0x6c)).set(20_002_000, 0);
+        (, bytes memory data) = address(e).staticcall(abi.encodeWithSignature("config()"));
+        E candidate = new E(IFeeInfo(address(0x6c)), eth, usdc, seq, abi.decode(data, (E.Config)));
+        this.validateDeployment(address(candidate), keccak256(data));
+    }
+
     function test_remainingPlanExcludesPreparation() public view {
         E.Quote memory full = quote(plan(4));
         E.Quote memory remaining = e.estimate(address(samples), plan(4), 2, false);
@@ -253,7 +277,7 @@ contract ReadOnlyGasEstimatorTest is Test {
         assertFalse(quote(plan(2)).reliable);
     }
 
-    function test_decimalsAndUsdcDepeg() public {
+    function test_nativeDecimalsAndUsdQuoteIndependence() public {
         eth.setDecimals(18);
         eth.set(3000e18, block.timestamp);
         assertTrue(quote(plan(2)).reliable);
@@ -262,7 +286,7 @@ contract ReadOnlyGasEstimatorTest is Test {
         eth.setDecimals(8);
         eth.set(3000e8, block.timestamp);
         usdc.set(50_000_000, block.timestamp);
-        assertFalse(quote(plan(2)).reliable);
+        assertTrue(quote(plan(2)).reliable);
     }
 
     function test_sequencerGraceAndFeesFailure() public {
@@ -274,6 +298,32 @@ contract ReadOnlyGasEstimatorTest is Test {
         seq.setStarted(block.timestamp - 7200);
         fees.setFail();
         assertFalse(quote(plan(2)).reliable);
+    }
+
+    function test_usdQuoteDoesNotChangeWithUsdcPeg() public {
+        uint256 baseline = quote(plan(2)).costUSDC;
+        usdc.set(90_000_000, block.timestamp);
+        E.Quote memory belowPeg = quote(plan(2));
+        assertTrue(belowPeg.reliable);
+        assertEq(belowPeg.costUSDC, baseline);
+        usdc.set(110_000_000, block.timestamp);
+        assertEq(quote(plan(2)).costUSDC, baseline);
+        assertEq(e.quoteCurrency(), bytes32("USD6"));
+        usdc.set(-1, block.timestamp);
+        assertTrue(quote(plan(2)).reliable);
+        assertEq(quote(plan(2)).costUSDC, baseline);
+        vm.mockCallRevert(address(usdc), abi.encodeWithSignature("latestRoundData()"), bytes("offline"));
+        assertTrue(quote(plan(2)).reliable);
+        assertEq(quote(plan(2)).costUSDC, baseline);
+    }
+
+    function test_usdQuoteNeedsNoUsdcFeed() public {
+        (bool ok, bytes memory encoded) = address(e).staticcall(abi.encodeWithSignature("config()"));
+        assertTrue(ok);
+        E.Config memory c = abi.decode(encoded, (E.Config));
+        c.usdcMaxPriceAge = 0;
+        E withoutUsdc = new E(fees, eth, IFeed(address(0)), seq, c);
+        assertTrue(withoutUsdc.estimate(address(samples), plan(2), 1, true).reliable);
     }
 
     function test_planIdentityChanges() public view {

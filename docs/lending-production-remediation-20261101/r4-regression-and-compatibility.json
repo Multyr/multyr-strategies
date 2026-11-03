@@ -1,0 +1,38 @@
+{
+  "status": "EXECUTED_GATES_PASS_RELEASE_STILL_OPEN",
+  "readiness": "NOT_PRODUCTION_READY",
+  "gates": [
+    {
+      "name": "full-regression",
+      "passed": 2924,
+      "failed": 0,
+      "skipped": 0,
+      "suites": 199,
+      "log": "C:\\Users\\Pierre\\Multyr\\pt-multiply\\multyr-strategies-multitoken\\deployments\\lending-full-validation-20261101\\production\\R4-regression\\root-full-final.log",
+      "sha256": "8fb3d8d0d88fa4b79e06251e401c61dcc114040527b2bfc74806066fc2468853"
+    },
+    {
+      "name": "original-four",
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0,
+      "suites": 1,
+      "log": "C:\\Users\\Pierre\\Multyr\\pt-multiply\\pd\\deployments\\lending-full-validation-20261101\\production\\D-polygon\\root-original-four-final.log",
+      "sha256": "3d3c88978f422d4f348f09b195f3d1c5fa5a8312a32ac9b7b53881877fc210bc"
+    },
+    {
+      "name": "legacy-matrix-nineteen",
+      "passed": 19,
+      "failed": 0,
+      "skipped": 0,
+      "suites": 4,
+      "log": "C:\\Users\\Pierre\\Multyr\\pt-multiply\\pc\\deployments\\lending-full-validation-20261101\\production\\C-wrapper\\root-legacy-nineteen-final.log",
+      "sha256": "032872bc4d6b37d66ac87cdc2d9288244a3e07ab22ef960069309cbaaf5c8f4b"
+    }
+  ],
+  "limits": [
+    "Full regression explicitly enabled both legacy opt-ins via RUN_ROUTER_HARVEST_FORK=true, realArbRPC/pinned520094008.",
+    "Legacy matrix uses disclosed controlled fixtures and does not replace the strict actual41-case gate.",
+    "Production sources must remain source-bound; subsequent actual-test-only additions need their own executed acceptance and final CI."
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "status": "FIXED_INTEGRATED_UNIT_VALIDATION_PASS",
+  "readiness": "NOT_PRODUCTION_READY",
+  "findings": [
+    {
+      "before": "10M rawUSD-equivalent deposit with 8percent idle wrongly accepted despite 5percent actualNAV limit",
+      "after": "NoCashInvariant reverts as required",
+      "defect": "Incoming pre-transferred assets counted twice in normal-deposit idle allowance",
+      "regression": "DepositIdleDenominatorTest.test_depositMustRejectIdleAboveActualPortfolioLimit",
+      "fix": "Use actual post-deployment totalAssets as bootstrap already does, preserving all BPS/dust/degraded policy",
+      "id": "D-F002"
+    },
+    {
+      "defect": "Morpho adapter includes idle in NAV but hides it from normal withdrawal after optimization double-failure",
+      "regressions": [
+        "failed-target/restore liquidity",
+        "failed-target/restore normal withdrawal",
+        "partial idle preserves receipts/principal",
+        "idle then receipt withdrawal updates only receipt principal"
+      ],
+      "fix": "Include idle in withdrawable assets and pay idle first to configured vault; only receipt redemption changes principal",
+      "id": "D-F004"
+    }
+  ],
+  "before": {
+    "kind": "CONTROLLED_FAULT_REPRODUCTION",
+    "failed": 3,
+    "passed": 0
+  },
+  "after": {
+    "suites": 10,
+    "skipped": 0,
+    "passed": 154,
+    "scope": "Related Morpho tests, fuzz cases, deployment wiring and controller idle invariants",
+    "exitCode": 0,
+    "failed": 0
+  },
+  "runtime": {
+    "margin": 73,
+    "contract": "MorphoUsdcMultiMarketAdapter",
+    "bytes": 23479,
+    "limit": 23552
+  },
+  "changedPaths": [
+    "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol",
+    "src/strategies/usdc-lending/adapters/lending/MorphoUsdcMultiMarket.sol",
+    "test/strategies/usdc-lending/adapters/MorphoAdapter.t.sol",
+    "test/strategies/usdc-lending/DepositIdleDenominator.t.sol"
+  ],
+  "evidence": [
+    {
+      "path": "C:/Users/Pierre/Multyr/pt-multiply/pd/deployments/lending-full-validation-20261101/production/D-repro/root-before.log",
+      "sha256": "86153ea1236a31b6d4d09677a6c393938c3739e8675b430dca57c53a195aabde"
+    },
+    {
+      "path": "C:/Users/Pierre/Multyr/pt-multiply/pd/deployments/lending-full-validation-20261101/production/D-repro/root-after.log",
+      "sha256": "d1462fedc48f600ed0b7aa9fd0ac63378a0f3e684c3c626e5b10e914afcad7c4"
+    },
+    {
+      "path": "C:/Users/Pierre/Multyr/pt-multiply/pd/deployments/lending-full-validation-20261101/production/D-repro/root-related.log",
+      "sha256": "ea31e09ff40f717aa0b5a98a1af21755098b9d51230de4b508509c89f0daca06"
+    }
+  ],
+  "remaining": [
+    "Final integrated real-market matrix and full regression",
+    "Final complete runtime/storage/selector release gate",
+    "Independent final delta review and production operational/fee calibration gates"
+  ]
+}

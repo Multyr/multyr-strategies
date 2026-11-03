@@ -1,0 +1,43 @@
+{
+  "finding": "CONFIG-REAL-01",
+  "status": "FIXED_VALIDATED_MATRIX_ALL_FINAL_GATES_PASS",
+  "sources": [
+    {
+      "file": "MorphoUsdcMultiMarket.sol",
+      "sha256": "994eae1463f34187accbe570b8e5f0b8dfc1cc90905b9bb67ac5e48b40bb541c"
+    },
+    {
+      "file": "CometUsdcMultiMarket.sol",
+      "sha256": "7d71190f8f0619d284def53d5a6a17a61d993899ba18eb788ee0b9dea2341cda"
+    },
+    {
+      "file": "DolomiteUsdcMultiMarket.sol",
+      "sha256": "ed0717fb278c108d36990b35800fa5b304c72f6c96d5823523f01acc73214763"
+    }
+  ],
+  "log": "deployments/lending-full-validation-20261101/live-registry-before.log",
+  "logSha256": "cb41ade0b3fea0e86c00ab40e189e2c8fa173123545f652afc58889459e3105b",
+  "description": "All3 real funded adapters allow registry reload while real receipts remain invested. Reload deletes the position/principal enumeration and can orphan live receipts or misprice cached NAV. Resetting only counters is unsafe: require receipts and accounted principal to be empty before destructive replacement.",
+  "unitEvidence": "MarketConfigSafetyHarnessTest4pass; raw donated receipts block destructive reload/replacement, aliases reject, empty reload recovers and safe Euler append is preserved",
+  "finalClosure": "docs/lending-full-validation-20261101/final-validation.json",
+  "finalStatus": "FIXED_VALIDATED_MATRIX_ALL_FINAL_GATES_PASS",
+  "historicalStatus": "FIXED_CONFIG_UNIT_TESTS_PASS_ALL_REAL_LIFECYCLES_RECHECK_RUNNING",
+  "finalSources": [
+    {
+      "path": "src/strategies/usdc-lending/adapters/lending/MorphoUsdcMultiMarket.sol",
+      "sha256": "cf5fa3b27cd51cc266e506bdd234d88cd8a9085e10fef7bc3b148b7a79167e24"
+    },
+    {
+      "path": "src/strategies/usdc-lending/adapters/lending/CometUsdcMultiMarket.sol",
+      "sha256": "4ce6cca641d067020649b94961546e6885d4efeb0f569736d392bcbb1f6a611d"
+    },
+    {
+      "path": "src/strategies/usdc-lending/adapters/lending/DolomiteUsdcMultiMarket.sol",
+      "sha256": "25b1ee8d23b52d18de4433048b57abafa64b38ae8042f5232d0820f18f49bb32"
+    },
+    {
+      "path": "src/strategies/usdc-lending/adapters/lending/EulerUsdcMultiMarket.sol",
+      "sha256": "9101aefd9377a8a5248f9c6682a771d441f1b0f8445662a6719e5d2ad38e900c"
+    }
+  ]
+}

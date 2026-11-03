@@ -172,7 +172,7 @@ See [`docs/invariants.md`](docs/invariants.md) for the full formal invariant set
 | `EulerUsdcMultiMarketAdapter` | Euler V2 (EVault) | PUSH | `interestRate()` in ray (EVault native) |
 | `FluidUsdcMultiMarketAdapter` | Fluid fUSDC | PULL | PPS snapshot delta (keeper-poked) |
 | `MorphoUsdcMultiMarketAdapter` | Morpho Blue vaults | PULL | PPS snapshot with staleness cache |
-| `VenusUsdcMultiMarketAdapter` | Venus vUSDC_Core | PULL | `supplyRatePerBlock × blocksPerYear` (per-chain configurable; default 126,144,000 Arbitrum; C-04 fix) |
+| `VenusUsdcMultiMarketAdapter` | Compatible Venus ERC20 markets | PULL | Per-slot supply rate × explicitly configured annual slots; zero/default normalization is rejected |
 
 See [`docs/adapters.md`](docs/adapters.md) for full per-adapter security properties,
 role tables, and APY computation details.

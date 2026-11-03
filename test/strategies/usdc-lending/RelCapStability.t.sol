@@ -144,12 +144,22 @@ contract RelCapStability is UsdcMultiLendingVaultTestBase {
     function test_dynamic_relcap_scales_correctly() public {
         // adapter3 has 5M ext TVL -> dynamic relCap = 12% = 600K
         _mintAndTransferToVault(core, 2_000_000e6);
+        // The initial manual 10% cap leaves 7% idle at this TVL, beyond the
+        // unchanged 5% strict-deposit limit. Rejection must remain atomic.
         vm.prank(core);
+        vm.expectRevert(bytes4(keccak256("NoCashInvariant()")));
         vault.deposit(2_000_000e6);
+        assertEq(usdc.balanceOf(address(vault)), 2_000_000e6);
+        assertEq(vault.positionAssets(address(adapter1)), 0);
+        assertEq(vault.positionAssets(address(adapter2)), 0);
+        assertEq(vault.positionAssets(address(adapter3)), 0);
 
-        // Remove manual override
+        // Exercise the dynamic policy from the deposit itself, rather than
+        // admitting cash under an infeasible manual policy first.
         vm.prank(admin);
         StrategySettingsModule(address(vault)).setMaxRelativeExposureBps(0);
+        vm.prank(core);
+        vault.deposit(2_000_000e6);
 
         for (uint256 i = 0; i < 5; i++) {
             _warpAndDeployIdle();

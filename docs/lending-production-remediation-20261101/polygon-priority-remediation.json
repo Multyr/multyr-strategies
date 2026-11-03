@@ -1,0 +1,51 @@
+{
+  "finding": "FEE-POL-PRIORITY",
+  "status": "FIXED_79_FOCUSED_2933_REGRESSION_42_ACTUAL_33_STRUCTURE_PASS",
+  "readiness": "NOT_PRODUCTION_READY",
+  "problem": "Uniform100gwei constructor priority ceiling prevents configuration of measured Polygon117gwei priority.",
+  "resolution": "Native fee source permits positive priority<=1000gwei only on137; Ethereum1 andBSC56 retain100gwei. Other constructor/runtime guards unchanged; estimator1000gwei total-price ceiling unchanged.",
+  "before": {
+    "path": "deployments/lending-full-validation-20261101/production/coordinator/R8-polygon-priority-before.log",
+    "sha256": "024b14267c343cde469dad0d0078e118f947e9c9624a14bd923117932450cf19"
+  },
+  "focusedAfter": {
+    "path": "deployments/lending-full-validation-20261101/production/coordinator/R8-native-focused.log",
+    "sha256": "1ced00a030ec3f2a417865de831255405b87947e63c81a0bba5252fc77d96afd"
+  },
+  "focusedCounts": {
+    "passed": 79,
+    "failed": 0,
+    "skipped": 0,
+    "suites": 6
+  },
+  "actual": "docs/lending-production-remediation-20261101/r8-actual-42-acceptance.json",
+  "structural": "docs/lending-production-remediation-20261101/r8-structure.json",
+  "runtimeCount": 33,
+  "nativeRuntimeBytes": 459,
+  "nativeSource": {
+    "path": "src/strategies/usdc-lending/gas/NativeL1FeeInfo.sol",
+    "sha256": "7efc0124d65d4fc8ddd0d7401882909d9ef6be67acd5fa8cc85ebc1cb57dffdb"
+  },
+  "priorityHistory": {
+    "path": "deployments/lending-full-validation-20261101/production/coordinator/native-priority-fee-history.json",
+    "sha256": "0c53f7fd8e7922910d56a05a5ca3049282a945a618189d2430d0927ddddc430d"
+  },
+  "independentReview": {
+    "path": "deployments/lending-full-validation-20261101/production/coordinator/R8-native-priority-review.md",
+    "sha256": "c8504cc791aee966ffcdcf7d12d8403656a02f8bdaab51d3a6467270d31b284d"
+  },
+  "limits": [
+    "Compatibility ceiling is not calibrated production priority floor.",
+    "Configured priority1000gwei plus any positive basefee exceeds existing estimator bound; deployment preflight rejects that configuration. It is a constructor upper bound, not an endorsed deployment value.",
+    "Real Polygon integration now uses117gwei and independent359977417725wei execution price. Future congestion may differ.",
+    "Current candidate is not released; main/Core/current shadow remain untouched."
+  ],
+  "regression": {
+    "passed": 2933,
+    "failed": 0,
+    "skipped": 0,
+    "suites": 199,
+    "log": "deployments/lending-full-validation-20261101/production/coordinator/R8-full-regression.log",
+    "sha256": "06604f7dee3d862ac2dd3f88834c4a860f16d9f05d4c5a2d3449e2d3abb1446b"
+  }
+}

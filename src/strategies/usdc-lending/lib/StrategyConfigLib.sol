@@ -7,6 +7,24 @@ pragma solidity 0.8.28;
 ///         drift between the core scoring logic and the explainability read layer.
 /// @dev    All functions are `internal` so they are inlined by the compiler into each
 ///         caller -- no deployed library address, no DELEGATECALL overhead.
+///
+/// @dev    TOKEN-AGNOSTIC SCALE. Every threshold below is a quantity of the vault asset
+///         compared against another quantity of the vault asset (tvl, extTVL). The bands
+///         were originally written as `*e6` literals, which silently assumed a 6-decimal,
+///         dollar-pegged asset: on an 18-decimal asset every boundary is wrong by ~1e12
+///         times the asset price, and because the comparison still succeeds nothing
+///         reverts -- every tier simply pins to its most permissive value.
+///
+///         The boundaries are therefore expressed as multiples of `refUnit`: the amount of
+///         the quantity the table treats as one unit of account. Production callers
+///         normalize the complete asset amount into USD6 through StrategyParamsModule,
+///         then use refUnit = 1e6. This avoids multiplying a rounded one-dollar quote.
+///           - 6-decimal dollar-pegged asset: refUnit = 1e6  -> every band is byte-identical
+///             to the previous literals. This change is a behavioural no-op for USDC.
+///           - Other assets: value the whole amount with a fresh oracle before comparison.
+///
+///         Table values remain USD-calibrated; current oracle prices determine the
+///         corresponding underlying amount. Token-quantity bounds use referenceUnit.
 library StrategyConfigLib {
 
     // ── Scoring defaults (safe fallback for unset components) ────────────────
@@ -26,54 +44,73 @@ library StrategyConfigLib {
     uint256 internal constant CONFIDENCE_VHIGH = 10000;
 
     /// @notice TVL tiers cap target count; governance may only lower the maximum.
-    function effectiveMaxAdapters(uint256 tvl, uint16 staticMax) internal pure returns (uint16) {
+    /// @param refUnit asset amount the tier scale treats as one unit of account (1e6 for 6dp USDC)
+    function effectiveMaxAdapters(uint256 tvl, uint16 staticMax, uint256 refUnit)
+        internal
+        pure
+        returns (uint16)
+    {
         uint16 n;
-        if (tvl < 25_000e6) n = 1;
-        else if (tvl < 250_000e6) n = 2;
-        else if (tvl < 1_000_000e6) n = 3;
-        else if (tvl < 5_000_000e6) n = 4;
+        if (tvl < 25_000 * refUnit) n = 1;
+        else if (tvl < 250_000 * refUnit) n = 2;
+        else if (tvl < 1_000_000 * refUnit) n = 3;
+        else if (tvl < 5_000_000 * refUnit) n = 4;
         else n = 5;
         return staticMax > 0 && staticMax < n ? staticMax : n;
     }
 
-    /// @notice Minimum seed in six-decimal asset units, with governance floor.
-    function effectiveMinNewAdapterSeed(uint256 tvl, uint256 staticSeed) internal pure returns (uint256) {
-        uint256 seed = tvl < 250_000e6 ? 100e6 : tvl < 1_000_000e6 ? 1_000e6 : tvl < 5_000_000e6 ? 5_000e6 : tvl < 25_000_000e6 ? 25_000e6 : tvl * 200 / 1e4;
+    /// @notice Minimum seed in vault-asset units, with governance floor.
+    /// @param refUnit asset amount the tier scale treats as one unit of account
+    function effectiveMinNewAdapterSeed(uint256 tvl, uint256 staticSeed, uint256 refUnit)
+        internal
+        pure
+        returns (uint256)
+    {
+        uint256 seed = tvl < 250_000 * refUnit
+            ? 100 * refUnit
+            : tvl < 1_000_000 * refUnit
+                ? 1_000 * refUnit
+                : tvl < 5_000_000 * refUnit
+                    ? 5_000 * refUnit
+                    : tvl < 25_000_000 * refUnit ? 25_000 * refUnit : tvl * 200 / 1e4;
         return staticSeed > seed ? staticSeed : seed;
     }
 
     // ── Pure helpers ─────────────────────────────────────────────────────────
 
     /// @dev Dynamic relative exposure cap -- scales with external market depth.
-    function effectiveRelativeCapBps(uint256 extTVL) internal pure returns (uint16) {
-        if (extTVL < 100_000e6)      return 0;
-        if (extTVL < 500_000e6)      return 200;
-        if (extTVL < 1_000_000e6)    return 500;
-        if (extTVL < 2_000_000e6)    return 800;
-        if (extTVL < 3_000_000e6)    return 1000;
-        if (extTVL < 10_000_000e6)   return 1200;
-        if (extTVL < 25_000_000e6)   return 1500;
-        if (extTVL < 50_000_000e6)   return 1800;
-        if (extTVL < 250_000_000e6)  return 2000;
+    /// @param refUnit asset amount the tier scale treats as one unit of account
+    function effectiveRelativeCapBps(uint256 extTVL, uint256 refUnit) internal pure returns (uint16) {
+        if (extTVL < 100_000 * refUnit)      return 0;
+        if (extTVL < 500_000 * refUnit)      return 200;
+        if (extTVL < 1_000_000 * refUnit)    return 500;
+        if (extTVL < 2_000_000 * refUnit)    return 800;
+        if (extTVL < 3_000_000 * refUnit)    return 1000;
+        if (extTVL < 10_000_000 * refUnit)   return 1200;
+        if (extTVL < 25_000_000 * refUnit)   return 1500;
+        if (extTVL < 50_000_000 * refUnit)   return 1800;
+        if (extTVL < 250_000_000 * refUnit)  return 2000;
         return 2500;
     }
 
     /// @dev TVL confidence -- 3-state: UNAVAILABLE (cacheTs==0), STALE (beyond window), FRESH.
     ///      Canonical semantic aligned with StrategyStorageLayout._tvlConfidence (Audit P0.6).
     ///      Parametrized so callers with different storage access patterns share one logic path.
+    /// @param refUnit asset amount the tier scale treats as one unit of account
     function tvlConfidence(
         uint256 extTVL,
         uint64  cacheTs,
-        uint32  staleness
+        uint32  staleness,
+        uint256 refUnit
     ) internal view returns (uint256) {
         if (cacheTs == 0) return CONFIDENCE_ZERO;
         if (staleness > 0 && block.timestamp - cacheTs > staleness) return CONFIDENCE_MICRO;
-        if (extTVL < 100_000e6)      return CONFIDENCE_ZERO;
-        if (extTVL < 500_000e6)      return CONFIDENCE_MICRO;
-        if (extTVL < 2_000_000e6)    return CONFIDENCE_SMALL;
-        if (extTVL < 10_000_000e6)   return CONFIDENCE_LOW;
-        if (extTVL < 50_000_000e6)   return CONFIDENCE_MED;
-        if (extTVL < 250_000_000e6)  return CONFIDENCE_HIGH;
+        if (extTVL < 100_000 * refUnit)      return CONFIDENCE_ZERO;
+        if (extTVL < 500_000 * refUnit)      return CONFIDENCE_MICRO;
+        if (extTVL < 2_000_000 * refUnit)    return CONFIDENCE_SMALL;
+        if (extTVL < 10_000_000 * refUnit)   return CONFIDENCE_LOW;
+        if (extTVL < 50_000_000 * refUnit)   return CONFIDENCE_MED;
+        if (extTVL < 250_000_000 * refUnit)  return CONFIDENCE_HIGH;
         return CONFIDENCE_VHIGH;
     }
 

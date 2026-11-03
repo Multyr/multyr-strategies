@@ -1,0 +1,21 @@
+{
+  "finding": "VENUS-REAL-01",
+  "status": "FIXED_VALIDATED_MATRIX_ALL_FINAL_GATES_PASS",
+  "sourceSha256": "b41e1d6a0f133ff15ec6061e2f80aa2e7740a04ee2838ffb6461461a6c3f9e0f",
+  "testSha256": "74fcb0a6a1cb7f517aaaf76d9a03ba16e056d67291453a9b75cf330bb8d283e7",
+  "log": "deployments/lending-full-validation-20261101/venus-before.log",
+  "logSha256": "5ee98d5eab396fd8dd1c830966a1bfd48040a580b9db2110a17ff1eca93a09e9",
+  "description": "externalMarketTVL advertised total supplied but used gross cash+borrows. Real BSC USDC/USDT includes protocol-owned reserves; isolated Arbitrum additionally includes recognized badDebt in the canonical lender exchange rate. TVL must consistently value outstanding lender shares.",
+  "reference": "Independent raw balance sheet cash+borrows+optional badDebt-reserves agrees to1unit with actual vToken.totalSupply*exchangeRateStored/1e18. All3 actual markets fail adapter comparison before fix.",
+  "afterLogSha256": "68ac6ccf1b5fc392830c9f2dd114605bccfde0fa7eaf9fb84c028d8f4c59e460",
+  "afterSourceSha256": "a8f9fbbfbda75403260d6e9d160dcd9787d5350762af54c436489528cde6f281",
+  "finalClosure": "docs/lending-full-validation-20261101/final-validation.json",
+  "finalStatus": "FIXED_VALIDATED_MATRIX_ALL_FINAL_GATES_PASS",
+  "historicalStatus": "FIXED_THREE_REAL_LIFECYCLES_PASS_UNIT_RELEASE_GATES_PENDING",
+  "finalSources": [
+    {
+      "path": "src/strategies/usdc-lending/adapters/lending/VenusUsdcMultiMarket.sol",
+      "sha256": "a8f9fbbfbda75403260d6e9d160dcd9787d5350762af54c436489528cde6f281"
+    }
+  ]
+}

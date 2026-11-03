@@ -36,7 +36,7 @@ contract StrategySafetyOverflowModule is StrategyStorageLayout {
 
     /// @notice Route excess idle USDC into ordered safety-fallback adapters.
     /// @dev    Best-effort: each deposit goes through safeAdapterDeposit (in AdapterOpsModule).
-    ///         Respects fallbackAbsCap and fallbackRelCap per adapter -- never normal abs/rel cap.
+    ///         Uses dedicated fallback caps; the global governance ceiling remains binding.
     ///         Skips adapters that are disabled, flagged, quarantined, or below extTVL MICRO band.
     function executeSafetyOverflow() external onlyDelegateCall {
         // With an explicit reserve policy, only the score-selected target path deploys.
@@ -66,7 +66,7 @@ contract StrategySafetyOverflowModule is StrategyStorageLayout {
             if (quarantined[a]) continue;
 
             uint256 extTVL = cachedExternalTVL[a];
-            if (extTVL < 500_000e6) continue;
+            if (extTVL < _usd6ToAssetUnits(500_000e6)) continue;
 
             SafetyFallback memory sf = safetyFallback[a];
             if (sf.absCapBps == 0) continue;

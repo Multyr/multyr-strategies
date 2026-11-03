@@ -1,0 +1,24 @@
+{
+  "finding": "COMET-REAL-02",
+  "status": "FIXED_VALIDATED_MATRIX_ALL_FINAL_GATES_PASS",
+  "sourceSha256": "3a88c28b8d92559c1b8397d326af6841b40438dfac22ff611cf91734a0bcc1aa",
+  "logSha256": "b968d6882c7a14093dae75f3f536631a81ec9a4d2d4fb73368ca1fbb45fe1d2f",
+  "observations": "Stored totalsBasic supply index omits projected accrued interest. Actual canonical totalSupply() is larger on Ethereum USDT/WETH and ArbitrumWETH at pinned actual blocks. All3 real lifecycle tests fail on externalMarketTVL comparison before any deposit.",
+  "examples": [
+    "EthereumUSDT158044295953122 vs158044497366433",
+    "EthereumWETH50586164015904608533012 vs50586272522297241346592",
+    "ArbitrumWETH841305554742672907074 vs841312473676247466119"
+  ],
+  "afterSourceSha256": "7d71190f8f0619d284def53d5a6a17a61d993899ba18eb788ee0b9dea2341cda",
+  "realAfterLog": "deployments/lending-full-validation-20261101/morpho-comet-fluid-after.log",
+  "regressionLog": "deployments/lending-full-validation-20261101/changed-adapter-units.log",
+  "finalClosure": "docs/lending-full-validation-20261101/final-validation.json",
+  "finalStatus": "FIXED_VALIDATED_MATRIX_ALL_FINAL_GATES_PASS",
+  "historicalStatus": "FIXED_THREE_REAL_LIFECYCLES_AND_73_UNIT_TESTS_PASS",
+  "finalSources": [
+    {
+      "path": "src/strategies/usdc-lending/adapters/lending/CometUsdcMultiMarket.sol",
+      "sha256": "4ce6cca641d067020649b94961546e6885d4efeb0f569736d392bcbb1f6a611d"
+    }
+  ]
+}

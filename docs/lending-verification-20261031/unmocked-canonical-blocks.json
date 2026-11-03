@@ -1,0 +1,50 @@
+[
+  {
+    "chainId": "42161",
+    "rpcBlock": "514700000",
+    "hash": "0x6cd99e89682092c8cbd11bc521fcf67ffb4c26a3dfe5a03eeef2f97dde644e9c",
+    "numberHex": "0x1eadb2e0",
+    "timestampHex": "0x6acf4b8c",
+    "rpc": "https://arbitrum-one.public.blastapi.io"
+  },
+  {
+    "chainId": "42161",
+    "rpcBlock": "514701500",
+    "hash": "0xef605a92cb0be6b25d1da484d178e269990ae2abe7d4e0efea65737f49b90f1b",
+    "numberHex": "0x1eadb8bc",
+    "timestampHex": "0x6acf4d21",
+    "rpc": "https://arbitrum-one.public.blastapi.io"
+  },
+  {
+    "chainId": "42161",
+    "rpcBlock": "520000000",
+    "hash": "0x644c5b07524ff3d5fe7736b7a7f9dd05437721ad34453877feacb693de0e4e79",
+    "numberHex": "0x1efe9200",
+    "timestampHex": "0x6ae5ec3f",
+    "rpc": "https://arbitrum-one.public.blastapi.io"
+  },
+  {
+    "chainId": "8453",
+    "rpcBlock": "52590000",
+    "hash": "0x33cedbf7e1f85563354369bbe298f32e95c9ba4295f7f8aa6cfd8042fbc4edfd",
+    "numberHex": "0x32275b0",
+    "timestampHex": "0x6acf4843",
+    "rpc": "https://base-mainnet.public.blastapi.io"
+  },
+  {
+    "chainId": "8453",
+    "rpcBlock": "52590180",
+    "hash": "0xe2e68b1483ba2b55875f9512e4a04af12dfa016d4de117ca48ebbd77e11df467",
+    "numberHex": "0x3227664",
+    "timestampHex": "0x6acf49ab",
+    "rpc": "https://base-mainnet.public.blastapi.io"
+  },
+  {
+    "chainId": "8453",
+    "rpcBlock": "53300000",
+    "hash": "0x6d4604f0cb38ace849be1303f4cfa095066f9ebc5fd7ac348af777d9565895a5",
+    "numberHex": "0x32d4b20",
+    "timestampHex": "0x6ae4f323",
+    "rpc": "https://base-mainnet.public.blastapi.io"
+  }
+]

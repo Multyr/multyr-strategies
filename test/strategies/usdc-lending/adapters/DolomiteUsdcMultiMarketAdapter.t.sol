@@ -126,6 +126,7 @@ contract MockDoloPoolLike {
     constructor(address _base) { baseTokenAddr = _base; }
 
     function baseToken() external view returns (address) { return baseTokenAddr; }
+    function getMarketTokenAddress(uint256) external view returns (address) { return baseTokenAddr; }
     function availableLiquidity(address) external view returns (uint256) { return liquidBalance; }
 
     function setLiquidBalance(uint256 x) external { liquidBalance = x; }
@@ -462,11 +463,12 @@ contract DolomiteAdapter_Test is Test {
         vm.prank(vault);
         uint256 got = adapter.withdraw(500e6, vault);
         assertEq(got, 0, "disabled market must be skipped, not drained");
-        assertEq(adapter.totalAssets(), 0, "disabled market's assets are hidden, not queried, while disabled");
+        assertEq(adapter.totalAssets(), 500e6, "disabling interaction must not hide owned assets");
+        assertEq(adapter.withdrawableAssets(), 0, "disabled position is valued but not offered as executable liquidity");
 
         vm.prank(admin);
         adapter.toggleMarket(0, true); // re-enable
-        assertEq(adapter.totalAssets(), 500e6, "funds reappear once the market is trusted again -- not lost");
+        assertEq(adapter.totalAssets(), 500e6, "reenabling interactions must preserve the same NAV");
     }
 
     function test_deposit_1wei_dust_succeeds() public {

@@ -15,6 +15,10 @@ pragma solidity 0.8.28;
 // via StrategyStorageLayout — direct imports removed to prevent shadowing.
 import { IERC20Metadata } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import { IParamsProvider } from "@multyr-core/interfaces/IParamsProvider.sol";
+import { OracleValuationLib } from "@multyr-core/core/libraries/OracleValuationLib.sol";
+import { Math } from "@openzeppelin/contracts/utils/math/Math.sol";
+import { StrategyConfigLib } from "../lib/StrategyConfigLib.sol";
 
 import { ILendingAdapter, IAdapterEmergency } from "../interfaces/ILendingAdapter.sol";
 // FIX P0.L5: import full file → brings in StrategyStorageLayout (parent) +
@@ -29,6 +33,10 @@ import {
     InsufficientBalance, ZeroAddress
 } from "./StrategyStorageLayout.sol";
 
+interface IStrategyCoreParamsReader {
+    function params() external view returns (IParamsProvider);
+}
+
 /**
  * @dev CRITICAL: Storage layout must be IDENTICAL to UsdcMultiLendingVault.
  *      We inherit AccessControl + Pausable + ReentrancyGuard in the same order
@@ -39,7 +47,7 @@ contract StrategyParamsModule is StrategyStorageLayout {
     using SafeERC20 for IERC20Metadata;
 
     // ── Constants UNIQUE to ParamsModule ────────────────────────────────
-    uint256 public constant MAX_EXTERNAL_TVL = 50_000_000_000e6; // 50B USDC
+    uint256 public constant MAX_EXTERNAL_TVL = 50_000_000_000e6; // $50B, USD6
 
     // ── Events UNIQUE to ParamsModule (not in StorageLayout) ────────────
     event ExternalTVLRejected(address indexed adapter, uint256 previousTvl, uint256 reportedTvl);
@@ -48,6 +56,85 @@ contract StrategyParamsModule is StrategyStorageLayout {
     constructor(address asset_, address _core)
         StrategyStorageLayout(asset_, _core, address(0), address(0), address(0))
     {}
+
+    /// @notice Convert a USD6 amount to underlying units using the core's fresh asset oracle.
+    /// @dev Always rounds up so costs and minimum-value thresholds cannot be understated.
+    ///      The core OracleValuationLib is the single source of oracle freshness policy.
+    function usd6ToAssetUnits(uint256 usd6) external view returns (uint256) {
+        return _convertUsd6ToAssetUnits(usd6);
+    }
+
+    /// @notice Underlying raw units representing one USD, rounded up.
+    /// @dev Display quote only. Financial tiers value complete amounts before comparison.
+    function usdUnitInAsset() external view returns (uint256) {
+        return _convertUsd6ToAssetUnits(1e6);
+    }
+
+    /// @notice Whole amount valuation, rounded down; never multiply a rounded $1 quote.
+    function assetUnitsToUsd6(uint256 assets) public view returns (uint256) {
+        uint256 priceWad = OracleValuationLib.getFreshPriceWad(
+            IStrategyCoreParamsReader(core).params(), address(ASSET), core
+        );
+        return Math.mulDiv(assets, priceWad, referenceUnit * 1e12);
+    }
+
+    /// @dev Settings has already checked the caller's role and finalization policy.
+    ///      Centralizing valuation and writes here keeps Settings below its size buffer.
+    function execSetDustTolerance(uint256 amount) external {
+        if (msg.sender != address(this)) revert Unauthorized();
+        if (amount > 0 && assetUnitsToUsd6(amount) > 100_000e6) revert ParamOutOfRange();
+        dustTolerance = amount;
+        emit DustToleranceUpdated(amount);
+    }
+
+    function execSetRebalancePlanMinDrift(uint256 amount) external {
+        if (msg.sender != address(this)) revert Unauthorized();
+        uint256 usd6 = assetUnitsToUsd6(amount);
+        if (usd6 < 1_000e6 || usd6 > 100_000e6) revert ParamOutOfRange();
+        uint256 old = rebalancePlanMinDrift;
+        rebalancePlanMinDrift = amount;
+        emit RebalancePlanMinDriftUpdated(old, amount);
+    }
+
+    function tierMaxAdapters(uint256 assets, uint16 staticMax) external view returns (uint16) {
+        return StrategyConfigLib.effectiveMaxAdapters(assetUnitsToUsd6(assets), staticMax, 1e6);
+    }
+
+    function tierRelativeCap(uint256 assets) external view returns (uint16) {
+        return StrategyConfigLib.effectiveRelativeCapBps(assetUnitsToUsd6(assets), 1e6);
+    }
+
+    function tierConfidence(uint256 assets, uint64 cachedAt, uint32 maxAge) external view returns (uint256) {
+        // Preserve unavailable/stale confidence without requiring a usable price.
+        if (cachedAt == 0) return StrategyConfigLib.CONFIDENCE_ZERO;
+        if (maxAge > 0 && block.timestamp - cachedAt > maxAge) return StrategyConfigLib.CONFIDENCE_MICRO;
+        return StrategyConfigLib.tvlConfidence(assetUnitsToUsd6(assets), cachedAt, maxAge, 1e6);
+    }
+
+    function tierSeed(uint256 assets, uint256 staticSeed) external view returns (uint256) {
+        uint256 usd6 = assetUnitsToUsd6(assets);
+        uint256 seed = usd6 >= 25_000_000e6
+            ? Math.mulDiv(assets, 200, 10000)
+            : _convertUsd6ToAssetUnits(StrategyConfigLib.effectiveMinNewAdapterSeed(usd6, 0, 1e6));
+        return seed > staticSeed ? seed : staticSeed;
+    }
+
+    function _convertUsd6ToAssetUnits(uint256 usd6) internal view returns (uint256 units) {
+        if (usd6 == 0) return 0;
+        if (usd6 > type(uint256).max / 1e12) revert InvalidInput();
+
+        uint8 decimals_ = ASSET.decimals();
+        uint256 scale = 10 ** uint256(decimals_);
+        uint256 usdWad = usd6 * 1e12;
+        uint256 priceWad = OracleValuationLib.getFreshPriceWad(
+            IStrategyCoreParamsReader(core).params(), address(ASSET), core
+        );
+        units = OracleValuationLib.usdToAssetUnits(usdWad, priceWad, decimals_);
+        if (mulmod(usdWad, scale, priceWad) != 0) {
+            if (units == type(uint256).max) revert InvalidInput();
+            ++units;
+        }
+    }
 
     // ══════════════════════════════════════════════════════════════════════
     //  VIEW: ADAPTER REGISTRY
@@ -159,7 +246,7 @@ contract StrategyParamsModule is StrategyStorageLayout {
                 bool valid = true;
 
                 // Layer 1: absolute sanity bound
-                if (tvl > MAX_EXTERNAL_TVL) valid = false;
+                if (assetUnitsToUsd6(tvl) > MAX_EXTERNAL_TVL) valid = false;
 
                 // Layer 2: delta limiter — reject jumps > 10x previous value
                 if (valid && prev > 0) {

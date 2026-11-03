@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.28;
+import {LendingOracleTestFixture} from "./helpers/LendingOracleTestFixture.sol";
 
 import { Test, console2 } from "forge-std/Test.sol";
 import { StrategyExplainabilityLens } from "../../../src/strategies/usdc-lending/lens/StrategyExplainabilityLens.sol";
@@ -173,7 +174,7 @@ contract MockLendingAdapterFuzz is ILendingAdapter {
 // FUZZ TEST BASE
 // ============================================================================
 
-contract UsdcMultiLendingVaultFuzzBase is Test {
+contract UsdcMultiLendingVaultFuzzBase is LendingOracleTestFixture {
     address constant ARBITRUM_USDC = 0xaf88d065e77c8cC2239327C5EDb3A432268e5831;
 
     UsdcMultiLendingVault public vault;
@@ -183,7 +184,7 @@ contract UsdcMultiLendingVaultFuzzBase is Test {
     MockLendingAdapterFuzz public adapter3;
 
     address public admin = address(0x1);
-    address public core = address(0x2);
+    address public core = _newOracleCore(1e18);
     address public router = address(0x6);
     address public keeper = address(0x3);
     address public paramSetter = address(0x4);
@@ -638,6 +639,13 @@ contract UsdcMultiLendingVault_GateParams is UsdcMultiLendingVaultFuzzBase {
         vm.prank(admin);
         vault.setAllocCalcModule(address(_allocCalcMod1));
 
+        // This override must wire the same mandatory risk module as the base fixture.
+        address overflow = deployCode("StrategySafetyOverflowModule.sol:StrategySafetyOverflowModule",
+            abi.encode(ARBITRUM_USDC, core, address(paramsModule), address(scoringMod), address(adapterOpsMod)));
+        vm.prank(admin);
+        StrategySettingsModule(address(vault)).setSafetyOverflowModule(overflow);
+        assertEq(vault.safetyOverflowModule_addr(), overflow);
+
         vm.startPrank(admin);
         vault.grantRole(PARAM_ROLE, paramSetter);
 
@@ -659,9 +667,11 @@ contract UsdcMultiLendingVault_GateParams is UsdcMultiLendingVaultFuzzBase {
         require(ok3, "setAdapterDepositMode failed");
         vm.stopPrank();
 
-        // Audit #2 P0.6: poke TVL cache so adapters get non-zero confidence
-        vm.prank(keeper);
+        // Observe TVL and liquidity before exercising cooldown, not degraded setup.
+        vm.startPrank(keeper);
         StrategyParamsModule(address(vault)).pokeExternalTVL();
+        StrategyParamsModule(address(vault)).pokeLiquidityBatch(0, 3);
+        vm.stopPrank();
     }
 
     function test_RebalanceCooldown_blocks_back_to_back_calls() public {

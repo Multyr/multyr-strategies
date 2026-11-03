@@ -1,0 +1,30 @@
+{
+  "status": "BASE_NATIVE_FEES_AND_ORIGINAL_LIFECYCLES_PASS_ON_R2",
+  "readiness": "NOT_PRODUCTION_READY",
+  "passed": 6,
+  "failed": 0,
+  "skipped": 0,
+  "suites": 2,
+  "newTests": [
+    "Base USDC actual candidate/OP oracle/native feeds",
+    "Base WETH actual candidate/OP oracle/native feeds"
+  ],
+  "preservedTests": 4,
+  "log": "C:/Users/Pierre/Multyr/pt-multiply/pb/deployments/lending-full-validation-20261101/production/B-base/root-native-base-integrated-r2-official.log",
+  "logSha256": "880b08d2dcfa3d67ef3e53429224329016308440820bb18944afa5ceb998d7f9",
+  "limitations": [
+    "Benchmark gas coefficients, not production calibration",
+    "R3 estimator includes additional L1 capability and requires final integrated revalidation"
+  ],
+  "provider": "Official Base alternative selected after public Blast429; failed attempt retained",
+  "observations": [
+    "├─ emit BaseFeeContext(chainId: 8453, rpcBlock: 52590000 [5.259e7], evmBlock: 52590000 [5.259e7], timestamp: 1791969347 [1.791e9], priceUpdatedAt: 1791968359 [1.791e9], sequencerStartedAt: 1782491507 [1.782e9])",
+    "├─ emit BaseFeeRawData(blockBasefee: 5000000 [5e6], l1Upper: 23756518698 [2.375e10], opConst: 0, opSample: 0, l2Price: 1005000000 [1.005e9], ethAnswer: 250353630186 [2.503e11], ethDecimals: 8, ethPriceWAD: 2503536301860000000000 [2.503e21])",
+    "├─ emit BaseFeeExpected(expectedL2Gas: 1796224 [1.796e6], expectedPosterWei: 47513037660 [4.751e10], expectedExecWei: 1805205120000000 [1.805e15], rawWei: 1805252633037660 [1.805e15], expectedUSD6: 5649395 [5.649e6])",
+    "├─ emit BaseFeeActual(costUSD6: 5649395 [5.649e6], l2Gas: 1796224 [1.796e6], posterWei: 47513037660 [4.751e10], execWei: 1805205120000000 [1.805e15], sampleCount: 0, reliable: true, usedDefaults: true)",
+    "├─ emit BaseFeeContext(chainId: 8453, rpcBlock: 52590000 [5.259e7], evmBlock: 52590000 [5.259e7], timestamp: 1791969347 [1.791e9], priceUpdatedAt: 1791968359 [1.791e9], sequencerStartedAt: 1782491507 [1.782e9])",
+    "├─ emit BaseFeeRawData(blockBasefee: 5000000 [5e6], l1Upper: 23756518698 [2.375e10], opConst: 0, opSample: 0, l2Price: 1005000000 [1.005e9], ethAnswer: 250353630186 [2.503e11], ethDecimals: 8, ethPriceWAD: 2503536301860000000000 [2.503e21])",
+    "├─ emit BaseFeeExpected(expectedL2Gas: 1796224 [1.796e6], expectedPosterWei: 47513037660 [4.751e10], expectedExecWei: 1805205120000000 [1.805e15], rawWei: 1805252633037660 [1.805e15], expectedUSD6: 5649395 [5.649e6])",
+    "├─ emit BaseFeeActual(costUSD6: 5649395 [5.649e6], l2Gas: 1796224 [1.796e6], posterWei: 47513037660 [4.751e10], execWei: 1805205120000000 [1.805e15], sampleCount: 0, reliable: true, usedDefaults: true)"
+  ]
+}

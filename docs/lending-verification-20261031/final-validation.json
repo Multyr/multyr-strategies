@@ -1,0 +1,96 @@
+{
+  "recordedAtUtc": "2026-11-01T10:53:53.6737474Z",
+  "baseCommit": "211f1a0a4cb9c63232ae18dac24ccb921e5a4699",
+  "frozenCoreCommit": "9a9d120709de99a6216e9fe75d36e9ffdcb1a4d9",
+  "functionalSnapshotSha256": "dbf0b89c7b87954030533fc2a514ccfc52f1fac4a5720114efc08f4885f10da9",
+  "functionalSnapshotRule": "Sorted changed/new src,test,script .sol paths plus changed foundry.toml; each line is path SPACE UTF8-LF-SHA256 LF",
+  "functionalFiles": 64,
+  "forkEnvironment": {
+    "RUN_ROUTER_HARVEST_FORK": "true",
+    "ROUTER_HARVEST_RPC": "https://arbitrum-one.public.blastapi.io",
+    "ROUTER_HARVEST_BLOCK": "520094008"
+  },
+  "runs": [
+    {
+      "name": "strategy-regression",
+      "command": "forge test --match-path 'test/strategies/usdc-lending/**' --no-match-path 'test/strategies/usdc-lending/fork/**' --summary",
+      "exitCode": 0,
+      "suites": 189,
+      "passed": 2789,
+      "failed": 0,
+      "skipped": 0,
+      "requiredUnexecuted": 0,
+      "localLog": "lending-regression-final.log",
+      "logSha256": "a37e55a8ee0d6203ae1652f751c384a5a8a9bfc13b61ebf9ec66480984e6b9ba"
+    },
+    {
+      "name": "real-market-acceptance",
+      "command": "forge test --match-contract 'Lending((Asset|Strategy|Core)Matrix|RewardRoutes)ForkTest|LendingUnmockedE2ETest|CometPublishedTotalsForkTest' --threads 1 --fork-url https://base-mainnet.public.blastapi.io --fork-block-number 52500000 --compute-units-per-second 40 --fork-retries 8 --fork-retry-backoff 2000 -vvvv --summary",
+      "exitCode": 0,
+      "suites": 6,
+      "passed": 25,
+      "failed": 0,
+      "skipped": 0,
+      "requiredUnexecuted": 0,
+      "localLog": "lending-acceptance-final.log",
+      "logSha256": "79332114ffaed8f40027c22214b7ef54ff7d17dfc380853be3da40a5bdc7c6c7"
+    }
+  ],
+  "uniqueAcceptanceTests": 2814,
+  "duplicateAccounting": "Manifest5 and actual legacy opt-ins2 are included in regression2789; original matrix19 plus unmocked E2E4 plus Comet ABI2 are the separate acceptance25",
+  "embeddedCoverage": {
+    "manifest": 5,
+    "legacyOptIns": 2,
+    "newRemediationUnitTests": 16,
+    "originalMatrix": 19,
+    "unmockedProductionE2E": 4,
+    "actualCometSupplyABI": 2
+  },
+  "excludedHistoricalForkFiles": 12,
+  "excludedHistoricalDeclaredCases": 29,
+  "exclusionInventory": "excluded-historical-forks.json",
+  "structure": {
+    "exitCode": 0,
+    "runtimeCount": 20,
+    "maximumRuntimeBytes": 23415,
+    "projectLimitBytes": 23552,
+    "layouts": 9,
+    "uniqueSelectors": 296,
+    "distinctSignatureCollisions": 0,
+    "localLog": "lending-structure-final.log",
+    "reportSha256": "4779cd4fcc807794c78761900f5de1bb87f52d814c9dbc5a173f743cf027b63a"
+  },
+  "lint": {
+    "exitCode": 0,
+    "unsafeTypecastWarnings": 40,
+    "triage": "lint-cast-triage.json",
+    "localLog": "lending-lint-final.log",
+    "logSha256": "0467568c0217ef8cfc8eab0102dddfcf68d18fc1443dea736d1586a63a63ab42",
+    "notAnAuditCertificate": true
+  },
+  "independentClaudeReviews": 3,
+  "independentDeltaReviews": 2,
+  "pinnedExistingRuntimeProofs": 9,
+  "realHistoricalEvidence": "unmocked-e2e-proof.json and unmocked-canonical-blocks.json",
+  "failedAttempt": "Prior whole run2787 pass/2 fail/0 skip; incomplete overridden cooldown fixture corrected and focused2 passed before final full2789/0/0. See REVIEW_RECONCILIATION.md.",
+  "support": "Aave USDC/WETH on Arbitrum/Base; actual Comet supply ABI verified, not a Comet lifecycle certification",
+  "githubCiExecution": "not claimed; workflow includes mandatory explicit cases",
+  "liveDeployment": "not performed; core/main/shadow frozen",
+  "ciSummaryGuard": {
+    "script": "script/AssertLendingTestSummary.ps1",
+    "sha256": "fd143853d5d24062d44cdb790f71e61f688db273eae4dc09a9f811dd46ed2fd5",
+    "acceptedActualLogs": [
+      "regression2789/0/0/189suites",
+      "acceptance25/0/0/6suites"
+    ],
+    "rejectedControls": [
+      "actual2787pass/2fail",
+      "zero-tests",
+      "skipped-case"
+    ],
+    "workflowYamlParsed": true,
+    "strictCiCountGates": 6,
+    "workflowSha256": "e7626b72a9e8f5d68a068cbcfd5c5c0f9f57a1f6d03ce7911ff3f40a3de4e695",
+    "remoteCiExecuted": false
+  }
+}

@@ -1,0 +1,958 @@
+{
+  "status": "SEVEN_FAMILIES_TWO_CHAINS_EACH_REAL_FORK_TRANSACTION_GAS_PASS",
+  "readiness": "NOT_PRODUCTION_READY",
+  "families": 7,
+  "profiles": 14,
+  "operationReceipts": 72,
+  "rows": [
+    {
+      "case": "aave-arb-weth",
+      "family": "Aave",
+      "chainId": 42161,
+      "asset": "0x82af49447d8a07e3bd95bd0d56f35241523fbab1",
+      "decimals": 18,
+      "canonicalBlock": 520094008,
+      "canonicalBlockHash": "0xd0e4d2d28e0d9a60d819743930f9f2843409bf37a895a411620a632da53fa600",
+      "source": "src/strategies/usdc-lending/adapters/lending/AaveV3USDCmarket.sol",
+      "sourceUtf8LfSha256": "0d79431f4ae89657f5149fdd19f993b4b00760225b606698131c03bc81892087",
+      "runtimeSha256": "dbc0584f9fa80f9b8d1d1bd9479901843d25270b01ed0e4782c559d9499ffb1a",
+      "raw": "deployments/lending-full-validation-20261101/production/transaction-gas/runs/20261102T222703-35200/aave-arb-weth/result.json",
+      "rawSha256": "f4b8c57fdca4ea184de5f4ed1e080691c8c837fb1283922dd7e8f85e8bd6e2bf",
+      "operations": [
+        {
+          "operation": "approve",
+          "txHash": "0x0a77fefbb632f8b8bef9c5b38fa24774512b8f8e41891fbd77325c90431b1d18",
+          "gasUsed": "53452",
+          "blockNumber": "520094011",
+          "calldataBytes": 68,
+          "holderDeltaRaw": "0",
+          "adapterNavAfterRaw": "0",
+          "independentReceiptAssetsAfterRaw": "0"
+        },
+        {
+          "operation": "deposit_first",
+          "txHash": "0x108aa8310a4debf2701249441880cd774d46bd96fc805e98bf572f17cc174d34",
+          "gasUsed": "251327",
+          "blockNumber": "520094012",
+          "calldataBytes": 36,
+          "holderDeltaRaw": "-100000000000000000",
+          "adapterNavAfterRaw": "99999999999999999",
+          "independentReceiptAssetsAfterRaw": "99999999999999999"
+        },
+        {
+          "operation": "deposit_continuation",
+          "txHash": "0xda195eb7ad3d8ad5be62f1cbb62c03f9660435ef27c01d1f11892ded0550dafa",
+          "gasUsed": "204914",
+          "blockNumber": "520094013",
+          "calldataBytes": 36,
+          "holderDeltaRaw": "-25000000000000000",
+          "adapterNavAfterRaw": "125000000032168842",
+          "independentReceiptAssetsAfterRaw": "125000000032168842"
+        },
+        {
+          "operation": "withdraw_partial",
+          "txHash": "0x99608e53eaca5e127691a6d9d7df42793a3772f5dc11b762894cd8170dd140dc",
+          "gasUsed": "186299",
+          "blockNumber": "520094014",
+          "calldataBytes": 68,
+          "holderDeltaRaw": "25000000000000000",
+          "adapterNavAfterRaw": "100000000072379869",
+          "independentReceiptAssetsAfterRaw": "100000000072379869"
+        },
+        {
+          "operation": "emergency_pull",
+          "txHash": "0x3b3f02131db7ce71dd2dea09ec0b8430869a3b1a9a37567e4f4bc033ea73ede4",
+          "gasUsed": "194518",
+          "blockNumber": "520094015",
+          "calldataBytes": 4,
+          "holderDeltaRaw": "100000000104548713",
+          "adapterNavAfterRaw": "0",
+          "independentReceiptAssetsAfterRaw": "0"
+        }
+      ]
+    },
+    {
+      "case": "aave-eth-usdt-v3",
+      "family": "Aave",
+      "chainId": 1,
+      "asset": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+      "decimals": 6,
+      "canonicalBlock": 26165000,
+      "canonicalBlockHash": "0x520c3607be6f0aba6a7722233a437bf88e6b778b304a7dbc1ae6316ac58185ac",
+      "source": "src/strategies/usdc-lending/adapters/lending/AaveV3USDCmarket.sol",
+      "sourceUtf8LfSha256": "0d79431f4ae89657f5149fdd19f993b4b00760225b606698131c03bc81892087",
+      "runtimeSha256": "dbc0584f9fa80f9b8d1d1bd9479901843d25270b01ed0e4782c559d9499ffb1a",
+      "raw": "deployments/lending-full-validation-20261101/production/transaction-gas/runs/20261102T222703-35200/aave-eth-usdt-v3/result.json",
+      "rawSha256": "c2cb63fabda608ae67c1104a6a59960cdd0af950465db73be90e3352701ee4de",
+      "operations": [
+        {
+          "operation": "approve",
+          "txHash": "0xd5d8aa337d1dc86d59bdc4abfcbf4352e13fe1822f7c62ea81369ca5a98dc192",
+          "gasUsed": "48561",
+          "blockNumber": "26165003",
+          "calldataBytes": 68,
+          "holderDeltaRaw": "0",
+          "adapterNavAfterRaw": "0",
+          "independentReceiptAssetsAfterRaw": "0"
+        },
+        {
+          "operation": "deposit_first",
+          "txHash": "0xd2db194e943d4df6de7bed489da251ebe8a6abf10cff11768d98c16836081bc5",
+          "gasUsed": "249492",
+          "blockNumber": "26165004",
+          "calldataBytes": 36,
+          "holderDeltaRaw": "-100000000",
+          "adapterNavAfterRaw": "99999999",
+          "independentReceiptAssetsAfterRaw": "99999999"
+        },
+        {
+          "operation": "deposit_continuation",
+          "txHash": "0x876aa3ad4697b3d0f615bb4dc8a6bb7004d1d9e4e662842286de56fbbb909aaf",
+          "gasUsed": "203091",
+          "blockNumber": "26165005",
+          "calldataBytes": 36,
+          "holderDeltaRaw": "-25000000",
+          "adapterNavAfterRaw": "124999999",
+          "independentReceiptAssetsAfterRaw": "124999999"
+        },
+        {
+          "operation": "withdraw_partial",
+          "txHash": "0x0dc0b8068cbd70fbc76e88b71375a9719903d0ace59a134045b05df54efaab34",
+          "gasUsed": "188104",
+          "blockNumber": "26165006",
+          "calldataBytes": 68,
+          "holderDeltaRaw": "25000000",
+          "adapterNavAfterRaw": "99999999",
+          "independentReceiptAssetsAfterRaw": "99999999"
+        },
+        {
+          "operation": "emergency_pull",
+          "txHash": "0xbfe158e1c6135cacad19b9c40e09396b5fde2721a0788c0ce0d2bbdb7506c21b",
+          "gasUsed": "198820",
+          "blockNumber": "26165007",
+          "calldataBytes": 4,
+          "holderDeltaRaw": "99999999",
+          "adapterNavAfterRaw": "0",
+          "independentReceiptAssetsAfterRaw": "0"
+        }
+      ]
+    },
+    {
+      "case": "comet-arb-weth",
+      "family": "Comet",
+      "chainId": 42161,
+      "asset": "0x82af49447d8a07e3bd95bd0d56f35241523fbab1",
+      "decimals": 18,
+      "canonicalBlock": 520094008,
+      "canonicalBlockHash": "0xd0e4d2d28e0d9a60d819743930f9f2843409bf37a895a411620a632da53fa600",
+      "source": "src/strategies/usdc-lending/adapters/lending/CometUsdcMultiMarket.sol",
+      "sourceUtf8LfSha256": "af76503e9b4299667e7659673f1db59f5dae68b8d4c8585441839fe4db6e2da4",
+      "runtimeSha256": "35d258aab811452270255395dadcaed4a4d6bcb60654aec9bd45c94f4016b115",
+      "raw": "deployments/lending-full-validation-20261101/production/transaction-gas/runs/20261102T222703-35200/comet-arb-weth/result.json",
+      "rawSha256": "d4e4207655402b0d5ae74af8f84444209bdf14ab269274d378dac900ddf7f1fb",
+      "operations": [
+        {
+          "operation": "approve",
+          "txHash": "0x0973cf9ae764ea05b42c2be7873d98dab025cc07fcc64ecacd0369412640979d",
+          "gasUsed": "53452",
+          "blockNumber": "520094013",
+          "calldataBytes": 68,
+          "holderDeltaRaw": "0",
+          "adapterNavAfterRaw": "0",
+          "independentReceiptAssetsAfterRaw": "0"
+        },
+        {
+          "operation": "deposit_first",
+          "txHash": "0xcf123cfafd9e40bf9f11d82a3ce5eda37064e864c2b4c047a096411fc5df005d",
+          "gasUsed": "220230",
+          "blockNumber": "520094014",
+          "calldataBytes": 36,
+          "holderDeltaRaw": "-100000000000000000",
+          "adapterNavAfterRaw": "99999999999999999",
+          "independentReceiptAssetsAfterRaw": "99999999999999999"
+        },
+        {
+          "operation": "deposit_continuation",
+          "txHash": "0xa5288defdb9c41aee8e9fc3e02361078cbdfb93c8e7e6005b5a8f14a76478b33",
+          "gasUsed": "179190",
+          "blockNumber": "520094015",
+          "calldataBytes": 36,
+          "holderDeltaRaw": "-25000000000000000",
+          "adapterNavAfterRaw": "125000000033901213",
+          "independentReceiptAssetsAfterRaw": "125000000033901213"
+        },
+        {
+          "operation": "withdraw_partial",
+          "txHash": "0x9995b8642ce8685f61b2e2443badc021aece5dae8c2fc4d8c56a37e701ca3d9a",
+          "gasUsed": "151149",
+          "blockNumber": "520094016",
+          "calldataBytes": 68,
+          "holderDeltaRaw": "25000000000000000",
+          "adapterNavAfterRaw": "100000000076276455",
+          "independentReceiptAssetsAfterRaw": "100000000076276455"
+        },
+        {
+          "operation": "emergency_pull",
+          "txHash": "0xe7b5bbd5f69c1880ff165da21105bab329870fc2f829872820e12debf04fdb90",
+          "gasUsed": "139162",
+          "blockNumber": "520094017",
+          "calldataBytes": 4,
+          "holderDeltaRaw": "100000000110177670",
+          "adapterNavAfterRaw": "0",
+          "independentReceiptAssetsAfterRaw": "0"
+        }
+      ]
+    },
+    {
+      "case": "comet-eth-usdt",
+      "family": "Comet",
+      "chainId": 1,
+      "asset": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+      "decimals": 6,
+      "canonicalBlock": 26300000,
+      "canonicalBlockHash": "0xfeb02dce39436b4d1f400d128fa774891b94451859a56e6c9d548b8574629b56",
+      "source": "src/strategies/usdc-lending/adapters/lending/CometUsdcMultiMarket.sol",
+      "sourceUtf8LfSha256": "af76503e9b4299667e7659673f1db59f5dae68b8d4c8585441839fe4db6e2da4",
+      "runtimeSha256": "35d258aab811452270255395dadcaed4a4d6bcb60654aec9bd45c94f4016b115",
+      "raw": "deployments/lending-full-validation-20261101/production/transaction-gas/runs/20261102T222703-35200/comet-eth-usdt/result.json",
+      "rawSha256": "63a89e6930113068c834785118f2036d41960cdff06599c02cdb95c1d06f0f15",
+      "operations": [
+        {
+          "operation": "approve",
+          "txHash": "0xa36b704b99e8160f9e4edef20b3302554c0e823d1ae9dcc17268e5322968531d",
+          "gasUsed": "48561",
+          "blockNumber": "26300005",
+          "calldataBytes": 68,
+          "holderDeltaRaw": "0",
+          "adapterNavAfterRaw": "0",
+          "independentReceiptAssetsAfterRaw": "0"
+        },
+        {
+          "operation": "deposit_first",
+          "txHash": "0x91f326a2e606d30bb0ddc40915285660dcb2ab3e3e0efe460e2c978634db96bf",
+          "gasUsed": "217784",
+          "blockNumber": "26300006",
+          "calldataBytes": 36,
+          "holderDeltaRaw": "-100000000",
+          "adapterNavAfterRaw": "99999999",
+          "independentReceiptAssetsAfterRaw": "99999999"
+        },
+        {
+          "operation": "deposit_continuation",
+          "txHash": "0x61e98bc5ae98864127921331fa46b953bf741b746a05a886d0cbd8fceda2da52",
+          "gasUsed": "176754",
+          "blockNumber": "26300007",
+          "calldataBytes": 36,
+          "holderDeltaRaw": "-25000000",
+          "adapterNavAfterRaw": "124999998",
+          "independentReceiptAssetsAfterRaw": "124999998"
+        },
+        {
+          "operation": "withdraw_partial",
+          "txHash": "0x57c17a48e0323f260aa1f8ca1c019be0c18143efcde3c8f28ca02e07af722d82",
+          "gasUsed": "153689",
+          "blockNumber": "26300008",
+          "calldataBytes": 68,
+          "holderDeltaRaw": "25000000",
+          "adapterNavAfterRaw": "99999998",
+          "independentReceiptAssetsAfterRaw": "99999998"
+        },
+        {
+          "operation": "emergency_pull",
+          "txHash": "0x0d78d61aab7a46cc006499d204b06b394ce18f0b38680d5896d5c878d1a09b5b",
+          "gasUsed": "142145",
+          "blockNumber": "26300009",
+          "calldataBytes": 4,
+          "holderDeltaRaw": "99999998",
+          "adapterNavAfterRaw": "0",
+          "independentReceiptAssetsAfterRaw": "0"
+        }
+      ]
+    },
+    {
+      "case": "dolomite-arb-usdt",
+      "family": "Dolomite-wrapper",
+      "chainId": 42161,
+      "asset": "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9",
+      "decimals": 6,
+      "canonicalBlock": 520094008,
+      "canonicalBlockHash": "0xd0e4d2d28e0d9a60d819743930f9f2843409bf37a895a411620a632da53fa600",
+      "source": "src/strategies/usdc-lending/adapters/lending/DolomiteUsdcMultiMarket.sol",
+      "sourceUtf8LfSha256": "9ee5c5fce1f129f8a8c979b233b71de07cc436ea94c3fc85518a64293b8f69f2",
+      "runtimeSha256": "9342aa948c71bef10fb6a78fcf062a2dd4ad1524c2844a78c92d30a42466140d",
+      "raw": "deployments/lending-full-validation-20261101/production/transaction-gas/runs/20261102T222703-35200/dolomite-arb-usdt/result.json",
+      "rawSha256": "bddbb707a02acebaa46252456473b2124a0e7a9870b94bee6ceeda3808bcef0b",
+      "operations": [
+        {
+          "operation": "approve",
+          "txHash": "0xef8172ade4137ceb38293fc5c341c7f9b0c42c5ac258b474afd6b43f4d94dc1b",
+          "gasUsed": "53582",
+          "blockNumber": "520094013",
+          "calldataBytes": 68,
+          "holderDeltaRaw": "0",
+          "adapterNavAfterRaw": "0",
+          "independentReceiptAssetsAfterRaw": "0"
+        },
+        {
+          "operation": "deposit_first",
+          "txHash": "0x91afe40dc4e34e8eb5279b9098e78394d59b3a19d0a0bab6304de15b73985435",
+          "gasUsed": "693742",
+          "blockNumber": "520094014",
+          "calldataBytes": 36,
+          "holderDeltaRaw": "-100000000",
+          "adapterNavAfterRaw": "100000000",
+          "independentReceiptAssetsAfterRaw": "100000000"
+        },
+        {
+          "operation": "deposit_continuation",
+          "txHash": "0x84fd1d127e9fefb10e38335dac3c0bbede3b909d07bb9758dda503b3d9d02e43",
+          "gasUsed": "574083",
+          "blockNumber": "520094015",
+          "calldataBytes": 36,
+          "holderDeltaRaw": "-25000000",
+          "adapterNavAfterRaw": "125000000",
+          "independentReceiptAssetsAfterRaw": "125000000"
+        },
+        {
+          "operation": "withdraw_partial",
+          "txHash": "0xd7bd1dd200f1ca9e8ea3a211e16809cee7f59108fafabb8e4155224010f7b4b1",
+          "gasUsed": "405128",
+          "blockNumber": "520094016",
+          "calldataBytes": 68,
+          "holderDeltaRaw": "25000000",
+          "adapterNavAfterRaw": "100000001",
+          "independentReceiptAssetsAfterRaw": "100000001"
+        },
+        {
+          "operation": "emergency_pull",
+          "txHash": "0xe7b5bbd5f69c1880ff165da21105bab329870fc2f829872820e12debf04fdb90",
+          "gasUsed": "338532",
+          "blockNumber": "520094017",
+          "calldataBytes": 4,
+          "holderDeltaRaw": "100000001",
+          "adapterNavAfterRaw": "0",
+          "independentReceiptAssetsAfterRaw": "0"
+        }
+      ]
+    },
+    {
+      "case": "dolomite-eth-usdc",
+      "family": "Dolomite-wrapper",
+      "chainId": 1,
+      "asset": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+      "decimals": 6,
+      "canonicalBlock": 26300000,
+      "canonicalBlockHash": "0xfeb02dce39436b4d1f400d128fa774891b94451859a56e6c9d548b8574629b56",
+      "source": "src/strategies/usdc-lending/adapters/lending/DolomiteUsdcMultiMarket.sol",
+      "sourceUtf8LfSha256": "9ee5c5fce1f129f8a8c979b233b71de07cc436ea94c3fc85518a64293b8f69f2",
+      "runtimeSha256": "9342aa948c71bef10fb6a78fcf062a2dd4ad1524c2844a78c92d30a42466140d",
+      "raw": "deployments/lending-full-validation-20261101/production/transaction-gas/runs/20261102T222703-35200/dolomite-eth-usdc/result.json",
+      "rawSha256": "1d480f92adbfda15609a9a6e5c299829df498a21e39e3b8953da2d4628494e90",
+      "operations": [
+        {
+          "operation": "approve",
+          "txHash": "0x751fa8e3a65215a2ee3e50d3b49d55cbe8a34b9b949bc509dfc810d70542337a",
+          "gasUsed": "55570",
+          "blockNumber": "26300005",
+          "calldataBytes": 68,
+          "holderDeltaRaw": "0",
+          "adapterNavAfterRaw": "0",
+          "independentReceiptAssetsAfterRaw": "0"
+        },
+        {
+          "operation": "deposit_first",
+          "txHash": "0x69a491c98e6d657d74c3c36bbe87db7fad90f5a52c5d37072e0e04296435db1c",
+          "gasUsed": "529041",
+          "blockNumber": "26300006",
+          "calldataBytes": 36,
+          "holderDeltaRaw": "-100000000",
+          "adapterNavAfterRaw": "100000000",
+          "independentReceiptAssetsAfterRaw": "100000000"
+        },
+        {
+          "operation": "deposit_continuation",
+          "txHash": "0xd26dfbd4e139401a7f01d3d383ce6fa14fab30f0562db8166244e870d41a51a6",
+          "gasUsed": "382988",
+          "blockNumber": "26300007",
+          "calldataBytes": 36,
+          "holderDeltaRaw": "-25000000",
+          "adapterNavAfterRaw": "124999999",
+          "independentReceiptAssetsAfterRaw": "124999999"
+        },
+        {
+          "operation": "withdraw_partial",
+          "txHash": "0x8287b39e6d95602d749593d4f02d554c1b307ddb698973440042f5d1a035d3b3",
+          "gasUsed": "455237",
+          "blockNumber": "26300008",
+          "calldataBytes": 68,
+          "holderDeltaRaw": "25000000",
+          "adapterNavAfterRaw": "100000000",
+          "independentReceiptAssetsAfterRaw": "100000000"
+        },
+        {
+          "operation": "emergency_pull",
+          "txHash": "0xecea27f60581f62177325daf8e3b15bc646bdb9b36ed30d4c9209c938a35d6a7",
+          "gasUsed": "377500",
+          "blockNumber": "26300009",
+          "calldataBytes": 4,
+          "holderDeltaRaw": "100000000",
+          "adapterNavAfterRaw": "0",
+          "independentReceiptAssetsAfterRaw": "0"
+        }
+      ]
+    },
+    {
+      "case": "euler-arb-usdc",
+      "family": "Euler",
+      "chainId": 42161,
+      "asset": "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+      "decimals": 6,
+      "canonicalBlock": 520094008,
+      "canonicalBlockHash": "0xd0e4d2d28e0d9a60d819743930f9f2843409bf37a895a411620a632da53fa600",
+      "source": "src/strategies/usdc-lending/adapters/lending/EulerUsdcMultiMarket.sol",
+      "sourceUtf8LfSha256": "149424a2d7cb1ee4df6913f8e7c4fa7b65cdd73d3db8754913f384a0005882db",
+      "runtimeSha256": "6284564de894ed3fc584461b4d7754aff63b44b385268dd174b65b1f5cd0af7f",
+      "raw": "deployments/lending-full-validation-20261101/production/transaction-gas/runs/20261102T222703-35200/euler-arb-usdc/result.json",
+      "rawSha256": "eb3f3bc4f08884b4f9f6a9dccb1d7e17fc16bcad2ef6a1f541b5f86e21987afc",
+      "operations": [
+        {
+          "operation": "push_funding_deposit_first",
+          "txHash": "0x37a22e1db406fbe75c184042d9362e0d1394c2d556de5aba09bac6a6d4a75740",
+          "gasUsed": "62159",
+          "blockNumber": "520094012",
+          "calldataBytes": 68,
+          "holderDeltaRaw": "-100000000",
+          "adapterNavAfterRaw": "100000000",
+          "independentReceiptAssetsAfterRaw": "0"
+        },
+        {
+          "operation": "deposit_first",
+          "txHash": "0x88a9c891db82e0068bf80deaea2d232d2266d851306d01a6eadfb30d0ac934b0",
+          "gasUsed": "316863",
+          "blockNumber": "520094013",
+          "calldataBytes": 36,
+          "holderDeltaRaw": "0",
+          "adapterNavAfterRaw": "99999999",
+          "independentReceiptAssetsAfterRaw": "99999999"
+        },
+        {
+          "operation": "push_funding_deposit_continuation",
+          "txHash": "0x709725888fc34ccc6fbf38d52c5aa5e999924c5146db2aee07692572de80840c",
+          "gasUsed": "62171",
+          "blockNumber": "520094014",
+          "calldataBytes": 68,
+          "holderDeltaRaw": "-25000000",
+          "adapterNavAfterRaw": "125000000",
+          "independentReceiptAssetsAfterRaw": "100000000"
+        },
+        {
+          "operation": "deposit_continuation",
+          "txHash": "0x3fff14aa1d23420dc7f8913512bc1140418635ebfcfed86f0aac9e5b66a48b8d",
+          "gasUsed": "247725",
+          "blockNumber": "520094015",
+          "calldataBytes": 36,
+          "holderDeltaRaw": "0",
+          "adapterNavAfterRaw": "125000000",
+          "independentReceiptAssetsAfterRaw": "125000000"
+        },
+        {
+          "operation": "withdraw_partial",
+          "txHash": "0x5ab9af49d1264d7664076980352eacfa437692658041f0883fa734cdd1649b08",
+          "gasUsed": "230063",
+          "blockNumber": "520094016",
+          "calldataBytes": 68,
+          "holderDeltaRaw": "25000000",
+          "adapterNavAfterRaw": "99999999",
+          "independentReceiptAssetsAfterRaw": "99999999"
+        },
+        {
+          "operation": "emergency_pull",
+          "txHash": "0x214475191327f04fc567be432c3bc130fcda90e4d7ab7065adbf79343a48d60d",
+          "gasUsed": "182260",
+          "blockNumber": "520094017",
+          "calldataBytes": 4,
+          "holderDeltaRaw": "99999999",
+          "adapterNavAfterRaw": "0",
+          "independentReceiptAssetsAfterRaw": "0"
+        }
+      ]
+    },
+    {
+      "case": "euler-eth-usdt",
+      "family": "Euler",
+      "chainId": 1,
+      "asset": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+      "decimals": 6,
+      "canonicalBlock": 26300000,
+      "canonicalBlockHash": "0xfeb02dce39436b4d1f400d128fa774891b94451859a56e6c9d548b8574629b56",
+      "source": "src/strategies/usdc-lending/adapters/lending/EulerUsdcMultiMarket.sol",
+      "sourceUtf8LfSha256": "149424a2d7cb1ee4df6913f8e7c4fa7b65cdd73d3db8754913f384a0005882db",
+      "runtimeSha256": "6284564de894ed3fc584461b4d7754aff63b44b385268dd174b65b1f5cd0af7f",
+      "raw": "deployments/lending-full-validation-20261101/production/transaction-gas/runs/20261102T222703-35200/euler-eth-usdt/result.json",
+      "rawSha256": "c8d922ec60b0d447300cc9734a304da72da913c79cc47b6fa52ec8f89cd0475b",
+      "operations": [
+        {
+          "operation": "push_funding_deposit_first",
+          "txHash": "0xb8b26efc235eb240b0b2310a078298af51c9ff8ca11ea6b1c939ae4f258db1f6",
+          "gasUsed": "63197",
+          "blockNumber": "26300004",
+          "calldataBytes": 68,
+          "holderDeltaRaw": "-100000000",
+          "adapterNavAfterRaw": "100000000",
+          "independentReceiptAssetsAfterRaw": "0"
+        },
+        {
+          "operation": "deposit_first",
+          "txHash": "0x7029de6b83337f820a8cf861ec57cf2216b30d2b08cc893abc473cb43ae3a1b7",
+          "gasUsed": "308313",
+          "blockNumber": "26300005",
+          "calldataBytes": 36,
+          "holderDeltaRaw": "0",
+          "adapterNavAfterRaw": "99999999",
+          "independentReceiptAssetsAfterRaw": "99999999"
+        },
+        {
+          "operation": "push_funding_deposit_continuation",
+          "txHash": "0x5275e2b1b7a199ca9047784d86cb777cdf8ef33b7b1446684a051587977d36d6",
+          "gasUsed": "63209",
+          "blockNumber": "26300006",
+          "calldataBytes": 68,
+          "holderDeltaRaw": "-25000000",
+          "adapterNavAfterRaw": "124999999",
+          "independentReceiptAssetsAfterRaw": "99999999"
+        },
+        {
+          "operation": "deposit_continuation",
+          "txHash": "0x0e3eec552a2c0f257d3b19a3ae56c4655ca4d7ab96a5de02445b4ed19c39c63f",
+          "gasUsed": "241383",
+          "blockNumber": "26300007",
+          "calldataBytes": 36,
+          "holderDeltaRaw": "0",
+          "adapterNavAfterRaw": "124999999",
+          "independentReceiptAssetsAfterRaw": "124999999"
+        },
+        {
+          "operation": "withdraw_partial",
+          "txHash": "0xe40d6eb4aa0dac488c0481395612e23feb1f5a40163274d34e6a21732d5225c9",
+          "gasUsed": "230882",
+          "blockNumber": "26300008",
+          "calldataBytes": 68,
+          "holderDeltaRaw": "25000000",
+          "adapterNavAfterRaw": "99999999",
+          "independentReceiptAssetsAfterRaw": "99999999"
+        },
+        {
+          "operation": "emergency_pull",
+          "txHash": "0xd9e1a5dcb13fb9f3202d694871d3ef54a73ed54f119ae3f3d3ea8572a0e45f38",
+          "gasUsed": "183877",
+          "blockNumber": "26300009",
+          "calldataBytes": 4,
+          "holderDeltaRaw": "99999999",
+          "adapterNavAfterRaw": "0",
+          "independentReceiptAssetsAfterRaw": "0"
+        }
+      ]
+    },
+    {
+      "case": "fluid-arb-usdc",
+      "family": "Fluid",
+      "chainId": 42161,
+      "asset": "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+      "decimals": 6,
+      "canonicalBlock": 520094008,
+      "canonicalBlockHash": "0xd0e4d2d28e0d9a60d819743930f9f2843409bf37a895a411620a632da53fa600",
+      "source": "src/strategies/usdc-lending/adapters/lending/FluidUsdcMultiMarket.sol",
+      "sourceUtf8LfSha256": "4853bb85517fc9d2dc89d0a94590c3b115a60c24e73f1ead69dd619c516fa249",
+      "runtimeSha256": "19b714b47f3214d2700da146747f005ef74dba91ebad89ec500258442d56fa4a",
+      "raw": "deployments/lending-full-validation-20261101/production/transaction-gas/runs/20261102T222703-35200/fluid-arb-usdc/result.json",
+      "rawSha256": "66cb4fa6f73f384b662a9e9256eb58bca5fd4bf5dc561ab13aad5d152b81a908",
+      "operations": [
+        {
+          "operation": "approve",
+          "txHash": "0x30405cf2734b37a87a7c1327234c270b298a242845c0d5111d4d03a9d7883e97",
+          "gasUsed": "55449",
+          "blockNumber": "520094011",
+          "calldataBytes": 68,
+          "holderDeltaRaw": "0",
+          "adapterNavAfterRaw": "0",
+          "independentReceiptAssetsAfterRaw": "0"
+        },
+        {
+          "operation": "deposit_first",
+          "txHash": "0x7b1bd78a59ce7c74b6019b1ce3a15618b8004d7f8cf39f3924d8a54610173e2b",
+          "gasUsed": "173183",
+          "blockNumber": "520094012",
+          "calldataBytes": 36,
+          "holderDeltaRaw": "-100000000",
+          "adapterNavAfterRaw": "99999999",
+          "independentReceiptAssetsAfterRaw": "99999999"
+        },
+        {
+          "operation": "deposit_continuation",
+          "txHash": "0x05694b6784fb849203148e8b8c591233c2a1b1b0f746be32ba7bde1aa3249450",
+          "gasUsed": "159512",
+          "blockNumber": "520094013",
+          "calldataBytes": 36,
+          "holderDeltaRaw": "-25000000",
+          "adapterNavAfterRaw": "124999998",
+          "independentReceiptAssetsAfterRaw": "124999998"
+        },
+        {
+          "operation": "withdraw_partial",
+          "txHash": "0xfcd986ee679a028ee91a27a99cb0d350d96d1f91f4750e278b47f8c7516d2d32",
+          "gasUsed": "137871",
+          "blockNumber": "520094014",
+          "calldataBytes": 68,
+          "holderDeltaRaw": "25000000",
+          "adapterNavAfterRaw": "99999998",
+          "independentReceiptAssetsAfterRaw": "99999998"
+        },
+        {
+          "operation": "emergency_pull",
+          "txHash": "0xfe9f5ad39e993e4deffa407949da6ef38857013326949b72368eedc41468c389",
+          "gasUsed": "128262",
+          "blockNumber": "520094015",
+          "calldataBytes": 4,
+          "holderDeltaRaw": "99999998",
+          "adapterNavAfterRaw": "0",
+          "independentReceiptAssetsAfterRaw": "0"
+        }
+      ]
+    },
+    {
+      "case": "fluid-eth-weth",
+      "family": "Fluid",
+      "chainId": 1,
+      "asset": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+      "decimals": 18,
+      "canonicalBlock": 26300000,
+      "canonicalBlockHash": "0xfeb02dce39436b4d1f400d128fa774891b94451859a56e6c9d548b8574629b56",
+      "source": "src/strategies/usdc-lending/adapters/lending/FluidUsdcMultiMarket.sol",
+      "sourceUtf8LfSha256": "4853bb85517fc9d2dc89d0a94590c3b115a60c24e73f1ead69dd619c516fa249",
+      "runtimeSha256": "19b714b47f3214d2700da146747f005ef74dba91ebad89ec500258442d56fa4a",
+      "raw": "deployments/lending-full-validation-20261101/production/transaction-gas/runs/20261102T222703-35200/fluid-eth-weth/result.json",
+      "rawSha256": "72362d56be10dabad835cc3faa452e13312792f6c37cbda1bfadd1c9e709da82",
+      "operations": [
+        {
+          "operation": "approve",
+          "txHash": "0x5d3abd2546af7dc64f259957a49ec1fd4cf37ee1978a8bae89f28980f504bc3a",
+          "gasUsed": "46064",
+          "blockNumber": "26300003",
+          "calldataBytes": 68,
+          "holderDeltaRaw": "0",
+          "adapterNavAfterRaw": "0",
+          "independentReceiptAssetsAfterRaw": "0"
+        },
+        {
+          "operation": "deposit_first",
+          "txHash": "0x8e07ee0435dfff2a449ae585e308ad35528bd3f5de2f204a6c33c42d6e042fb7",
+          "gasUsed": "181436",
+          "blockNumber": "26300004",
+          "calldataBytes": 36,
+          "holderDeltaRaw": "-100000000000000000",
+          "adapterNavAfterRaw": "99999999999999999",
+          "independentReceiptAssetsAfterRaw": "99999999999999999"
+        },
+        {
+          "operation": "deposit_continuation",
+          "txHash": "0x66982843a107afb17af082714e9e9ffd1ca5aaa4705184a81598dca35a9ab0ea",
+          "gasUsed": "167756",
+          "blockNumber": "26300005",
+          "calldataBytes": 36,
+          "holderDeltaRaw": "-25000000000000000",
+          "adapterNavAfterRaw": "125000000050016004",
+          "independentReceiptAssetsAfterRaw": "125000000050016004"
+        },
+        {
+          "operation": "withdraw_partial",
+          "txHash": "0xc6a722e6d41450a68316e412699defce866ff5650f4fd15eac84ed01b80598ca",
+          "gasUsed": "146005",
+          "blockNumber": "26300006",
+          "calldataBytes": 68,
+          "holderDeltaRaw": "25000000000000000",
+          "adapterNavAfterRaw": "100000000112651361",
+          "independentReceiptAssetsAfterRaw": "100000000112651361"
+        },
+        {
+          "operation": "emergency_pull",
+          "txHash": "0xb3f4c9f60256999263f4e1d9d65a7b5523b0dbcdfcfd92029ebe2f3bc0c210db",
+          "gasUsed": "143348",
+          "blockNumber": "26300007",
+          "calldataBytes": 4,
+          "holderDeltaRaw": "100000000162667366",
+          "adapterNavAfterRaw": "0",
+          "independentReceiptAssetsAfterRaw": "0"
+        }
+      ]
+    },
+    {
+      "case": "morpho-arb-usdc",
+      "family": "Morpho",
+      "chainId": 42161,
+      "asset": "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+      "decimals": 6,
+      "canonicalBlock": 520094008,
+      "canonicalBlockHash": "0xd0e4d2d28e0d9a60d819743930f9f2843409bf37a895a411620a632da53fa600",
+      "source": "src/strategies/usdc-lending/adapters/lending/MorphoUsdcMultiMarket.sol",
+      "sourceUtf8LfSha256": "a3b7634df6d2600f36437dc8a981f1540898031b7abd270807916dd824fd4be1",
+      "runtimeSha256": "083e6dab09f9f6e5c23e426d69434f66f5ed02ece9e68fe9c6b7fa03193b3f99",
+      "raw": "deployments/lending-full-validation-20261101/production/transaction-gas/runs/20261102T222703-35200/morpho-arb-usdc/result.json",
+      "rawSha256": "37c477a9a3379ee2e61b10cbeb86d5b94ba75d58ef08faa27f859df8561fa365",
+      "operations": [
+        {
+          "operation": "approve",
+          "txHash": "0xf0f0518cf222fa838dde6c707e34b0c959e7d552ad26a594df7e1169c370908a",
+          "gasUsed": "55449",
+          "blockNumber": "520094013",
+          "calldataBytes": 68,
+          "holderDeltaRaw": "0",
+          "adapterNavAfterRaw": "0",
+          "independentReceiptAssetsAfterRaw": "0"
+        },
+        {
+          "operation": "deposit_first",
+          "txHash": "0x81dd93d996ea7e9ba9843e3ac4d209135043ea02a1e8de53be02ff5de3d9c1e8",
+          "gasUsed": "696600",
+          "blockNumber": "520094014",
+          "calldataBytes": 36,
+          "holderDeltaRaw": "-100000000",
+          "adapterNavAfterRaw": "99999999",
+          "independentReceiptAssetsAfterRaw": "99999999"
+        },
+        {
+          "operation": "deposit_continuation",
+          "txHash": "0x4a3e579612beb063b7f6f812ae3edd780c183ce798ce7a37b822a39ebef2fe20",
+          "gasUsed": "546084",
+          "blockNumber": "520094015",
+          "calldataBytes": 36,
+          "holderDeltaRaw": "-25000000",
+          "adapterNavAfterRaw": "125000000",
+          "independentReceiptAssetsAfterRaw": "125000000"
+        },
+        {
+          "operation": "withdraw_partial",
+          "txHash": "0x47cb46742bb2698c050b159802dc9be62872db78c82e80e132ae3d527c9bf108",
+          "gasUsed": "779372",
+          "blockNumber": "520094016",
+          "calldataBytes": 68,
+          "holderDeltaRaw": "25000000",
+          "adapterNavAfterRaw": "100000000",
+          "independentReceiptAssetsAfterRaw": "100000000"
+        },
+        {
+          "operation": "emergency_pull",
+          "txHash": "0xe5f8790c648a9d5488f7e41aa25cda5fef5704b047a08342c1469100cf5bf56a",
+          "gasUsed": "366595",
+          "blockNumber": "520094017",
+          "calldataBytes": 4,
+          "holderDeltaRaw": "100000000",
+          "adapterNavAfterRaw": "0",
+          "independentReceiptAssetsAfterRaw": "0"
+        }
+      ]
+    },
+    {
+      "case": "morpho-eth-usdt",
+      "family": "Morpho",
+      "chainId": 1,
+      "asset": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+      "decimals": 6,
+      "canonicalBlock": 26300000,
+      "canonicalBlockHash": "0xfeb02dce39436b4d1f400d128fa774891b94451859a56e6c9d548b8574629b56",
+      "source": "src/strategies/usdc-lending/adapters/lending/MorphoUsdcMultiMarket.sol",
+      "sourceUtf8LfSha256": "a3b7634df6d2600f36437dc8a981f1540898031b7abd270807916dd824fd4be1",
+      "runtimeSha256": "083e6dab09f9f6e5c23e426d69434f66f5ed02ece9e68fe9c6b7fa03193b3f99",
+      "raw": "deployments/lending-full-validation-20261101/production/transaction-gas/runs/20261102T222703-35200/morpho-eth-usdt/result.json",
+      "rawSha256": "9a3c064dc4e071bc10ef7bafb7db0bd6e20cfe760535077e6807d910d78496e6",
+      "operations": [
+        {
+          "operation": "approve",
+          "txHash": "0xb3b0a25108c2e52504d914c1d56730b945b5edde6841060159ba988497d1cae0",
+          "gasUsed": "48561",
+          "blockNumber": "26300005",
+          "calldataBytes": 68,
+          "holderDeltaRaw": "0",
+          "adapterNavAfterRaw": "0",
+          "independentReceiptAssetsAfterRaw": "0"
+        },
+        {
+          "operation": "deposit_first",
+          "txHash": "0xc60c5916fc017ef26e4b5db04e3c6041f1e2af9121b38b8a8982d04faa16e1df",
+          "gasUsed": "1166229",
+          "blockNumber": "26300006",
+          "calldataBytes": 36,
+          "holderDeltaRaw": "-100000000",
+          "adapterNavAfterRaw": "99999999",
+          "independentReceiptAssetsAfterRaw": "99999999"
+        },
+        {
+          "operation": "deposit_continuation",
+          "txHash": "0x4364e4eb2e55dc81fd4bafb34fee42088cbdea92c6efea8c0ac5c51af86dc2b3",
+          "gasUsed": "1015713",
+          "blockNumber": "26300007",
+          "calldataBytes": 36,
+          "holderDeltaRaw": "-25000000",
+          "adapterNavAfterRaw": "125000000",
+          "independentReceiptAssetsAfterRaw": "125000000"
+        },
+        {
+          "operation": "withdraw_partial",
+          "txHash": "0x5405a595538b6bcf0ac8af018e4849bc32c72d0ef7eb7ec0be51166d1492bb90",
+          "gasUsed": "1601182",
+          "blockNumber": "26300008",
+          "calldataBytes": 68,
+          "holderDeltaRaw": "25000000",
+          "adapterNavAfterRaw": "100000000",
+          "independentReceiptAssetsAfterRaw": "100000000"
+        },
+        {
+          "operation": "emergency_pull",
+          "txHash": "0xbb4af344bab97fe7a2af21af1781e03854e94e8763a77370d172a14ee6cbedec",
+          "gasUsed": "615077",
+          "blockNumber": "26300009",
+          "calldataBytes": 4,
+          "holderDeltaRaw": "100000000",
+          "adapterNavAfterRaw": "0",
+          "independentReceiptAssetsAfterRaw": "0"
+        }
+      ]
+    },
+    {
+      "case": "venus-arb-usdc",
+      "family": "Venus",
+      "chainId": 42161,
+      "asset": "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+      "decimals": 6,
+      "canonicalBlock": 520094008,
+      "canonicalBlockHash": "0xd0e4d2d28e0d9a60d819743930f9f2843409bf37a895a411620a632da53fa600",
+      "source": "src/strategies/usdc-lending/adapters/lending/VenusUsdcMultiMarket.sol",
+      "sourceUtf8LfSha256": "c808739317ac18ed7dad5d0b2862e50489c709d5c746e1db7da08bde71db65b1",
+      "runtimeSha256": "25b265b3b67c05496d137d8599db12992392410525cd9b51ad813c8fdeedba9d",
+      "raw": "deployments/lending-full-validation-20261101/production/transaction-gas/runs/20261102T222703-35200/venus-arb-usdc/result.json",
+      "rawSha256": "793bf6a04ef8a52be7828ce0838a719d9fcf08f92bbbf99a919b37246acd49b2",
+      "operations": [
+        {
+          "operation": "approve",
+          "txHash": "0x30405cf2734b37a87a7c1327234c270b298a242845c0d5111d4d03a9d7883e97",
+          "gasUsed": "55449",
+          "blockNumber": "520094011",
+          "calldataBytes": 68,
+          "holderDeltaRaw": "0",
+          "adapterNavAfterRaw": "0",
+          "independentReceiptAssetsAfterRaw": "0"
+        },
+        {
+          "operation": "deposit_first",
+          "txHash": "0x7b1bd78a59ce7c74b6019b1ce3a15618b8004d7f8cf39f3924d8a54610173e2b",
+          "gasUsed": "312033",
+          "blockNumber": "520094012",
+          "calldataBytes": 36,
+          "holderDeltaRaw": "-100000000",
+          "adapterNavAfterRaw": "99999999",
+          "independentReceiptAssetsAfterRaw": "99999999"
+        },
+        {
+          "operation": "deposit_continuation",
+          "txHash": "0x05694b6784fb849203148e8b8c591233c2a1b1b0f746be32ba7bde1aa3249450",
+          "gasUsed": "253114",
+          "blockNumber": "520094013",
+          "calldataBytes": 36,
+          "holderDeltaRaw": "-25000000",
+          "adapterNavAfterRaw": "125000000",
+          "independentReceiptAssetsAfterRaw": "125000000"
+        },
+        {
+          "operation": "withdraw_partial",
+          "txHash": "0xfcd986ee679a028ee91a27a99cb0d350d96d1f91f4750e278b47f8c7516d2d32",
+          "gasUsed": "238184",
+          "blockNumber": "520094014",
+          "calldataBytes": 68,
+          "holderDeltaRaw": "25000000",
+          "adapterNavAfterRaw": "100000000",
+          "independentReceiptAssetsAfterRaw": "100000000"
+        },
+        {
+          "operation": "emergency_pull",
+          "txHash": "0xfe9f5ad39e993e4deffa407949da6ef38857013326949b72368eedc41468c389",
+          "gasUsed": "228535",
+          "blockNumber": "520094015",
+          "calldataBytes": 4,
+          "holderDeltaRaw": "100000000",
+          "adapterNavAfterRaw": "0",
+          "independentReceiptAssetsAfterRaw": "0"
+        }
+      ]
+    },
+    {
+      "case": "venus-bsc-usdt",
+      "family": "Venus",
+      "chainId": 56,
+      "asset": "0x55d398326f99059ff775485246999027b3197955",
+      "decimals": 18,
+      "canonicalBlock": 131080000,
+      "canonicalBlockHash": "0xd462066816f81c99870e6f58ae9bc1f0e7945611c3f7b9971ed02c4a622a0d19",
+      "source": "src/strategies/usdc-lending/adapters/lending/VenusUsdcMultiMarket.sol",
+      "sourceUtf8LfSha256": "c808739317ac18ed7dad5d0b2862e50489c709d5c746e1db7da08bde71db65b1",
+      "runtimeSha256": "25b265b3b67c05496d137d8599db12992392410525cd9b51ad813c8fdeedba9d",
+      "raw": "deployments/lending-full-validation-20261101/production/transaction-gas/runs/20261102T222703-35200/venus-bsc-usdt/result.json",
+      "rawSha256": "49fa8d37f113a95a2f8edf84de345eebb63e65dbc85a58c4fe934da7f0701739",
+      "operations": [
+        {
+          "operation": "approve",
+          "txHash": "0x7f813fe6edd9615ce618846d87842186ea2d13561fcaf1611c2ab7141817b1b0",
+          "gasUsed": "46206",
+          "blockNumber": "131080003",
+          "calldataBytes": 68,
+          "holderDeltaRaw": "0",
+          "adapterNavAfterRaw": "0",
+          "independentReceiptAssetsAfterRaw": "0"
+        },
+        {
+          "operation": "deposit_first",
+          "txHash": "0x37a0fb055ffb647c2ec99f3a4c6129282df10a6285809972e5c5a6a6fd5fce7f",
+          "gasUsed": "286277",
+          "blockNumber": "131080004",
+          "calldataBytes": 36,
+          "holderDeltaRaw": "-100000000000000000000",
+          "adapterNavAfterRaw": "99999999999783032042",
+          "independentReceiptAssetsAfterRaw": "99999999999783032042"
+        },
+        {
+          "operation": "deposit_continuation",
+          "txHash": "0x60f5e5b99082348dd6c0870206b650bbc94c5f662337742540b222b6c41cd420",
+          "gasUsed": "244454",
+          "blockNumber": "131080005",
+          "calldataBytes": 36,
+          "holderDeltaRaw": "-25000000000000000000",
+          "adapterNavAfterRaw": "125000000057766390470",
+          "independentReceiptAssetsAfterRaw": "125000000057766390470"
+        },
+        {
+          "operation": "withdraw_partial",
+          "txHash": "0x30f6285ada7108d87d81f152707f566203c259bdd1b73731a09f0a281109534c",
+          "gasUsed": "236425",
+          "blockNumber": "131080006",
+          "calldataBytes": 68,
+          "holderDeltaRaw": "25000000000000000000",
+          "adapterNavAfterRaw": "100000000130638509450",
+          "independentReceiptAssetsAfterRaw": "100000000130638509450"
+        },
+        {
+          "operation": "emergency_pull",
+          "txHash": "0x87a67f56f6664e10e395cfc463c75375612bcaf35731c557dcda473b65a5ddc2",
+          "gasUsed": "221701",
+          "blockNumber": "131080007",
+          "calldataBytes": 4,
+          "holderDeltaRaw": "100000000188882265082",
+          "adapterNavAfterRaw": "0",
+          "independentReceiptAssetsAfterRaw": "0"
+        }
+      ]
+    }
+  ],
+  "limits": [
+    "Actual mined receipts on owned local Anvil forks; no public-chain broadcast.",
+    "Adapter lifecycle receipts do not prove Native keeper wrapper/poster calibration.",
+    "Source-bound R17 evidence; pending R18 patches require revalidation."
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "chainId": 42161,
+  "block": 520094008,
+  "blockTimestamp": 1793480259,
+  "core": "0x5e0cdb76487BD96Ff069Ef7F78eaDF5b5909C8cb",
+  "params": "0x5680E4948759569DCB9D2eAB6a5504d733c83B2A",
+  "asset": "0xaf88d065e77c8cC2239327C5EDb3A432268e5831",
+  "oracle": "0x93c94aF96e7e52AD5029cE8fEa84d14583518B76",
+  "maxStalenessSeconds": 86400,
+  "quote": {
+    "priceWad": "999826710000000000",
+    "feedDecimals": 8,
+    "updatedAt": 1793480169,
+    "fresh": true
+  },
+  "scope": "Read-only confirmation of the exact params()/oracleConfigFor(asset,core)/getQuote(asset) path consumed by the candidate. No core modification or claim of a complete core audit."
+}

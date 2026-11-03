@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.28;
+import {LendingOracleTestFixture} from "./helpers/LendingOracleTestFixture.sol";
 
 import { Test, console2 } from "forge-std/Test.sol";
 import { StrategyRebalanceGateModule } from "../../../src/strategies/usdc-lending/controller/StrategyRebalanceGateModule.sol";
@@ -31,7 +32,7 @@ import { StrategySafetyOverflowModule } from "../../../src/strategies/usdc-lendi
 /// @title Delegatecall Equivalence Tests — CTO mandated
 /// @notice Proves that module-based functions match strategy scoring behavior
 ///         and that security guards work correctly.
-contract DelegatecallEquivalence is Test {
+contract DelegatecallEquivalence is LendingOracleTestFixture {
     address constant ARBITRUM_USDC = 0xaf88d065e77c8cC2239327C5EDb3A432268e5831;
 
     UsdcMultiLendingVault public vault;
@@ -44,7 +45,7 @@ contract DelegatecallEquivalence is Test {
     ScoringMockAdapter public adapterC;
 
     address public admin = address(0x1);
-    address public core = address(0x2);
+    address public core = _newOracleCore(1e18);
     address public router = address(0x6);
     address public keeper = address(0x3);
     address public lens;

@@ -101,7 +101,7 @@ contract MockMorphoVault {
         return (shares * _totalAssets) / totalSupply;
     }
 
-    function maxWithdraw(address owner) external view returns (uint256) {
+    function maxWithdraw(address owner) external view virtual returns (uint256) {
         if (revertOnMaxWithdraw) revert("max-no");
         uint256 shares = balanceOf[owner];
         if (totalSupply == 0) return shares;
@@ -976,15 +976,18 @@ contract MorphoAdapter_RefreshFromRegistry_Test is Test {
         adapter.refreshFromRegistry();
     }
 
-    function test_refreshFromRegistry_emptyRegistryClears() public {
-        // Registry returns empty → refresh clears all markets (no revert, registry is set)
+    function test_refreshFromRegistry_emptyRegistryRevertsWithoutDroppingMarkets() public {
+        uint256 beforeCount = adapter.markets().length;
+        address firstMarket = adapter.markets()[0];
         address[] memory empty = new address[](0);
         registry.setVaults(empty);
 
         vm.prank(admin);
+        vm.expectRevert(MorphoUsdcMultiMarketAdapter.EmptyRegistry.selector);
         adapter.refreshFromRegistry();
 
-        assertEq(adapter.markets().length, 0);
+        assertEq(adapter.markets().length, beforeCount);
+        assertEq(adapter.markets()[0], firstMarket);
     }
 }
 
@@ -1088,5 +1091,198 @@ contract MorphoRegistryAssetValidationTest is MorphoAdapter_RefreshFromRegistry_
         vm.prank(admin);
         vm.expectRevert(bytes("asset mismatch"));
         adapter.refreshFromRegistry();
+    }
+}
+
+/// @dev Isolated fault injection; real-market acceptance lives in fork tests.
+contract MorphoEmergencyNavRegressionTest is MorphoAdapter_Test {
+    function test_roleFailurePreservesAccountAndRequiredRole() public {
+        vm.prank(user);
+        vm.expectRevert(abi.encodeWithSelector(MorphoUsdcMultiMarketAdapter.AccessControlUnauthorizedAccount.selector,user,DEFAULT_ADMIN_ROLE));
+        adapter.grantRole(PARAM_ROLE,user);
+        assertFalse(adapter.hasRole(PARAM_ROLE,user));
+    }
+
+    function _prepareYieldPosition() internal {
+        // This isolated accounting fixture uses an EOA vault, so it has no
+        // strategy USD converter. Keep realistic spread costs; omit gas quote.
+        vm.prank(admin);
+        adapter.setCostsEstimates(20, 10, 0);
+        _mintAndApprove(vault, 1000e6);
+        vm.prank(vault);
+        adapter.deposit(1000e6);
+        _addMarket(vault2);
+        usdc.mint(address(this), 1000e6);
+        usdc.approve(address(vault2), 1000e6);
+        vault2.deposit(1000e6, address(this));
+        vm.prank(admin);
+        adapter.pokeAPYSnapshots();
+        vm.warp(block.timestamp + 1 days);
+        vault1.simulateYield(1e6);
+        vault2.simulateYield(10e6);
+        vm.prank(admin);
+        adapter.pokeAPYSnapshots();
+    }
+
+    function _rebalanceYieldPosition() internal {
+        _prepareYieldPosition();
+        vm.prank(vault);
+        (uint256 moved, address from, address to) = adapter.optimize();
+        assertGt(moved, 1000e6, "must move accrued yield as well as principal");
+        assertEq(from, address(vault1));
+        assertEq(to, address(vault2));
+    }
+
+    function test_optimize_preservesPrincipalSumWhenMovingYield() public {
+        _rebalanceYieldPosition();
+        assertEq(adapter.principal(0) + adapter.principal(1), adapter.principalTotal());
+    }
+
+    function test_partialWithdrawalDrainsLowerObservedYieldFirst() public {
+        _prepareYieldPosition();
+        vm.prank(admin);adapter.flagMarket(0,true);
+        _mintAndApprove(vault,500e6);vm.prank(vault);adapter.deposit(500e6);
+        vm.prank(admin);adapter.flagMarket(0,false);
+        assertLt(adapter.lastGoodApyBps(address(vault1)),adapter.lastGoodApyBps(address(vault2)));
+        uint256 lower=vault1.balanceOf(address(adapter));uint256 higher=vault2.balanceOf(address(adapter));
+        vm.prank(vault);assertEq(adapter.withdraw(100e6,vault),100e6);
+        assertLt(vault1.balanceOf(address(adapter)),lower);
+        assertEq(vault2.balanceOf(address(adapter)),higher,"best observed yield must be preserved");
+    }
+
+    function test_emergencyExit_afterYieldRebalanceCompletes() public {
+        _rebalanceYieldPosition();
+        vm.prank(vault);
+        adapter.emergencyPullAllToVault();
+        assertEq(adapter.principalTotal(), 0);
+        assertEq(adapter.totalAssets(), 0);
+        assertGe(usdc.balanceOf(vault), 1000e6);
+    }
+
+    function test_optimize_failedTargetAndRestoreCountsOnlyActualIdle() public {
+        _prepareYieldPosition();
+        bytes memory operation = abi.encodeWithSignature("deposit(uint256,address)", 1001e6, address(adapter));
+        vm.mockCallRevert(address(vault2), operation, bytes("target-paused"));
+        vm.mockCallRevert(address(vault1), operation, bytes("source-paused"));
+        vm.prank(vault);
+        (uint256 moved,,) = adapter.optimize();
+        assertEq(moved, 0);
+        assertEq(usdc.balanceOf(address(adapter)), 1001e6);
+        assertEq(adapter.investedAssetsLive(), 0);
+        assertEq(adapter.principalTotal(), 0);
+        assertEq(adapter.totalAssets(), 1001e6, "old source cache must not double-count idle proceeds");
+        // D-F004 CONTROLLED-FAULT-REPRO: idle underlying must be immediately withdrawable
+        assertEq(adapter.withdrawableAssets(), 1001e6, "idle underlying is immediately withdrawable");
+    }
+
+    // D-F004 CONTROLLED-FAULT-REPRO: after optimize double-failure, vault must be able to
+    // withdraw the stranded idle USDC via the normal withdraw() path.
+    function test_optimize_failedTargetAndRestoreIdleWithdrawsNormally() public {
+        _prepareYieldPosition();
+        bytes memory operation = abi.encodeWithSignature("deposit(uint256,address)", 1001e6, address(adapter));
+        vm.mockCallRevert(address(vault2), operation, bytes("target-paused"));
+        vm.mockCallRevert(address(vault1), operation, bytes("source-paused"));
+        vm.prank(vault);
+        adapter.optimize();
+
+        uint256 vaultBalBefore = usdc.balanceOf(vault);
+        vm.prank(vault);
+        uint256 received = adapter.withdraw(1001e6, vault);
+
+        assertEq(received, 1001e6, "D-F004: withdraw must return full idle amount");
+        assertEq(usdc.balanceOf(vault) - vaultBalBefore, 1001e6, "D-F004: vault balance must increase by full idle");
+        assertEq(adapter.totalAssets(), 0, "D-F004: adapter totalAssets must be zero after full withdrawal");
+        assertEq(adapter.principalTotal(), 0, "D-F004: principalTotal must remain zero");
+    }
+
+    function test_idleOnlyPartialWithdrawalPreservesReceiptsAndPrincipal() public {
+        _mintAndApprove(vault, 1000e6);
+        vm.prank(vault);
+        adapter.deposit(1000e6);
+        usdc.mint(address(adapter), 10e6); // Controlled donation, no principal.
+        uint256 receiptsBefore = vault1.balanceOf(address(adapter));
+        uint256 beforeVault = usdc.balanceOf(vault);
+        assertEq(adapter.withdrawableAssets(), 1010e6);
+        vm.prank(vault);
+        assertEq(adapter.withdraw(5e6, user), 5e6);
+        assertEq(usdc.balanceOf(vault) - beforeVault, 5e6, "configured vault receives idle");
+        assertEq(vault1.balanceOf(address(adapter)), receiptsBefore);
+        assertEq(adapter.principalTotal(), 1000e6);
+        assertEq(adapter.idleAssetBalance(), 5e6);
+        assertEq(adapter.totalAssets(), 1005e6);
+    }
+
+    function test_partialWithdrawalConsumesIdleBeforeReceiptPrincipal() public {
+        _mintAndApprove(vault, 1000e6);
+        vm.prank(vault);
+        adapter.deposit(1000e6);
+        usdc.mint(address(adapter), 10e6); // Controlled donation, no principal.
+        uint256 receiptsBefore = vault1.balanceOf(address(adapter));
+        uint256 beforeVault = usdc.balanceOf(vault);
+        vm.prank(vault);
+        assertEq(adapter.withdraw(20e6, vault), 20e6);
+        assertEq(usdc.balanceOf(vault) - beforeVault, 20e6);
+        assertEq(adapter.idleAssetBalance(), 0);
+        assertLt(vault1.balanceOf(address(adapter)), receiptsBefore);
+        assertEq(adapter.principalTotal(), 990e6, "only market withdrawal reduces principal");
+        assertEq(adapter.investedAssetsLive(), 990e6);
+        assertEq(adapter.totalAssets(), 990e6);
+    }
+
+    function test_emergencyExit_clearsRecoveredNavAndRetainsFailedPosition() public {
+        uint256 amount = 1000e6;
+        _mintAndApprove(vault, amount);
+        vm.prank(vault);
+        adapter.deposit(amount);
+        uint256 shares = vault1.balanceOf(address(adapter));
+        assertGt(shares, 0);
+        vm.mockCallRevert(address(vault1),
+            abi.encodeWithSignature("redeem(uint256,address,address)", shares, address(adapter), address(adapter)),
+            bytes("protocol-paused"));
+        vm.prank(vault);
+        adapter.emergencyPullAllToVault();
+        assertEq(adapter.principalTotal(), amount, "failed exit retains principal");
+        assertEq(adapter.principal(0), amount);
+        assertEq(adapter.totalAssets(), amount, "unrecovered position remains in NAV");
+        assertEq(adapter.investedAssetsLive(), amount);
+        assertEq(vault1.balanceOf(address(adapter)), shares);
+        vm.clearMockedCalls();
+        vm.prank(vault);
+        adapter.emergencyPullAllToVault();
+        assertEq(usdc.balanceOf(vault), amount);
+        assertEq(adapter.principalTotal(), 0);
+        assertEq(adapter.principal(0), 0);
+        assertEq(adapter.totalAssets(), 0, "successful exit clears cached NAV immediately");
+        assertEq(adapter.investedAssetsLive(), 0);
+    }
+
+    function test_emergencyExit_twoMarketsPreservesOnlyFailedPrincipal() public {
+        _mintAndApprove(vault, 1000e6);
+        vm.prank(vault);
+        adapter.deposit(1000e6);
+        _addMarket(vault2);
+        vm.prank(admin);
+        adapter.flagMarket(0, true);
+        _mintAndApprove(vault, 500e6);
+        vm.prank(vault);
+        adapter.deposit(500e6);
+        uint256 shares = vault2.balanceOf(address(adapter));
+        assertGt(shares, 0);
+        vm.mockCallRevert(address(vault2),
+            abi.encodeWithSignature("redeem(uint256,address,address)", shares, address(adapter), address(adapter)),
+            bytes("protocol-paused"));
+        vm.prank(vault);
+        adapter.emergencyPullAllToVault();
+        assertEq(usdc.balanceOf(vault), 1000e6, "flagged market still drains in emergency");
+        assertEq(adapter.principal(0), 0);
+        assertEq(adapter.principal(1), 500e6);
+        assertEq(adapter.principalTotal(), 500e6);
+        assertEq(adapter.totalAssets(), 500e6);
+        vm.clearMockedCalls();
+        vm.prank(vault);
+        adapter.emergencyPullAllToVault();
+        assertEq(usdc.balanceOf(vault), 1500e6);
+        assertEq(adapter.principalTotal(), 0);
+        assertEq(adapter.totalAssets(), 0);
     }
 }

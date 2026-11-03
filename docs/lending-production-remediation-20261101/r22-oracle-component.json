@@ -1,0 +1,24 @@
+{
+  "status": "WSTETH_USD_LATEST_DATA_COMPONENT_PASS",
+  "passed": 28,
+  "failed": 0,
+  "skipped": 0,
+  "policy": "Actual stETH/USD times current native wstETH redemption conversion; forwarded source metadata; latest only.",
+  "realNewTokenQualification": "PENDING",
+  "independentReview": "RUNNING",
+  "readiness": "NOT_PRODUCTION_READY",
+  "evidence": [
+    {
+      "path": "deployments/lending-full-validation-20261101/production/coordinator/R22-wsteth-oracle-unit-2.log",
+      "sha256": "f61979297df2340251f163c53fdfd079afddb7714ff953deb0d3d94f609223b1"
+    },
+    {
+      "path": "deployments/lending-full-validation-20261101/production/coordinator/R22-wsteth-official-oracle-abi.json",
+      "sha256": "f79a40fbac718cc16535ec6b23fdbedb119656b3af9dd332fab0da9d44e8ba80"
+    },
+    {
+      "path": "deployments/lending-full-validation-20261101/production/coordinator/R22-wsteth-steth-usd-composition.json",
+      "sha256": "dbc9538e1d0c816c8c567861319d72f79b7179170e19689116ea8e2813edd890"
+    }
+  ]
+}

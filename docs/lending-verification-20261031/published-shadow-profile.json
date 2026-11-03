@@ -1,0 +1,45 @@
+{
+  "chainId": 42161,
+  "rpc": "https://arbitrum-one.public.blastapi.io",
+  "rpcBlock": "520094008",
+  "records": [
+    {
+      "name": "buffer",
+      "address": "0x9b3fE5c76e0C10de254Ee2153f71DF6a96020D96",
+      "signature": "getConfig()((uint16,uint16,uint16,uint16,uint16,uint16,address,address,uint32,bool))",
+      "arguments": [],
+      "exitCode": 0,
+      "result": "(400, 200, 600, 800, 400, 50, 0xaf88d065e77c8cC2239327C5EDb3A432268e5831, 0x0000000000000000000000000000000000000000, 0, false)"
+    },
+    {
+      "name": "withdrawal",
+      "address": "0x5680E4948759569DCB9D2eAB6a5504d733c83B2A",
+      "signature": "getWithdrawalParams(address)((uint16,uint16,uint16,uint16,uint64))",
+      "arguments": [
+        "0x5e0cdb76487BD96Ff069Ef7F78eaDF5b5909C8cb"
+      ],
+      "exitCode": 0,
+      "result": "(1000, 0, 0, 0, 86400 [8.64e4])"
+    },
+    {
+      "name": "strategy-ceiling",
+      "address": "0x37847D2e12892e3298DEE695e7E971fba0Ca3e24",
+      "signature": "maxStrategyBps(address)(uint16)",
+      "arguments": [
+        "0x2AD722B6241605481829E4B251AE8A4Ba8Be86cE"
+      ],
+      "exitCode": 0,
+      "result": "10000 [1e4]"
+    },
+    {
+      "name": "strategy-loss-cap",
+      "address": "0x37847D2e12892e3298DEE695e7E971fba0Ca3e24",
+      "signature": "lossCapPerStrategy(address)(uint16)",
+      "arguments": [
+        "0x2AD722B6241605481829E4B251AE8A4Ba8Be86cE"
+      ],
+      "exitCode": 0,
+      "result": "50"
+    }
+  ]
+}

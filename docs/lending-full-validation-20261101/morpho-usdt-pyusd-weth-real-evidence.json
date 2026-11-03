@@ -1,0 +1,41 @@
+{
+  "scope": "Morpho real Ethereum USDT, PYUSD, WETH: actual historical PPS reference, authorized NAV/PPS maintenance, real transfers, deposit/NAV/partial/full recall. Not multi-chain/full-scoring closure.",
+  "passed": 3,
+  "failed": 0,
+  "skipped": 0,
+  "chainId": 1,
+  "firstRpcBlock": "26299000",
+  "lastRpcBlock": "26300000",
+  "rpc": "https://eth-mainnet.public.blastapi.io",
+  "testSource": "deployments/lending-full-validation-20261101/root-tests/MorphoActualAssets.t.sol",
+  "testSourceSha256": "dca5771e17aeecb6aa6ecc4e21324a0724d89b7c92431e41af8c775df7f4e7b1",
+  "adapterSourceSha256": "d9f3cee58a1b8f23c0cdfbd2142cb3effb14ea18f3e8895ba87cd12987b4d8f2",
+  "log": "deployments/lending-full-validation-20261101/morpho-after-fix.log",
+  "logSha256": "35953ab0592e864965253011dd0b0d8b70fe5a22583f6beb8982c0fe4ae8b5f2",
+  "observations": [
+    "token: 0x6c3ea9036406852006290770BEdFcAbA0e23A0e8, market: 0x19b3cD7032B8C062E8d44EaCad661a0970DD8c55, rpcBlock: 26300000 [2.63e7], decimals: 6, tvl: 3088926 [3.088e6], wrapperCash: 0, position: 0, redeemable: 0, rate: 408",
+    "token: 0x6c3ea9036406852006290770BEdFcAbA0e23A0e8, market: 0x19b3cD7032B8C062E8d44EaCad661a0970DD8c55, rpcBlock: 26300000 [2.63e7], decimals: 6, tvl: 1003088926 [1.003e9], wrapperCash: 0, position: 999999999 [9.999e8], redeemable: 999999999 [9.999e8], rate: 408",
+    "token: 0x6c3ea9036406852006290770BEdFcAbA0e23A0e8, market: 0x19b3cD7032B8C062E8d44EaCad661a0970DD8c55, rpcBlock: 26300000 [2.63e7], decimals: 6, tvl: 753088926 [7.53e8], wrapperCash: 0, position: 749999999 [7.499e8], redeemable: 749999999 [7.499e8], rate: 408",
+    "token: 0x6c3ea9036406852006290770BEdFcAbA0e23A0e8, market: 0x19b3cD7032B8C062E8d44EaCad661a0970DD8c55, rpcBlock: 26300000 [2.63e7], decimals: 6, tvl: 3088927 [3.088e6], wrapperCash: 0, position: 0, redeemable: 0, rate: 408",
+    "token: 0xdAC17F958D2ee523a2206206994597C13D831ec7, market: 0xbEef047a543E45807105E51A8BBEFCc5950fcfBa, rpcBlock: 26300000 [2.63e7], decimals: 6, tvl: 82737498220957 [8.273e13], wrapperCash: 38405905 [3.84e7], position: 0, redeemable: 0, rate: 477",
+    "token: 0xdAC17F958D2ee523a2206206994597C13D831ec7, market: 0xbEef047a543E45807105E51A8BBEFCc5950fcfBa, rpcBlock: 26300000 [2.63e7], decimals: 6, tvl: 82738498220957 [8.273e13], wrapperCash: 38405905 [3.84e7], position: 999999999 [9.999e8], redeemable: 999999999 [9.999e8], rate: 477",
+    "token: 0xdAC17F958D2ee523a2206206994597C13D831ec7, market: 0xbEef047a543E45807105E51A8BBEFCc5950fcfBa, rpcBlock: 26300000 [2.63e7], decimals: 6, tvl: 82738248220957 [8.273e13], wrapperCash: 38405905 [3.84e7], position: 749999999 [7.499e8], redeemable: 749999999 [7.499e8], rate: 477",
+    "token: 0xdAC17F958D2ee523a2206206994597C13D831ec7, market: 0xbEef047a543E45807105E51A8BBEFCc5950fcfBa, rpcBlock: 26300000 [2.63e7], decimals: 6, tvl: 82737498220958 [8.273e13], wrapperCash: 38405905 [3.84e7], position: 0, redeemable: 0, rate: 477",
+    "token: 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2, market: 0xBEEf050ecd6a16c4e7bfFbB52Ebba7846C4b8cD4, rpcBlock: 26300000 [2.63e7], decimals: 18, tvl: 3708183715328476796760 [3.708e21], wrapperCash: 0, position: 0, redeemable: 0, rate: 175",
+    "token: 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2, market: 0xBEEf050ecd6a16c4e7bfFbB52Ebba7846C4b8cD4, rpcBlock: 26300000 [2.63e7], decimals: 18, tvl: 3709183715328476796760 [3.709e21], wrapperCash: 0, position: 999999999999999999 [9.999e17], redeemable: 999999999999999999 [9.999e17], rate: 175",
+    "token: 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2, market: 0xBEEf050ecd6a16c4e7bfFbB52Ebba7846C4b8cD4, rpcBlock: 26300000 [2.63e7], decimals: 18, tvl: 3708933715328476796760 [3.708e21], wrapperCash: 0, position: 749999999999999999 [7.499e17], redeemable: 749999999999999999 [7.499e17], rate: 175",
+    "token: 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2, market: 0xBEEf050ecd6a16c4e7bfFbB52Ebba7846C4b8cD4, rpcBlock: 26300000 [2.63e7], decimals: 18, tvl: 3708183715328476796761 [3.708e21], wrapperCash: 0, position: 0, redeemable: 0, rate: 175"
+  ],
+  "ppsReference": [
+    "market: 0x19b3cD7032B8C062E8d44EaCad661a0970DD8c55, firstBlock: 26299000 [2.629e7], secondBlock: 26300000 [2.63e7], firstTimestamp: 1793284163 [1.793e9], secondTimestamp: 1793296163 [1.793e9], firstPps: 2050751505719 [2.05e12], secondPps: 2050783373615 [2.05e12], independentlyCalculatedBps: 408",
+    "market: 0xbEef047a543E45807105E51A8BBEFCc5950fcfBa, firstBlock: 26299000 [2.629e7], secondBlock: 26300000 [2.63e7], firstTimestamp: 1793284163 [1.793e9], secondTimestamp: 1793296163 [1.793e9], firstPps: 1135642988457 [1.135e12], secondPps: 1135663643579 [1.135e12], independentlyCalculatedBps: 477",
+    "market: 0xBEEf050ecd6a16c4e7bfFbB52Ebba7846C4b8cD4, firstBlock: 26299000 [2.629e7], secondBlock: 26300000 [2.63e7], firstTimestamp: 1793284163 [1.793e9], secondTimestamp: 1793296163 [1.793e9], firstPps: 1053099640498297518588012 [1.053e24], secondPps: 1053106670068726165313329 [1.053e24], independentlyCalculatedBps: 175"
+  ],
+  "funding": [
+    "token: 0x6c3ea9036406852006290770BEdFcAbA0e23A0e8, holder: 0xAFBb1a7E9ddEf38D9bC4A220E702B18DAcaa2a62, beforeBalance: 500861601438863 [5.008e14], amount: 1000000000 [1e9], afterBalance: 500860601438863 [5.008e14]",
+    "token: 0xdAC17F958D2ee523a2206206994597C13D831ec7, holder: 0xF977814e90dA44bFA03b6295A0616a897441aceC, beforeBalance: 16000000001136208 [1.6e16], amount: 1000000000 [1e9], afterBalance: 15999999001136208 [1.599e16]",
+    "token: 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2, holder: 0xF977814e90dA44bFA03b6295A0616a897441aceC, beforeBalance: 15520719728819056416 [1.552e19], amount: 1000000000000000000 [1e18], afterBalance: 14520719728819056416 [1.452e19]"
+  ],
+  "marketSelection": "PYUSD Steakhouse0xbeef02... at this pin is actually capped and flat PPS; actual deposit reverts AllCapsReached0xded0652d. This failed row is retained in morpho-euler-actual-assets.log; successful PYUSD lifecycle uses actual Sentora0x19b3cd... with verified PYUSD asset and real available capacity. No caps disabled or market spoofed.",
+  "persistence": "Only adapter/registry before any position/funding persist during canonical PPS sampling. All lifecycle transactions occur at the second canonical historical block."
+}

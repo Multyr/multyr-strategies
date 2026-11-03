@@ -15,7 +15,7 @@ pragma solidity 0.8.28;
 import { IERC20Metadata } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
-import { ILendingAdapter, IAdapterEmergency } from "../interfaces/ILendingAdapter.sol";
+import { ILendingAdapter, IAdapterEmergency, ILendingGasQuoteUnit, ILendingSettingsExecutor } from "../interfaces/ILendingAdapter.sol";
 import {
     StrategyStorageLayout,
     SkipReason,
@@ -46,7 +46,8 @@ contract StrategySettingsModule is StrategyStorageLayout {
     /// @notice Enable read-only estimation for a replacement strategy before finalization.
     /// @dev Write-once; no gas quote setter. Estimator calibration is governed separately.
     function setRebalanceGasEstimator(address estimator) external onlyRoleOrRevert(DEFAULT_ADMIN_ROLE) paramsNotFinalized {
-        require(rebalanceGasEstimator == address(0) && estimator.code.length > 0 && rebalancePlanPhase == 0, "gas-estimator");
+        if (rebalanceGasEstimator != address(0) || estimator.code.length == 0 || rebalancePlanPhase != 0) revert InvalidInput();
+        if (ILendingGasQuoteUnit(estimator).quoteCurrency() != bytes32("USD6")) revert InvalidInput();
         rebalanceGasEstimator = estimator;
         emit RebalanceGasEstimatorSet(estimator);
     }
@@ -188,9 +189,7 @@ contract StrategySettingsModule is StrategyStorageLayout {
         onlyRoleOrRevert(PARAM_ROLE)
         paramsNotFinalized
     {
-        if (_dustTolerance > 100_000e6) revert ParamOutOfRange();
-        dustTolerance = _dustTolerance;
-        emit DustToleranceUpdated(_dustTolerance);
+        ILendingSettingsExecutor(address(this)).execSetDustTolerance(_dustTolerance);
     }
 
     function setNewAdapterRampParams(uint256 _minNewAdapterSeed, uint64 _newAdapterRampDuration)
@@ -294,10 +293,7 @@ contract StrategySettingsModule is StrategyStorageLayout {
     }
 
     function setRebalancePlanMinDrift(uint256 _minDrift) external onlyRoleOrRevert(PARAM_ROLE) {
-        if (!(_minDrift >= 1000e6 && _minDrift <= 100_000e6)) revert ParamOutOfRange(); // "range: 1K-100K"
-        uint256 old = rebalancePlanMinDrift;
-        rebalancePlanMinDrift = _minDrift;
-        emit RebalancePlanMinDriftUpdated(old, _minDrift);
+        ILendingSettingsExecutor(address(this)).execSetRebalancePlanMinDrift(_minDrift);
     }
 
     function setExternalTVLStalenessSeconds(uint32 _seconds) external onlyRoleOrRevert(PARAM_ROLE) {
@@ -423,6 +419,8 @@ contract StrategySettingsModule is StrategyStorageLayout {
     }
 
     function setWithdrawalLockSeconds(uint64 seconds_) external onlyRoleOrRevert(PARAM_ROLE) {
+        // The advisory degraded-mode view multiplies the configured value by seven.
+        if (seconds_ > type(uint64).max / 7) revert ParamOutOfRange();
         withdrawalLockSeconds = seconds_;
     }
 

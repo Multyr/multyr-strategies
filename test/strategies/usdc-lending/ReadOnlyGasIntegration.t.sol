@@ -96,6 +96,44 @@ contract ReadOnlyGasIntegrationTest is UsdcMultiLendingVaultTestBase {
         assertTrue(destination != address(0), "fixture must include a safety deposit");
     }
 
+    function _recallPlannedWithdrawalAndDonate() internal returns (address source) {
+        for (uint256 i; i < vault.rebalancePlanTotalActions(); ++i) {
+            if (vault.rebalancePlanAmounts(i) >> 255 == 0) {
+                source = vault.rebalancePlanAdapters(i);
+                break;
+            }
+        }
+        assertTrue(source != address(0), "fixture must plan a withdrawal");
+        address[] memory targets = new address[](1);
+        targets[0] = source;
+        vm.prank(admin);
+        vault.selectiveRecall(targets);
+        assertEq(vault.positionAssets(source), 0);
+        // Controlled donation of owned adapter assets, not canonical interest.
+        MockLendingAdapter(source).simulateYield(1000e6);
+    }
+
+    function test_recalledSafetySourceDonationCannotUnderflowPlan() public {
+        _prepareSafety();
+        address source = _recallPlannedWithdrawalAndDonate();
+        (uint32 countBefore,) = vault.withdrawGasObservation(source);
+        step();
+        assertEq(vault.positionAssets(source), 0);
+        (uint32 countAfter,) = vault.withdrawGasObservation(source);
+        assertEq(countAfter, countBefore, "skipped withdrawal must not seed EMA");
+    }
+
+    function test_recalledEconomicSourceCancelsBeforeDonationMovement() public {
+        prepare();
+        address source = _recallPlannedWithdrawalAndDonate();
+        uint256 cash = usdc.balanceOf(address(vault));
+        step();
+        assertEq(vault.rebalancePlanPhase(), 0);
+        assertEq(vault.positionAssets(source), 0);
+        assertEq(usdc.balanceOf(address(vault)), cash);
+        assertEq(MockLendingAdapter(source).deposited(), 1000e6);
+    }
+
     function test_safetyRecallContinuesButDisabledDepositsAreSkipped() public {
         address destination = _prepareSafety();
         uint256 before = vault.positionAssets(destination);
@@ -401,14 +439,32 @@ contract ReadOnlyGasIntegrationTest is UsdcMultiLendingVaultTestBase {
         assertEq(vault.rebalancePlanPhase(), 0);
     }
 
-    function test_strictDepositAndEmergencyRecallRecordGas() public {
+    function test_strictDepositGasAndEmergencyRecallPreserveOrdinaryWithdrawMeasurements() public {
         assertGt(vault.emaDepositGas(address(adapter1)) + vault.emaDepositGas(address(adapter2)), 0);
-        eth.set(0, block.timestamp); // safety exits must not depend on estimator availability
+        address[3] memory adapters = [address(adapter1), address(adapter2), address(adapter3)];
+        uint64[3] memory ema;
+        uint32[3] memory counts;
+        uint64[3] memory times;
+        for (uint256 i; i < 3; ++i) {
+            ema[i] = vault.emaWithdrawGas(adapters[i]);
+            (counts[i], times[i]) = vault.withdrawGasObservation(adapters[i]);
+        }
+        uint256 navBefore = vault.totalAssets();
+        uint256 coreCashBefore = usdc.balanceOf(core);
+        assertGt(navBefore, 0);
+        eth.set(0, block.timestamp);
         vm.prank(admin);
         vault.emergencyRecallAll();
-        assertGt(
-            vault.emaWithdrawGas(address(adapter1)) + vault.emaWithdrawGas(address(adapter2)), 0
-        );
+        assertEq(usdc.balanceOf(address(vault)), navBefore, "full recall becomes strategy idle");
+        assertEq(usdc.balanceOf(core), coreCashBefore, "emergency recall does not transfer to Core");
+        for (uint256 i; i < 3; ++i) {
+            assertEq(vault.positionAssets(adapters[i]), 0);
+            assertEq(MockLendingAdapter(adapters[i]).totalAssets(), 0);
+            assertEq(vault.emaWithdrawGas(adapters[i]), ema[i]);
+            (uint32 countAfter, uint64 timeAfter) = vault.withdrawGasObservation(adapters[i]);
+            assertEq(countAfter, counts[i]);
+            assertEq(timeAfter, times[i]);
+        }
     }
 
     function test_partialDepositStopsDynamicPlan() public {

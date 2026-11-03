@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.28;
+import {LendingOracleTestFixture} from "./helpers/LendingOracleTestFixture.sol";
 
 import { Test, console2 } from "forge-std/Test.sol";
 import {
@@ -23,7 +24,7 @@ import { StrategySafetyOverflowModule } from "../../../src/strategies/usdc-lendi
 
 /// @title Rebalance Engine V10 Tests — P0-P3 + parity
 /// @notice Validates: gas EMA, hysteresis, coordination, regime, and zero-default parity
-contract RebalanceEngineV10_Test is Test {
+contract RebalanceEngineV10_Test is LendingOracleTestFixture {
     address constant ARBITRUM_USDC = 0xaf88d065e77c8cC2239327C5EDb3A432268e5831;
 
     UsdcMultiLendingVault public vault;
@@ -33,7 +34,7 @@ contract RebalanceEngineV10_Test is Test {
     StrategyRebalanceGateModule public gateMod;
 
     address public admin = address(0x1);
-    address public core = address(0x2);
+    address public core = _newOracleCore(1e18);
     address public router = address(0x6);
     address public keeper = address(0x3);
 

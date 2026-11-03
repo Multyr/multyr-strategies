@@ -112,6 +112,9 @@ error ZeroAddress();
 /// @notice Thrown if a strategy does not implement IStrategyVault.
 error NotIStrategyVault();
 
+/// @notice Thrown if a zero poke interval is provided.
+error InvalidPokeInterval();
+
 /// @dev HARVEST opcode
 uint8 constant OP_HARVEST = 1;
 /// @dev REBALANCE opcode (legacy — kept for backward compat, maps to prepare)
@@ -221,7 +224,7 @@ contract StrategyUpkeep is AutomationCompatibleInterface, Ownable {
     /// @notice USDC address for Aave rate lookup
     address public usdc;
     /// @notice Minimum seconds between POKE_APY operations (default 86400 = 24h)
-    uint64 public pokeInterval;
+    uint64 public pokeInterval = 1 days;
     /// @notice Timestamp of last POKE_APY execution
     uint64 public lastPokeTs;
 
@@ -342,6 +345,7 @@ contract StrategyUpkeep is AutomationCompatibleInterface, Ownable {
 
     /// @notice Set the minimum interval between POKE_APY operations.
     function setPokeInterval(uint64 newInterval) external onlyOwner {
+        if (newInterval == 0) revert InvalidPokeInterval();
         emit PokeIntervalUpdated(pokeInterval, newInterval);
         pokeInterval = newInterval;
     }

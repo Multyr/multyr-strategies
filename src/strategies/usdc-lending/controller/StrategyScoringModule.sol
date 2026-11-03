@@ -33,7 +33,7 @@ import {
     TooManyAdapters,
     DegradedViews
 } from "./StrategyStorageLayout.sol";
-import { ILendingAdapter } from "../interfaces/ILendingAdapter.sol";
+import { ILendingAdapter, IStrategyAssetValuation } from "../interfaces/ILendingAdapter.sol";
 
 // FIX P0.L3 (quant audit): interfaccia opzionale per adapter multi-market
 // che espongono TVL-weighted APY. Single-market adapter (Aave V3, Fluid, Venus)
@@ -150,7 +150,7 @@ contract StrategyScoringModule is StrategyStorageLayout {
 
         // V9.1 CTO: self-healing retry — if caps were stale, sync + retry once.
         // Audit MEDIUM 1.2 — emit RetryModeSet observability events on each edge.
-        if (remainingIdle > threshold && remainingIdle > 1e6 && gasleft() > 500_000) {
+        if (remainingIdle > threshold && gasleft() > 500_000 && remainingIdle > _usd6ToAssetUnits(1e6)) {
             emit IdleCapExhausted(remainingIdle, threshold);
             _syncPositionAssets(true);
             _retryMode = true;
@@ -225,7 +225,7 @@ contract StrategyScoringModule is StrategyStorageLayout {
     }
 
     function _minSeedInternal() internal view returns (uint256) {
-        return StrategyConfigLib.effectiveMinNewAdapterSeed(_tvl(), minNewAdapterSeed);
+        return IStrategyAssetValuation(address(this)).tierSeed(_tvl(), minNewAdapterSeed);
     }
 
     /// @notice Dynamic max adapters per allocation — scales with TVL.
@@ -237,7 +237,7 @@ contract StrategyScoringModule is StrategyStorageLayout {
     // WHAT COULD BREAK: tests asserting old thresholds (150K→2, 650K→3). PROMPT 3 fixes cascade.
     // VERIFY: sum(effectiveAbsCapBps) >= 110% TVL at each tier (STRUCTURAL_BASE invariant).
     function effectiveMaxAdaptersPerAllocation() public view onlyDelegateCall returns (uint16) {
-        return StrategyConfigLib.effectiveMaxAdapters(_tvl(), maxAdaptersPerAllocation);
+        return IStrategyAssetValuation(address(this)).tierMaxAdapters(_tvl(), maxAdaptersPerAllocation);
     }
 
     /// @notice Adaptive per-adapter cap (docs/TIER_MODEL.md Section 4).
@@ -592,7 +592,7 @@ contract StrategyScoringModule is StrategyStorageLayout {
             unchecked { ++i; }
         }
         uint256 tvlBased = (sum * 5) / 1e4;
-        uint256 maxCap = 50_000e6;
+        uint256 maxCap = _usd6ToAssetUnits(50_000e6);
         if (tvlBased > maxCap) tvlBased = maxCap;
         return tvlBased > _dust ? tvlBased : _dust;
     }

@@ -1,0 +1,22 @@
+{
+  "status": "TARGETED_SAFETY_PLAN_RECALL_FIX_PASS",
+  "before": {
+    "safetyUnderflowFailed": 1,
+    "economicCancellationPassed": 1
+  },
+  "afterPassed": 28,
+  "afterFailed": 0,
+  "afterSkipped": 0,
+  "policy": "Cap stale withdrawals to current cached position; skip zero without EMA; keep protective actions and existing economic cancellation.",
+  "readiness": "NOT_PRODUCTION_READY",
+  "evidence": [
+    {
+      "path": "deployments/lending-full-validation-20261101/production/coordinator/R20-plan-before.log",
+      "sha256": "b1182c09bd6e1cd7b82fbd84834eef010cbf5b8ef222f797a2cdf62b86c2f42d"
+    },
+    {
+      "path": "deployments/lending-full-validation-20261101/production/coordinator/R21-plan-after.log",
+      "sha256": "02cab21b6826980257c3226d0615370936ee8da1854f868fd0e17cf1e9783954"
+    }
+  ]
+}

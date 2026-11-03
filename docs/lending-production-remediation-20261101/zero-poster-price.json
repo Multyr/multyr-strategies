@@ -1,0 +1,59 @@
+{
+  "id": "PR-FEE-ZERO-POSTER",
+  "status": "FIXED_TARGETED_VALIDATION",
+  "releaseReadiness": "NOT_PRODUCTION_READY",
+  "input": "R1-TECHNICAL",
+  "functionalSourceDigest": "ab7bbfefffb63ea4ca15b703267675b6b4b712466cc9d36705aeb7efb0258795",
+  "chainId": 42161,
+  "block": 520384312,
+  "blockHash": "0xe6beee34bcbb8e6876788b2fc361d85265e03189c059b03b6c28a082408c4bd7",
+  "observation": {
+    "l2PriceWei": "20002000",
+    "perTxWei": "0",
+    "providers": 2,
+    "perByteWei": "0"
+  },
+  "defect": "Legitimate zero native posting prices incorrectly force unreliable fallback and reject deployment preflight.",
+  "fix": "Allow zero posting prices, retaining positive execution price and all existing upper bounds, price/source/governance checks and rounding.",
+  "changedPaths": [
+    "src/strategies/usdc-lending/gas/ReadOnlyGasEstimator.sol",
+    "script/GasEstimatorPreflight.sol",
+    "test/strategies/usdc-lending/ReadOnlyGasEstimator.t.sol"
+  ],
+  "validation": {
+    "before": {
+      "failed": 2,
+      "kind": "CONTROLLED_REPLAY",
+      "passed": 0
+    },
+    "nativeCandidateIntegration": "OPEN",
+    "finalIntegratedRegression": "PENDING",
+    "after": {
+      "passed": 65,
+      "skipped": 0,
+      "failed": 0,
+      "suites": 5,
+      "exitCode": 0
+    }
+  },
+  "evidence": [
+    {
+      "sha256": "8ac322acdcfd1de332473ee5306958864ef5cda79f11a21e602778dd6dac401e",
+      "path": "C:/Users/Pierre/Multyr/pt-multiply/multyr-strategies-multitoken/deployments/lending-full-validation-20261101/production/coordinator/evidence/arb-zero-byte-official.json"
+    },
+    {
+      "sha256": "658c2b07bea719cc0ed14f778d6b564740f9f0cc3f74592f4b84d8f05084f1ad",
+      "path": "C:/Users/Pierre/Multyr/pt-multiply/multyr-strategies-multitoken/deployments/lending-full-validation-20261101/production/coordinator/evidence/arb-zero-byte-blast.json"
+    },
+    {
+      "sha256": "56e6ede8ca0848849c95cc0eff09f7721e7e034715e3ac32ee876f3fd7e0a73e",
+      "path": "C:/Users/Pierre/Multyr/pt-multiply/lr/deployments/lending-full-validation-20261101/production-zero-poster-before.log"
+    },
+    {
+      "sha256": "5286eff4e60a664d5e512e25b1b31b6efbb5c2a145e74c5d9ee3c3959ba40b05",
+      "path": "C:/Users/Pierre/Multyr/pt-multiply/lr/deployments/lending-full-validation-20261101/production-zero-poster-focused.log"
+    }
+  ],
+  "officialProtocolSource": "https://github.com/OffchainLabs/nitro/blob/master/precompiles/ArbGasInfo.go",
+  "scope": "Real RPC observations establish valid input. Regression tests replay the real values under controlled local fixtures; they do not close native candidate integration."
+}

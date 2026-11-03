@@ -1,0 +1,17 @@
+{
+  "finding": "DOLOMITE-REAL-01",
+  "status": "FIXED_VALIDATED_MATRIX_ALL_FINAL_GATES_PASS",
+  "beforeSourceSha256": "ed0717fb278c108d36990b35800fa5b304c72f6c96d5823523f01acc73214763",
+  "beforeLog": "deployments/lending-full-validation-20261101/dolomite-disabled-before.log",
+  "beforeLogSha256": "e97cca0bfbad74e6cb834459073e96544843b48f3aaa4daf428d8e210b6ef38a",
+  "description": "AtArbitrum520094008 actual1000USDT dToken position remained owned, but toggleMarket(false) changed adapter totalAssets from1000000000 to0. Interaction flags must not erase asset ownership from NAV.",
+  "finalClosure": "docs/lending-full-validation-20261101/final-validation.json",
+  "finalStatus": "FIXED_VALIDATED_MATRIX_ALL_FINAL_GATES_PASS",
+  "historicalStatus": "REPRODUCED_AND_FIXED_PENDING_LIVE_RECHECK",
+  "finalSources": [
+    {
+      "path": "src/strategies/usdc-lending/adapters/lending/DolomiteUsdcMultiMarket.sol",
+      "sha256": "25b1ee8d23b52d18de4433048b57abafa64b38ae8042f5232d0820f18f49bb32"
+    }
+  ]
+}

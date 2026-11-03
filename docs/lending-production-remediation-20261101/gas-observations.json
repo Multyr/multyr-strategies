@@ -1,0 +1,154 @@
+{
+  "status": "ACTUAL_CONTROLLER_INTERVAL_EVENTS_VERIFIED",
+  "readiness": "NOT_PRODUCTION_READY",
+  "events": 16,
+  "tests": 4,
+  "suites": 2,
+  "log": "C:\\Users\\Pierre\\Multyr\\pt-multiply\\pc\\deployments\\lending-full-validation-20261101\\production\\C\\root-native-eth-and-original-exit-r3-traces.log",
+  "logSha256": "e5c822c217be4428b36e45970df7fd8c7bcdfe239129d526d1917f270eb3adbc",
+  "evidence": "C:\\Users\\Pierre\\Multyr\\pt-multiply\\lr\\deployments\\lending-full-validation-20261101\\production\\G-calibration\\execution-events.json",
+  "evidenceSha256": "1cbd86fb7e6aca1dcab364966c0008fb6fb79ff369f3832f15fdcd4845c14a6f",
+  "statistics": {
+    "deposit": {
+      "by_adapter": {
+        "FullUserExitE2ETest|test_fullExitSmallUser_usdt()|1|0xdac17f958d2ee523a2206206994597c13d831ec7|0x756e0562323ADcDA4430d6cb456d9151f605290B": {
+          "chainId": 1,
+          "asset": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+          "adapter_address": "0x756e0562323ADcDA4430d6cb456d9151f605290B",
+          "suite": "FullUserExitE2ETest",
+          "test": "test_fullExitSmallUser_usdt()",
+          "adapter_name": "AaveV3USDCAdapter",
+          "observations_count": 2,
+          "min_gas": 127622,
+          "max_gas": 229754,
+          "raw_values": [
+            229754,
+            127622
+          ]
+        },
+        "FullUserExitE2ETest|test_fullExitSmallUser_weth()|1|0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2|0x756e0562323ADcDA4430d6cb456d9151f605290B": {
+          "chainId": 1,
+          "asset": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+          "adapter_address": "0x756e0562323ADcDA4430d6cb456d9151f605290B",
+          "suite": "FullUserExitE2ETest",
+          "test": "test_fullExitSmallUser_weth()",
+          "adapter_name": "AaveV3USDCAdapter",
+          "observations_count": 2,
+          "min_gas": 124387,
+          "max_gas": 222719,
+          "raw_values": [
+            222719,
+            124387
+          ]
+        },
+        "EthereumNativeFeeFullExitTest|test_nativeFeeFullExit_usdt()|1|0xdac17f958d2ee523a2206206994597c13d831ec7|0x756e0562323ADcDA4430d6cb456d9151f605290B": {
+          "chainId": 1,
+          "asset": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+          "adapter_address": "0x756e0562323ADcDA4430d6cb456d9151f605290B",
+          "suite": "EthereumNativeFeeFullExitTest",
+          "test": "test_nativeFeeFullExit_usdt()",
+          "adapter_name": "AaveV3USDCAdapter",
+          "observations_count": 2,
+          "min_gas": 127622,
+          "max_gas": 229754,
+          "raw_values": [
+            229754,
+            127622
+          ]
+        },
+        "EthereumNativeFeeFullExitTest|test_nativeFeeFullExit_weth()|1|0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2|0x756e0562323ADcDA4430d6cb456d9151f605290B": {
+          "chainId": 1,
+          "asset": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+          "adapter_address": "0x756e0562323ADcDA4430d6cb456d9151f605290B",
+          "suite": "EthereumNativeFeeFullExitTest",
+          "test": "test_nativeFeeFullExit_weth()",
+          "adapter_name": "AaveV3USDCAdapter",
+          "observations_count": 2,
+          "min_gas": 124387,
+          "max_gas": 222719,
+          "raw_values": [
+            222719,
+            124387
+          ]
+        }
+      },
+      "overall_min": 124387,
+      "overall_max": 229754,
+      "total_observations": 8
+    },
+    "withdraw": {
+      "by_adapter": {
+        "FullUserExitE2ETest|test_fullExitSmallUser_usdt()|1|0xdac17f958d2ee523a2206206994597c13d831ec7|0x756e0562323ADcDA4430d6cb456d9151f605290B": {
+          "chainId": 1,
+          "asset": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+          "adapter_address": "0x756e0562323ADcDA4430d6cb456d9151f605290B",
+          "suite": "FullUserExitE2ETest",
+          "test": "test_fullExitSmallUser_usdt()",
+          "adapter_name": "AaveV3USDCAdapter",
+          "observations_count": 2,
+          "min_gas": 68652,
+          "max_gas": 80451,
+          "raw_values": [
+            80451,
+            68652
+          ]
+        },
+        "FullUserExitE2ETest|test_fullExitSmallUser_weth()|1|0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2|0x756e0562323ADcDA4430d6cb456d9151f605290B": {
+          "chainId": 1,
+          "asset": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+          "adapter_address": "0x756e0562323ADcDA4430d6cb456d9151f605290B",
+          "suite": "FullUserExitE2ETest",
+          "test": "test_fullExitSmallUser_weth()",
+          "adapter_name": "AaveV3USDCAdapter",
+          "observations_count": 2,
+          "min_gas": 66430,
+          "max_gas": 76229,
+          "raw_values": [
+            76229,
+            66430
+          ]
+        },
+        "EthereumNativeFeeFullExitTest|test_nativeFeeFullExit_usdt()|1|0xdac17f958d2ee523a2206206994597c13d831ec7|0x756e0562323ADcDA4430d6cb456d9151f605290B": {
+          "chainId": 1,
+          "asset": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+          "adapter_address": "0x756e0562323ADcDA4430d6cb456d9151f605290B",
+          "suite": "EthereumNativeFeeFullExitTest",
+          "test": "test_nativeFeeFullExit_usdt()",
+          "adapter_name": "AaveV3USDCAdapter",
+          "observations_count": 2,
+          "min_gas": 68652,
+          "max_gas": 80451,
+          "raw_values": [
+            80451,
+            68652
+          ]
+        },
+        "EthereumNativeFeeFullExitTest|test_nativeFeeFullExit_weth()|1|0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2|0x756e0562323ADcDA4430d6cb456d9151f605290B": {
+          "chainId": 1,
+          "asset": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+          "adapter_address": "0x756e0562323ADcDA4430d6cb456d9151f605290B",
+          "suite": "EthereumNativeFeeFullExitTest",
+          "test": "test_nativeFeeFullExit_weth()",
+          "adapter_name": "AaveV3USDCAdapter",
+          "observations_count": 2,
+          "min_gas": 66430,
+          "max_gas": 76229,
+          "raw_values": [
+            76229,
+            66430
+          ]
+        }
+      },
+      "overall_min": 66430,
+      "overall_max": 80451,
+      "total_observations": 8
+    }
+  },
+  "limits": [
+    "Only Aave Ethereum USDT/WETH",
+    "Controller operation intervals are not full transaction gas",
+    "First/subsequent observations do not prove EVM cold/warm cache state",
+    "Current-source all-adapter and transaction-wrapper overhead calibration remains open"
+  ],
+  "contextIsolation": "Each suite/test/chain/asset has a separate key, because deterministic adapter CREATE addresses repeat across fixtures."
+}

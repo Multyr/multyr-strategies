@@ -1,0 +1,84 @@
+{
+  "cycle": "R18",
+  "status": "TARGETED_FIXES_PASS_FINAL_SOURCE_REVALIDATION_PENDING",
+  "confirmedAndFixed": [
+    {
+      "id": "EULER-RETRY-BUDGET",
+      "proof": "test_eulerActivationRetryDeploysBudgetAndRecordsAllPrincipal",
+      "resolution": "Count successful poke capital once, subtract dust from request budget, re-read cap and restore exact approval before retry."
+    },
+    {
+      "id": "EULER-OPTIMIZE-RETRY",
+      "proof": "test_eulerOptimizeActivationRetryPreservesCapitalAndRevokesApproval",
+      "resolution": "Restore approval, subtract successful poke, require enough fresh capacity or atomically roll back source withdrawal."
+    },
+    {
+      "id": "EULER-CAP-VIEW-ISOLATION",
+      "proof": "test_eulerBadMaxDepositDoesNotHideHealthyApy",
+      "resolution": "Skip reverting capacity views while keeping healthy market rates available."
+    },
+    {
+      "id": "DOLOMITE-CAPPED-ACTIVE",
+      "proof": [
+        "test_dolomiteFullActiveMarketFallsBackToHealthyMarket",
+        "test_dolomitePartialActiveCapFillsOtherMarket"
+      ],
+      "resolution": "Bounded capacity-aware fallback, partial fills, temporary approvals revoked; principal only for successful investment."
+    },
+    {
+      "id": "DOLOMITE-REGISTRY-AMBIGUITY",
+      "proof": "test_dolomiteRegistrySkipsAmbiguousMarketButKeepsValidEntry",
+      "resolution": "Skip dual matching interfaces; retain duplicate rejection and valid entries."
+    }
+  ],
+  "rootCorrectionsToClaudeProposal": [
+    "Euler poke cannot spend100raw from a request smaller than100, even if other idle funds exist.",
+    "Euler optimize cannot partially redeposit a withdrawn principal amount while retaining a stale source cost basis; fresh insufficient cap rolls back atomically.",
+    "Dolomite successful zero-share response must revert the whole transaction, restoring any already-transferred tokens.",
+    "Dolomite all-market failure must revert, preserving prior fail-closed behavior.",
+    "Do not replace existing registry duplicate rejection with unrequested duplicate skipping."
+  ],
+  "additionalBoundaryTests": 3,
+  "before": {
+    "failed": 6,
+    "passed": 0,
+    "log": "deployments/lending-full-validation-20261101/production/coordinator/R18-followup-before.log",
+    "sha256": "476e0070fc0aa804609c913d87f6c0fc6b5231fdf9c1e7bf16f13fa4b58509f6"
+  },
+  "after": {
+    "passed": 9,
+    "failed": 0,
+    "skipped": 0,
+    "log": "deployments/lending-full-validation-20261101/production/coordinator/R18-followup-nine-2.log",
+    "sha256": "22220c104fbd52ce9275edbdc10025ff5507e43ff12c8c0e1043f71a37f465c2"
+  },
+  "runtimeBytes": {
+    "EulerUsdcMultiMarketAdapter": 21971,
+    "DolomiteUsdcMultiMarketAdapter": 22863
+  },
+  "rejectedOrUnproven": [
+    {
+      "id": "R17-V1",
+      "reason": "No actual Venus redeemUnderlying counterexample. Its requested-underlying transfer must not be confused with share-to-asset rounding; all actual lifecycle receipts pass. Do not change accounting on a hypothetical want-minus-one assumption."
+    },
+    {
+      "id": "R17-D3",
+      "reason": "Initial rejection superseded by R20 source inspection: _assetsOn does use IDolomiteMargin.getAccountWei for PoolLike. The unconditional ERC20 empty-market guard is inconsistent with that account-based ownership model. Controlled proof and exact fix are pending; prior invented-API rationale is withdrawn."
+    },
+    {
+      "id": "R17-E3",
+      "reason": "No demonstrated principal double-count in iterative selection."
+    },
+    {
+      "id": "R17-EULER-GATE-REVIEW",
+      "reason": "Rejected source-only hypothesis that zero existing positions prevent rebalance. Real dedicated Native profiles prove startup rebalance works. Actual reason was tierRelativeCap=0 for market below100kUSD, independently measured. Do not deployIdle around that risk exclusion."
+    }
+  ],
+  "remaining": [
+    "Independent review of root-corrected final patch.",
+    "Full final-source regression/actual/structure/receipt/Native reruns.",
+    "R15 controller stale-plan claim still requires targeted proof/adjudication.",
+    "Exact-commit CI and owner-specific operational release requirements."
+  ],
+  "readiness": "NOT_PRODUCTION_READY"
+}

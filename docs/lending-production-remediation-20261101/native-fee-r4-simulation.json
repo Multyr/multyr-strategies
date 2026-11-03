@@ -1,0 +1,46 @@
+{
+  "status": "EXACT_CURRENT_ESTIMATOR_REAL_ARB_NATIVE_RPC_COMPONENT_PASS",
+  "readiness": "NOT_PRODUCTION_READY",
+  "chainId": 42161,
+  "pinnedBlock": 520384312,
+  "pinnedBlockHash": "0xe6beee34bcbb8e6876788b2fc361d85265e03189c059b03b6c28a082408c4bd7",
+  "estimatorSourceUtf8LfSha256": "5163a652daad00b2d61cb2e84462ea4ff6770aefd0d0fd595af65c30c7453197",
+  "actual": {
+    "actionsHash": "0xbbd7e4657174982581f4a2916a89886764b5b7d5cb7dee38c4519f9276ca6101",
+    "values": [
+      "101518",
+      "1796224",
+      "0",
+      "35928072448000",
+      "2",
+      "1",
+      "1"
+    ]
+  },
+  "componentQueryEstimatedGas": 92074,
+  "rawEvidence": [
+    {
+      "path": "C:\\Users\\Pierre\\Multyr\\pt-multiply\\lr\\deployments\\lending-full-validation-20261101\\production\\B-native-r4\\root-probe-arb-1.json",
+      "sha256": "0e2ae77d3f652c00bc9c8356808d43a2d0552dcb5ac530f23a85153d8b9a0aee"
+    },
+    {
+      "path": "C:\\Users\\Pierre\\Multyr\\pt-multiply\\lr\\deployments\\lending-full-validation-20261101\\production\\B-native-r4\\root-query-gas.json",
+      "sha256": "1570a99a2a66d7f9a1ecfed69a5151fdaff763e64dd73d88939c6f1816d30c6c"
+    },
+    {
+      "path": "C:\\Users\\Pierre\\Multyr\\pt-multiply\\lr\\deployments\\lending-full-validation-20261101\\production\\B-native-r4\\arb-estimator.json",
+      "sha256": "152ef9729409f68cd7c1871441e3d1332f747dd6f0ea13ab8af26fb195d383cc"
+    },
+    {
+      "path": "C:\\Users\\Pierre\\Multyr\\pt-multiply\\lr\\deployments\\lending-full-validation-20261101\\production\\B-native-r4\\arb-call.json",
+      "sha256": "0ec58082072029707118ffed7a675c9b251b7bdf7666d46fc71e54ce80204f97"
+    }
+  ],
+  "limits": [
+    "Constructor-derived current runtime/storage simulated only at independently verified unused address; native0x6c/feeds/real existing strategy measurements unchanged.",
+    "eth_call/state overrides only; no public transactions.",
+    "Only estimator primitive and query-gas estimate; no whole candidate keeper calibration/activation/production-ready claim.",
+    "Illustrative gas coefficients. Prior R3 query91974 is historical; current component estimate92074 supersedes it.",
+    "Official Arb endpoint missing-trie failure retained; archive public RPC passes."
+  ]
+}

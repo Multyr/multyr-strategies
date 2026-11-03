@@ -1,0 +1,65 @@
+{
+  "status": "ARBITRUM_NATIVE_FEE_PRIMITIVE_VERIFIED",
+  "readiness": "NOT_PRODUCTION_READY",
+  "inputDigest": "ab7bbfefffb63ea4ca15b703267675b6b4b712466cc9d36705aeb7efb0258795",
+  "chainId": 42161,
+  "rpcBlock": 520384312,
+  "blockHash": "0xe6beee34bcbb8e6876788b2fc361d85265e03189c059b03b6c28a082408c4bd7",
+  "kind": "RPC_CANDIDATE_SIMULATION",
+  "rawEvidence": "C:\\Users\\Pierre\\Multyr\\pt-multiply\\lr\\deployments\\lending-full-validation-20261101\\production\\B-native\\root-probe-arb-0.json",
+  "rawEvidenceSha256": "de7fbd5a8de93b1f2f9be0d75a7b11639f4df4be8179dae242c65756753fbd7f",
+  "runtimeFiles": {
+    "arb-estimator.json": "aeb0b4ea18d772123e9c3e93f9162c2c13daef91714e7301caf79e2c2b59d6b4"
+  },
+  "independentActionsHash": "0xbbd7e4657174982581f4a2916a89886764b5b7d5cb7dee38c4519f9276ca6101",
+  "reference": {
+    "measurements": {
+      "ema": [
+        292628
+      ],
+      "observation": [
+        2,
+        1793199760
+      ]
+    },
+    "values": [
+      "101518",
+      "1796224",
+      "0",
+      "35928072448000",
+      "2",
+      "1",
+      "1"
+    ],
+    "fieldOrder": [
+      "costUSD6",
+      "l2Gas",
+      "posterWei",
+      "executionWei",
+      "txCount",
+      "reliable",
+      "usedDefaults"
+    ]
+  },
+  "actual": {
+    "actionsHash": "0xbbd7e4657174982581f4a2916a89886764b5b7d5cb7dee38c4519f9276ca6101",
+    "values": [
+      "101518",
+      "1796224",
+      "0",
+      "35928072448000",
+      "2",
+      "1",
+      "1"
+    ]
+  },
+  "overrides": "Only exact locally initialized estimator runtime/storage at an address verified code/nonce/balance zero. Existing native ArbGasInfo, feeds and strategy measurements remain untouched.",
+  "limits": [
+    "Read-only hypothetical candidate simulation; no live deployment or transaction execution.",
+    "Illustrative gas coefficients and cold-start defaults; production operation gas calibration remains OPEN.",
+    "Uses existing real Arbitrum strategy measurements context, not a claim of full R1 operational deployment.",
+    "Base standalone probe rejected an invalid measurement context; real candidate Core/strategy Base tests are being implemented separately.",
+    "No global P2/P3/P4/P5/P6 closure or production approval."
+  ],
+  "protocolSource": "https://github.com/OffchainLabs/nitro/blob/master/precompiles/ArbGasInfo.go"
+}

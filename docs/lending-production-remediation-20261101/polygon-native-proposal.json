@@ -1,0 +1,84 @@
+{
+  "status": "REMEDIATION_INTEGRATED_UNIT_AND_ACTUAL_POLYGON_PASS_FINAL_GATES_PENDING",
+  "readiness": "NOT_PRODUCTION_READY",
+  "integrated": true,
+  "passed": 69,
+  "failed": 0,
+  "skipped": 0,
+  "suites": 5,
+  "proposedChains": [
+    1,
+    56,
+    137
+  ],
+  "polygonNativeSanityWad": {
+    "low": "100000000000000",
+    "high": "1000000000000000000000"
+  },
+  "existingEthBnbSanityWad": {
+    "low": "100000000000000000000",
+    "high": "100000000000000000000000"
+  },
+  "proofs": [
+    {
+      "path": "C:\\Users\\Pierre\\Multyr\\pt-multiply\\pd\\deployments\\lending-full-validation-20261101\\production\\D-polygon\\root-before.log",
+      "sha256": "e9820991b59a53f4b5e0edb0ac8052341aeb9964e669360387326795e9726ce6"
+    },
+    {
+      "path": "C:\\Users\\Pierre\\Multyr\\pt-multiply\\pd\\deployments\\lending-full-validation-20261101\\production\\D-polygon\\root-before-estimator.log",
+      "sha256": "a5c8cc7eb16458eee097bfbc56bdda5d3ef907bd916c7f33783a089991c022ba"
+    },
+    {
+      "path": "C:\\Users\\Pierre\\Multyr\\pt-multiply\\pd\\deployments\\lending-full-validation-20261101\\production\\D-polygon\\root-after-related.log",
+      "sha256": "4d9b9c7963562e7dd7e3531c47bbfd19bfe5c49acde4db7ea82a515fdd7f9fa4"
+    }
+  ],
+  "proposalSources": [
+    {
+      "path": "src/strategies/usdc-lending/gas/ReadOnlyGasEstimator.sol",
+      "sha256": "6244b424cc37e8724d859bc80573d0f11a2472622b0b01a7b17f92f05b19bed1"
+    },
+    {
+      "path": "src/strategies/usdc-lending/gas/NativeL1FeeInfo.sol",
+      "sha256": "53f3ab626ba985fa59267d482cb1ff5f8f93507a554bb52f527c31362ba8867e"
+    },
+    {
+      "path": "test/strategies/usdc-lending/PolygonNativeGas.t.sol",
+      "sha256": "ccac6edbb5686a0a555e0f28b9066b946288504197bf6a4ac13dd4b7e3fb8611"
+    }
+  ],
+  "limits": [
+    "Unit feeds/measurements are controlled negative regressions, not real-protocol evidence.",
+    "Root rejected copied helper mocks, a mislabeled constructor test and self-referential fee math; corrected tests use the production native helper and independent gas/fee arithmetic.",
+    "Publicnode archive denied the full historical candidate fixture; failure retained. Verified public dRPC/Tenderly archive balance probes; dRPC actual integration now running.",
+    "No canonical production source changed yet; no on-chain writes.",
+    "Fixture feed typo and insufficient historical interval for actual two-day timelock were corrected; failed attempts retained. Correct USDC feed independently checked via Chainlink directory and RPC.",
+    "Quote reference runs through an external self-call to avoid optimizer caching block.basefee across fork rolls; final fee agrees with the actual pinned public header.",
+    "Native fee coefficients remain illustrative benchmarks, not approved deployment calibration.",
+    "Core/strategy allocation and full recall; not an epoched user full-exit proof.",
+    "Canonical integration waits for running pre-Polygon regression to terminate.",
+    "Integrated after terminal pre-Polygon regression; that broad run had2904pass2fail2skip and is not acceptance. Relcap fixture and obsolete emergency-EMA expectation are corrected; canonical100-case related run is pending."
+  ],
+  "actual": {
+    "chainId": 137,
+    "initialBlock": 96500000,
+    "settlementBlock": 96622546,
+    "settlementBlockHash": "0x03d670395f8bb40c355e35f8ceacefb7176bde6e81ddce3d8fd52a44720f3741",
+    "asset": "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
+    "decimals": 6,
+    "nativeFeed": "0xAB594600376Ec9fD91F8e885dADF0CE036862dE0",
+    "assetFeed": "0xfE4A8cc5b5B2366C1B58Bea3858e81843581b2F7",
+    "nativePriceWad": "88312640000000000",
+    "quotedGas": 1796224,
+    "executionPriceWei": "272977417725",
+    "expectedAndQuotedUsd6": "54129",
+    "existingHolderFundingRaw": "201045858",
+    "investedAndRecalledRaw": "176920354",
+    "passed": 1,
+    "failed": 0,
+    "skipped": 0,
+    "log": "C:\\Users\\Pierre\\Multyr\\pt-multiply\\pd\\deployments\\lending-full-validation-20261101\\production\\D-polygon\\root-actual-final.log",
+    "logSha256": "b2099aef58bfc924d2db6d0e8bae37aefe08ae32cf4c89e2690a418148f20100",
+    "independentPublicHeaderBasefeeVerified": true
+  }
+}

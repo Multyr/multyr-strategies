@@ -22,16 +22,31 @@ import { StrategyStorageLayout } from "../../../../src/strategies/usdc-lending/c
 
 // ── Harness: exposes library internals as external for the fuzzer ─────────────
 contract StrategyConfigLibHarness {
+    // Existing boundary table is denominated in 6-decimal USDC units.
     function effectiveRelativeCapBps(uint256 extTVL) external pure returns (uint16) {
-        return StrategyConfigLib.effectiveRelativeCapBps(extTVL);
+        return StrategyConfigLib.effectiveRelativeCapBps(extTVL, 1e6);
+    }
+
+    function effectiveRelativeCapBps(uint256 refUnit, uint256 extTVL) external pure returns (uint16) {
+        return StrategyConfigLib.effectiveRelativeCapBps(extTVL, refUnit);
+    }
+
+    // Existing confidence table is denominated in 6-decimal USDC units.
+    function tvlConfidence(uint256 extTVL, uint64 cacheTs, uint32 staleness)
+        external
+        view
+        returns (uint256)
+    {
+        return StrategyConfigLib.tvlConfidence(extTVL, cacheTs, staleness, 1e6);
     }
 
     function tvlConfidence(
+        uint256 refUnit,
         uint256 extTVL,
         uint64  cacheTs,
         uint32  staleness
     ) external view returns (uint256) {
-        return StrategyConfigLib.tvlConfidence(extTVL, cacheTs, staleness);
+        return StrategyConfigLib.tvlConfidence(extTVL, cacheTs, staleness, refUnit);
     }
 }
 
@@ -39,10 +54,14 @@ contract StrategyConfigLibHarness {
 // StrategyStorageLayout is a concrete contract (not abstract). We deploy it with
 // dummy addresses so Solidity's type system exposes the public constant getters.
 // None of the dummy addresses are called during construction.
+contract MockAssetMetadata {
+    function decimals() external pure returns (uint8) { return 6; }
+}
+
 contract StorageLayoutConsts is StrategyStorageLayout {
     // solhint-disable-next-line no-empty-blocks
-    constructor()
-        StrategyStorageLayout(address(1), address(0), address(0), address(0), address(0))
+    constructor(address asset_)
+        StrategyStorageLayout(asset_, address(0), address(0), address(0), address(0))
     {}
 }
 
@@ -55,7 +74,9 @@ contract Lens_Core_Parity_Constants is Test {
     StorageLayoutConsts core;
 
     function setUp() public {
-        core = new StorageLayoutConsts();
+        address asset = address(0x1234);
+        vm.etch(asset, type(MockAssetMetadata).runtimeCode);
+        core = new StorageLayoutConsts(asset);
     }
 
     function test_CL01a_default_bps_match_core() public view {
@@ -120,6 +141,19 @@ contract Lens_Core_Parity_RelCap is Test {
         assertEq(h.effectiveRelativeCapBps(249_999_999e6),    2000, "<250M -> 2000");
         assertEq(h.effectiveRelativeCapBps(250_000_000e6),    2500, "250M -> 2500");
         assertEq(h.effectiveRelativeCapBps(type(uint256).max),2500, "max -> 2500");
+    }
+
+    function test_CL02b_effectiveRelativeCapBps_scales_with_asset_decimals() public view {
+        assertEq(
+            h.effectiveRelativeCapBps(1e18, 100_000e18),
+            h.effectiveRelativeCapBps(100_000e6),
+            "same whole-token quantity must select same cap at 18 decimals"
+        );
+        assertEq(
+            h.effectiveRelativeCapBps(1e18, 250_000_000e18),
+            h.effectiveRelativeCapBps(250_000_000e6),
+            "upper boundary must scale with asset decimals"
+        );
     }
 
     /// @dev Fuzz: result is always a valid step value; function is weakly monotone-non-decreasing.

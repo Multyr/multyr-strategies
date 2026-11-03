@@ -1,0 +1,525 @@
+{
+  "status": "EIGHT_NATIVE_PROFILES_PASS",
+  "sourceCycle": "R25_CURRENT",
+  "profiles": [
+    {
+      "profile": "all",
+      "status": "COLD_NATIVE_SEVEN_ENABLED_KEEPER_RECALL_PASS",
+      "header": {
+        "number": "0x1f08f66a",
+        "hash": "0x785f99208dd3c993ed717cd213350d1ba62bb383e978c7c781ef7a1eebac6cce",
+        "timestamp": "0x6ae8fb71",
+        "baseFeePerGas": "0x1314470"
+      },
+      "nativePriceWords": [
+        "0",
+        "0",
+        "400120000000",
+        "20000000",
+        "6000",
+        "20006000"
+      ],
+      "independentQuote": {
+        "l2Gas": "9646224",
+        "posterWei": "0",
+        "executionWei": "192982357344000",
+        "costUSD6": "563758"
+      },
+      "wrapperGas": {
+        "keeper-0": "2421674",
+        "keeper-1": "3403283"
+      },
+      "coldQuoteCoversObservedWrapperGas": true,
+      "ordinaryWithdrawalObservation": null,
+      "investedNavRaw": "70400880286",
+      "recalledRaw": "70400880286",
+      "raw": "deployments/lending-full-validation-20261101/production/keeper-gas/R25-paced/all/native-result.json",
+      "rawSha256": "f83ea2fb519463c55c66f27d8fdd1076889ee0fd5500a19e9db7f2a71763ca79"
+    },
+    {
+      "profile": "aave",
+      "status": "DEDICATED_NATIVE_KEEPER_ORDINARY_EMA_RECALL_PASS",
+      "header": {
+        "number": "0x1f08f66a",
+        "hash": "0x785f99208dd3c993ed717cd213350d1ba62bb383e978c7c781ef7a1eebac6cce",
+        "timestamp": "0x6ae8fb71",
+        "baseFeePerGas": "0x1314470"
+      },
+      "nativePriceWords": [
+        "0",
+        "0",
+        "400120000000",
+        "20000000",
+        "6000",
+        "20006000"
+      ],
+      "independentQuote": {
+        "l2Gas": "8146224",
+        "posterWei": "0",
+        "executionWei": "162973357344000",
+        "costUSD6": "476093"
+      },
+      "wrapperGas": {
+        "keeper-0": "937820",
+        "keeper-1": "1193213"
+      },
+      "coldQuoteCoversObservedWrapperGas": true,
+      "ordinaryWithdrawalObservation": {
+        "count": "3",
+        "updatedAt": "1793654529",
+        "emaWithdrawGas": "161798",
+        "actualNativeCoreWithdrawalGasUsed": [
+          "881094",
+          "788992",
+          "786809",
+          "786808"
+        ],
+        "usedDefaults": false,
+        "l2Gas": "2784910",
+        "costUSD6": "162760",
+        "requestsRaw": [
+          "31780396130",
+          "100000000",
+          "100000000",
+          "100000000"
+        ],
+        "nativePriceWords": [
+          "0",
+          "0",
+          "400120000000",
+          "20000000",
+          "6000",
+          "20006000"
+        ],
+        "configuredCooldownSeconds": "300",
+        "generatedBlocks": 76,
+        "generatedEndTimestamp": "1793654529",
+        "counterfactualAccrualRaw": "29863"
+      },
+      "investedNavRaw": "70400880286",
+      "recalledRaw": "38320514020",
+      "raw": "deployments/lending-full-validation-20261101/production/keeper-gas/R25-paced/aave/native-result.json",
+      "rawSha256": "30556e0588e5810beff70a0f040c8b89703f67a74a9ad1124b53ff8f8eaa4144"
+    },
+    {
+      "profile": "comet",
+      "status": "DEDICATED_NATIVE_KEEPER_ORDINARY_EMA_RECALL_PASS",
+      "header": {
+        "number": "0x1f08f66a",
+        "hash": "0x785f99208dd3c993ed717cd213350d1ba62bb383e978c7c781ef7a1eebac6cce",
+        "timestamp": "0x6ae8fb71",
+        "baseFeePerGas": "0x1314470"
+      },
+      "nativePriceWords": [
+        "0",
+        "0",
+        "400120000000",
+        "20000000",
+        "6000",
+        "20006000"
+      ],
+      "independentQuote": {
+        "l2Gas": "8146224",
+        "posterWei": "0",
+        "executionWei": "162973357344000",
+        "costUSD6": "476093"
+      },
+      "wrapperGas": {
+        "keeper-0": "923052",
+        "keeper-1": "1151847"
+      },
+      "coldQuoteCoversObservedWrapperGas": true,
+      "ordinaryWithdrawalObservation": {
+        "count": "3",
+        "updatedAt": "1793654529",
+        "emaWithdrawGas": "155093",
+        "actualNativeCoreWithdrawalGasUsed": [
+          "825023",
+          "744331",
+          "742148",
+          "742148"
+        ],
+        "usedDefaults": false,
+        "l2Gas": "2778205",
+        "costUSD6": "162368",
+        "requestsRaw": [
+          "31780396130",
+          "100000000",
+          "100000000",
+          "100000000"
+        ],
+        "nativePriceWords": [
+          "0",
+          "0",
+          "400120000000",
+          "20000000",
+          "6000",
+          "20006000"
+        ],
+        "configuredCooldownSeconds": "300",
+        "generatedBlocks": 76,
+        "generatedEndTimestamp": "1793654529",
+        "counterfactualAccrualRaw": "33928"
+      },
+      "investedNavRaw": "70400880286",
+      "recalledRaw": "38320518085",
+      "raw": "deployments/lending-full-validation-20261101/production/keeper-gas/R25-paced/comet/native-result.json",
+      "rawSha256": "a234cbe757ef621f089f080b31b2981da77916e2c1c30fd43f2688333abf929a"
+    },
+    {
+      "profile": "morpho",
+      "status": "DEDICATED_NATIVE_KEEPER_ORDINARY_EMA_RECALL_PASS",
+      "header": {
+        "number": "0x1f08f66a",
+        "hash": "0x785f99208dd3c993ed717cd213350d1ba62bb383e978c7c781ef7a1eebac6cce",
+        "timestamp": "0x6ae8fb71",
+        "baseFeePerGas": "0x1314470"
+      },
+      "nativePriceWords": [
+        "0",
+        "0",
+        "400120000000",
+        "20000000",
+        "6000",
+        "20006000"
+      ],
+      "independentQuote": {
+        "l2Gas": "8146224",
+        "posterWei": "0",
+        "executionWei": "162973357344000",
+        "costUSD6": "476093"
+      },
+      "wrapperGas": {
+        "keeper-0": "1096562",
+        "keeper-1": "1686639"
+      },
+      "coldQuoteCoversObservedWrapperGas": true,
+      "ordinaryWithdrawalObservation": {
+        "count": "3",
+        "updatedAt": "1793654529",
+        "emaWithdrawGas": "757477",
+        "actualNativeCoreWithdrawalGasUsed": [
+          "1845746",
+          "1387784",
+          "1385601",
+          "1385601"
+        ],
+        "usedDefaults": false,
+        "l2Gas": "3380589",
+        "costUSD6": "197573",
+        "requestsRaw": [
+          "61209894894",
+          "100000000",
+          "100000000",
+          "100000000"
+        ],
+        "nativePriceWords": [
+          "0",
+          "0",
+          "400120000000",
+          "20000000",
+          "6000",
+          "20006000"
+        ],
+        "configuredCooldownSeconds": "300",
+        "generatedBlocks": 76,
+        "generatedEndTimestamp": "1793654529",
+        "counterfactualAccrualRaw": "6542"
+      },
+      "investedNavRaw": "70400880286",
+      "recalledRaw": "8890991935",
+      "raw": "deployments/lending-full-validation-20261101/production/keeper-gas/R25-paced/morpho/native-result.json",
+      "rawSha256": "d0b5d5bcb6cef0e166e4a68cc96b022e49eaf7a6fc7412f42c255a9170fd4cfe"
+    },
+    {
+      "profile": "euler",
+      "status": "DEDICATED_NATIVE_KEEPER_ORDINARY_EMA_RECALL_PASS",
+      "header": {
+        "number": "0x1f08f66a",
+        "hash": "0x785f99208dd3c993ed717cd213350d1ba62bb383e978c7c781ef7a1eebac6cce",
+        "timestamp": "0x6ae8fb71",
+        "baseFeePerGas": "0x1314470"
+      },
+      "nativePriceWords": [
+        "0",
+        "0",
+        "400120000000",
+        "20000000",
+        "6000",
+        "20006000"
+      ],
+      "independentQuote": {
+        "l2Gas": "8146224",
+        "posterWei": "0",
+        "executionWei": "162973357344000",
+        "costUSD6": "476093"
+      },
+      "wrapperGas": {
+        "keeper-0": "997619",
+        "keeper-1": "1352075"
+      },
+      "coldQuoteCoversObservedWrapperGas": true,
+      "ordinaryWithdrawalObservation": {
+        "count": "3",
+        "updatedAt": "1793654529",
+        "emaWithdrawGas": "224488",
+        "actualNativeCoreWithdrawalGasUsed": [
+          "979419",
+          "867534",
+          "865350",
+          "865350"
+        ],
+        "usedDefaults": false,
+        "l2Gas": "2847600",
+        "costUSD6": "166424",
+        "requestsRaw": [
+          "65600179936",
+          "100000000",
+          "100000000",
+          "100000000"
+        ],
+        "nativePriceWords": [
+          "0",
+          "0",
+          "400120000000",
+          "20000000",
+          "6000",
+          "20006000"
+        ],
+        "configuredCooldownSeconds": "300",
+        "generatedBlocks": 76,
+        "generatedEndTimestamp": "1793654529",
+        "counterfactualAccrualRaw": "7440"
+      },
+      "investedNavRaw": "70400880286",
+      "recalledRaw": "4500707791",
+      "raw": "deployments/lending-full-validation-20261101/production/keeper-gas/R25-paced/euler/native-result.json",
+      "rawSha256": "467c0b4b24926854b5899d3a028928b9984c5de8da5cd7b485aa967d53237275"
+    },
+    {
+      "profile": "fluid",
+      "status": "DEDICATED_NATIVE_KEEPER_ORDINARY_EMA_RECALL_PASS",
+      "header": {
+        "number": "0x1f08f66a",
+        "hash": "0x785f99208dd3c993ed717cd213350d1ba62bb383e978c7c781ef7a1eebac6cce",
+        "timestamp": "0x6ae8fb71",
+        "baseFeePerGas": "0x1314470"
+      },
+      "nativePriceWords": [
+        "0",
+        "0",
+        "400120000000",
+        "20000000",
+        "6000",
+        "20006000"
+      ],
+      "independentQuote": {
+        "l2Gas": "8146224",
+        "posterWei": "0",
+        "executionWei": "162973357344000",
+        "costUSD6": "476093"
+      },
+      "wrapperGas": {
+        "keeper-0": "904689",
+        "keeper-1": "1093880"
+      },
+      "coldQuoteCoversObservedWrapperGas": true,
+      "ordinaryWithdrawalObservation": {
+        "count": "3",
+        "updatedAt": "1793654529",
+        "emaWithdrawGas": "134078",
+        "actualNativeCoreWithdrawalGasUsed": [
+          "862235",
+          "765132",
+          "762949",
+          "762949"
+        ],
+        "usedDefaults": false,
+        "l2Gas": "2757190",
+        "costUSD6": "161141",
+        "requestsRaw": [
+          "31780396130",
+          "100000000",
+          "100000000",
+          "100000000"
+        ],
+        "nativePriceWords": [
+          "0",
+          "0",
+          "400120000000",
+          "20000000",
+          "6000",
+          "20006000"
+        ],
+        "configuredCooldownSeconds": "300",
+        "generatedBlocks": 76,
+        "generatedEndTimestamp": "1793654529",
+        "counterfactualAccrualRaw": "48643"
+      },
+      "investedNavRaw": "70400880285",
+      "recalledRaw": "38320532800",
+      "raw": "deployments/lending-full-validation-20261101/production/keeper-gas/R25-paced/fluid/native-result.json",
+      "rawSha256": "e63bd5b14826970da7d5acd7b82d7357700dd896fc7433eb1a4e93c5f3668039"
+    },
+    {
+      "profile": "dolomite",
+      "status": "DEDICATED_NATIVE_KEEPER_ORDINARY_EMA_RECALL_PASS",
+      "header": {
+        "number": "0x1f08f66a",
+        "hash": "0x785f99208dd3c993ed717cd213350d1ba62bb383e978c7c781ef7a1eebac6cce",
+        "timestamp": "0x6ae8fb71",
+        "baseFeePerGas": "0x1314470"
+      },
+      "nativePriceWords": [
+        "0",
+        "0",
+        "400120000000",
+        "20000000",
+        "6000",
+        "20006000"
+      ],
+      "independentQuote": {
+        "l2Gas": "8146224",
+        "posterWei": "0",
+        "executionWei": "162973357344000",
+        "costUSD6": "476093"
+      },
+      "wrapperGas": {
+        "keeper-0": "961966",
+        "keeper-1": "1727760"
+      },
+      "coldQuoteCoversObservedWrapperGas": true,
+      "ordinaryWithdrawalObservation": {
+        "count": "3",
+        "updatedAt": "1793654529",
+        "emaWithdrawGas": "359482",
+        "actualNativeCoreWithdrawalGasUsed": [
+          "1314066",
+          "1080559",
+          "1081206",
+          "1081296"
+        ],
+        "usedDefaults": false,
+        "l2Gas": "2982594",
+        "costUSD6": "174314",
+        "requestsRaw": [
+          "31780396130",
+          "100000000",
+          "100000000",
+          "100000000"
+        ],
+        "nativePriceWords": [
+          "0",
+          "0",
+          "400120000000",
+          "20000000",
+          "6000",
+          "20006000"
+        ],
+        "configuredCooldownSeconds": "300",
+        "generatedBlocks": 76,
+        "generatedEndTimestamp": "1793654529",
+        "counterfactualAccrualRaw": "51012"
+      },
+      "investedNavRaw": "70400880287",
+      "recalledRaw": "38320535169",
+      "raw": "deployments/lending-full-validation-20261101/production/keeper-gas/R25-paced/dolomite/native-result.json",
+      "rawSha256": "0bf3270f796c8895b5b598d9e7aea8909d4bd3ade8363b5cfabb6c0480c31e2c"
+    },
+    {
+      "profile": "venus",
+      "status": "DEDICATED_NATIVE_KEEPER_ORDINARY_EMA_RECALL_PASS",
+      "header": {
+        "number": "0x1f08f66a",
+        "hash": "0x785f99208dd3c993ed717cd213350d1ba62bb383e978c7c781ef7a1eebac6cce",
+        "timestamp": "0x6ae8fb71",
+        "baseFeePerGas": "0x1314470"
+      },
+      "nativePriceWords": [
+        "0",
+        "0",
+        "400120000000",
+        "20000000",
+        "6000",
+        "20006000"
+      ],
+      "independentQuote": {
+        "l2Gas": "8146224",
+        "posterWei": "0",
+        "executionWei": "162973357344000",
+        "costUSD6": "476093"
+      },
+      "wrapperGas": {
+        "keeper-0": "921291",
+        "keeper-1": "1239031"
+      },
+      "coldQuoteCoversObservedWrapperGas": true,
+      "ordinaryWithdrawalObservation": {
+        "count": "3",
+        "updatedAt": "1793654529",
+        "emaWithdrawGas": "219131",
+        "actualNativeCoreWithdrawalGasUsed": [
+          "924384",
+          "861887",
+          "859704",
+          "859704"
+        ],
+        "usedDefaults": false,
+        "l2Gas": "2842243",
+        "costUSD6": "166111",
+        "requestsRaw": [
+          "65570511330",
+          "100000000",
+          "100000000",
+          "100000000"
+        ],
+        "nativePriceWords": [
+          "0",
+          "0",
+          "400120000000",
+          "20000000",
+          "6000",
+          "20006000"
+        ],
+        "configuredCooldownSeconds": "300",
+        "generatedBlocks": 76,
+        "generatedEndTimestamp": "1793654529",
+        "counterfactualAccrualRaw": "6471"
+      },
+      "investedNavRaw": "70400880286",
+      "recalledRaw": "4530375428",
+      "raw": "deployments/lending-full-validation-20261101/production/keeper-gas/R25-paced/venus/native-result.json",
+      "rawSha256": "981ce8408b54ac928604d8ec66d1f8fcc59b7425cde3f7e5fc7ba40f10b0327b"
+    }
+  ],
+  "simulatorSha256": "25543633754a8fb9b4f53206145a0d7bb5725837f11a4d3ffba6f5222824633f",
+  "sourceAcceptance": "docs/lending-production-remediation-20261101/r25-actual-50-acceptance.json",
+  "sourceAcceptanceSha256": "271895edab84f79bc9400b3088652368723e983cf419f184c445602cca703e42",
+  "checkpoint": "deployments/lending-full-validation-20261101/production/keeper-gas/R25/checkpoint.json",
+  "checkpointSha256": "f3a44ebd812369d7729c70524de4af30f22e130c2b0e6d1f7f2fef464301a80c",
+  "rawMatrix": "deployments/lending-full-validation-20261101/production/keeper-gas/R25-paced/matrix.json",
+  "rawMatrixSha256": "7aa871dcb16de627f713ab02c188c13b73887d819c472b12f9892ff872e88145",
+  "estimatorConfig": {
+    "prepareGas": 4000000,
+    "stepGas": 2000000,
+    "finalizeGas": 600000,
+    "defaultDepositGas": 1500000,
+    "defaultWithdrawGas": 2000000,
+    "intrinsicGas": 23112,
+    "calldataBytes": 132,
+    "marginBps": 3000,
+    "maxPriceAge": 3600,
+    "usdcMaxPriceAge": 3600,
+    "sequencerGrace": 3600,
+    "fallbackUSDC": 100000000
+  },
+  "limits": [
+    "Genuine Nitro eth_simulateV1, validation=true. No native-precompile mock.",
+    "Own unfunded fixture code/storage/nonce overlays only; real financial token/protocol state and prices.",
+    "Canonical header plus explicitly disclosed Node-generated simulation blocks; not historical mined returns.",
+    "Arbitrum USDC vault with actual USDT0 funding swap; other asset-specific Native fixtures are not implied.",
+    "Measured envelope for these exact policies and markets only; recalibrate when topology, chain or keeper policy changes."
+  ],
+  "rateLimitEvidence": "One HTTP429 retry retained in raw native-errors.json; default canonical batches/read rate reduced to4.",
+  "readiness": "NOT_PRODUCTION_READY"
+}

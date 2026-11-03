@@ -1,0 +1,24 @@
+{
+  "finding": "Release export must require explicit production approval and reject incomplete validation before creating artifacts.",
+  "status": "FIXED_NEGATIVE_EXECUTION_PASS",
+  "source": "script/ExportLendingCandidate.ps1",
+  "sourceUtf8LfSha256": "17791d1c3dadd432ec280c67cb7ab04f5c8d42bdf8a2c37bddcba21fbb2c1920",
+  "baseCommit": "211f1a0a4cb9c63232ae18dac24ccb921e5a4699",
+  "behavior": [
+    "Require COMPLETE_FOR_VALIDATED_MATRIX and PRODUCTION_READY.",
+    "Verify fixed reviewed-base ancestry and frozen Core pin before export.",
+    "Compare functional source against the validation ledger before creating release artifacts.",
+    "Include reviewed base and candidate HEAD independently; future feature commits do not erase the reviewed-base diff."
+  ],
+  "negativeExecution": {
+    "status": "PASS",
+    "reason": "Expanded validation gates are not closed",
+    "destinationCreated": false,
+    "readiness": "NOT_PRODUCTION_READY"
+  },
+  "limits": [
+    "Readiness rejection tested with the actual incomplete ledger.",
+    "No fake approval ledger was used. Successful production export remains blocked until all release gates close."
+  ],
+  "readiness": "NOT_PRODUCTION_READY"
+}

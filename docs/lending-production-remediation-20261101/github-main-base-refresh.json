@@ -1,0 +1,18 @@
+{
+  "status": "PUBLIC_MAIN_MERGE_TREE_EQUALS_CANDIDATE_COMMON_ANCESTOR_NO_UNINTEGRATED_UPSTREAM_TREE_DELTA",
+  "publicMain": "b77629a1fcedc31a6855d1f82b7cab9833db3757",
+  "candidateBase": "211f1a0a4cb9c63232ae18dac24ccb921e5a4699",
+  "historyStatus": "diverged",
+  "ahead": 13,
+  "behind": 1,
+  "limits": [
+    "GitHub compare returned its300-file cap; this was rejected as proof that production files were equal.",
+    "History diverges by13 candidate commits and1 public main merge; exact complete tree identity at merge/common ancestor establishes no additional upstream tree delta needs incorporation.",
+    "Candidate base contains earlier strategy work relative to public main, and current changes remain uncommitted. Current delta audits do not independently cover all unchanged baseline code.",
+    "Feature commit and real CI remain open; no main write, merge or broadcast."
+  ],
+  "commonAncestor": "0b804f294b2fe07565a520aabd5ec4c4b73a1582",
+  "publicMainTree": "d457d48bd314b32d7c4c8a966e65d073f6c60c0a",
+  "commonAncestorTree": "d457d48bd314b32d7c4c8a966e65d073f6c60c0a",
+  "verification": "GitHub connector verified public main SHA; read-only fetch retrieved that exact object without updating branch refs/FETCH_HEAD; git diff --quiet commonAncestor publicMain exited0."
+}

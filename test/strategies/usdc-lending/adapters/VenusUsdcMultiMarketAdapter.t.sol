@@ -61,6 +61,7 @@ contract MockVToken {
     bool public revertOnGetCash;
     bool public revertOnTotalBorrows;
     bool public revertOnRedeem;
+    bool public revertOnExchangeRate;
 
     constructor(address _underlying) {
         underlying = _underlying;
@@ -77,8 +78,10 @@ contract MockVToken {
     function setRevertOnGetCash(bool v) external { revertOnGetCash = v; }
     function setRevertOnTotalBorrows(bool v) external { revertOnTotalBorrows = v; }
     function setRevertOnRedeem(bool v) external { revertOnRedeem = v; }
+    function setRevertOnExchangeRate(bool v) external { revertOnExchangeRate = v; }
+    function setTotalSupply(uint256 shares) external { totalSupply = shares; }
 
-    function exchangeRateStored() external view returns (uint256) { return exchangeRate; }
+    function exchangeRateStored() external view returns (uint256) { require(!revertOnExchangeRate, "exchange-rate-revert"); return exchangeRate; }
     function exchangeRateCurrent() external returns (uint256) { return exchangeRate; }
     function supplyRatePerBlock() external view returns (uint256) { return supplyRate; }
 
@@ -538,21 +541,24 @@ contract VenusUsdcMultiMarketAdapterTest is Test {
     // EXTERNAL MARKET TVL
     // ═══════════════════════════════════════════════════════════════════════
 
-    function test_externalMarketTVL_sumOfCashAndBorrows() public {
+    function test_externalMarketTVL_valuesLenderSharesRatherThanGrossAssets() public {
         vToken.setCash(10_000_000e6);
         vToken.setBorrows(5_000_000e6);
-        assertEq(adapter.externalMarketTVL(), 15_000_000e6);
+        vToken.setTotalSupply(14_000_000e6 * 1e18 / 2e16);
+        assertEq(adapter.externalMarketTVL(), 14_000_000e6);
     }
 
-    function test_externalMarketTVL_returnsZeroOnGetCashRevert() public {
-        vToken.setRevertOnGetCash(true);
+    function test_externalMarketTVL_returnsZeroOnExchangeRateRevert() public {
+        vToken.setTotalSupply(1e12);
+        vToken.setRevertOnExchangeRate(true);
         assertEq(adapter.externalMarketTVL(), 0);
     }
 
     function test_externalMarketTVL_handlesRevertOnTotalBorrows() public {
         vToken.setCash(7_000_000e6);
+        vToken.setTotalSupply(7_000_000e6 * 1e18 / 2e16);
         vToken.setRevertOnTotalBorrows(true);
-        // Should still return cash (borrows treated as 0)
+        // Canonical supply and exchange rate do not require an extra borrow getter.
         assertEq(adapter.externalMarketTVL(), 7_000_000e6);
     }
 
@@ -939,7 +945,7 @@ contract MockSwapHelperVenus {
 
     function canSwap(address) external view returns (bool) { return canSwapResult; }
     function previewExpectedOut(address, uint256) external view returns (uint256) { return expectedOut; }
-    function swapToUSDC(address rewardToken, uint256 amountIn, address receiver) external returns (uint256) {
+    function swapToAsset(address rewardToken, uint256 amountIn, address receiver) external returns (uint256) {
         if (revertOnSwap) revert("swap-revert");
         MockERC20XVS(rewardToken).transferFrom(msg.sender, address(this), amountIn);
         // mint USDC to receiver via mock USDC contract

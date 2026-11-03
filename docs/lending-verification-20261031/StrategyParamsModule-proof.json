@@ -1,0 +1,70 @@
+{
+  "contract": "StrategyParamsModule",
+  "address": "0x9DdbFF7a2D6cbfdA7fE5Fe72A7e7A09eef8F2772",
+  "block": 520094008,
+  "blockHash": "0xd0e4d2d28e0d9a60d819743930f9f2843409bf37a895a411620a632da53fa600",
+  "compilerInputSha256": "9892d22a80d7f8305eb2b065c518ae226c0f8c7debd748591937bb1ee4186a6c",
+  "runtimeBytes": 14381,
+  "compiledRuntimeBytes": 14381,
+  "observedKeccak": "0x831029cd6f2dfde91a80a3f40d194cfcc03d5dd33fbdd432d8cfea1972082727",
+  "compiledBoundKeccak": "0x831029cd6f2dfde91a80a3f40d194cfcc03d5dd33fbdd432d8cfea1972082727",
+  "immutableBindings": [
+    {
+      "astId": "117064",
+      "name": "ASSET",
+      "value": "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+      "ranges": [
+        {
+          "length": 32,
+          "start": 8231
+        }
+      ]
+    },
+    {
+      "astId": "117066",
+      "name": "core",
+      "value": "0x5e0cdb76487bd96ff069ef7f78eadf5b5909c8cb",
+      "ranges": [
+        {
+          "length": 32,
+          "start": 2335
+        }
+      ]
+    },
+    {
+      "astId": "117068",
+      "name": "paramsModule",
+      "value": "0x0000000000000000000000000000000000000000",
+      "ranges": [
+        {
+          "length": 32,
+          "start": 2104
+        }
+      ]
+    },
+    {
+      "astId": "117070",
+      "name": "scoringModule",
+      "value": "0x0000000000000000000000000000000000000000",
+      "ranges": [
+        {
+          "length": 32,
+          "start": 9276
+        }
+      ]
+    },
+    {
+      "astId": "117072",
+      "name": "adapterOpsModule",
+      "value": "0x0000000000000000000000000000000000000000",
+      "ranges": [
+        {
+          "length": 32,
+          "start": 9521
+        }
+      ]
+    }
+  ],
+  "immutableBindingErrors": [],
+  "exactRuntimeMatch": true
+}

@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.28;
+import {LendingOracleTestFixture} from "./helpers/LendingOracleTestFixture.sol";
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // RemediationSprint.t.sol -- Real-contract harness for 2026-04-22 remediation sprint
@@ -50,7 +51,7 @@ import { StrategySafetyOverflowModule } from "../../../src/strategies/usdc-lendi
 // Shared base: deploy harness with 3 mock adapters
 // ─────────────────────────────────────────────────────────────────────────────
 
-abstract contract RemediationBase is Test {
+abstract contract RemediationBase is LendingOracleTestFixture {
     address constant ARBITRUM_USDC = 0xaf88d065e77c8cC2239327C5EDb3A432268e5831;
 
     UsdcMultiLendingVault public vault;
@@ -65,7 +66,7 @@ abstract contract RemediationBase is Test {
     StrategyAdapterOpsModule public adapterOpsMod;
 
     address public admin   = address(0xA11CE);
-    address public core    = address(0xC0FFEE);
+    address public core = _newOracleCore(1e18);
     address public router  = address(0xBEEF);
     address public keeper  = address(0xCAFE);
 

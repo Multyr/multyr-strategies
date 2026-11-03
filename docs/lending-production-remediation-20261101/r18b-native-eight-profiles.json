@@ -1,0 +1,973 @@
+{
+  "status": "EIGHT_NATIVE_PROFILES_PASS",
+  "sourceCycle": "R18b_HISTORICAL",
+  "profiles": [
+    {
+      "status": "COLD_NATIVE_SEVEN_ENABLED_KEEPER_RECALL_PASS",
+      "chainId": 42161,
+      "header": {
+        "baseFeePerGas": "0x1314470",
+        "difficulty": "0x1",
+        "extraData": "0x50f94b8c61d92a595f9fc3fe383178a4dfa35e3ab6d332e75d7ccbc7c25f6744",
+        "gasLimit": "0x4000000000000",
+        "gasUsed": "0x35bda",
+        "hash": "0x785f99208dd3c993ed717cd213350d1ba62bb383e978c7c781ef7a1eebac6cce",
+        "l1BlockNumber": "0x191c24c",
+        "logsBloom": "0x00000000000000000000000000000000000000010000000000010000008000000000800000000000000000000000100000000000000000000000000000000000000200000000000000000008000000000000000000000000000000001000000000000000020000000100008000000800000000000000000000000010000000000000000000000000200000000000000000001005000000800000000000000000000000000000100000000401000000000000000000000000000000000010000000000002000000000000000000000000000000000000000000000000800020000002000000000000000000000000000000000004000000000000000000000000",
+        "miner": "0xa4b000000000000000000073657175656e636572",
+        "mixHash": "0x0000000000028e29000000000191c24c000000000000003d0001000000000000",
+        "nonce": "0x000000000027d179",
+        "number": "0x1f08f66a",
+        "parentHash": "0x7df6f9c21550fdbc6ae69cd587322a8e5c006ede00dd80ffcabe5cf78ed70eb2",
+        "receiptsRoot": "0x9eac2a84bafc9f7271baabf853c343e552840404fa5034a6eded259143a7e3ef",
+        "sendCount": "0x28e29",
+        "sendRoot": "0x50f94b8c61d92a595f9fc3fe383178a4dfa35e3ab6d332e75d7ccbc7c25f6744",
+        "sha3Uncles": "0x1dcc4de8dec75d7aab85b567b6ccd41ad312451b948a7413f0a142fd40d49347",
+        "size": "0x407",
+        "stateRoot": "0xc172b0ded147453c0e85042c86c8fe31a9e76c9b43e68d1bd7402b0dfe485be7",
+        "timestamp": "0x6ae8fb71",
+        "transactions": [
+          "0xa35402e1ceef9caf14337bc8eb8131768d5a38d503d629fcc319cfd4c1318e1e",
+          "0x2a50f69dfa52f46e7aaa94ca20b4659d8a5bfd771b486a4bb464d57746759938",
+          "0xdc2f6a64bed36c5eb283db1186d9b9cbf9bfb130693ba2f9de1b3c604f15a6e6"
+        ],
+        "transactionsRoot": "0xdb7d92b59607c85d6195ceafa0d380fbc8b68120e2b310bf0b1b3680f9d6dd50",
+        "uncles": []
+      },
+      "profile": "all",
+      "nativeRpc": "<authorized-rpc>",
+      "simulatorSha256": "351d69bf4cc602bc907a0cb44796370dfa8aec84bcff98fa5bdc00167158475f",
+      "checkpointSha256": "81962afc8ca55e1ea8ee9010a51640f02483ec0cf8ab2a6dfd716799340cdb64",
+      "actions": [
+        [
+          "0x62932e9dBE3aF84b18E0D4515CBDaa54abeC5dac",
+          35737032218,
+          true
+        ],
+        [
+          "0x75A9C6B8F7dfDEd686f761373D1A7A151fB3A81C",
+          4900700351,
+          true
+        ]
+      ],
+      "independentQuote": {
+        "l2Gas": "9646224",
+        "posterWei": "0",
+        "executionWei": "192982357344000",
+        "costUSD6": "563758"
+      },
+      "simulatedNativeWrapperGasUsed": {
+        "keeper-0": "2421674",
+        "keeper-1": "3373648"
+      },
+      "swapInputRaw": "88000000000",
+      "swapCreditRaw": "87878018792",
+      "investedNavRaw": "70400880286",
+      "recalledRaw": "70400880286",
+      "protocolPositionRaw": {
+        "aave": "0",
+        "comet": "0",
+        "morpho": "0",
+        "euler": "4900700350",
+        "fluid": "0",
+        "dolomite": "35737032218",
+        "venus": "0"
+      },
+      "protocolReceiptRaw": {
+        "aave": "0",
+        "comet": "0",
+        "morpho": "0",
+        "euler": "4609910368",
+        "fluid": "0",
+        "dolomite": "27759227184",
+        "venus": "0"
+      },
+      "idleBeforeRaw": "70400880287",
+      "idleAfterRaw": "29763147718",
+      "coreBeforeRouteRaw": "80001000324",
+      "coreAfterRouteRaw": "9600120037",
+      "actualPokeDefaultInterval": "86400",
+      "simulatedNativeRefreshGasUsed": "548337",
+      "ordinaryWithdrawalObservation": null,
+      "limits": [
+        "Native per-call simulated gas, not mined transaction receipts.",
+        "Only unused unfunded constructor-produced fixture accounts projected.",
+        "Cold initial allocation only; warm EMA, other profiles and production coefficient approval remain separate gates.",
+        "Seven enabled/scanned venues do not imply seven investment actions; only the actual risk-engine-selected actions execute."
+      ],
+      "readiness": "NOT_PRODUCTION_READY",
+      "rawReport": "deployments/lending-full-validation-20261101/production/keeper-gas/R18b/matrix/all/native-result.json",
+      "rawReportSha256": "80bb855dba940440211e22cb20bc45bd6724270666cfa2384fb68e65f14a4bd7"
+    },
+    {
+      "status": "DEDICATED_NATIVE_KEEPER_ORDINARY_EMA_RECALL_PASS",
+      "chainId": 42161,
+      "header": {
+        "baseFeePerGas": "0x1314470",
+        "difficulty": "0x1",
+        "extraData": "0x50f94b8c61d92a595f9fc3fe383178a4dfa35e3ab6d332e75d7ccbc7c25f6744",
+        "gasLimit": "0x4000000000000",
+        "gasUsed": "0x35bda",
+        "hash": "0x785f99208dd3c993ed717cd213350d1ba62bb383e978c7c781ef7a1eebac6cce",
+        "l1BlockNumber": "0x191c24c",
+        "logsBloom": "0x00000000000000000000000000000000000000010000000000010000008000000000800000000000000000000000100000000000000000000000000000000000000200000000000000000008000000000000000000000000000000001000000000000000020000000100008000000800000000000000000000000010000000000000000000000000200000000000000000001005000000800000000000000000000000000000100000000401000000000000000000000000000000000010000000000002000000000000000000000000000000000000000000000000800020000002000000000000000000000000000000000004000000000000000000000000",
+        "miner": "0xa4b000000000000000000073657175656e636572",
+        "mixHash": "0x0000000000028e29000000000191c24c000000000000003d0001000000000000",
+        "nonce": "0x000000000027d179",
+        "number": "0x1f08f66a",
+        "parentHash": "0x7df6f9c21550fdbc6ae69cd587322a8e5c006ede00dd80ffcabe5cf78ed70eb2",
+        "receiptsRoot": "0x9eac2a84bafc9f7271baabf853c343e552840404fa5034a6eded259143a7e3ef",
+        "sendCount": "0x28e29",
+        "sendRoot": "0x50f94b8c61d92a595f9fc3fe383178a4dfa35e3ab6d332e75d7ccbc7c25f6744",
+        "sha3Uncles": "0x1dcc4de8dec75d7aab85b567b6ccd41ad312451b948a7413f0a142fd40d49347",
+        "size": "0x407",
+        "stateRoot": "0xc172b0ded147453c0e85042c86c8fe31a9e76c9b43e68d1bd7402b0dfe485be7",
+        "timestamp": "0x6ae8fb71",
+        "transactions": [
+          "0xa35402e1ceef9caf14337bc8eb8131768d5a38d503d629fcc319cfd4c1318e1e",
+          "0x2a50f69dfa52f46e7aaa94ca20b4659d8a5bfd771b486a4bb464d57746759938",
+          "0xdc2f6a64bed36c5eb283db1186d9b9cbf9bfb130693ba2f9de1b3c604f15a6e6"
+        ],
+        "transactionsRoot": "0xdb7d92b59607c85d6195ceafa0d380fbc8b68120e2b310bf0b1b3680f9d6dd50",
+        "uncles": []
+      },
+      "profile": "aave",
+      "nativeRpc": "<authorized-rpc>",
+      "simulatorSha256": "351d69bf4cc602bc907a0cb44796370dfa8aec84bcff98fa5bdc00167158475f",
+      "checkpointSha256": "81962afc8ca55e1ea8ee9010a51640f02483ec0cf8ab2a6dfd716799340cdb64",
+      "actions": [
+        [
+          "0xFF9332FCEc30b772046B280EdcC432b09E15c741",
+          38720484157,
+          true
+        ]
+      ],
+      "independentQuote": {
+        "l2Gas": "8146224",
+        "posterWei": "0",
+        "executionWei": "162973357344000",
+        "costUSD6": "476093"
+      },
+      "simulatedNativeWrapperGasUsed": {
+        "keeper-0": "937820",
+        "keeper-1": "1193213"
+      },
+      "swapInputRaw": "88000000000",
+      "swapCreditRaw": "87878018792",
+      "investedNavRaw": "70400880286",
+      "recalledRaw": "38320514020",
+      "protocolPositionRaw": {
+        "aave": "38720484156",
+        "comet": "0",
+        "morpho": "0",
+        "euler": "0",
+        "fluid": "0",
+        "dolomite": "0",
+        "venus": "0"
+      },
+      "protocolReceiptRaw": {
+        "aave": "38720484156",
+        "comet": "0",
+        "morpho": "0",
+        "euler": "0",
+        "fluid": "0",
+        "dolomite": "0",
+        "venus": "0"
+      },
+      "idleBeforeRaw": "70400880287",
+      "idleAfterRaw": "31680396130",
+      "coreBeforeRouteRaw": "80001000324",
+      "coreAfterRouteRaw": "9600120037",
+      "actualPokeDefaultInterval": "86400",
+      "simulatedNativeRefreshGasUsed": "548337",
+      "ordinaryWithdrawalObservation": {
+        "count": "3",
+        "updatedAt": "1793654529",
+        "emaWithdrawGas": "161798",
+        "actualNativeCoreWithdrawalGasUsed": [
+          "881094",
+          "788992",
+          "786809",
+          "786808"
+        ],
+        "usedDefaults": false,
+        "l2Gas": "2784910",
+        "costUSD6": "162760",
+        "requestsRaw": [
+          "31780396130",
+          "100000000",
+          "100000000",
+          "100000000"
+        ],
+        "nativePriceWords": [
+          "0",
+          "0",
+          "400120000000",
+          "20000000",
+          "6000",
+          "20006000"
+        ],
+        "configuredCooldownSeconds": "300",
+        "generatedBlocks": 76,
+        "generatedEndTimestamp": "1793654529",
+        "counterfactualAccrualRaw": "29863"
+      },
+      "limits": [
+        "Native per-call simulated gas, not mined transaction receipts.",
+        "Only unused unfunded constructor-produced fixture accounts projected.",
+        "Cold initial allocation only; warm EMA, other profiles and production coefficient approval remain separate gates.",
+        "Seven enabled/scanned venues do not imply seven investment actions; only the actual risk-engine-selected actions execute."
+      ],
+      "readiness": "NOT_PRODUCTION_READY",
+      "rawReport": "deployments/lending-full-validation-20261101/production/keeper-gas/R18b/matrix/aave/native-result.json",
+      "rawReportSha256": "d06e981b86a1b9889bdf4d2d3bdef5e70be7ad20507668f2901dd1bd273bf823"
+    },
+    {
+      "status": "DEDICATED_NATIVE_KEEPER_ORDINARY_EMA_RECALL_PASS",
+      "chainId": 42161,
+      "header": {
+        "baseFeePerGas": "0x1314470",
+        "difficulty": "0x1",
+        "extraData": "0x50f94b8c61d92a595f9fc3fe383178a4dfa35e3ab6d332e75d7ccbc7c25f6744",
+        "gasLimit": "0x4000000000000",
+        "gasUsed": "0x35bda",
+        "hash": "0x785f99208dd3c993ed717cd213350d1ba62bb383e978c7c781ef7a1eebac6cce",
+        "l1BlockNumber": "0x191c24c",
+        "logsBloom": "0x00000000000000000000000000000000000000010000000000010000008000000000800000000000000000000000100000000000000000000000000000000000000200000000000000000008000000000000000000000000000000001000000000000000020000000100008000000800000000000000000000000010000000000000000000000000200000000000000000001005000000800000000000000000000000000000100000000401000000000000000000000000000000000010000000000002000000000000000000000000000000000000000000000000800020000002000000000000000000000000000000000004000000000000000000000000",
+        "miner": "0xa4b000000000000000000073657175656e636572",
+        "mixHash": "0x0000000000028e29000000000191c24c000000000000003d0001000000000000",
+        "nonce": "0x000000000027d179",
+        "number": "0x1f08f66a",
+        "parentHash": "0x7df6f9c21550fdbc6ae69cd587322a8e5c006ede00dd80ffcabe5cf78ed70eb2",
+        "receiptsRoot": "0x9eac2a84bafc9f7271baabf853c343e552840404fa5034a6eded259143a7e3ef",
+        "sendCount": "0x28e29",
+        "sendRoot": "0x50f94b8c61d92a595f9fc3fe383178a4dfa35e3ab6d332e75d7ccbc7c25f6744",
+        "sha3Uncles": "0x1dcc4de8dec75d7aab85b567b6ccd41ad312451b948a7413f0a142fd40d49347",
+        "size": "0x407",
+        "stateRoot": "0xc172b0ded147453c0e85042c86c8fe31a9e76c9b43e68d1bd7402b0dfe485be7",
+        "timestamp": "0x6ae8fb71",
+        "transactions": [
+          "0xa35402e1ceef9caf14337bc8eb8131768d5a38d503d629fcc319cfd4c1318e1e",
+          "0x2a50f69dfa52f46e7aaa94ca20b4659d8a5bfd771b486a4bb464d57746759938",
+          "0xdc2f6a64bed36c5eb283db1186d9b9cbf9bfb130693ba2f9de1b3c604f15a6e6"
+        ],
+        "transactionsRoot": "0xdb7d92b59607c85d6195ceafa0d380fbc8b68120e2b310bf0b1b3680f9d6dd50",
+        "uncles": []
+      },
+      "profile": "comet",
+      "nativeRpc": "<authorized-rpc>",
+      "simulatorSha256": "351d69bf4cc602bc907a0cb44796370dfa8aec84bcff98fa5bdc00167158475f",
+      "checkpointSha256": "81962afc8ca55e1ea8ee9010a51640f02483ec0cf8ab2a6dfd716799340cdb64",
+      "actions": [
+        [
+          "0x40AA1ed69D83238989a93cF0537DEd57B1d7e1E3",
+          38720484157,
+          true
+        ]
+      ],
+      "independentQuote": {
+        "l2Gas": "8146224",
+        "posterWei": "0",
+        "executionWei": "162973357344000",
+        "costUSD6": "476093"
+      },
+      "simulatedNativeWrapperGasUsed": {
+        "keeper-0": "923052",
+        "keeper-1": "1151847"
+      },
+      "swapInputRaw": "88000000000",
+      "swapCreditRaw": "87878018792",
+      "investedNavRaw": "70400880286",
+      "recalledRaw": "38320518085",
+      "protocolPositionRaw": {
+        "aave": "0",
+        "comet": "38720484156",
+        "morpho": "0",
+        "euler": "0",
+        "fluid": "0",
+        "dolomite": "0",
+        "venus": "0"
+      },
+      "protocolReceiptRaw": {
+        "aave": "0",
+        "comet": "38720484156",
+        "morpho": "0",
+        "euler": "0",
+        "fluid": "0",
+        "dolomite": "0",
+        "venus": "0"
+      },
+      "idleBeforeRaw": "70400880287",
+      "idleAfterRaw": "31680396130",
+      "coreBeforeRouteRaw": "80001000324",
+      "coreAfterRouteRaw": "9600120037",
+      "actualPokeDefaultInterval": "86400",
+      "simulatedNativeRefreshGasUsed": "548337",
+      "ordinaryWithdrawalObservation": {
+        "count": "3",
+        "updatedAt": "1793654529",
+        "emaWithdrawGas": "155093",
+        "actualNativeCoreWithdrawalGasUsed": [
+          "825023",
+          "744331",
+          "742148",
+          "742148"
+        ],
+        "usedDefaults": false,
+        "l2Gas": "2778205",
+        "costUSD6": "162368",
+        "requestsRaw": [
+          "31780396130",
+          "100000000",
+          "100000000",
+          "100000000"
+        ],
+        "nativePriceWords": [
+          "0",
+          "0",
+          "400120000000",
+          "20000000",
+          "6000",
+          "20006000"
+        ],
+        "configuredCooldownSeconds": "300",
+        "generatedBlocks": 76,
+        "generatedEndTimestamp": "1793654529",
+        "counterfactualAccrualRaw": "33928"
+      },
+      "limits": [
+        "Native per-call simulated gas, not mined transaction receipts.",
+        "Only unused unfunded constructor-produced fixture accounts projected.",
+        "Cold initial allocation only; warm EMA, other profiles and production coefficient approval remain separate gates.",
+        "Seven enabled/scanned venues do not imply seven investment actions; only the actual risk-engine-selected actions execute."
+      ],
+      "readiness": "NOT_PRODUCTION_READY",
+      "rawReport": "deployments/lending-full-validation-20261101/production/keeper-gas/R18b/matrix/comet/native-result.json",
+      "rawReportSha256": "8b65fa23eb6345241288e8af3fc6f7487c83e6d55f0a32eb4d91b61ce0b46402"
+    },
+    {
+      "status": "DEDICATED_NATIVE_KEEPER_ORDINARY_EMA_RECALL_PASS",
+      "chainId": 42161,
+      "header": {
+        "baseFeePerGas": "0x1314470",
+        "difficulty": "0x1",
+        "extraData": "0x50f94b8c61d92a595f9fc3fe383178a4dfa35e3ab6d332e75d7ccbc7c25f6744",
+        "gasLimit": "0x4000000000000",
+        "gasUsed": "0x35bda",
+        "hash": "0x785f99208dd3c993ed717cd213350d1ba62bb383e978c7c781ef7a1eebac6cce",
+        "l1BlockNumber": "0x191c24c",
+        "logsBloom": "0x00000000000000000000000000000000000000010000000000010000008000000000800000000000000000000000100000000000000000000000000000000000000200000000000000000008000000000000000000000000000000001000000000000000020000000100008000000800000000000000000000000010000000000000000000000000200000000000000000001005000000800000000000000000000000000000100000000401000000000000000000000000000000000010000000000002000000000000000000000000000000000000000000000000800020000002000000000000000000000000000000000004000000000000000000000000",
+        "miner": "0xa4b000000000000000000073657175656e636572",
+        "mixHash": "0x0000000000028e29000000000191c24c000000000000003d0001000000000000",
+        "nonce": "0x000000000027d179",
+        "number": "0x1f08f66a",
+        "parentHash": "0x7df6f9c21550fdbc6ae69cd587322a8e5c006ede00dd80ffcabe5cf78ed70eb2",
+        "receiptsRoot": "0x9eac2a84bafc9f7271baabf853c343e552840404fa5034a6eded259143a7e3ef",
+        "sendCount": "0x28e29",
+        "sendRoot": "0x50f94b8c61d92a595f9fc3fe383178a4dfa35e3ab6d332e75d7ccbc7c25f6744",
+        "sha3Uncles": "0x1dcc4de8dec75d7aab85b567b6ccd41ad312451b948a7413f0a142fd40d49347",
+        "size": "0x407",
+        "stateRoot": "0xc172b0ded147453c0e85042c86c8fe31a9e76c9b43e68d1bd7402b0dfe485be7",
+        "timestamp": "0x6ae8fb71",
+        "transactions": [
+          "0xa35402e1ceef9caf14337bc8eb8131768d5a38d503d629fcc319cfd4c1318e1e",
+          "0x2a50f69dfa52f46e7aaa94ca20b4659d8a5bfd771b486a4bb464d57746759938",
+          "0xdc2f6a64bed36c5eb283db1186d9b9cbf9bfb130693ba2f9de1b3c604f15a6e6"
+        ],
+        "transactionsRoot": "0xdb7d92b59607c85d6195ceafa0d380fbc8b68120e2b310bf0b1b3680f9d6dd50",
+        "uncles": []
+      },
+      "profile": "morpho",
+      "nativeRpc": "<authorized-rpc>",
+      "simulatorSha256": "351d69bf4cc602bc907a0cb44796370dfa8aec84bcff98fa5bdc00167158475f",
+      "checkpointSha256": "81962afc8ca55e1ea8ee9010a51640f02483ec0cf8ab2a6dfd716799340cdb64",
+      "actions": [
+        [
+          "0x3171695D6cF7d0C3586E66fc1a1A7518C99c504a",
+          9290985393,
+          true
+        ]
+      ],
+      "independentQuote": {
+        "l2Gas": "8146224",
+        "posterWei": "0",
+        "executionWei": "162973357344000",
+        "costUSD6": "476093"
+      },
+      "simulatedNativeWrapperGasUsed": {
+        "keeper-0": "1096562",
+        "keeper-1": "1686639"
+      },
+      "swapInputRaw": "88000000000",
+      "swapCreditRaw": "87878018792",
+      "investedNavRaw": "70400880286",
+      "recalledRaw": "8890991935",
+      "protocolPositionRaw": {
+        "aave": "0",
+        "comet": "0",
+        "morpho": "9290985392",
+        "euler": "0",
+        "fluid": "0",
+        "dolomite": "0",
+        "venus": "0"
+      },
+      "protocolReceiptRaw": {
+        "aave": "0",
+        "comet": "0",
+        "morpho": "8934021095011786287652",
+        "euler": "0",
+        "fluid": "0",
+        "dolomite": "0",
+        "venus": "0"
+      },
+      "idleBeforeRaw": "70400880287",
+      "idleAfterRaw": "61109894894",
+      "coreBeforeRouteRaw": "80001000324",
+      "coreAfterRouteRaw": "9600120037",
+      "actualPokeDefaultInterval": "86400",
+      "simulatedNativeRefreshGasUsed": "548337",
+      "ordinaryWithdrawalObservation": {
+        "count": "3",
+        "updatedAt": "1793654529",
+        "emaWithdrawGas": "757477",
+        "actualNativeCoreWithdrawalGasUsed": [
+          "1845746",
+          "1387784",
+          "1385601",
+          "1385601"
+        ],
+        "usedDefaults": false,
+        "l2Gas": "3380589",
+        "costUSD6": "197573",
+        "requestsRaw": [
+          "61209894894",
+          "100000000",
+          "100000000",
+          "100000000"
+        ],
+        "nativePriceWords": [
+          "0",
+          "0",
+          "400120000000",
+          "20000000",
+          "6000",
+          "20006000"
+        ],
+        "configuredCooldownSeconds": "300",
+        "generatedBlocks": 76,
+        "generatedEndTimestamp": "1793654529",
+        "counterfactualAccrualRaw": "6542"
+      },
+      "limits": [
+        "Native per-call simulated gas, not mined transaction receipts.",
+        "Only unused unfunded constructor-produced fixture accounts projected.",
+        "Cold initial allocation only; warm EMA, other profiles and production coefficient approval remain separate gates.",
+        "Seven enabled/scanned venues do not imply seven investment actions; only the actual risk-engine-selected actions execute."
+      ],
+      "readiness": "NOT_PRODUCTION_READY",
+      "rawReport": "deployments/lending-full-validation-20261101/production/keeper-gas/R18b/matrix/morpho/native-result.json",
+      "rawReportSha256": "16b21aaad9cab31b5d3f75e9800848d179660e4e3086f3908a7500abb91bdd7b"
+    },
+    {
+      "status": "DEDICATED_NATIVE_KEEPER_ORDINARY_EMA_RECALL_PASS",
+      "chainId": 42161,
+      "header": {
+        "baseFeePerGas": "0x1314470",
+        "difficulty": "0x1",
+        "extraData": "0x50f94b8c61d92a595f9fc3fe383178a4dfa35e3ab6d332e75d7ccbc7c25f6744",
+        "gasLimit": "0x4000000000000",
+        "gasUsed": "0x35bda",
+        "hash": "0x785f99208dd3c993ed717cd213350d1ba62bb383e978c7c781ef7a1eebac6cce",
+        "l1BlockNumber": "0x191c24c",
+        "logsBloom": "0x00000000000000000000000000000000000000010000000000010000008000000000800000000000000000000000100000000000000000000000000000000000000200000000000000000008000000000000000000000000000000001000000000000000020000000100008000000800000000000000000000000010000000000000000000000000200000000000000000001005000000800000000000000000000000000000100000000401000000000000000000000000000000000010000000000002000000000000000000000000000000000000000000000000800020000002000000000000000000000000000000000004000000000000000000000000",
+        "miner": "0xa4b000000000000000000073657175656e636572",
+        "mixHash": "0x0000000000028e29000000000191c24c000000000000003d0001000000000000",
+        "nonce": "0x000000000027d179",
+        "number": "0x1f08f66a",
+        "parentHash": "0x7df6f9c21550fdbc6ae69cd587322a8e5c006ede00dd80ffcabe5cf78ed70eb2",
+        "receiptsRoot": "0x9eac2a84bafc9f7271baabf853c343e552840404fa5034a6eded259143a7e3ef",
+        "sendCount": "0x28e29",
+        "sendRoot": "0x50f94b8c61d92a595f9fc3fe383178a4dfa35e3ab6d332e75d7ccbc7c25f6744",
+        "sha3Uncles": "0x1dcc4de8dec75d7aab85b567b6ccd41ad312451b948a7413f0a142fd40d49347",
+        "size": "0x407",
+        "stateRoot": "0xc172b0ded147453c0e85042c86c8fe31a9e76c9b43e68d1bd7402b0dfe485be7",
+        "timestamp": "0x6ae8fb71",
+        "transactions": [
+          "0xa35402e1ceef9caf14337bc8eb8131768d5a38d503d629fcc319cfd4c1318e1e",
+          "0x2a50f69dfa52f46e7aaa94ca20b4659d8a5bfd771b486a4bb464d57746759938",
+          "0xdc2f6a64bed36c5eb283db1186d9b9cbf9bfb130693ba2f9de1b3c604f15a6e6"
+        ],
+        "transactionsRoot": "0xdb7d92b59607c85d6195ceafa0d380fbc8b68120e2b310bf0b1b3680f9d6dd50",
+        "uncles": []
+      },
+      "profile": "euler",
+      "nativeRpc": "<authorized-rpc>",
+      "simulatorSha256": "351d69bf4cc602bc907a0cb44796370dfa8aec84bcff98fa5bdc00167158475f",
+      "checkpointSha256": "81962afc8ca55e1ea8ee9010a51640f02483ec0cf8ab2a6dfd716799340cdb64",
+      "actions": [
+        [
+          "0x75A9C6B8F7dfDEd686f761373D1A7A151fB3A81C",
+          4900700351,
+          true
+        ]
+      ],
+      "independentQuote": {
+        "l2Gas": "8146224",
+        "posterWei": "0",
+        "executionWei": "162973357344000",
+        "costUSD6": "476093"
+      },
+      "simulatedNativeWrapperGasUsed": {
+        "keeper-0": "997619",
+        "keeper-1": "1352075"
+      },
+      "swapInputRaw": "88000000000",
+      "swapCreditRaw": "87878018792",
+      "investedNavRaw": "70400880286",
+      "recalledRaw": "4500707791",
+      "protocolPositionRaw": {
+        "aave": "0",
+        "comet": "0",
+        "morpho": "0",
+        "euler": "4900700350",
+        "fluid": "0",
+        "dolomite": "0",
+        "venus": "0"
+      },
+      "protocolReceiptRaw": {
+        "aave": "0",
+        "comet": "0",
+        "morpho": "0",
+        "euler": "4609910368",
+        "fluid": "0",
+        "dolomite": "0",
+        "venus": "0"
+      },
+      "idleBeforeRaw": "70400880287",
+      "idleAfterRaw": "65500179936",
+      "coreBeforeRouteRaw": "80001000324",
+      "coreAfterRouteRaw": "9600120037",
+      "actualPokeDefaultInterval": "86400",
+      "simulatedNativeRefreshGasUsed": "548337",
+      "ordinaryWithdrawalObservation": {
+        "count": "3",
+        "updatedAt": "1793654529",
+        "emaWithdrawGas": "224488",
+        "actualNativeCoreWithdrawalGasUsed": [
+          "979419",
+          "867534",
+          "865350",
+          "865350"
+        ],
+        "usedDefaults": false,
+        "l2Gas": "2847600",
+        "costUSD6": "166424",
+        "requestsRaw": [
+          "65600179936",
+          "100000000",
+          "100000000",
+          "100000000"
+        ],
+        "nativePriceWords": [
+          "0",
+          "0",
+          "400120000000",
+          "20000000",
+          "6000",
+          "20006000"
+        ],
+        "configuredCooldownSeconds": "300",
+        "generatedBlocks": 76,
+        "generatedEndTimestamp": "1793654529",
+        "counterfactualAccrualRaw": "7440"
+      },
+      "limits": [
+        "Native per-call simulated gas, not mined transaction receipts.",
+        "Only unused unfunded constructor-produced fixture accounts projected.",
+        "Cold initial allocation only; warm EMA, other profiles and production coefficient approval remain separate gates.",
+        "Seven enabled/scanned venues do not imply seven investment actions; only the actual risk-engine-selected actions execute."
+      ],
+      "readiness": "NOT_PRODUCTION_READY",
+      "rawReport": "deployments/lending-full-validation-20261101/production/keeper-gas/R18b/matrix/euler/native-result.json",
+      "rawReportSha256": "d6cd2c61e2c6d064e0e0e14b1620fe1650cc2a4748a2d628299b9787fef4e0e9"
+    },
+    {
+      "status": "DEDICATED_NATIVE_KEEPER_ORDINARY_EMA_RECALL_PASS",
+      "chainId": 42161,
+      "header": {
+        "baseFeePerGas": "0x1314470",
+        "difficulty": "0x1",
+        "extraData": "0x50f94b8c61d92a595f9fc3fe383178a4dfa35e3ab6d332e75d7ccbc7c25f6744",
+        "gasLimit": "0x4000000000000",
+        "gasUsed": "0x35bda",
+        "hash": "0x785f99208dd3c993ed717cd213350d1ba62bb383e978c7c781ef7a1eebac6cce",
+        "l1BlockNumber": "0x191c24c",
+        "logsBloom": "0x00000000000000000000000000000000000000010000000000010000008000000000800000000000000000000000100000000000000000000000000000000000000200000000000000000008000000000000000000000000000000001000000000000000020000000100008000000800000000000000000000000010000000000000000000000000200000000000000000001005000000800000000000000000000000000000100000000401000000000000000000000000000000000010000000000002000000000000000000000000000000000000000000000000800020000002000000000000000000000000000000000004000000000000000000000000",
+        "miner": "0xa4b000000000000000000073657175656e636572",
+        "mixHash": "0x0000000000028e29000000000191c24c000000000000003d0001000000000000",
+        "nonce": "0x000000000027d179",
+        "number": "0x1f08f66a",
+        "parentHash": "0x7df6f9c21550fdbc6ae69cd587322a8e5c006ede00dd80ffcabe5cf78ed70eb2",
+        "receiptsRoot": "0x9eac2a84bafc9f7271baabf853c343e552840404fa5034a6eded259143a7e3ef",
+        "sendCount": "0x28e29",
+        "sendRoot": "0x50f94b8c61d92a595f9fc3fe383178a4dfa35e3ab6d332e75d7ccbc7c25f6744",
+        "sha3Uncles": "0x1dcc4de8dec75d7aab85b567b6ccd41ad312451b948a7413f0a142fd40d49347",
+        "size": "0x407",
+        "stateRoot": "0xc172b0ded147453c0e85042c86c8fe31a9e76c9b43e68d1bd7402b0dfe485be7",
+        "timestamp": "0x6ae8fb71",
+        "transactions": [
+          "0xa35402e1ceef9caf14337bc8eb8131768d5a38d503d629fcc319cfd4c1318e1e",
+          "0x2a50f69dfa52f46e7aaa94ca20b4659d8a5bfd771b486a4bb464d57746759938",
+          "0xdc2f6a64bed36c5eb283db1186d9b9cbf9bfb130693ba2f9de1b3c604f15a6e6"
+        ],
+        "transactionsRoot": "0xdb7d92b59607c85d6195ceafa0d380fbc8b68120e2b310bf0b1b3680f9d6dd50",
+        "uncles": []
+      },
+      "profile": "fluid",
+      "nativeRpc": "<authorized-rpc>",
+      "simulatorSha256": "351d69bf4cc602bc907a0cb44796370dfa8aec84bcff98fa5bdc00167158475f",
+      "checkpointSha256": "81962afc8ca55e1ea8ee9010a51640f02483ec0cf8ab2a6dfd716799340cdb64",
+      "actions": [
+        [
+          "0x0856eaF48E047b7169D695f5c37f60f9daC5B991",
+          38720484157,
+          true
+        ]
+      ],
+      "independentQuote": {
+        "l2Gas": "8146224",
+        "posterWei": "0",
+        "executionWei": "162973357344000",
+        "costUSD6": "476093"
+      },
+      "simulatedNativeWrapperGasUsed": {
+        "keeper-0": "904689",
+        "keeper-1": "1093880"
+      },
+      "swapInputRaw": "88000000000",
+      "swapCreditRaw": "87878018792",
+      "investedNavRaw": "70400880285",
+      "recalledRaw": "38320532800",
+      "protocolPositionRaw": {
+        "aave": "0",
+        "comet": "0",
+        "morpho": "0",
+        "euler": "0",
+        "fluid": "38720484155",
+        "dolomite": "0",
+        "venus": "0"
+      },
+      "protocolReceiptRaw": {
+        "aave": "0",
+        "comet": "0",
+        "morpho": "0",
+        "euler": "0",
+        "fluid": "34048651845",
+        "dolomite": "0",
+        "venus": "0"
+      },
+      "idleBeforeRaw": "70400880287",
+      "idleAfterRaw": "31680396130",
+      "coreBeforeRouteRaw": "80001000324",
+      "coreAfterRouteRaw": "9600120037",
+      "actualPokeDefaultInterval": "86400",
+      "simulatedNativeRefreshGasUsed": "548337",
+      "ordinaryWithdrawalObservation": {
+        "count": "3",
+        "updatedAt": "1793654529",
+        "emaWithdrawGas": "134078",
+        "actualNativeCoreWithdrawalGasUsed": [
+          "862235",
+          "765132",
+          "762949",
+          "762949"
+        ],
+        "usedDefaults": false,
+        "l2Gas": "2757190",
+        "costUSD6": "161141",
+        "requestsRaw": [
+          "31780396130",
+          "100000000",
+          "100000000",
+          "100000000"
+        ],
+        "nativePriceWords": [
+          "0",
+          "0",
+          "400120000000",
+          "20000000",
+          "6000",
+          "20006000"
+        ],
+        "configuredCooldownSeconds": "300",
+        "generatedBlocks": 76,
+        "generatedEndTimestamp": "1793654529",
+        "counterfactualAccrualRaw": "48643"
+      },
+      "limits": [
+        "Native per-call simulated gas, not mined transaction receipts.",
+        "Only unused unfunded constructor-produced fixture accounts projected.",
+        "Cold initial allocation only; warm EMA, other profiles and production coefficient approval remain separate gates.",
+        "Seven enabled/scanned venues do not imply seven investment actions; only the actual risk-engine-selected actions execute."
+      ],
+      "readiness": "NOT_PRODUCTION_READY",
+      "rawReport": "deployments/lending-full-validation-20261101/production/keeper-gas/R18b/matrix/fluid/native-result.json",
+      "rawReportSha256": "f0e8e865ee8ed7d8d2317ae820987532f84380e6557f5ec51b78f1163cd5d8e4"
+    },
+    {
+      "status": "DEDICATED_NATIVE_KEEPER_ORDINARY_EMA_RECALL_PASS",
+      "chainId": 42161,
+      "header": {
+        "baseFeePerGas": "0x1314470",
+        "difficulty": "0x1",
+        "extraData": "0x50f94b8c61d92a595f9fc3fe383178a4dfa35e3ab6d332e75d7ccbc7c25f6744",
+        "gasLimit": "0x4000000000000",
+        "gasUsed": "0x35bda",
+        "hash": "0x785f99208dd3c993ed717cd213350d1ba62bb383e978c7c781ef7a1eebac6cce",
+        "l1BlockNumber": "0x191c24c",
+        "logsBloom": "0x00000000000000000000000000000000000000010000000000010000008000000000800000000000000000000000100000000000000000000000000000000000000200000000000000000008000000000000000000000000000000001000000000000000020000000100008000000800000000000000000000000010000000000000000000000000200000000000000000001005000000800000000000000000000000000000100000000401000000000000000000000000000000000010000000000002000000000000000000000000000000000000000000000000800020000002000000000000000000000000000000000004000000000000000000000000",
+        "miner": "0xa4b000000000000000000073657175656e636572",
+        "mixHash": "0x0000000000028e29000000000191c24c000000000000003d0001000000000000",
+        "nonce": "0x000000000027d179",
+        "number": "0x1f08f66a",
+        "parentHash": "0x7df6f9c21550fdbc6ae69cd587322a8e5c006ede00dd80ffcabe5cf78ed70eb2",
+        "receiptsRoot": "0x9eac2a84bafc9f7271baabf853c343e552840404fa5034a6eded259143a7e3ef",
+        "sendCount": "0x28e29",
+        "sendRoot": "0x50f94b8c61d92a595f9fc3fe383178a4dfa35e3ab6d332e75d7ccbc7c25f6744",
+        "sha3Uncles": "0x1dcc4de8dec75d7aab85b567b6ccd41ad312451b948a7413f0a142fd40d49347",
+        "size": "0x407",
+        "stateRoot": "0xc172b0ded147453c0e85042c86c8fe31a9e76c9b43e68d1bd7402b0dfe485be7",
+        "timestamp": "0x6ae8fb71",
+        "transactions": [
+          "0xa35402e1ceef9caf14337bc8eb8131768d5a38d503d629fcc319cfd4c1318e1e",
+          "0x2a50f69dfa52f46e7aaa94ca20b4659d8a5bfd771b486a4bb464d57746759938",
+          "0xdc2f6a64bed36c5eb283db1186d9b9cbf9bfb130693ba2f9de1b3c604f15a6e6"
+        ],
+        "transactionsRoot": "0xdb7d92b59607c85d6195ceafa0d380fbc8b68120e2b310bf0b1b3680f9d6dd50",
+        "uncles": []
+      },
+      "profile": "dolomite",
+      "nativeRpc": "<authorized-rpc>",
+      "simulatorSha256": "351d69bf4cc602bc907a0cb44796370dfa8aec84bcff98fa5bdc00167158475f",
+      "checkpointSha256": "81962afc8ca55e1ea8ee9010a51640f02483ec0cf8ab2a6dfd716799340cdb64",
+      "actions": [
+        [
+          "0x62932e9dBE3aF84b18E0D4515CBDaa54abeC5dac",
+          38720484157,
+          true
+        ]
+      ],
+      "independentQuote": {
+        "l2Gas": "8146224",
+        "posterWei": "0",
+        "executionWei": "162973357344000",
+        "costUSD6": "476093"
+      },
+      "simulatedNativeWrapperGasUsed": {
+        "keeper-0": "961966",
+        "keeper-1": "1698125"
+      },
+      "swapInputRaw": "88000000000",
+      "swapCreditRaw": "87878018792",
+      "investedNavRaw": "70400880287",
+      "recalledRaw": "38320535169",
+      "protocolPositionRaw": {
+        "aave": "0",
+        "comet": "0",
+        "morpho": "0",
+        "euler": "0",
+        "fluid": "0",
+        "dolomite": "38720484157",
+        "venus": "0"
+      },
+      "protocolReceiptRaw": {
+        "aave": "0",
+        "comet": "0",
+        "morpho": "0",
+        "euler": "0",
+        "fluid": "0",
+        "dolomite": "30076664168",
+        "venus": "0"
+      },
+      "idleBeforeRaw": "70400880287",
+      "idleAfterRaw": "31680396130",
+      "coreBeforeRouteRaw": "80001000324",
+      "coreAfterRouteRaw": "9600120037",
+      "actualPokeDefaultInterval": "86400",
+      "simulatedNativeRefreshGasUsed": "548337",
+      "ordinaryWithdrawalObservation": {
+        "count": "3",
+        "updatedAt": "1793654529",
+        "emaWithdrawGas": "359482",
+        "actualNativeCoreWithdrawalGasUsed": [
+          "1314066",
+          "1080559",
+          "1081206",
+          "1081296"
+        ],
+        "usedDefaults": false,
+        "l2Gas": "2982594",
+        "costUSD6": "174314",
+        "requestsRaw": [
+          "31780396130",
+          "100000000",
+          "100000000",
+          "100000000"
+        ],
+        "nativePriceWords": [
+          "0",
+          "0",
+          "400120000000",
+          "20000000",
+          "6000",
+          "20006000"
+        ],
+        "configuredCooldownSeconds": "300",
+        "generatedBlocks": 76,
+        "generatedEndTimestamp": "1793654529",
+        "counterfactualAccrualRaw": "51012"
+      },
+      "limits": [
+        "Native per-call simulated gas, not mined transaction receipts.",
+        "Only unused unfunded constructor-produced fixture accounts projected.",
+        "Cold initial allocation only; warm EMA, other profiles and production coefficient approval remain separate gates.",
+        "Seven enabled/scanned venues do not imply seven investment actions; only the actual risk-engine-selected actions execute."
+      ],
+      "readiness": "NOT_PRODUCTION_READY",
+      "rawReport": "deployments/lending-full-validation-20261101/production/keeper-gas/R18b/matrix/dolomite/native-result.json",
+      "rawReportSha256": "1f63cddf4d834676db6f9262e8e2d0d4d11b8269860e710d8ae126bc6463af09"
+    },
+    {
+      "status": "DEDICATED_NATIVE_KEEPER_ORDINARY_EMA_RECALL_PASS",
+      "chainId": 42161,
+      "header": {
+        "baseFeePerGas": "0x1314470",
+        "difficulty": "0x1",
+        "extraData": "0x50f94b8c61d92a595f9fc3fe383178a4dfa35e3ab6d332e75d7ccbc7c25f6744",
+        "gasLimit": "0x4000000000000",
+        "gasUsed": "0x35bda",
+        "hash": "0x785f99208dd3c993ed717cd213350d1ba62bb383e978c7c781ef7a1eebac6cce",
+        "l1BlockNumber": "0x191c24c",
+        "logsBloom": "0x00000000000000000000000000000000000000010000000000010000008000000000800000000000000000000000100000000000000000000000000000000000000200000000000000000008000000000000000000000000000000001000000000000000020000000100008000000800000000000000000000000010000000000000000000000000200000000000000000001005000000800000000000000000000000000000100000000401000000000000000000000000000000000010000000000002000000000000000000000000000000000000000000000000800020000002000000000000000000000000000000000004000000000000000000000000",
+        "miner": "0xa4b000000000000000000073657175656e636572",
+        "mixHash": "0x0000000000028e29000000000191c24c000000000000003d0001000000000000",
+        "nonce": "0x000000000027d179",
+        "number": "0x1f08f66a",
+        "parentHash": "0x7df6f9c21550fdbc6ae69cd587322a8e5c006ede00dd80ffcabe5cf78ed70eb2",
+        "receiptsRoot": "0x9eac2a84bafc9f7271baabf853c343e552840404fa5034a6eded259143a7e3ef",
+        "sendCount": "0x28e29",
+        "sendRoot": "0x50f94b8c61d92a595f9fc3fe383178a4dfa35e3ab6d332e75d7ccbc7c25f6744",
+        "sha3Uncles": "0x1dcc4de8dec75d7aab85b567b6ccd41ad312451b948a7413f0a142fd40d49347",
+        "size": "0x407",
+        "stateRoot": "0xc172b0ded147453c0e85042c86c8fe31a9e76c9b43e68d1bd7402b0dfe485be7",
+        "timestamp": "0x6ae8fb71",
+        "transactions": [
+          "0xa35402e1ceef9caf14337bc8eb8131768d5a38d503d629fcc319cfd4c1318e1e",
+          "0x2a50f69dfa52f46e7aaa94ca20b4659d8a5bfd771b486a4bb464d57746759938",
+          "0xdc2f6a64bed36c5eb283db1186d9b9cbf9bfb130693ba2f9de1b3c604f15a6e6"
+        ],
+        "transactionsRoot": "0xdb7d92b59607c85d6195ceafa0d380fbc8b68120e2b310bf0b1b3680f9d6dd50",
+        "uncles": []
+      },
+      "profile": "venus",
+      "nativeRpc": "<authorized-rpc>",
+      "simulatorSha256": "351d69bf4cc602bc907a0cb44796370dfa8aec84bcff98fa5bdc00167158475f",
+      "checkpointSha256": "81962afc8ca55e1ea8ee9010a51640f02483ec0cf8ab2a6dfd716799340cdb64",
+      "actions": [
+        [
+          "0xF89bCE51F7C63febAA94EB2D8253c32219a6574D",
+          4930368957,
+          true
+        ]
+      ],
+      "independentQuote": {
+        "l2Gas": "8146224",
+        "posterWei": "0",
+        "executionWei": "162973357344000",
+        "costUSD6": "476093"
+      },
+      "simulatedNativeWrapperGasUsed": {
+        "keeper-0": "921291",
+        "keeper-1": "1239031"
+      },
+      "swapInputRaw": "88000000000",
+      "swapCreditRaw": "87878018792",
+      "investedNavRaw": "70400880286",
+      "recalledRaw": "4530375428",
+      "protocolPositionRaw": {
+        "aave": "0",
+        "comet": "0",
+        "morpho": "0",
+        "euler": "0",
+        "fluid": "0",
+        "dolomite": "0",
+        "venus": "4930368956"
+      },
+      "protocolReceiptRaw": {
+        "aave": "0",
+        "comet": "0",
+        "morpho": "0",
+        "euler": "0",
+        "fluid": "0",
+        "dolomite": "0",
+        "venus": "440745280462"
+      },
+      "idleBeforeRaw": "70400880287",
+      "idleAfterRaw": "65470511330",
+      "coreBeforeRouteRaw": "80001000324",
+      "coreAfterRouteRaw": "9600120037",
+      "actualPokeDefaultInterval": "86400",
+      "simulatedNativeRefreshGasUsed": "548337",
+      "ordinaryWithdrawalObservation": {
+        "count": "3",
+        "updatedAt": "1793654529",
+        "emaWithdrawGas": "219131",
+        "actualNativeCoreWithdrawalGasUsed": [
+          "924384",
+          "861887",
+          "859704",
+          "859704"
+        ],
+        "usedDefaults": false,
+        "l2Gas": "2842243",
+        "costUSD6": "166111",
+        "requestsRaw": [
+          "65570511330",
+          "100000000",
+          "100000000",
+          "100000000"
+        ],
+        "nativePriceWords": [
+          "0",
+          "0",
+          "400120000000",
+          "20000000",
+          "6000",
+          "20006000"
+        ],
+        "configuredCooldownSeconds": "300",
+        "generatedBlocks": 76,
+        "generatedEndTimestamp": "1793654529",
+        "counterfactualAccrualRaw": "6471"
+      },
+      "limits": [
+        "Native per-call simulated gas, not mined transaction receipts.",
+        "Only unused unfunded constructor-produced fixture accounts projected.",
+        "Cold initial allocation only; warm EMA, other profiles and production coefficient approval remain separate gates.",
+        "Seven enabled/scanned venues do not imply seven investment actions; only the actual risk-engine-selected actions execute."
+      ],
+      "readiness": "NOT_PRODUCTION_READY",
+      "rawReport": "deployments/lending-full-validation-20261101/production/keeper-gas/R18b/matrix/venus/native-result.json",
+      "rawReportSha256": "41c50ff017515f11d989b64ff72a6958490258fadb753a1bcc23451f665ea73c"
+    }
+  ],
+  "matrix": "deployments/lending-full-validation-20261101/production/keeper-gas/R18b/matrix/matrix.json",
+  "matrixSha256": "c49c0ba9c6617aeb50111b439fa705fdf45af62afa34a669171d42b49336f175",
+  "readiness": "NOT_PRODUCTION_READY",
+  "limits": [
+    "Actual Nitro simulation with validation true, not mined public-chain receipts.",
+    "Historical R18b source; not acceptance of current remediation or new tokens.",
+    "Seven-enabled case trades two selected markets; seven dedicated profiles exercise each family.",
+    "Node-generated future blocks create disclosed counterfactual accrual, distinct from genuine later-header interest proof."
+  ]
+}

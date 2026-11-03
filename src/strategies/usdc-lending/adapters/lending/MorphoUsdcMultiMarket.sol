@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.28;
 import { PpsRateLib } from "./PpsRateLib.sol";
+import { IStrategyAssetValuation } from "../../interfaces/ILendingAdapter.sol";
 
 // ===== OpenZeppelin imports =====
 import { SafeERC20, IERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
@@ -57,7 +58,17 @@ interface IProtocolRegistry {
 }
 
 // ===== Adapter contract =====
+interface IMorphoV2LiquidityView {
+    function withdrawableIdle(address asset, address market, address owner, address receiver)
+        external view returns (uint256);
+}
+
 contract MorphoUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, ReentrancyGuard, Initializable {
+    error PositionsActive();
+    error DuplicateMarket();
+    error EmptyRegistry();
+    error ArithmeticBound();
+    error AccessControlUnauthorizedAccount(address account, bytes32 neededRole);
     using SafeERC20 for IERC20;
 
     // ===== Roles =====
@@ -157,6 +168,13 @@ contract MorphoUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentra
         _;
     }
 
+    /// @dev Keep the same AccessControl predicate and role storage, with the
+    /// compact structured error used by modern AccessControl implementations.
+    /// This preserves the deployment buffer without relaxing any permission.
+    function _checkRole(bytes32 role, address account) internal view override {
+        if (!hasRole(role, account)) revert AccessControlUnauthorizedAccount(account, role);
+    }
+
     modifier onlyParam() {
         require(
             hasRole(PARAM_ROLE, msg.sender) || hasRole(DEFAULT_ADMIN_ROLE, msg.sender),
@@ -200,9 +218,12 @@ contract MorphoUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentra
         try registry.getEnabledVaults(IProtocolRegistry.ProtocolType.MORPHO) returns (
             address[] memory vaults
         ) {
+            // Match addMarket's bound: downstream uint8 market indexes must not wrap.
+            require(vaults.length <= 255, "too many markets");
             for (uint256 i = 0; i < vaults.length; i++) {
                 if (vaults[i] != address(0)) {
                     require(IERC4626Like(vaults[i]).asset() == underlying, "asset mismatch");
+                    _requireUniqueMarket(vaults[i], mkts.length);
                     mkts.push(
                         Market({
                             addr: vaults[i], enabled: true, flagged: false, riskScoreBps: BPS_DENOM
@@ -225,6 +246,7 @@ contract MorphoUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentra
         // (OOG). Cap the registry well below that.
         require(mkts.length < 255, "too many markets");
         require(IERC4626Like(market).asset() == underlying, "wrong asset");
+        _requireUniqueMarket(market, mkts.length);
         mkts.push(Market({ addr: market, enabled: true, flagged: false, riskScoreBps: BPS_DENOM }));
         principal.push(0);
         emit MarketAdded(mkts.length - 1, market);
@@ -246,7 +268,10 @@ contract MorphoUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentra
         require(idx < mkts.length, "bad idx");
         require(market != address(0), "zero");
         require(IERC4626Like(market).asset() == underlying, "wrong asset");
+        _requireUniqueMarket(market, idx);
+        _requireEmptyMarket(mkts[idx].addr, principal[idx]);
         mkts[idx].addr = market;
+        cachedMarketNav[idx] = 0;
         emit MarketUpdated(idx, market);
     }
 
@@ -254,6 +279,12 @@ contract MorphoUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentra
     /// @dev Only works if registry was set in constructor
     function refreshFromRegistry() external onlyParam {
         require(address(registry) != address(0), "no registry");
+        if (principalTotal != 0) revert PositionsActive();
+        for (uint256 i; i < mkts.length; ++i) {
+            _requireEmptyMarket(mkts[i].addr, principal[i]);
+            delete cachedMarketNav[i];
+        }
+        activeIdx = 0;
 
         // Clear existing markets
         delete mkts;
@@ -261,6 +292,16 @@ contract MorphoUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentra
 
         // Reload from registry
         _loadFromRegistry();
+        if (mkts.length == 0) revert EmptyRegistry();
+    }
+
+    function _requireUniqueMarket(address market, uint256 excluded) internal view {
+        for (uint256 i; i < mkts.length; ++i)
+            if (i != excluded && mkts[i].addr == market) revert DuplicateMarket();
+    }
+
+    function _requireEmptyMarket(address market, uint256 costBasis) internal view {
+        if (costBasis != 0 || IERC20(market).balanceOf(address(this)) != 0) revert PositionsActive();
     }
 
     function setRiskScore(uint256 idx, uint16 riskScoreBps) external onlyParam {
@@ -394,6 +435,10 @@ contract MorphoUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentra
 
     /// @dev Try deposit to a specific market. Returns true on success, false on failure.
     function _safeDepositToMarket(address market, uint256 assets) internal returns (bool) {
+        if (vaultV2LiquidityView == address(0)) {
+            (bool v2, bytes memory identity) = market.staticcall(abi.encodeWithSignature("liquidityAdapter()"));
+            if (v2 && identity.length >= 32) return false;
+        }
         _approveMarket(market, assets);
         try IERC4626Like(market).deposit(assets, address(this)) returns (uint256 shares) {
             _revokeMarketApproval(market);
@@ -446,34 +491,44 @@ contract MorphoUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentra
     }
 
     function withdrawableAssets() public view override returns (uint256) {
-        uint256 sum = 0;
+        uint256 sum = idleAssetBalance();
         uint256 n = mkts.length;
         for (uint256 i = 0; i < n; ++i) {
             address m = mkts[i].addr;
             if (m == address(0)) continue;
-            // For Morpho vaults: use maxWithdraw() which accounts for underlying market liquidity
-            // Fallback to checking cash balance if maxWithdraw() is not available
-            (bool success, bytes memory data) =
-                m.staticcall(abi.encodeWithSignature("maxWithdraw(address)", address(this)));
-            if (success && data.length >= 32) {
-                sum += abi.decode(data, (uint256));
-            } else {
-                // Fallback: safe estimate via convertToAssets + cash
-                uint256 shares = IERC20(m).balanceOf(address(this));
-                if (shares < 1) continue; // slither: incorrect-equality - use < 1 instead of == 0
-                (bool okConvert, uint256 assets) = _safeConvertToAssets(m, shares);
-                // FIX P1.L4: continue MUST be inside if-branch so success path runs the cash-cap.
-                //          Pre-fix, the unconditional continue made the cash-cap path unreachable
-                //          and the market contributed 0 (under-reports liquidity).
-                if (!okConvert) {
-                    sum += principal[i];
-                    continue;
-                }
-                uint256 cash = IERC20(underlying).balanceOf(m);
-                sum += assets < cash ? assets : cash;
-            }
+            sum += _marketWithdrawable(m, principal[i]);
         }
         return sum;
+    }
+
+    function _marketWithdrawable(address market, uint256 unavailablePriceFallback)
+        internal view returns (uint256)
+    {
+        (bool success, bytes memory data) = market.staticcall(
+            abi.encodeWithSignature("maxWithdraw(address)", address(this)));
+        if (success && data.length >= 32) {
+            uint256 available = abi.decode(data, (uint256));
+            return available == 0 ? _vaultV2IdleLiquidity(market) : available;
+        }
+        // Preserve the legacy cash-capped fallback when the max view is absent.
+        uint256 shares = IERC20(market).balanceOf(address(this));
+        if (shares == 0) return 0;
+        (bool ok, uint256 assets) = _safeConvertToAssets(market, shares);
+        if (!ok) return unavailablePriceFallback;
+        uint256 cash = IERC20(underlying).balanceOf(market);
+        return assets < cash ? assets : cash;
+    }
+
+    /// @dev Morpho V2 deliberately returns zero from maxWithdraw. Its exit pays
+    /// actual idle assets first. This is a gate-checked lower bound: allocated
+    /// assets, unknown adapter families and force-deallocation penalties never
+    /// masquerade as immediate free liquidity. V1's zero limit stays binding.
+    function _vaultV2IdleLiquidity(address market) internal view returns (uint256) {
+        address helper = vaultV2LiquidityView;
+        if (helper == address(0)) return 0;
+        try IMorphoV2LiquidityView(helper).withdrawableIdle(underlying, market, address(this), vault)
+            returns (uint256 available) { return available; }
+        catch { return 0; }
     }
 
     // ===== Adapter interface: deposit/withdraw (NO-CUSTODY) =====
@@ -549,10 +604,14 @@ contract MorphoUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentra
         require(want > 0, "zero");
         // Withdraw pro-rata from worst APY to best, or by available liquidity
         uint256 n = mkts.length;
-        uint256 totalWithdrawn = 0;
-        uint256 remaining = want;
+        uint256 idleAvail = idleAssetBalance();
+        uint256 totalWithdrawn = idleAvail < want ? idleAvail : want;
+        if (totalWithdrawn > 0) {
+            IERC20(underlying).safeTransfer(vault, totalWithdrawn);
+        }
+        uint256 remaining = want - totalWithdrawn;
         // Build sorted index list by APY ascending (worst first)
-        uint8[] memory idxs = sortMarketsByAPY(false);
+        uint8[] memory idxs = sortMarketsByAPY(true);
         for (uint256 k = 0; k < n && remaining > 0; ++k) {
             uint8 idx = idxs[k];
             address m = mkts[idx].addr;
@@ -561,21 +620,10 @@ contract MorphoUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentra
             if (shares < 1) continue; // slither: incorrect-equality - use < 1 instead of == 0
 
             // Determine withdrawable amount using maxWithdraw() for accurate liquidity check
-            uint256 canWithdraw;
-            (bool success, bytes memory data) =
-                m.staticcall(abi.encodeWithSignature("maxWithdraw(address)", address(this)));
-            if (success && data.length >= 32) {
-                canWithdraw = abi.decode(data, (uint256));
-            } else {
-                // Fallback: estimate via cash balance (for non-Morpho vaults)
-                uint256 maxAssets = IERC4626Like(m).convertToAssets(shares);
-                uint256 cash = IERC20(underlying).balanceOf(m);
-                canWithdraw = maxAssets < cash ? maxAssets : cash;
-            }
+            uint256 canWithdraw = _marketWithdrawable(m, 0);
 
             if (canWithdraw < 1) continue; // slither: incorrect-equality - use < 1 instead of == 0
             uint256 toWithdraw = canWithdraw < remaining ? canWithdraw : remaining;
-            uint256 sharesToBurn = IERC4626Like(m).previewWithdraw(toWithdraw);
             // slither: unused-return - capture return value
             uint256 actualSharesBurned = IERC4626Like(m).withdraw(toWithdraw, vault, address(this));
             require(actualSharesBurned > 0 || toWithdraw < 1, "Morpho: withdraw returned 0 shares");
@@ -607,6 +655,14 @@ contract MorphoUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentra
     mapping(address => PpsSnap) public ppsSnap;
 
     mapping(address => PpsRateLib.Sample) internal rateSamples;
+    // Appended adapter configuration; controller/core storage remains unchanged.
+    address public vaultV2LiquidityView;
+    event VaultV2LiquidityViewUpdated(address indexed helper);
+    function setVaultV2LiquidityView(address helper) external onlyParam {
+        require(helper == address(0) || helper.code.length > 0, "liquidity view code");
+        vaultV2LiquidityView = helper;
+        emit VaultV2LiquidityViewUpdated(helper);
+    }
     function currentAPYBps() public view override returns (uint16) {
         if (apyOverrideBps != 0) return apyOverrideBps;
         if (activeIdx < mkts.length && mkts[activeIdx].enabled)
@@ -708,7 +764,12 @@ contract MorphoUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentra
             _recordMarketFailure(toMarket, toIdx);
             // Re-deposit to source as fallback
             _refreshApyCache(fromMarket);
-            _safeDepositToMarket(fromMarket, moveAmount);
+            bool restored = _safeDepositToMarket(fromMarket, moveAmount);
+            if (!restored) {
+                principalTotal -= principal[fromIdx];
+                principal[fromIdx] = 0;
+            }
+            _refreshNavCache();
             // Worst case: funds idle in adapter. Strategy will recall via withdraw.
             return (0, fromMarket, toMarket);
         }
@@ -717,9 +778,11 @@ contract MorphoUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentra
 
         // Accounting: move principal
         uint256 fromP = principal[fromIdx];
-        uint256 delta = fromP < moveAmount ? fromP : moveAmount;
-        principal[fromIdx] = fromP - delta;
-        principal[toIdx] += moveAmount;
+        // The plan withdraws the whole quoted source position. Move its cost
+        // basis, not the proceeds including yield, so the principal sum is
+        // preserved and gains are not silently added to invested principal.
+        principal[fromIdx] = 0;
+        principal[toIdx] += fromP;
 
         activeIdx = toIdx;
         lastOptimizeTs = uint64(block.timestamp);
@@ -842,10 +905,11 @@ contract MorphoUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentra
         // Compute benefit/cost
         uint16 apyFrom = getAPYOnChain(mkts[fromIdx].addr);
         uint16 apyTo = getAPYOnChain(mkts[toIdx].addr);
-        require(fromAlloc <= uint256(type(int256).max), "MorphoUsdcMultiMarket: fromAlloc overflow");
-        require(
-            gasCostUSDC <= uint256(type(int256).max), "MorphoUsdcMultiMarket: gasCostUSDC overflow"
-        );
+        if (fromAlloc > uint256(type(int256).max)) revert ArithmeticBound();
+        uint256 gasCostAsset = gasCostUSDC == 0
+            ? 0
+            : IStrategyAssetValuation(vault).usd6ToAssetUnits(gasCostUSDC);
+        if (gasCostAsset > uint256(type(int256).max)) revert ArithmeticBound();
         // casting to int256 is safe because overflow is checked above (uint16/uint8 always fit in int256)
         // forge-lint: disable-next-line(unsafe-typecast)
         int256 deltaAPY = int256(uint256(apyTo)) - int256(uint256(apyFrom));
@@ -853,7 +917,7 @@ contract MorphoUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentra
         int256 grossBenefit = int256(fromAlloc) * deltaAPY * int256(uint256(gateHorizonDays))
             / (int256(uint256(BPS_DENOM)) * 365);
         // forge-lint: disable-next-line(unsafe-typecast)
-        int256 moveCost = int256(gasCostUSDC) + int256(fromAlloc)
+        int256 moveCost = int256(gasCostAsset) + int256(fromAlloc)
             * int256(uint256(slippageBpsEstimate + withdrawalSpreadBpsEstimate))
             / int256(uint256(BPS_DENOM));
         int256 netBenefit = grossBenefit - moveCost;
@@ -986,20 +1050,25 @@ contract MorphoUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentra
 
     function emergencyPullAllToVault() external nonReentrant onlyVault {
         uint256 n = mkts.length;
+        uint256 remainingPrincipal;
         for (uint256 i = 0; i < n; ++i) {
             address m = mkts[i].addr;
-            if (m == address(0)) continue;
+            if (m == address(0)) { remainingPrincipal += principal[i]; continue; }
             uint256 shares = IERC20(m).balanceOf(address(this));
-            if (shares < 1) continue; // slither: incorrect-equality - use < 1 instead of == 0
+            if (shares < 1) { principal[i] = 0; continue; }
             try IERC4626Like(m).redeem(shares, address(this), address(this)) returns (uint256 _assetsOut) {
+                principal[i] = 0;
                 emit EmergencyMarketRedeemed(i, m, shares, _assetsOut);
             } catch (bytes memory reason) {
                 emit AdapterOperationFailed(msg.sig, reason);
                 emit EmergencyMarketRedeemed(i, m, shares, 0);
             }
-            principal[i] = 0;
+            remainingPrincipal += principal[i];
         }
-        principalTotal = 0;
+        principalTotal = remainingPrincipal;
+        // Successful exits must stop contributing their old cached NAV. Failed
+        // redemptions retain their principal and actual remaining position.
+        _refreshNavCache();
         // Transfer FULL balance (withdrawn + any pre-existing idle) to vault
         uint256 fullBalance = IERC20(underlying).balanceOf(address(this));
         if (fullBalance > 0) {

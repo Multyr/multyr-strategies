@@ -1,0 +1,30 @@
+{
+  "status": "CAPABILITIES_VERIFIED_NOT_KEEPER_CALIBRATION",
+  "nativeParity": {
+    "status": "PASS_NATIVE_PRICE_CONTEXT_MATCH_ALL_SIX_WORDS",
+    "rpc": "https://arb1.arbitrum.io/rpc",
+    "block": "520666905",
+    "hash": "0x6341b72ae6840c85bdbf58dd32960e307135cf8d7aaa8bd6071d59b24eb05e12",
+    "baseFeePerGasWei": "20034000",
+    "validation": true,
+    "blockOverrides": [
+      "baseFeePerGas"
+    ],
+    "matchedWords": 6
+  },
+  "ownUnfundedCheckpoint": {
+    "status": "PASS_UNUSED_UNFUNDED_OWN_CONSTRUCTOR_CHECKPOINT",
+    "sourceBlock": 26275000,
+    "targetBlock": 26300000,
+    "targetHeaderUnchanged": true,
+    "targetHolderBalanceUnchanged": true,
+    "projectedNativeBalance": "0"
+  },
+  "limits": [
+    "Native gasUsed from eth_simulateV1 is simulated per-call gas, not a mined transaction receipt.",
+    "Only new, source-constructor-produced unfunded contracts may be projected; existing protocol, holder, token and native precompile state may not be overridden.",
+    "Generated simulation block timestamps are counterfactual; pinned canonical base fee is reproduced explicitly.",
+    "These capability probes do not close wrapper gas calibration or production readiness."
+  ],
+  "readiness": "NOT_PRODUCTION_READY"
+}

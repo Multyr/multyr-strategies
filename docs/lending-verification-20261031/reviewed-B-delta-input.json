@@ -1,0 +1,27 @@
+[
+  {
+    "path": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol",
+    "sha256": "AB114B9E85644BD45257F588DBB33E22AE4F03B599116396776B8E04A5F94E19"
+  },
+  {
+    "path": "src/strategies/usdc-lending/controller/StrategySettingsModule.sol",
+    "sha256": "2F935B868EF8A446D92EBA48D3AAE04D2C7A1D8A0822A8E7E732EE50AE0D4003"
+  },
+  {
+    "path": "src/strategies/usdc-lending/adapters/lending/MorphoUsdcMultiMarket.sol",
+    "sha256": "B98F249FC21682F4EF9206F32E9BCACF36A05A1A173680221417A9F91E3999C0"
+  },
+  {
+    "path": "test/strategies/usdc-lending/ReviewAvailabilityRemediation.t.sol",
+    "sha256": "3E66749D2A23E2C3373CC8632FB9D30680B71BCE3A43E154F357809C5551C3DC"
+  },
+  {
+    "path": "test/strategies/usdc-lending/MorphoRegistryBound.t.sol",
+    "sha256": "4803DA278621EAC0495EBEDF925B83DDF3499464D6D5307A31E8CD9FB005A801"
+  },
+  {
+    "path": "test/strategies/usdc-lending/AdapterRateRemediation.t.sol",
+    "sha256": "77422BC7E6F17567070E05AE9EB17304C1CD21B5400B33559418361EC43D5D1F",
+    "purpose": "import dependency for MorphoRegistryBound unit test"
+  }
+]

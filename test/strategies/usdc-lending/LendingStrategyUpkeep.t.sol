@@ -677,6 +677,32 @@ contract LendingStrategyUpkeep_PokeAPY_Test is Test {
         upkeep.setPokeInterval(86400); // 24h
     }
 
+    function test_freshPokeDefaultDoesNotStarveHarvest() public {
+        address[] memory strats = new address[](1);
+        strats[0] = address(strategy);
+        StrategyUpkeep fresh = new StrategyUpkeep(strats);
+        fresh.addPokeTarget(address(target1));
+        strategy.setCanHarvest(true);
+        (bool needed, bytes memory data) = fresh.checkUpkeep("");
+        assertTrue(needed);
+        (uint8 op,) = abi.decode(data, (uint8, uint256));
+        assertEq(op, OP_POKE_APY);
+        fresh.performUpkeep(data);
+        assertEq(target1.pokeCallCount(), 1);
+        (needed, data) = fresh.checkUpkeep("");
+        assertTrue(needed);
+        (op,) = abi.decode(data, (uint8, uint256));
+        assertEq(op, 1, "fresh poke must yield to ready harvest");
+        assertEq(fresh.pokeInterval(), 1 days);
+    }
+
+    function test_zeroPokeIntervalRejectedWithoutStateChange() public {
+        uint64 beforeInterval = upkeep.pokeInterval();
+        vm.expectRevert(bytes4(keccak256("InvalidPokeInterval()")));
+        upkeep.setPokeInterval(0);
+        assertEq(upkeep.pokeInterval(), beforeInterval);
+    }
+
     // ========================================================================
     // checkUpkeep — POKE_APY
     // ========================================================================

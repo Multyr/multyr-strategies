@@ -1,0 +1,31 @@
+{
+  "status": "ACTUAL_OPTIMISM_NATIVE_FEE_ALLOCATION_RECALL_PASS",
+  "readiness": "NOT_PRODUCTION_READY",
+  "integrated": true,
+  "passed": 1,
+  "failed": 0,
+  "skipped": 0,
+  "chainId": 10,
+  "initialBlock": 158920000,
+  "settlementBlock": 159020249,
+  "asset": "0x94b008aa00579c1307b0ef2c499ad98a8ce58e58",
+  "decimals": 6,
+  "holder": "0xacd03d601e5bb1b275bb94076ff46ed9d753435a",
+  "assetFeed": "0xecef79e109e997bca29c1c0897ec9d7b03647f5e",
+  "nativeFeed": "0x13e3ee699d1909e989722e753853ae30b17e08c5",
+  "sequencerFeed": "0x371ead81c9102c9bf4874a9075ffff170f2ee389",
+  "gpo": "0x420000000000000000000000000000000000000f",
+  "nativePriceWad": "2266310000000000000000",
+  "quotedGas": 1796224,
+  "executionPriceWei": "1000000281",
+  "expectedAndQuotedUsd6": "5088879",
+  "log": "C:\\Users\\Pierre\\Multyr\\pt-multiply\\pd\\deployments\\lending-full-validation-20261101\\production\\D-polygon\\root-optimism-actual-final.log",
+  "logSha256": "53bdef8909a86eb239543e0aed0ce9604a545a97232c2754795f8c656588d5e4",
+  "limits": [
+    "Real holder transfer, actual Chainlink/USD/sequencer feeds, actual OP GPO and candidate/Core/Aave allocation/full recall.",
+    "Independent quote uses actual GPO upper-bound, operator constant/sample and pinned native feed; not target quote output.",
+    "Coefficients illustrative; production wrapper calibration remains open.",
+    "Not an epoched user full-exit proof.",
+    "Full integrated41-case canonical gate not yet executed."
+  ]
+}

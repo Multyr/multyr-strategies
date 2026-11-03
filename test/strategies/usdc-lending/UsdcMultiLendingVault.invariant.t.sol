@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.28;
+import {LendingOracleTestFixture} from "./helpers/LendingOracleTestFixture.sol";
 
 import { Test, console2 } from "forge-std/Test.sol";
 import { StdInvariant } from "forge-std/StdInvariant.sol";
@@ -242,7 +243,7 @@ contract VaultHandler is Test {
 // INVARIANT TEST CONTRACT
 // ============================================================================
 
-contract UsdcMultiLendingVault_Invariant_Test is StdInvariant, Test {
+contract UsdcMultiLendingVault_Invariant_Test is StdInvariant, LendingOracleTestFixture {
     address constant ARBITRUM_USDC = 0xaf88d065e77c8cC2239327C5EDb3A432268e5831;
 
     UsdcMultiLendingVault public vault;
@@ -253,7 +254,7 @@ contract UsdcMultiLendingVault_Invariant_Test is StdInvariant, Test {
     VaultHandler public handler;
 
     address public admin = address(0x1);
-    address public core = address(0x2);
+    address public core = _newOracleCore(1e18);
     address public router = address(0x6);
     address public keeper = address(0x3);
     address public paramSetter = address(0x4);
@@ -663,7 +664,7 @@ contract AdversarialHandler is Test {
     }
 }
 
-contract UsdcMultiLendingVault_Adversarial_Invariant_Test is StdInvariant, Test {
+contract UsdcMultiLendingVault_Adversarial_Invariant_Test is StdInvariant, LendingOracleTestFixture {
     address constant ARBITRUM_USDC = 0xaf88d065e77c8cC2239327C5EDb3A432268e5831;
 
     UsdcMultiLendingVault public vault;
@@ -673,7 +674,7 @@ contract UsdcMultiLendingVault_Adversarial_Invariant_Test is StdInvariant, Test 
     AdversarialHandler public handler;
 
     address public admin = address(0x1);
-    address public core = address(0x2);
+    address public core = _newOracleCore(1e18);
     address public router = address(0x6);
     address public keeper = address(0x3);
 
@@ -853,7 +854,7 @@ contract ScoringInvariantHandler is Test {
     }
 }
 
-contract UsdcMultiLendingVault_Scoring_Invariant_Test is StdInvariant, Test {
+contract UsdcMultiLendingVault_Scoring_Invariant_Test is StdInvariant, LendingOracleTestFixture {
     MockUSDCInvariant public usdc;
     UsdcMultiLendingVault public vault;
     ScoringInvariantHandler public handler;
@@ -861,7 +862,7 @@ contract UsdcMultiLendingVault_Scoring_Invariant_Test is StdInvariant, Test {
 
     address constant ARBITRUM_USDC = 0xaf88d065e77c8cC2239327C5EDb3A432268e5831;
     address public admin = address(0xAD);
-    address public core = address(0xC0);
+    address public core = _newOracleCore(1e18);
     address public keeper = address(0xBE);
     bytes32 constant KEEPER_ROLE = keccak256("KEEPER_ROLE");
 

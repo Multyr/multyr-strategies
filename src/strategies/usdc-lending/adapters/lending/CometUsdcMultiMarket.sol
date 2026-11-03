@@ -2,11 +2,14 @@
 pragma solidity 0.8.28;
 
 // ----------- OpenZeppelin imports -----------
+import { IERC20Metadata } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
 import { ReentrancyGuard } from "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import { Initializable } from "@openzeppelin/contracts/proxy/utils/Initializable.sol";
+import { Math } from "@openzeppelin/contracts/utils/math/Math.sol";
+import { IStrategyAssetValuation } from "../../interfaces/ILendingAdapter.sol";
 
 // ----------- IProtocolRegistry interface -----------
 interface IProtocolRegistry {
@@ -55,10 +58,11 @@ interface IComet {
     function supply(address asset, uint256 amount) external;
     function withdraw(address asset, uint256 amount) external;
     function balanceOf(address account) external view returns (uint256);
+    function totalSupply() external view returns (uint256);
     function getUtilization() external view returns (uint256);
     function getSupplyRate(uint256 utilization) external view returns (uint256);
     // V9.1: needed for external TVL calculation
-    function totalsBasic() external view returns (uint64, uint64, uint104, uint104, uint64, uint64);
+    function totalsBasic() external view returns (uint64, uint64, uint64, uint64, uint104, uint104, uint40, uint8);
     function baseIndexScale() external view returns (uint64);
 }
 
@@ -72,11 +76,14 @@ interface IRewardSwapHelperComet {
     /// @dev RA-10 oracle freshness gate (M1) + USDC swap (M2).
     function canSwap(address rewardToken) external view returns (bool);
     function previewExpectedOut(address rewardToken, uint256 amountIn) external view returns (uint256);
-    function swapToUSDC(address rewardToken, uint256 amountIn, address receiver) external returns (uint256);
+    function swapToAsset(address rewardToken, uint256 amountIn, address receiver) external returns (uint256);
 }
 
 // ----------- Adapter Contract -----------
 contract CometUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, ReentrancyGuard, Initializable {
+    error PositionsActive();
+    error DuplicateMarket();
+    error EmptyRegistry();
     using SafeERC20 for IERC20;
 
     // ----------- Roles -----------
@@ -84,7 +91,7 @@ contract CometUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
 
     // ----------- Immutable config -----------
     // --- V10 Storage (was immutable in V9.x; logically immutable post-initialize) ---
-    address public override underlying; // USDC
+    address public override underlying; // vault asset
     address public vault; // Strategy Vault (no-custody)
     IProtocolRegistry public registry; // Optional registry (address(0) if not used)
 
@@ -140,6 +147,15 @@ contract CometUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
     uint64 public lastOptimizeTs;
     uint8 public activeIdx;
 
+    /// @dev One whole unit of `underlying`, cached in initialize(). The scoring expression
+    ///      in optimize() normalises a liquidity figure (asset units) into bps and previously
+    ///      divided by a hard `1e6`; on an 18-decimal asset that inflates the liquidity term
+    ///      by 1e12 and the venue ranking becomes liquidity-dominated regardless of rate.
+    /// @dev Declared LAST on purpose: appended after every pre-existing slot so no slot above
+    ///      it moves. An earlier revision inserted it next to `underlying`, which shifted
+    ///      `vault`, `registry`, `mkts` and everything after them.
+    uint256 public underlyingUnit;
+
     // ----------- Events -----------
     event MarketAdded(uint256 indexed idx, address comet);
     event MarketToggled(uint256 indexed idx, bool enabled);
@@ -180,6 +196,7 @@ contract CometUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
     ) external initializer {
         require(usdc_ != address(0) && admin_ != address(0) && vault_ != address(0), "zero");
         underlying = usdc_;
+        underlyingUnit = 10 ** uint256(IERC20Metadata(usdc_).decimals());
         vault = vault_;
         capacity = capacity_;
         registry = IProtocolRegistry(registry_); // Can be address(0)
@@ -198,8 +215,10 @@ contract CometUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
 
     // ----------- Registry Management (PARAM_ROLE) -----------
     function addMarket(address comet) external onlyParam {
+        require(mkts.length < 255, "too many markets");
         require(comet != address(0), "zero");
         require(IComet(comet).baseToken() == underlying, "NotUSDC");
+        _requireUniqueMarket(comet, mkts.length);
         mkts.push(Market({ comet: comet, enabled: true, flagged: false, riskScoreBps: 10000 }));
         principal.push(0);
         emit MarketAdded(mkts.length - 1, comet);
@@ -221,6 +240,8 @@ contract CometUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
         require(idx < mkts.length, "badIdx");
         require(comet != address(0), "zero");
         require(IComet(comet).baseToken() == underlying, "NotUSDC");
+        _requireUniqueMarket(comet, idx);
+        _requireEmptyMarket(mkts[idx].comet, principal[idx]);
         mkts[idx].comet = comet;
         emit MarketUpdated(idx, comet);
     }
@@ -364,7 +385,7 @@ contract CometUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
         // (3) M2 swap — approve, attempt, reset approval regardless of outcome
         IERC20(rewardToken_).forceApprove(swapHelper_, 0);
         IERC20(rewardToken_).forceApprove(swapHelper_, bal);
-        try IRewardSwapHelperComet(swapHelper_).swapToUSDC(rewardToken_, bal, receiver) returns (uint256 out) {
+        try IRewardSwapHelperComet(swapHelper_).swapToAsset(rewardToken_, bal, receiver) returns (uint256 out) {
             realized = out;
             emit HarvestExecuted(rewardToken_, bal, out, receiver);
         } catch (bytes memory reason) {
@@ -382,15 +403,20 @@ contract CometUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
     /// @notice Returns total USDC liquidity across all enabled Comet markets
     /// @dev Uses USDC balance of each Comet contract (available liquidity, conservative lower bound)
     /// @notice Total USDC supplied to external Comet markets.
-    /// @dev Uses totalsBasic().totalSupplyBase * baseSupplyIndex / baseIndexScale
-    ///      for accurate total supply (not just available cash).
+    /// @dev The canonical getter projects accrued supply interest. Stored
+    ///      totalsBasic indexes alone lag the live supply between accruals.
+    ///      Older Comet-like markets retain the conservative stored-index fallback.
     function externalMarketTVL() external view override returns (uint256 total) {
         total = 0;
         uint256 n = mkts.length;
         for (uint256 i = 0; i < n; ++i) {
             if (!mkts[i].enabled) continue;
+            try IComet(mkts[i].comet).totalSupply() returns (uint256 supply) {
+                total += supply;
+                continue;
+            } catch {}
             try IComet(mkts[i].comet).totalsBasic() returns (
-                uint64 baseSupplyIndex, uint64, uint104, uint104, uint64 totalSupplyBase, uint64
+                uint64 baseSupplyIndex, uint64, uint64, uint64, uint104 totalSupplyBase, uint104, uint40, uint8
             ) {
                 try IComet(mkts[i].comet).baseIndexScale() returns (uint64 scale) {
                     if (scale > 0) {
@@ -591,6 +617,7 @@ contract CometUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
         uint256[] memory scores = new uint256[](n);
         uint256 bestScore = 0;
         uint256 bestIdx = 0;
+        uint256 managed = totalAssets();
         for (uint256 i = 0; i < n; ++i) {
             Market storage m = mkts[i];
             if (!m.enabled || m.flagged) continue;
@@ -601,7 +628,9 @@ contract CometUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
             uint16 stability = apy;
             uint16 incentive = incentiveBpsGlobal;
 
-            uint256 score = uint256(apy) * wAPY + liq * wLiq / 1e6 // normalize liquidity to bps
+            // Readiness is an asset/asset ratio, independent of decimals and token price.
+            uint256 liquidityBps = managed == 0 || liq >= managed ? 10000 : (liq * 10000) / managed;
+            uint256 score = uint256(apy) * wAPY + liquidityBps * wLiq
                 + uint256(risk) * wRisk + uint256(stability) * wStability + uint256(incentive)
                 * wIncentive;
             scores[i] = score;
@@ -634,7 +663,10 @@ contract CometUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
 
         uint256 horizon = gateHorizonDays * 1 days;
         uint256 grossBenefit = (fromAssets * deltaAPY * horizon) / (10000 * 365 days);
-        uint256 moveCost = gasCostUSDC
+        uint256 gasCostAsset = gasCostUSDC == 0
+            ? 0
+            : IStrategyAssetValuation(vault).usd6ToAssetUnits(gasCostUSDC);
+        uint256 moveCost = gasCostAsset
             + (fromAssets * (slippageBpsEstimate + withdrawalSpreadBpsEstimate)) / 10000;
         require(
             grossBenefit <= uint256(type(int256).max), "CometUsdcMultiMarket: grossBenefit overflow"
@@ -643,7 +675,8 @@ contract CometUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
         // casting to int256 is safe because overflow is checked above
         // forge-lint: disable-next-line(unsafe-typecast)
         int256 netBenefit = int256(grossBenefit) - int256(moveCost);
-        uint256 netBenefitBps = (grossBenefit > 0 && tvl > 0) ? (grossBenefit * 10000) / tvl : 0;
+        uint256 netBenefitBps = netBenefit > 0 && tvl > 0
+            ? Math.mulDiv(uint256(netBenefit), 10000, tvl) : 0;
         if (netBenefit <= 0 || netBenefitBps < gateMinNetBenefitBps) {
             return (0, mkts[fromIdx].comet, mkts[toIdx].comet);
         }
@@ -748,9 +781,11 @@ contract CometUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
         try registry.getEnabledVaults(IProtocolRegistry.ProtocolType.COMPOUND_V3) returns (
             address[] memory vaults
         ) {
+            require(vaults.length <= 255, "too many markets");
             for (uint256 i = 0; i < vaults.length; i++) {
                 if (vaults[i] != address(0)) {
                     require(IComet(vaults[i]).baseToken() == underlying, "asset mismatch");
+                    _requireUniqueMarket(vaults[i], mkts.length);
                     mkts.push(
                         Market({
                             comet: vaults[i], enabled: true, flagged: false, riskScoreBps: 10000
@@ -768,6 +803,9 @@ contract CometUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
     /// @notice Refresh markets from registry (clear and reload)
     function refreshFromRegistry() external onlyParam {
         require(address(registry) != address(0), "no registry");
+        if (principalTotal != 0) revert PositionsActive();
+        for (uint256 i; i < mkts.length; ++i) _requireEmptyMarket(mkts[i].comet, principal[i]);
+        activeIdx = 0;
 
         // Clear existing markets
         delete mkts;
@@ -775,6 +813,15 @@ contract CometUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
 
         // Reload from registry
         _loadFromRegistry();
+        if (mkts.length == 0) revert EmptyRegistry();
+    }
+
+    function _requireUniqueMarket(address market, uint256 excluded) internal view {
+        for (uint256 i; i < mkts.length; ++i)
+            if (i != excluded && mkts[i].comet == market) revert DuplicateMarket();
+    }
+    function _requireEmptyMarket(address market, uint256 costBasis) internal view {
+        if (costBasis != 0 || IComet(market).balanceOf(address(this)) != 0) revert PositionsActive();
     }
 
     // ----------- Idle Asset & Emergency Recovery -----------

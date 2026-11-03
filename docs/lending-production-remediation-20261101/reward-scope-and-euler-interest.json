@@ -1,0 +1,86 @@
+{
+  "status": "NAMED_REAL_EULER_INTEREST_HARVEST_PASS_EXTERNAL_REWARD_ACTIVATION_NOT_VALIDATED",
+  "productionReady": false,
+  "currentObservedStrategy": "0x2ad722b6241605481829e4b251ae8a4ba8be86ce",
+  "chainId": 42161,
+  "block": 520384312,
+  "verifiedDisabledExternalPipelines": [
+    {
+      "adapter": "0x7a853ffba027847295e2fbd0397dd4a6432b52fd",
+      "verifiedZeroGetters": [
+        "rewardsController()",
+        "swapHelper()"
+      ]
+    },
+    {
+      "adapter": "0x3f7386eb35c315c06664106f0ce0f4ffbec42779",
+      "verifiedZeroGetters": [
+        "rewardsController()",
+        "swapHelper()",
+        "rewardToken()"
+      ]
+    },
+    {
+      "adapter": "0x883bb97a5cd4c0e0ae5798632e1ec8c87e4fddb3",
+      "verifiedZeroGetters": [
+        "comptroller()",
+        "swapHelper()",
+        "rewardToken()"
+      ]
+    }
+  ],
+  "nonzeroLegacyEulerHarvestableRaw": "0x0000000000000000000000000000000000000000000000000000000000001da3",
+  "actualCandidateInterestObservations": [
+    {
+      "asset": "0xaf88d065e77c8cC2239327C5EDb3A432268e5831",
+      "market": "0x0a1eCC5Fe8C9be3C809844fcBe615B46A869b899",
+      "rpcBlock": "520194008",
+      "elapsedSeconds": "31549",
+      "principal": "1000000000",
+      "earned": "27690",
+      "realized": "27690"
+    },
+    {
+      "asset": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+      "market": "0x797DD80692c3b2dAdabCe8e30C07fDE5307D48a9",
+      "rpcBlock": "26304000",
+      "elapsedSeconds": "48204",
+      "principal": "1000000000",
+      "earned": "153167",
+      "realized": "153167"
+    },
+    {
+      "asset": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+      "market": "0x313603FA690301b0CaeEf8069c065862f9162162",
+      "rpcBlock": "26304000",
+      "elapsedSeconds": "48204",
+      "principal": "1000000000",
+      "earned": "130509",
+      "realized": "130509"
+    }
+  ],
+  "candidateTestSourceSha256": "43755dca5dc7c71f32554f973e6ad10c1600852f1ca679ff177e871a674fa66b",
+  "rawEvidence": [
+    {
+      "path": "deployments/lending-full-validation-20261101/production/coordinator/current-seven-reward-inputs.json",
+      "sha256": "459b7206fd0081715a129fbc2b38434d5bf8ed93048c6d125f1956d1856c188f"
+    },
+    {
+      "path": "deployments/lending-full-validation-20261101/production/coordinator/R6-euler-earned-interest-after.log",
+      "sha256": "e8ee29a29aed31dbff14a2fbfa235b80bb0471f7590ca5c6390f9eb234c2cc19"
+    }
+  ],
+  "limits": [
+    "Observed current Router-enabled strategy; retired historical strategy is not the active target.",
+    "A reverting or absent getter remains unavailable, never inferred zero.",
+    "Fluid/Morpho/Dolomite candidate harvest returns zero by explicit design; lending PPS/rate yield is separate from external reward-token claims.",
+    "Euler observations are actual EVault borrower interest accrued over genuine later headers with persisted scenario book. No donation or reward-token prefunding is counted as earned interest.",
+    "Future manifests enabling external reward controllers/helper/routes require genuine earned claim/swap acceptance; this remains unvalidated, not silently waived."
+  ],
+  "integratedAcceptance": "docs/lending-production-remediation-20261101/r7-actual-42-acceptance.json",
+  "independentCanonicalHeaders": {
+    "path": "deployments/lending-full-validation-20261101/production/coordinator/euler-earned-canonical-headers.json",
+    "sha256": "4ce7a86557a554a78a340640fc64b67c15fd8524e8919dde0202f6790ec463b6",
+    "providersPerChain": 2
+  }
+}

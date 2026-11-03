@@ -1,0 +1,42 @@
+[
+  {
+    "path": "src/strategies/usdc-lending/adapters/lending/CometUsdcMultiMarket.sol",
+    "sha256": "3A88C28B8D92559C1B8397D326AF6841B40438DFAC22FF611CF91734A0BCC1AA"
+  },
+  {
+    "path": "src/strategies/usdc-lending/adapters/lending/DolomiteUsdcMultiMarket.sol",
+    "sha256": "5BB7672425E7CC33DFF100CA40712B554C58FA906B772BC9A4275EBA2A32A29A"
+  },
+  {
+    "path": "test/strategies/usdc-lending/adapters/CometUsdcMultiMarketAdapter.t.sol",
+    "sha256": "3F2CA401091412A1C3D37BA5C02E733BFA49CFBB5D3BB232507785BFCE464520"
+  },
+  {
+    "path": "test/strategies/usdc-lending/AdapterRateRemediation.t.sol",
+    "sha256": "86848324CB47D3259F40BD728E1B5321467B74DCB02A7EE5A4585039C51627F5"
+  },
+  {
+    "path": "test/strategies/usdc-lending/fork/LendingUnmockedE2E.fork.t.sol",
+    "sha256": "E5F5F1B8042CBF7B5873291D7AC6A06272DCD1F9FC57A0DE0DD3A3BCCA89CFCE"
+  },
+  {
+    "path": "test/strategies/usdc-lending/fork/CometPublishedTotals.fork.t.sol",
+    "sha256": "9B1F5B908FE0EC420FC13028FE5D1628C913E8C1FC3D8133938B0E71C37397DC"
+  },
+  {
+    "path": "test/strategies/usdc-lending/fork/LendingStrategyMatrix.fork.t.sol",
+    "sha256": "2CADFAEBA28CBAC358C2AB5837F3497109F81CB4449C60A257B2B2411E58A0AE"
+  },
+  {
+    "path": ".github/workflows/lending-asset-matrix.yml",
+    "sha256": "E0D311B8034EE72C6536756B0CA9627BA80319A0825961654B81B642D0856572"
+  },
+  {
+    "path": "src/strategies/usdc-lending/controller/StrategySafetyOverflowModule.sol",
+    "sha256": "D857C6DF444F6B95156778D7250C55A787546CFCF5D18B83A67AA0A7AFE7A837"
+  },
+  {
+    "path": "src/strategies/usdc-lending/controller/StrategyRebalanceGateModule.sol",
+    "sha256": "E64A4879D7D045096C0A05C004A55776F6F6988B8C890C249C0664654F5C876B"
+  }
+]

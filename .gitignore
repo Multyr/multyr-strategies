@@ -51,6 +51,10 @@ audit_p07_v*/
 audit_p07_v*-*.zip
 audit_p07_v*-*.sha256
 evidence/
+# Reproducible compiler scratch files; compact verified proofs live under docs/.
+/deployments/lending-source-review-20261031/
+/deployments/lending-source-review-20261102/
+/deployments/lending-full-validation-20261101/
 
 # Echidna corpus (generated, not committed selectively)
 test/strategies/usdc-lending/echidna/corpus/

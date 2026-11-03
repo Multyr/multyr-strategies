@@ -25,10 +25,11 @@ import { ScoringMockAdapter } from "./Scoring_Model.t.sol";
 import { ParamOutOfRange } from "../../../src/strategies/usdc-lending/controller/StrategyStorageLayout.sol";
 import { StrategyRebalancePlanModule } from "../../../src/strategies/usdc-lending/controller/StrategyRebalancePlanModule.sol";
 import { StrategySafetyOverflowModule } from "../../../src/strategies/usdc-lending/controller/StrategySafetyOverflowModule.sol";
+import { LendingOracleTestFixture } from "./helpers/LendingOracleTestFixture.sol";
 
 /// @title TVL Confidence Tests — CTO mandated
 /// @notice Tests external market TVL integration: confidence bands, relative cap, no dominance.
-contract TVL_Confidence is Test {
+contract TVL_Confidence is LendingOracleTestFixture {
     address constant ARBITRUM_USDC = 0xaf88d065e77c8cC2239327C5EDb3A432268e5831;
 
     UsdcMultiLendingVault public vault;
@@ -38,7 +39,7 @@ contract TVL_Confidence is Test {
     ScoringMockAdapter public adapterSmall; // small external TVL
 
     address public admin = address(0x1);
-    address public core = address(0x2);
+    address public core;
     address public router = address(0x6);
     address public keeper = address(0x3);
 
@@ -50,6 +51,7 @@ contract TVL_Confidence is Test {
         usdc = new MockUSDC();
         vm.etch(ARBITRUM_USDC, address(usdc).code);
         usdc = MockUSDC(ARBITRUM_USDC);
+        core = _newOracleCore(1e18);
 
         adapterBig = new ScoringMockAdapter(ARBITRUM_USDC);
         adapterMed = new ScoringMockAdapter(ARBITRUM_USDC);

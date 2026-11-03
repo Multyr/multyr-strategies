@@ -1,0 +1,524 @@
+{
+  "baseCommit": "211f1a0a4cb9c63232ae18dac24ccb921e5a4699",
+  "branch": "codex/lending-multitoken-multichain",
+  "frozenCoreCommit": "9a9d120709de99a6216e9fe75d36e9ffdcb1a4d9",
+  "hashPolicy": "Verify utf8LfSha256 after decoding UTF-8 and normalizing CRLF to LF; rawSha256 is same-host diagnostic only",
+  "files": [
+    {
+      "path": ".github/workflows/lending-asset-matrix.yml",
+      "utf8LfSha256": "aec4d09d1cad58e95a720456c4f0954d0ba8a205c595c9c7329013450e1d8ce7",
+      "rawSha256": "aec4d09d1cad58e95a720456c4f0954d0ba8a205c595c9c7329013450e1d8ce7",
+      "bytes": 1434
+    },
+    {
+      "path": ".gitignore",
+      "utf8LfSha256": "fb4bd2b01d20d8ec7c182dde02602d71aa3a7dc44199becc2d0cc0443328de3d",
+      "rawSha256": "846c50d51d28c9512437f9ad1dfc14a8c6ce624613ea70a8d6b4a33b8e0d82f3",
+      "bytes": 3145
+    },
+    {
+      "path": "docs/LENDING_CLAUDE_REVIEW_ORDERS.md",
+      "utf8LfSha256": "6957504b1bca40e6178b63351f90270d9644158710dc4cf6529af5926c7cfea7",
+      "rawSha256": "6957504b1bca40e6178b63351f90270d9644158710dc4cf6529af5926c7cfea7",
+      "bytes": 7426
+    },
+    {
+      "path": "docs/LENDING_CORE_OBSERVATIONS.md",
+      "utf8LfSha256": "f2176a39bc587e9125eb850c99e1dea1f501feb0a8b09160715e03a9b88b4d60",
+      "rawSha256": "f2176a39bc587e9125eb850c99e1dea1f501feb0a8b09160715e03a9b88b4d60",
+      "bytes": 1355
+    },
+    {
+      "path": "docs/LENDING_FINDINGS_REGISTER.md",
+      "utf8LfSha256": "da25daf40dd202c352d6d8ed9446b361bb5428a67cf193e9e85d3a72ba773b1c",
+      "rawSha256": "da25daf40dd202c352d6d8ed9446b361bb5428a67cf193e9e85d3a72ba773b1c",
+      "bytes": 5358
+    },
+    {
+      "path": "docs/LENDING_MULTITOKEN_EXECUTION.md",
+      "utf8LfSha256": "33917ea6f53cf8a94e257ff98ca2c3639398ca84bf68dab378fea3ca99266fad",
+      "rawSha256": "33917ea6f53cf8a94e257ff98ca2c3639398ca84bf68dab378fea3ca99266fad",
+      "bytes": 15131
+    },
+    {
+      "path": "docs/lending-verification-20261031/base-fee-observation.json",
+      "utf8LfSha256": "ec96c32426d5fa433d575fff6f9d94ce031b98ed0fd2637356562ede9fd9f5dc",
+      "rawSha256": "bbfa3b3f9c5bcc65e6294521c047d3edfe80611ca51e221aa50c5e27417998aa",
+      "bytes": 338
+    },
+    {
+      "path": "docs/lending-verification-20261031/candidate-structure.json",
+      "utf8LfSha256": "e62aedb67de4139ae1b9acf063355aecbc127533f8273a9905e4b2fba33904ad",
+      "rawSha256": "e8f288f5d76a600c615b1140e6cfacf5a26380725b516a909fa96a92fe54269d",
+      "bytes": 1370
+    },
+    {
+      "path": "docs/lending-verification-20261031/claude-review-status.json",
+      "utf8LfSha256": "1fba2d1ecaaa2e32da05cd2d182b9dec2c954fc58528bdbfeecc5c0e3ab853de",
+      "rawSha256": "1fba2d1ecaaa2e32da05cd2d182b9dec2c954fc58528bdbfeecc5c0e3ab853de",
+      "bytes": 603
+    },
+    {
+      "path": "docs/lending-verification-20261031/core-oracle-observation.json",
+      "utf8LfSha256": "8602c241a16de497ef1d6d736d4cb576dd5f546eb5bdcd89126ac18b83aa0d50",
+      "rawSha256": "8602c241a16de497ef1d6d736d4cb576dd5f546eb5bdcd89126ac18b83aa0d50",
+      "bytes": 655
+    },
+    {
+      "path": "docs/lending-verification-20261031/excluded-historical-forks.json",
+      "utf8LfSha256": "6f22820e2fa746509c14577baaced0b79c9d911758339a6308253d004897bfe9",
+      "rawSha256": "452a418ada2c6f9d20872207bf086cb8a90fb1624a24bb6b8a7fe44f2be77508",
+      "bytes": 1770
+    },
+    {
+      "path": "docs/lending-verification-20261031/final-validation.json",
+      "utf8LfSha256": "106874d64e73517b713fdbe0e8fd3c1d0306998601ed52f0c2edfa0689a1c0c5",
+      "rawSha256": "1a290f3b20294409491ac5c10f1e617caca7026a14e8dbad8e33b4575e5f69d6",
+      "bytes": 3318
+    },
+    {
+      "path": "docs/lending-verification-20261031/github-sources.json",
+      "utf8LfSha256": "5b5449d141446c3b2dbb7f3e2c1d4dad5f137557720d214d4a80abb77d11fb0f",
+      "rawSha256": "f4acbba4e0049d87a85af6d318fe0c8f8ed5ad6960aa8b89b567e8a164bec018",
+      "bytes": 3550
+    },
+    {
+      "path": "docs/lending-verification-20261031/README.md",
+      "utf8LfSha256": "8c7132bc40ac7a924415c9de124362cdfd2f902da8af110880e4b1e0710a402a",
+      "rawSha256": "8c7132bc40ac7a924415c9de124362cdfd2f902da8af110880e4b1e0710a402a",
+      "bytes": 3403
+    },
+    {
+      "path": "docs/lending-verification-20261031/StrategyAdapterOpsModule-proof.json",
+      "utf8LfSha256": "0103a7a8c6f41bd534cc713b37ecc93bb1f6703f814f488ac655a22a420bec93",
+      "rawSha256": "1df37d56a054a3a53b7e0682e54cd165e0bce3c78e57451197138728257be800",
+      "bytes": 2918
+    },
+    {
+      "path": "docs/lending-verification-20261031/StrategyAllocCalcModule-proof.json",
+      "utf8LfSha256": "603bc838b96a7baafe1bbb60f71e9d851db7cf431cac7e1410b5dfac79e6e2b4",
+      "rawSha256": "20b86108e1ff386ee68d2c485331fe2730effe2c5c5be70fe4a3744ed45f5fe0",
+      "bytes": 2698
+    },
+    {
+      "path": "docs/lending-verification-20261031/StrategyParamsModule-proof.json",
+      "utf8LfSha256": "7e9e8d0d45edc408c07e5c67809a61d2f8f2534960e6f6d60e274cde89a5730e",
+      "rawSha256": "15b6cb844708a3be40b5a31f05fb78bf1dcd1bc38ba9529d7c499406a7b562bc",
+      "bytes": 1808
+    },
+    {
+      "path": "docs/lending-verification-20261031/StrategyRebalanceGateModule-proof.json",
+      "utf8LfSha256": "abedc57fb5ad9321641069ff4fe0e1cb63cffcaa8c5ee0730cb1fcf8d6859a86",
+      "rawSha256": "107ee943a161fb0efd47b4253c8b0f54820913875d6a24e206091139e2116da4",
+      "bytes": 2708
+    },
+    {
+      "path": "docs/lending-verification-20261031/StrategyRebalancePlanModule-proof.json",
+      "utf8LfSha256": "75086d9af4acbffadfbd5efe1883e16b20f33d1ff403c68cd0948a1ea3819828",
+      "rawSha256": "6085db6a0a60516f1a48408f37938fe928c4c681879b4f3544d5939130335197",
+      "bytes": 2930
+    },
+    {
+      "path": "docs/lending-verification-20261031/StrategySafetyOverflowModule-proof.json",
+      "utf8LfSha256": "48e4009768598c30794a9df9d52ebeef4a642dce80e5e6da0dcfff5803290891",
+      "rawSha256": "da272056abae5bcb468e2446bd03c068edda5390a6cd5757c32536a4996814b5",
+      "bytes": 2410
+    },
+    {
+      "path": "docs/lending-verification-20261031/StrategyScoringModule-proof.json",
+      "utf8LfSha256": "54c52a4a562a19ec009a3d7c9cee83c088302fdda6f444ed4faa7603cebbc960",
+      "rawSha256": "9197bb6967ac7a5bfcf7192e834c55b919c78024b1b31408ed5acb14b37dff32",
+      "bytes": 3216
+    },
+    {
+      "path": "docs/lending-verification-20261031/StrategySettingsModule-proof.json",
+      "utf8LfSha256": "fca039255eed36584ceb3b75d1f0f988dcf3fb4ca19ad25497c2366da47eb4bf",
+      "rawSha256": "feffa8433159fe766e8ae45fd5adad61a1bc8ffd0b624295a32f1e1f1d8d7163",
+      "bytes": 1961
+    },
+    {
+      "path": "docs/lending-verification-20261031/UsdcMultiLendingVault-proof.json",
+      "utf8LfSha256": "3de35e92ce4bdfc3f290d2fabb95de8eed028abd0f096b200d0740b0478257df",
+      "rawSha256": "035d6101293ce19ccd9113bf9d74ba209ee2bf68f32eb11eb8abb67f9fc876e3",
+      "bytes": 2769
+    },
+    {
+      "path": "script/CheckLendingRelease.ps1",
+      "utf8LfSha256": "32e2e812021ea9fca09ced716982d269356366d0583083ff67dbe3668cf4f4b4",
+      "rawSha256": "32e2e812021ea9fca09ced716982d269356366d0583083ff67dbe3668cf4f4b4",
+      "bytes": 4799
+    },
+    {
+      "path": "script/DeployLendingStrategy.s.sol",
+      "utf8LfSha256": "f6ade78298c0fe0793ddc821877c184eb81d46c471b641278897248176ad144e",
+      "rawSha256": "f6ade78298c0fe0793ddc821877c184eb81d46c471b641278897248176ad144e",
+      "bytes": 13311
+    },
+    {
+      "path": "script/DeployUsdcLendingStrategy.s.sol",
+      "utf8LfSha256": "5ece9fe7d3bbf0261fc57729a6bb72a6f8dbca48a8488d91199199d074506fcf",
+      "rawSha256": "0ba649296c4e5f0c299085e3cc5a5d2c3919e0411c1f2e9ec79e9ba7b7335c46",
+      "bytes": 68960
+    },
+    {
+      "path": "script/ExportLendingCandidate.ps1",
+      "utf8LfSha256": "698123dca8df5d9787508788bb9e52ae58a033f9e6ed1fe29863b468fa4a4b75",
+      "rawSha256": "698123dca8df5d9787508788bb9e52ae58a033f9e6ed1fe29863b468fa4a4b75",
+      "bytes": 3767
+    },
+    {
+      "path": "script/GasEstimatorPreflight.sol",
+      "utf8LfSha256": "04d2579327d29c97ed4e66b773eeedb59048fc433db2661e8464f1f20ff3ea40",
+      "rawSha256": "46dcc89e9c08cd16778757c3f669d58393253826c61ae1c206178e5ee9d1bf17",
+      "bytes": 2465
+    },
+    {
+      "path": "script/ReproduceLendingRuntime.ps1",
+      "utf8LfSha256": "4e163f9e33e0119c33ce42d050a502958a9ead9bc8d232ec91184db5145f6932",
+      "rawSha256": "4e163f9e33e0119c33ce42d050a502958a9ead9bc8d232ec91184db5145f6932",
+      "bytes": 3462
+    },
+    {
+      "path": "script/VerifyPinnedRuntime.ps1",
+      "utf8LfSha256": "b4e16b2dbe5a48f80c292ec40e88027dad30adef2b4e0c80258cbd9048c8b793",
+      "rawSha256": "b4e16b2dbe5a48f80c292ec40e88027dad30adef2b4e0c80258cbd9048c8b793",
+      "bytes": 4236
+    },
+    {
+      "path": "src/strategies/usdc-lending/adapters/lending/AaveV3USDCmarket.sol",
+      "utf8LfSha256": "0d79431f4ae89657f5149fdd19f993b4b00760225b606698131c03bc81892087",
+      "rawSha256": "6c25d820f39182d6d808770283b8c2156c57989b4a7428ce19b20baf24faf43a",
+      "bytes": 23944
+    },
+    {
+      "path": "src/strategies/usdc-lending/adapters/lending/CometUsdcMultiMarket.sol",
+      "utf8LfSha256": "1fe7042808acbd4f4b034d8f6734197a9f1f36443ccad0802cfd3cd8693eaa2f",
+      "rawSha256": "fce28080ab2c4f8bd3a36f449eb1195d9f9da817f8ba296f4b4f1b017449940e",
+      "bytes": 38076
+    },
+    {
+      "path": "src/strategies/usdc-lending/adapters/lending/DolomiteUsdcMultiMarket.sol",
+      "utf8LfSha256": "900ff4273693046358aeb86fcf337b18a2c86906af8cbe26bc19e64cd83878d7",
+      "rawSha256": "3999a53ab83bc90b87c0d69fb68dc1dff908cda460f3f19c391afcc39ac9f2ea",
+      "bytes": 46531
+    },
+    {
+      "path": "src/strategies/usdc-lending/adapters/lending/EulerUsdcMultiMarket.sol",
+      "utf8LfSha256": "6d9de5dd5fbd96c0138589b3e74d53866f16f3f1d2cfaf61b2af3ad7bf588515",
+      "rawSha256": "7439ed0ea49cc3eae2e7009fb440eeaca322daecd1fd7bb5244913ff9342f361",
+      "bytes": 46095
+    },
+    {
+      "path": "src/strategies/usdc-lending/adapters/lending/MorphoUsdcMultiMarket.sol",
+      "utf8LfSha256": "10dff80317afaf812d4ee9204de86c6878e447c494c95405f2285110722cd0a4",
+      "rawSha256": "a03f21c5af21b1574b96327e08ae91460dc23cca36a24301f4761ab4f6651bdb",
+      "bytes": 43484
+    },
+    {
+      "path": "src/strategies/usdc-lending/adapters/lending/VenusUsdcMultiMarket.sol",
+      "utf8LfSha256": "d0b47964bb51dc24b134dc93470459266fdde7c5cfd0ae02f81733be8bf12f20",
+      "rawSha256": "b41e1d6a0f133ff15ec6061e2f80aa2e7740a04ee2838ffb6461461a6c3f9e0f",
+      "bytes": 23454
+    },
+    {
+      "path": "src/strategies/usdc-lending/config/LendingAssetConfig.sol",
+      "utf8LfSha256": "258260ffa3081c8b6ecfa6d57be4d03123307a8797abde23690f42e85c5c5fe2",
+      "rawSha256": "258260ffa3081c8b6ecfa6d57be4d03123307a8797abde23690f42e85c5c5fe2",
+      "bytes": 1390
+    },
+    {
+      "path": "src/strategies/usdc-lending/controller/StrategyAllocCalcModule.sol",
+      "utf8LfSha256": "8371f7a246744e647cc8be545bc21c467b89a7fc084cb3e36e68a2a8e74d634c",
+      "rawSha256": "06c16e550c51105d3ae7b512ae40426105820db3c6f5ffee5a2c2d5c48738ec2",
+      "bytes": 27479
+    },
+    {
+      "path": "src/strategies/usdc-lending/controller/StrategyParamsModule.sol",
+      "utf8LfSha256": "436dbb79f232bce0604180a51c6626a42ac846dd7b2e6946f7a0ae2661943664",
+      "rawSha256": "99485f67b122ed6cfa66ba5024c087057226a15a9b31b9c8e8b513f267b7602b",
+      "bytes": 22601
+    },
+    {
+      "path": "src/strategies/usdc-lending/controller/StrategyRebalanceGateModule.sol",
+      "utf8LfSha256": "564a368b0e39be4be1f2ec5c4718009e3609a5ea1d8bd47e2e98ef777aa7a757",
+      "rawSha256": "6646789ad6327015ffe845d4f1b80652d3f2ab8bdcd7851e18c8cd3ef11eaa27",
+      "bytes": 32608
+    },
+    {
+      "path": "src/strategies/usdc-lending/controller/StrategyRebalancePlanModule.sol",
+      "utf8LfSha256": "08748c0af83c77b99f6144ce45621b8df765ab20228787a40674033238508964",
+      "rawSha256": "7aa216e946e2557ccd4762e920345ae0bb426dad7259781c342ffec25dea6a3a",
+      "bytes": 28360
+    },
+    {
+      "path": "src/strategies/usdc-lending/controller/StrategySafetyOverflowModule.sol",
+      "utf8LfSha256": "3abad14fe5be84e5b332f79c8cbc16ec9f305d1c19d7df32add6f99e7fda0189",
+      "rawSha256": "bc7515b7558a4a5a31ac408bcb086003040bdd3297f486e4d5b4709b33666794",
+      "bytes": 9065
+    },
+    {
+      "path": "src/strategies/usdc-lending/controller/StrategyScoringModule.sol",
+      "utf8LfSha256": "045f87eda37ad25bd7ffd1bc473d272ed5315fc2a3c4ce52896fa4069ebfe917",
+      "rawSha256": "9a2ec831d069450ffde04cbb49e6a2fa2cdd8ff0f44549b2d0c612c58264b549",
+      "bytes": 30247
+    },
+    {
+      "path": "src/strategies/usdc-lending/controller/StrategySettingsModule.sol",
+      "utf8LfSha256": "dcad74a9364ca0684a98d148a3b1c40cea76f0a88b7bbea0c62949536ffde55f",
+      "rawSha256": "826a4701a8ae4bcb701c28d590ddea06093d56dfd6f1154ebb17eae0bacf7262",
+      "bytes": 33479
+    },
+    {
+      "path": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol",
+      "utf8LfSha256": "b2cad1455f96a94d7981636627ddc344f98688ebcc61d93186d28dba63f2a05d",
+      "rawSha256": "c168c39d8aa2eb098d696f3d53fe81420cedb5b321f079000270a7714b5962ef",
+      "bytes": 46251
+    },
+    {
+      "path": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol",
+      "utf8LfSha256": "c806840fb5739b3bf427b891f651f068ac2102a5393e929bec036c08976e1b9e",
+      "rawSha256": "2a3284a25f29e2a0d7ed7d7b25cd55e59f2c3250f253efdb8929fd701eceba2a",
+      "bytes": 47080
+    },
+    {
+      "path": "src/strategies/usdc-lending/gas/OPStackFeeInfo.sol",
+      "utf8LfSha256": "440fc0d7a06b949c947937472578d8e8c8bc4d4235855cc75084a6cd54537950",
+      "rawSha256": "440fc0d7a06b949c947937472578d8e8c8bc4d4235855cc75084a6cd54537950",
+      "bytes": 2114
+    },
+    {
+      "path": "src/strategies/usdc-lending/gas/ReadOnlyGasEstimator.sol",
+      "utf8LfSha256": "61e7c2559a8259295794bb33103a3cf32d92df93f9f8cbd07e8cfbbdcb12c3c4",
+      "rawSha256": "2a7352c9418ca7575dd0fe3779e377577412c8a0bf2662adff994e59e528aafb",
+      "bytes": 12978
+    },
+    {
+      "path": "src/strategies/usdc-lending/interfaces/ILendingAdapter.sol",
+      "utf8LfSha256": "2e05eec25f8d10346ee19fc695eface5bd554ed901d0ab20a074ebf4e2f3baec",
+      "rawSha256": "1277caeac78952d65808d3f39235ac05769e2555a5c77979953d32d0c9dc672b",
+      "bytes": 3995
+    },
+    {
+      "path": "src/strategies/usdc-lending/lens/StrategyExplainabilityLens.sol",
+      "utf8LfSha256": "24dcfde39703cf3ce568d7c5d713f7dfd82d1340818f04b32f1b6d819cd77a64",
+      "rawSha256": "db8ccfb7dca90fb22c5511b72bfb807c746fb95ba88959f60c080d3070d40de3",
+      "bytes": 22780
+    },
+    {
+      "path": "src/strategies/usdc-lending/lib/StrategyConfigLib.sol",
+      "utf8LfSha256": "49fecc7eddb1467fa8d75fb48150ca1cfd3fbaed602bc34bf66649db9f72152a",
+      "rawSha256": "9e94ceab893ae7d8d799881d230fe195d895c9fd20e766aa56e274bd49a3341f",
+      "bytes": 8936
+    },
+    {
+      "path": "src/strategies/usdc-lending/swap/RewardSwapHelper.sol",
+      "utf8LfSha256": "f9bc08a1ca8515b5fc8e6318b05256212ad5dce14e7b74715a643cc681f1eaa6",
+      "rawSha256": "2160337893f7e3872e8740a849ff914897fcaca9ec74ec4794f423baaac1c251",
+      "bytes": 25201
+    },
+    {
+      "path": "test/strategies/usdc-lending/adapters/AaveV3USDCAdapter.t.sol",
+      "utf8LfSha256": "baae1250dedb038564fd5c06cd04e32672dd78af71d9c88070856d73d5271f61",
+      "rawSha256": "eb872c7191d074bbb266a5c0956e027412a070b1dabc70a808043b42efd9b1e0",
+      "bytes": 54947
+    },
+    {
+      "path": "test/strategies/usdc-lending/adapters/CometUsdcMultiMarketAdapter.t.sol",
+      "utf8LfSha256": "73a1529dbf2b2b017bb59afac977f54552da7f8458c70e1f8f02c2ac4b8a675a",
+      "rawSha256": "9f88684b8c18321e57294fbf628928df6c79baebaad49bfe9e8f0fb2b88536cf",
+      "bytes": 41306
+    },
+    {
+      "path": "test/strategies/usdc-lending/adapters/VenusUsdcMultiMarketAdapter.t.sol",
+      "utf8LfSha256": "db453fed0879e3318bad5dddb88c3c9ff7a51d187c0fa381dfcb353e586e8274",
+      "rawSha256": "f16e0b5bda1e351544d40ed1c9e451abdb6f7df982ea0d9f0bac89032da29ab0",
+      "bytes": 46707
+    },
+    {
+      "path": "test/strategies/usdc-lending/Allocation_Consistency.t.sol",
+      "utf8LfSha256": "65462dc693262564c8e4e0c5a4b9cd08055adf0b6ba675374853356e2d28f7f2",
+      "rawSha256": "6209f006e72bc9952574fa1d0381bcb0a44d2d5ad710f180d2fba445424952b6",
+      "bytes": 30834
+    },
+    {
+      "path": "test/strategies/usdc-lending/CapDriftMandate.t.sol",
+      "utf8LfSha256": "718fc861904c720197ddee56df1b26aa6a7eb554b2371fdb69d050f87493183f",
+      "rawSha256": "d65e0e00c6171bd4a42d2e7d198806400226628025d3aadc6ab5798f2bf5ae85",
+      "bytes": 64408
+    },
+    {
+      "path": "test/strategies/usdc-lending/DelegatecallEquivalence.t.sol",
+      "utf8LfSha256": "ab1dc34cea53a7392d951e427bf1fa5d5e26f9b840f4dfa599abe55dbb30ee43",
+      "rawSha256": "09d34d42eb360c65cef9d688446ddb032d5d1a439473f521d3b6ffc4a69a5170",
+      "bytes": 24981
+    },
+    {
+      "path": "test/strategies/usdc-lending/Dynamic_Seed.t.sol",
+      "utf8LfSha256": "d4682e8ec74527688ab5edf51a413272b349bae4a84db2da3b695345c2ed50dc",
+      "rawSha256": "fc90ae270893c56de9a5662c7cb8c9d256382734772cfcc4cb253ec69735ec7b",
+      "bytes": 14970
+    },
+    {
+      "path": "test/strategies/usdc-lending/F_SCORING_INV2_CapFix.t.sol",
+      "utf8LfSha256": "7d1e614fbde92e9fd2f30fc4a4fe6c20a57c64e7e979f999b2f8cc444fdef676",
+      "rawSha256": "00699fe326122033bedccd2cefc1f405e6bda516410e4c6faa87bffa550ed26a",
+      "bytes": 18092
+    },
+    {
+      "path": "test/strategies/usdc-lending/fork/LendingAssetMatrix.fork.t.sol",
+      "utf8LfSha256": "fafeb01d2f0c483bc09a5d65181fd9c74273c8a7ab5e97acc3188b9a109e51e3",
+      "rawSha256": "fafeb01d2f0c483bc09a5d65181fd9c74273c8a7ab5e97acc3188b9a109e51e3",
+      "bytes": 4637
+    },
+    {
+      "path": "test/strategies/usdc-lending/fork/LendingCoreMatrix.fork.t.sol",
+      "utf8LfSha256": "86c8a6b020551bc4b023eff440a360d7648e5a1e2c3fe5d67da37cef931042b7",
+      "rawSha256": "86c8a6b020551bc4b023eff440a360d7648e5a1e2c3fe5d67da37cef931042b7",
+      "bytes": 7654
+    },
+    {
+      "path": "test/strategies/usdc-lending/fork/LendingRewardRoutes.fork.t.sol",
+      "utf8LfSha256": "34152d86f18a5f5e3268bee7eb419df26199824830abbd4b3407d49e97a89958",
+      "rawSha256": "34152d86f18a5f5e3268bee7eb419df26199824830abbd4b3407d49e97a89958",
+      "bytes": 3754
+    },
+    {
+      "path": "test/strategies/usdc-lending/fork/LendingStrategyMatrix.fork.t.sol",
+      "utf8LfSha256": "009a3137e64055155b3022ff28195da50051c0474ff571bb90044261d097c2cf",
+      "rawSha256": "009a3137e64055155b3022ff28195da50051c0474ff571bb90044261d097c2cf",
+      "bytes": 6824
+    },
+    {
+      "path": "test/strategies/usdc-lending/helpers/LendingOracleTestFixture.sol",
+      "utf8LfSha256": "bde59740a10ce2dd6e6f91b958200527110583559f2f16261233251f8dbda8a4",
+      "rawSha256": "bde59740a10ce2dd6e6f91b958200527110583559f2f16261233251f8dbda8a4",
+      "bytes": 2023
+    },
+    {
+      "path": "test/strategies/usdc-lending/LendingDeploymentManifest.t.sol",
+      "utf8LfSha256": "c6b6a2c4d8a55d941b79d5cf8a94138e0ac0fb13704b72fd315d6355c14f8582",
+      "rawSha256": "c6b6a2c4d8a55d941b79d5cf8a94138e0ac0fb13704b72fd315d6355c14f8582",
+      "bytes": 9309
+    },
+    {
+      "path": "test/strategies/usdc-lending/LendingLensCapParity.t.sol",
+      "utf8LfSha256": "6e6bffefd4fe51aa8467ec23734014026f20fe59db691cced47d473d55d79faf",
+      "rawSha256": "6e6bffefd4fe51aa8467ec23734014026f20fe59db691cced47d473d55d79faf",
+      "bytes": 1565
+    },
+    {
+      "path": "test/strategies/usdc-lending/lens/Lens_Core_Parity.t.sol",
+      "utf8LfSha256": "a899fd1b35b7ffcc523eda9c6eada7940c3d505ba833a5501df3ea49a34eb3ec",
+      "rawSha256": "ff90167cdc8e97e15407b1e4ec51d5439b2bb39c085b1bf13aef32cb0bccce00",
+      "bytes": 16025
+    },
+    {
+      "path": "test/strategies/usdc-lending/OPStackFeeInfo.t.sol",
+      "utf8LfSha256": "15174e67074150f95b247efc3ea7819b966d973e9dd16fd83d50a3feee00fd08",
+      "rawSha256": "15174e67074150f95b247efc3ea7819b966d973e9dd16fd83d50a3feee00fd08",
+      "bytes": 1888
+    },
+    {
+      "path": "test/strategies/usdc-lending/OracleAssetValuation.t.sol",
+      "utf8LfSha256": "fe53f1daae5ea6c984fc54022446e7a1e690761c839a6cffb5dd1a553e9be7c1",
+      "rawSha256": "fe53f1daae5ea6c984fc54022446e7a1e690761c839a6cffb5dd1a553e9be7c1",
+      "bytes": 5702
+    },
+    {
+      "path": "test/strategies/usdc-lending/PlanEstimatorRequirements.t.sol",
+      "utf8LfSha256": "1085baea283b43cb665d122b143e237190102ac585a484e4c62e9e26131a715d",
+      "rawSha256": "6b1a0de556f05390d624703280a37292773e80405cd21642b2ea87ed6d697886",
+      "bytes": 4820
+    },
+    {
+      "path": "test/strategies/usdc-lending/ReadOnlyGasEstimator.t.sol",
+      "utf8LfSha256": "57285693c929560004f7423fb68ec5f61ad52bfb32c7ff15c58ead9840494e87",
+      "rawSha256": "08cf4710f30895caff7f5ad29280db15ca64ae259fa322e83a86072ab748982b",
+      "bytes": 17067
+    },
+    {
+      "path": "test/strategies/usdc-lending/RebalanceEngineV10.t.sol",
+      "utf8LfSha256": "99ab4c8f83ee3369260e5afba9efef99a1f73b3cc454ab49a5401560b313874e",
+      "rawSha256": "3d564e88685cf8fc7e62f9133cc7e38f8c52be383fc5e0b37653739d1c6394b8",
+      "bytes": 26947
+    },
+    {
+      "path": "test/strategies/usdc-lending/RemediationSprint.t.sol",
+      "utf8LfSha256": "916ab5ee842a1d48b403ff45cfd5eaa197eda874e1bdfd9e69c0c3a1787d95d8",
+      "rawSha256": "e6cc2ff3f08a265901ea24addf53420c0547e1738c4d4da19c134fb545678ece",
+      "bytes": 28711
+    },
+    {
+      "path": "test/strategies/usdc-lending/replay-defense/LendingReplayDefense.t.sol",
+      "utf8LfSha256": "59aa901e0f87908d41a5f3cb8d2ffac0f3d48480c18358737e72937b1afdc3fd",
+      "rawSha256": "3cef22964c92982d4ab4fea79f8b46403e700ab4db51aa770e1ace7abd714d5a",
+      "bytes": 20119
+    },
+    {
+      "path": "test/strategies/usdc-lending/replay-defense/RAPatternRegression.t.sol",
+      "utf8LfSha256": "a2e5fe296907b89692351865144f0888659e44abef01bbf0dcb2cf28b443c95c",
+      "rawSha256": "ef6937b682ad952a0a0d17cf8fa789f0fe8a2c10e7171d85acad1752d0c55a08",
+      "bytes": 35793
+    },
+    {
+      "path": "test/strategies/usdc-lending/RouterHarvestFork.t.sol",
+      "utf8LfSha256": "ad1fd014b9dcd600d6b5b3d8e8127dce7e4cbc860d195327f41be3d728453a8a",
+      "rawSha256": "d166b18cefe3475017b67fcd43db253931f2777762455ad51ce483a8c86adb15",
+      "bytes": 4817
+    },
+    {
+      "path": "test/strategies/usdc-lending/Scoring_Model.t.sol",
+      "utf8LfSha256": "c5bdfcaf3fd9c9801d074d66c3cec45f8d1a23fa90d9b268795a5e930778dac7",
+      "rawSha256": "78e7e6979414ad254aba932ec787d87a0ddb56d8c4daa141252bd7c3dcdcf641",
+      "bytes": 57124
+    },
+    {
+      "path": "test/strategies/usdc-lending/StabilityEMA.t.sol",
+      "utf8LfSha256": "a96251981fcf0ee545d710f0c671aaf3415b0d5e77c82a12a4d566488b268ed2",
+      "rawSha256": "ef7ffe5ba09e59f74b7122c99c40f9d9bf6424dc44dafe0cde408a93b6fc8f17",
+      "bytes": 29539
+    },
+    {
+      "path": "test/strategies/usdc-lending/StrategyBootstrapper.t.sol",
+      "utf8LfSha256": "7ebb3ddb14d271d3db6e562daf4d727fc7db674b9b114faa23a53ea403bdfb83",
+      "rawSha256": "a8d9ffce2c2916ace7554e14293b998fec94a72da9f70e6c555526b588bed2be",
+      "bytes": 16226
+    },
+    {
+      "path": "test/strategies/usdc-lending/StrategySettingsCopy.t.sol",
+      "utf8LfSha256": "e6bf65528f6f28ff72cfdd8bb385b1d09f682798c895bf94d0d5596afb0c1c50",
+      "rawSha256": "68681ca211f2c52e634e2c9b41430a6b54838c0b95835c73fd69589152b12379",
+      "bytes": 7049
+    },
+    {
+      "path": "test/strategies/usdc-lending/swap/RewardSwapHelper.t.sol",
+      "utf8LfSha256": "9a3e4c021cada15b5e8dab9149745d68d630a8ae9ca6fc6f807e64d766fbe8b1",
+      "rawSha256": "a269cfb9d7deba2f2aa7acd4e473e1c348d986459a2286adbbf4da7a6a42870c",
+      "bytes": 36109
+    },
+    {
+      "path": "test/strategies/usdc-lending/TVL_Confidence.t.sol",
+      "utf8LfSha256": "78e5350a515a4e4bee2766f7a3705de47ee47c06e0c442bd40a11d44dc14fb5b",
+      "rawSha256": "482a3de726cd0c258d52015ce48792103ac8d0f49a413db7e884beb0da3fc6cf",
+      "bytes": 21168
+    },
+    {
+      "path": "test/strategies/usdc-lending/UsdcMultiLendingVault.fuzz.t.sol",
+      "utf8LfSha256": "5c105e895b5933c22b68f088e9022c33f58f2511e43a03f5acd167ee7c1c3e03",
+      "rawSha256": "feb29efdf37548b44212b86bfe07666fff1441ad8a5352b0659a8550b9547642",
+      "bytes": 40472
+    },
+    {
+      "path": "test/strategies/usdc-lending/UsdcMultiLendingVault.invariant.t.sol",
+      "utf8LfSha256": "ac29c279910964cee0768f8210dff5c0edf02e2198ca15567cae03b65e820754",
+      "rawSha256": "ecc0dc3060bbcb45a12b38d302e36e87492a082d2b92445f28b0f846b70ce231",
+      "bytes": 42637
+    },
+    {
+      "path": "test/strategies/usdc-lending/UsdcMultiLendingVault.t.sol",
+      "utf8LfSha256": "d2a483ef28ace7f6a3c75c95f3f366229fd4892c203bf68fc985256f1de174ae",
+      "rawSha256": "78868700e68d08d413699bdc4408758a2bcc2af447ae63c64990582006db30a0",
+      "bytes": 137018
+    }
+  ]
+}

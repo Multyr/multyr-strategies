@@ -2,6 +2,8 @@
 pragma solidity 0.8.28;
 
 import { SafeERC20, IERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import { IERC20Metadata } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
+import { Math } from "@openzeppelin/contracts/utils/math/Math.sol";
 import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
 import { ReentrancyGuard } from "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import { Initializable } from "@openzeppelin/contracts/proxy/utils/Initializable.sol";
@@ -43,13 +45,13 @@ interface IChainlinkFeed {
 }
 
 /// @title RewardSwapHelper
-/// @notice On-chain reward token → USDC swap with MEV resistance.
+/// @notice On-chain reward token → configured strategy asset swap with MEV resistance.
 /// @dev Pattern: caller transferFroms reward token to this helper; helper executes
-///      Chainlink-anchored swap with multi-DEX fallback, returns USDC to receiver.
+///      Chainlink-anchored swap with multi-DEX fallback, returns the configured asset.
 ///
 ///      MEV defenses:
 ///        - Chainlink price as anchor (not pool spot) for minOut calculation
-///        - Configurable slippage cap per reward token (max 1000 bps = 10%)
+///        - Configurable slippage cap per reward token (max 500 bps = 5%)
 ///        - Stale oracle check (per-token configurable maxFeedAgeSec)
 ///        - Multi-DEX fallback chain: Uniswap V3 → Camelot V3
 ///        - Single-block execution (deadline = block.timestamp on Camelot)
@@ -74,20 +76,20 @@ contract RewardSwapHelper is AccessControl, ReentrancyGuard, Initializable {
 
     // ─── Roles ──────────────────────────────────────────────────────────
     bytes32 public constant PARAM_ROLE = keccak256("PARAM_ROLE");
-    /// @notice Callers permitted to execute swapToUSDC (adapters + keeper bots).
+    /// @notice Callers permitted to execute reward swaps (adapters + keeper bots).
     ///         Granted by admin post-deploy to each adapter via grantRole(KEEPER_ROLE, adapter).
     bytes32 public constant KEEPER_ROLE = keccak256("KEEPER_ROLE");
 
     // ─── Immutable Storage ──────────────────────────────────────────────
     // --- V10 Storage (was immutable in V9.x; logically immutable post-initialize) ---
-    address public usdc;
+    address public usdc; // legacy storage slot: configured output asset
     address public uniswapV3Router;
     address public camelotV3Router; // optional (address(0) if not configured)
 
     // ─── L2 Sequencer Uptime Feed (Step 4.7 RA-10 defense) ──────────────
     /// @notice Arbitrum sequencer uptime feed. address(0) = check disabled.
     /// @dev    Reference Arbitrum mainnet: 0xFdB631F5EE196F0ed6FAa767959853A9F217697D
-    ///         When non-zero, swapToUSDC + canSwap require: sequencer up
+    ///         When non-zero, reward swaps + canSwap require: sequencer up
     ///         AND > SEQUENCER_GRACE_PERIOD_SEC since last restart.
     ///         Set via `setSequencerUptimeFeed`. Should be configured pre-deploy
     ///         on Arbitrum/Optimism/Base/etc; left zero only on chains without L2
@@ -95,6 +97,7 @@ contract RewardSwapHelper is AccessControl, ReentrancyGuard, Initializable {
     address public sequencerUptimeFeed;
 
     event SequencerUptimeFeedUpdated(address feed);
+    event OutputAssetOracleUpdated(address indexed feed, uint8 feedDecimals, uint8 assetDecimals, uint32 maxAge);
 
     // ─── Reward Token Config ────────────────────────────────────────────
     struct RewardConfig {
@@ -102,12 +105,19 @@ contract RewardSwapHelper is AccessControl, ReentrancyGuard, Initializable {
         uint8   feedDecimals;        // Chainlink feed decimals (typically 8)
         uint8   tokenDecimals;       // reward token ERC20 decimals
         uint32  maxFeedAgeSec;       // staleness threshold
-        bytes   uniswapV3Path;       // ABI-encoded path: rewardToken → ... → USDC
+        bytes   uniswapV3Path;       // ABI-encoded path: rewardToken → ... → output asset
         bytes   camelotV3Path;       // fallback path (empty bytes = disabled)
-        uint16  slippageBps;         // 100 = 1%; max 1000 (10%)
+        uint16  slippageBps;         // 100 = 1%; max 500 (5%)
         bool    enabled;
     }
     mapping(address => RewardConfig) public configs;
+
+    // Appended after V10 storage. One helper instance is scoped to one strategy asset.
+    address public outputAssetPriceFeed;
+    uint8 public outputAssetDecimals;
+    uint8 public outputAssetFeedDecimals;
+    uint32 public outputAssetMaxFeedAgeSec;
+    bool public legacyUsdcMode;
 
     // ─── Events ─────────────────────────────────────────────────────────
     event RewardConfigured(
@@ -137,6 +147,8 @@ contract RewardSwapHelper is AccessControl, ReentrancyGuard, Initializable {
     error MaxFeedAgeOutOfRange(uint32 secs);
     error SequencerDown();
     error SequencerGracePeriodNotElapsed(uint256 startedAt, uint256 graceUntil);
+    error FutureOracleTimestamp(uint256 updatedAt);
+    error LegacyUsdcSelectorDisabled();
 
     /// @dev Operational floor for maxFeedAgeSec (matches LINK/USD heartbeat lower-bound).
     uint32 public constant MIN_MAX_FEED_AGE_SEC = 3_600;
@@ -158,15 +170,51 @@ contract RewardSwapHelper is AccessControl, ReentrancyGuard, Initializable {
         address uniswapV3Router_,
         address camelotV3Router_
     ) external initializer {
+        legacyUsdcMode = true;
+        _initializeAsset(usdc_, admin_, uniswapV3Router_, camelotV3Router_);
+    }
+
+    /// @notice Initialize an arbitrary output asset; the legacy USDC selector is disabled.
+    function initializeAsset(address asset_, address admin_, address uniRouter_, address camelotRouter_)
+        external initializer
+    {
+        _initializeAsset(asset_, admin_, uniRouter_, camelotRouter_);
+    }
+
+    function _initializeAsset(address usdc_, address admin_, address uniswapV3Router_, address camelotV3Router_)
+        internal
+    {
         if (usdc_ == address(0) || admin_ == address(0) || uniswapV3Router_ == address(0)) {
             revert ZeroAddress();
         }
         usdc = usdc_;
+        uint8 assetDecimals_ = IERC20Metadata(usdc_).decimals();
+        if (assetDecimals_ > 18) revert InvalidConfig();
+        outputAssetDecimals = assetDecimals_;
         uniswapV3Router = uniswapV3Router_;
         camelotV3Router = camelotV3Router_;
 
         _grantRole(DEFAULT_ADMIN_ROLE, admin_);
         _grantRole(PARAM_ROLE, admin_);
+    }
+
+    /// @notice Set the configured strategy asset's USD feed and freshness bound.
+    function setOutputAssetOracle(address feed, uint32 maxFeedAgeSec) external onlyRole(PARAM_ROLE) {
+        if (feed == address(0)) revert ZeroAddress();
+        if (maxFeedAgeSec < MIN_MAX_FEED_AGE_SEC || maxFeedAgeSec > MAX_MAX_FEED_AGE_SEC) {
+            revert MaxFeedAgeOutOfRange(maxFeedAgeSec);
+        }
+        uint8 feedDecimals_ = IChainlinkFeed(feed).decimals();
+        if (feedDecimals_ > 18) revert InvalidConfig();
+        outputAssetPriceFeed = feed;
+        outputAssetFeedDecimals = feedDecimals_;
+        outputAssetMaxFeedAgeSec = maxFeedAgeSec;
+        emit OutputAssetOracleUpdated(feed, feedDecimals_, outputAssetDecimals, maxFeedAgeSec);
+    }
+
+    /// @notice Output token for this helper; `usdc()` remains for ABI compatibility.
+    function outputAsset() external view returns (address) {
+        return usdc;
     }
 
     // ─── Admin: Configure reward token ──────────────────────────────────
@@ -185,9 +233,15 @@ contract RewardSwapHelper is AccessControl, ReentrancyGuard, Initializable {
         if (rewardToken == address(0) || chainlinkFeed == address(0)) revert ZeroAddress();
         if (slippageBps > 500) revert SlippageTooHigh(slippageBps); // hard cap 5% (sandwich mitigation)
         if (uniswapV3Path.length == 0) revert InvalidConfig();
+        if (feedDecimals > 18 || tokenDecimals > 18) revert InvalidConfig();
         if (maxFeedAgeSec < MIN_MAX_FEED_AGE_SEC || maxFeedAgeSec > MAX_MAX_FEED_AGE_SEC) {
             revert MaxFeedAgeOutOfRange(maxFeedAgeSec);
         }
+        if (IChainlinkFeed(chainlinkFeed).decimals() != feedDecimals) revert InvalidConfig();
+        if (IERC20Metadata(rewardToken).decimals() != tokenDecimals) revert InvalidConfig();
+        if (!_validPath(uniswapV3Path, rewardToken, false)) revert InvalidConfig();
+        if (camelotV3Path.length > 0 && !_validPath(camelotV3Path, rewardToken, true)) revert InvalidConfig();
+        if (outputAssetPriceFeed == address(0)) revert InvalidConfig();
 
         configs[rewardToken] = RewardConfig({
             chainlinkFeed: chainlinkFeed,
@@ -247,17 +301,34 @@ contract RewardSwapHelper is AccessControl, ReentrancyGuard, Initializable {
         }
     }
 
-    // ─── Core: swapToUSDC ───────────────────────────────────────────────
+    // ─── Core: reward token to configured strategy asset ────────────────
 
-    /// @notice Pull rewardToken from caller, swap to USDC with MEV protection,
-    ///         transfer USDC to receiver.
+    /// @notice Pull rewardToken from caller, swap to the configured asset,
+    ///         and transfer that asset to receiver.
     /// @dev Caller must have approved this helper for `amountIn` of rewardToken.
-    /// @return amountOut USDC delivered to receiver.
+    /// @return amountOut configured strategy asset delivered to receiver.
+    function swapToAsset(
+        address rewardToken,
+        uint256 amountIn,
+        address receiver
+    ) external nonReentrant onlyRole(KEEPER_ROLE) returns (uint256 amountOut) {
+        return _swapToAsset(rewardToken, amountIn, receiver);
+    }
+
+    /// @notice Legacy USDC integrations only. Generic asset instances reject this selector.
     function swapToUSDC(
         address rewardToken,
         uint256 amountIn,
         address receiver
     ) external nonReentrant onlyRole(KEEPER_ROLE) returns (uint256 amountOut) {
+        if (!legacyUsdcMode) revert LegacyUsdcSelectorDisabled();
+        return _swapToAsset(rewardToken, amountIn, receiver);
+    }
+
+    function _swapToAsset(address rewardToken, uint256 amountIn, address receiver)
+        internal
+        returns (uint256 amountOut)
+    {
         RewardConfig memory cfg = configs[rewardToken];
         if (!cfg.enabled) revert NotEnabled(rewardToken);
         if (receiver == address(0)) revert ZeroAddress();
@@ -270,8 +341,8 @@ contract RewardSwapHelper is AccessControl, ReentrancyGuard, Initializable {
         IERC20(rewardToken).safeTransferFrom(msg.sender, address(this), amountIn);
 
         // 2. Compute oracle-anchored minOut
-        uint256 expectedOut = _oracleExpectedUsdcOut(rewardToken, amountIn, cfg);
-        uint256 minOut = (expectedOut * (10_000 - cfg.slippageBps)) / 10_000;
+        uint256 expectedOut = _oracleExpectedAssetOut(amountIn, cfg);
+        uint256 minOut = Math.mulDiv(expectedOut, 10_000 - cfg.slippageBps, 10_000);
 
         // 3. Try Uniswap V3 (primary)
         amountOut = _tryUniV3(rewardToken, amountIn, minOut, cfg.uniswapV3Path);
@@ -285,29 +356,56 @@ contract RewardSwapHelper is AccessControl, ReentrancyGuard, Initializable {
 
         if (amountOut == 0) revert AllRoutesFailed();
 
-        // 5. Forward USDC to receiver
+        // 5. Forward the configured output asset to receiver
         IERC20(usdc).safeTransfer(receiver, amountOut);
         emit Swapped(msg.sender, rewardToken, amountIn, amountOut, receiver, dexUsed);
     }
 
-    // ─── Internal: oracle expected USDC out ─────────────────────────────
+    // ─── Internal: oracle expected output-asset amount ──────────────────
 
-    /// @dev expectedUsdc = amountIn × oraclePrice × 10^USDC_DEC / 10^(tokenDec + feedDec)
-    function _oracleExpectedUsdcOut(
-        address /*rewardToken*/,
-        uint256 amountIn,
-        RewardConfig memory cfg
-    ) internal view returns (uint256) {
-        IChainlinkFeed feed = IChainlinkFeed(cfg.chainlinkFeed);
+    function _oracleExpectedAssetOut(uint256 amountIn, RewardConfig memory cfg)
+        internal
+        view
+        returns (uint256)
+    {
+        uint256 rewardPriceWad = _freshPriceWad(
+            IChainlinkFeed(cfg.chainlinkFeed), cfg.feedDecimals, cfg.maxFeedAgeSec, false
+        );
+        uint256 assetPriceWad = _freshPriceWad(
+            IChainlinkFeed(outputAssetPriceFeed), outputAssetFeedDecimals, outputAssetMaxFeedAgeSec, true
+        );
+        uint256 rewardValueWad = Math.mulDiv(amountIn, rewardPriceWad, 10 ** uint256(cfg.tokenDecimals));
+        return Math.mulDiv(rewardValueWad, 10 ** uint256(outputAssetDecimals), assetPriceWad);
+    }
+
+    function _freshPriceWad(IChainlinkFeed feed, uint8 feedDecimals, uint32 maxAge, bool roundUp)
+        internal
+        view
+        returns (uint256 priceWad)
+    {
         (, int256 answer, , uint256 updatedAt, ) = feed.latestRoundData();
-        if (block.timestamp - updatedAt > cfg.maxFeedAgeSec) {
-            revert StaleOracle(updatedAt, cfg.maxFeedAgeSec);
-        }
+        if (updatedAt == 0) revert StaleOracle(updatedAt, maxAge);
+        if (block.timestamp < updatedAt) revert FutureOracleTimestamp(updatedAt);
+        if (block.timestamp - updatedAt > maxAge) revert StaleOracle(updatedAt, maxAge);
         if (answer <= 0) revert InvalidOraclePrice(answer);
+        uint256 scale = 10 ** uint256(feedDecimals);
+        priceWad = Math.mulDiv(uint256(answer), 1e18, scale);
+        if (roundUp && mulmod(uint256(answer), 1e18, scale) != 0) ++priceWad;
+        if (priceWad == 0) revert InvalidOraclePrice(answer);
+    }
 
-        uint256 numerator = amountIn * uint256(answer) * 1e6;
-        uint256 divisor = 10 ** (uint256(cfg.tokenDecimals) + uint256(cfg.feedDecimals));
-        return numerator / divisor;
+    /// @dev Uniswap uses token/fee/token; Camelot Algebra V1 uses token/token.
+    ///      A different Algebra router version requires a separately reviewed integration.
+    function _validPath(bytes calldata path, address rewardToken, bool algebraV1) internal view returns (bool) {
+        uint256 step = algebraV1 ? 20 : 23;
+        if (path.length < 20 + step || (path.length - 20) % step != 0) return false;
+        address first;
+        address last;
+        assembly {
+            first := shr(96, calldataload(path.offset))
+            last := shr(96, calldataload(add(path.offset, sub(path.length, 20))))
+        }
+        return first == rewardToken && last == usdc;
     }
 
     // ─── Internal: Uniswap V3 attempt ───────────────────────────────────
@@ -373,14 +471,17 @@ contract RewardSwapHelper is AccessControl, ReentrancyGuard, Initializable {
         if (!cfg.enabled) return false;
         // RA-10: L2 sequencer probe (no-op if feed not configured)
         if (!_sequencerOk()) return false;
-        // Oracle freshness probe (must mirror _oracleExpectedUsdcOut checks)
-        try IChainlinkFeed(cfg.chainlinkFeed).latestRoundData() returns (
+        return _feedUsable(cfg.chainlinkFeed, cfg.maxFeedAgeSec)
+            && _feedUsable(outputAssetPriceFeed, outputAssetMaxFeedAgeSec);
+    }
+
+    function _feedUsable(address feed, uint32 maxAge) internal view returns (bool) {
+        if (feed == address(0)) return false;
+        try IChainlinkFeed(feed).latestRoundData() returns (
             uint80, int256 answer, uint256, uint256 updatedAt, uint80
         ) {
-            if (answer <= 0) return false;
-            if (block.timestamp < updatedAt) return false; // future-dated round
-            if (block.timestamp - updatedAt > cfg.maxFeedAgeSec) return false;
-            return true;
+            return answer > 0 && updatedAt > 0 && block.timestamp >= updatedAt
+                && block.timestamp - updatedAt <= maxAge;
         } catch {
             return false;
         }
@@ -388,12 +489,13 @@ contract RewardSwapHelper is AccessControl, ReentrancyGuard, Initializable {
 
     /// @notice Preview expectedOut for a given input — useful for off-chain monitoring.
     ///         Not authoritative; actual swap may differ.
+    /// @dev Returns raw units of `outputAsset()`.
     function previewExpectedOut(address rewardToken, uint256 amountIn)
         external view returns (uint256)
     {
         RewardConfig memory cfg = configs[rewardToken];
         if (!cfg.enabled) return 0;
-        return _oracleExpectedUsdcOut(rewardToken, amountIn, cfg);
+        return _oracleExpectedAssetOut(amountIn, cfg);
     }
 
     // ─── Sweep protection ───────────────────────────────────────────────

@@ -21,7 +21,7 @@ import {
     AdapterScore,
     QueryFailed
 } from "./StrategyStorageLayout.sol";
-import { ILendingAdapter } from "../interfaces/ILendingAdapter.sol";
+import { ILendingAdapter, IStrategyAssetValuation } from "../interfaces/ILendingAdapter.sol";
 
 interface IAdapterAPYExt {
     function effectiveAPYBps() external view returns (uint16);
@@ -541,7 +541,7 @@ contract StrategyAllocCalcModule is StrategyStorageLayout {
     // positionAssets) was pure redundant work, paid up to MAX_ADAPTERS times
     // per deployIdle()/prepareRebalance() cycle.
     function _effectiveMaxAdapters(uint256 tvl) internal view returns (uint16) {
-        return StrategyConfigLib.effectiveMaxAdapters(tvl, maxAdaptersPerAllocation);
+        return IStrategyAssetValuation(address(this)).tierMaxAdapters(tvl, maxAdaptersPerAllocation);
     }
 
     function _effectiveAbsCapBps(address adapter, uint256 tvl) internal view returns (uint256) {
@@ -580,7 +580,7 @@ contract StrategyAllocCalcModule is StrategyStorageLayout {
     }
 
     function _effectiveMinSeed(uint256 tvl) internal view returns (uint256) {
-        return StrategyConfigLib.effectiveMinNewAdapterSeed(tvl, minNewAdapterSeed);
+        return IStrategyAssetValuation(address(this)).tierSeed(tvl, minNewAdapterSeed);
     }
 
     // ── Liquidity cache helper ───────────────────────────────────────────────

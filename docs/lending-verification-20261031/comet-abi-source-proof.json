@@ -1,0 +1,30 @@
+{
+  "date": "2026-11-01",
+  "repository": "compound-finance/comet",
+  "commit": "f766f51583c23acc33b2a7824654ef2029a96804",
+  "storageSource": {
+    "url": "https://github.com/compound-finance/comet/blob/f766f51583c23acc33b2a7824654ef2029a96804/contracts/CometStorage.sol",
+    "githubBlobSha": "6a97c7bc598e5d8ab8fd998168542e1c1f3121c5",
+    "totalsBasic": "struct TotalsBasic {\n        // 1st slot\n        uint64 baseSupplyIndex;\n        uint64 baseBorrowIndex;\n        uint64 trackingSupplyIndex;\n        uint64 trackingBorrowIndex;\n        // 2nd slot\n        uint104 totalSupplyBase;\n        uint104 totalBorrowBase;\n        uint40 lastAccrualTime;\n        uint8 pauseFlags;\n    }"
+  },
+  "wethDeployment": {
+    "url": "https://github.com/compound-finance/comet/blob/f766f51583c23acc33b2a7824654ef2029a96804/deployments/arbitrum/weth/roots.json",
+    "githubBlobSha": "b8214155560622ceb8916978213bb0232d4e2d17",
+    "roots": {
+      "comet": "0x6f7D514bbD4aFf3BcD1140B7344b32f063dEe486",
+      "configurator": "0xb21b06D71c75973babdE35b49fFDAc3F82Ad3775",
+      "rewards": "0x88730d254A2f7e6AC8388c3198aFd694bA9f7fae",
+      "bridgeReceiver": "0x42480C37B249e33aABaf4c22B20235656bd38068",
+      "bulker": "0xbdE8F31D2DdDA895264e27DD990faB3DC87b372d",
+      "COMP": "0x354A6dA3fcde098F8389cad84b0182725c6C91dE"
+    }
+  },
+  "runtimeEvidence": {
+    "chainId": 42161,
+    "block": 520094008,
+    "market": "0x6f7D514bbD4aFf3BcD1140B7344b32f063dEe486",
+    "supplyPrincipal": "780694851164122267142",
+    "originalResult": "ABI decode revert; USDC control passed",
+    "postFix": "Both actual USDC/WETH published-market supply-formula checks pass within final acceptance25/0/0, bound to functional source dbf0b89c7b87954030533fc2a514ccfc52f1fac4a5720114efc08f4885f10da9"
+  }
+}

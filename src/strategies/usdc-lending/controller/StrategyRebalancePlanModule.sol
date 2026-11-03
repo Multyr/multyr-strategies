@@ -220,7 +220,7 @@ contract StrategyRebalancePlanModule is StrategyStorageLayout {
             uint256 drift = currentTvl > planTvl ? currentTvl - planTvl : planTvl - currentTvl;
             uint256 allowed = (planTvl * driftToleranceBps) / 1e4;
             uint256 minAbs = rebalancePlanMinDrift;
-            if (minAbs < 1) minAbs = 5_000e6;
+            if (minAbs < 1) minAbs = _usd6ToAssetUnits(5_000e6);
             if (drift > allowed && drift > minAbs) {
                 emit RebalancePlanInvalidated(planTvl, currentTvl);
                 emit RebalancePlanInvalidatedDueToDrift(drift, allowed);
@@ -292,6 +292,20 @@ contract StrategyRebalancePlanModule is StrategyStorageLayout {
                     } else { incomplete = true; }
                 }
             } else {
+                // Cap the planned withdrawal to the current cached position.
+                // A selectiveRecall (or any out-of-band reduction) between prepare
+                // and execute may have already zeroed positionAssets[adapter].
+                // Without this cap the subtraction at line 299 underflows (Panic 0x11)
+                // and the adapter's donated/unbooked assets are incorrectly debited.
+                uint256 cachedPos = positionAssets[adapter];
+                if (amount > cachedPos) {
+                    incomplete = true;
+                    amount = cachedPos;
+                }
+                if (amount == 0) {
+                    unchecked { ++i; }
+                    continue;
+                }
                 uint256 gasBefore = gasleft();
                 try ILendingAdapter(adapter).withdraw(amount, address(this)) returns (uint256 withdrawn) {
                     if (withdrawn > 0) _recordExecutionGas(adapter, gasBefore - gasleft(), false);
@@ -540,7 +554,7 @@ contract StrategyRebalancePlanModule is StrategyStorageLayout {
             unchecked { ++i; }
         }
         uint256 tvlBased = (sum * 5) / 1e4;
-        uint256 maxCap = 50_000e6;
+        uint256 maxCap = _usd6ToAssetUnits(50_000e6);
         if (tvlBased > maxCap) tvlBased = maxCap;
         return tvlBased > _dust ? tvlBased : _dust;
     }

@@ -1,0 +1,252 @@
+{
+  "testSource": "test/strategies/usdc-lending/fork/LendingUnmockedE2E.fork.t.sol",
+  "functionalSnapshotSha256": "dbf0b89c7b87954030533fc2a514ccfc52f1fac4a5720114efc08f4885f10da9",
+  "result": "4 passed; 0 failed; 0 skipped (within 25-case acceptance)",
+  "scope": "Frozen production Core/GlobalConfig/OracleMiddleware/BufferManager/Router and candidate strategy. Real holder funding, Uni conversion, Aave, actual historical feeds and two withdrawal epochs. Modified market state persists: counterfactual portfolio, not full canonical transaction replay. Static gas cost USD6=1e6; empty warm sleeve; no SystemSealer migration or live activation claim.",
+  "snapshots": [
+    {
+      "chainId": "42161",
+      "asset": "0xaf88d065e77c8cC2239327C5EDb3A432268e5831",
+      "rpcForkBlock": "514700000",
+      "evmBlockNumber": "26189849",
+      "timestamp": "1791970188",
+      "priceWad": "999860770000000000",
+      "oracleUpdatedAt": "1791970009",
+      "coreNav": "0",
+      "invested": "0",
+      "idle": "0"
+    },
+    {
+      "chainId": "42161",
+      "asset": "0xaf88d065e77c8cC2239327C5EDb3A432268e5831",
+      "rpcForkBlock": "514701500",
+      "evmBlockNumber": "26189883",
+      "timestamp": "1791970593",
+      "priceWad": "999838200000000000",
+      "oracleUpdatedAt": "1791970549",
+      "coreNav": "201028045",
+      "invested": "176904687",
+      "idle": "0"
+    },
+    {
+      "chainId": "42161",
+      "asset": "0xaf88d065e77c8cC2239327C5EDb3A432268e5831",
+      "rpcForkBlock": "520000000",
+      "evmBlockNumber": "26313026",
+      "timestamp": "1793453119",
+      "priceWad": "999807520000000000",
+      "oracleUpdatedAt": "1793452887",
+      "coreNav": "172226812",
+      "invested": "177114925",
+      "idle": "0"
+    },
+    {
+      "chainId": "42161",
+      "asset": "0xaf88d065e77c8cC2239327C5EDb3A432268e5831",
+      "rpcForkBlock": "520000000",
+      "evmBlockNumber": "26313026",
+      "timestamp": "1793453119",
+      "priceWad": "999807520000000000",
+      "oracleUpdatedAt": "1793452887",
+      "coreNav": "172226812",
+      "invested": "0",
+      "idle": "0"
+    },
+    {
+      "chainId": "42161",
+      "asset": "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1",
+      "rpcForkBlock": "514700000",
+      "evmBlockNumber": "26189849",
+      "timestamp": "1791970188",
+      "priceWad": "2498867368770000000000",
+      "oracleUpdatedAt": "1791970176",
+      "coreNav": "0",
+      "invested": "0",
+      "idle": "0"
+    },
+    {
+      "chainId": "42161",
+      "asset": "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1",
+      "rpcForkBlock": "514701500",
+      "evmBlockNumber": "26189883",
+      "timestamp": "1791970593",
+      "priceWad": "2496910529700000000000",
+      "oracleUpdatedAt": "1791970567",
+      "coreNav": "80436451135978740",
+      "invested": "70784078104323036",
+      "idle": "0"
+    },
+    {
+      "chainId": "42161",
+      "asset": "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1",
+      "rpcForkBlock": "520000000",
+      "evmBlockNumber": "26313026",
+      "timestamp": "1793453119",
+      "priceWad": "2245472600550000000000",
+      "oracleUpdatedAt": "1793452607",
+      "coreNav": "68863698914268779",
+      "invested": "70817775424412375",
+      "idle": "0"
+    },
+    {
+      "chainId": "42161",
+      "asset": "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1",
+      "rpcForkBlock": "520000000",
+      "evmBlockNumber": "26313026",
+      "timestamp": "1793453119",
+      "priceWad": "2245472600550000000000",
+      "oracleUpdatedAt": "1793452607",
+      "coreNav": "68863698914268778",
+      "invested": "0",
+      "idle": "0"
+    },
+    {
+      "chainId": "8453",
+      "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+      "rpcForkBlock": "52590000",
+      "evmBlockNumber": "52590000",
+      "timestamp": "1791969347",
+      "priceWad": "999864390000000000",
+      "oracleUpdatedAt": "1791895809",
+      "coreNav": "0",
+      "invested": "0",
+      "idle": "0"
+    },
+    {
+      "chainId": "8453",
+      "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+      "rpcForkBlock": "52590180",
+      "evmBlockNumber": "52590180",
+      "timestamp": "1791969707",
+      "priceWad": "999864390000000000",
+      "oracleUpdatedAt": "1791895809",
+      "coreNav": "201027337",
+      "invested": "176904067",
+      "idle": "0"
+    },
+    {
+      "chainId": "8453",
+      "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+      "rpcForkBlock": "53300000",
+      "evmBlockNumber": "53300000",
+      "timestamp": "1793389347",
+      "priceWad": "999754680000000000",
+      "oracleUpdatedAt": "1793364883",
+      "coreNav": "172315697",
+      "invested": "177206695",
+      "idle": "0"
+    },
+    {
+      "chainId": "8453",
+      "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+      "rpcForkBlock": "53300000",
+      "evmBlockNumber": "53300000",
+      "timestamp": "1793389347",
+      "priceWad": "999754680000000000",
+      "oracleUpdatedAt": "1793364883",
+      "coreNav": "172315696",
+      "invested": "0",
+      "idle": "0"
+    },
+    {
+      "chainId": "8453",
+      "asset": "0x4200000000000000000000000000000000000006",
+      "rpcForkBlock": "52590000",
+      "evmBlockNumber": "52590000",
+      "timestamp": "1791969347",
+      "priceWad": "2503536301860000000000",
+      "oracleUpdatedAt": "1791968359",
+      "coreNav": "0",
+      "invested": "0",
+      "idle": "0"
+    },
+    {
+      "chainId": "8453",
+      "asset": "0x4200000000000000000000000000000000000006",
+      "rpcForkBlock": "52590180",
+      "evmBlockNumber": "52590180",
+      "timestamp": "1791969707",
+      "priceWad": "2504000000000000000000",
+      "oracleUpdatedAt": "1791969589",
+      "coreNav": "80286444393267940",
+      "invested": "70652072412290446",
+      "idle": "0"
+    },
+    {
+      "chainId": "8453",
+      "asset": "0x4200000000000000000000000000000000000006",
+      "rpcForkBlock": "53300000",
+      "evmBlockNumber": "53300000",
+      "timestamp": "1793389347",
+      "priceWad": "2228458284180000000000",
+      "oracleUpdatedAt": "1793389083",
+      "coreNav": "68745557830667741",
+      "invested": "70696311768237254",
+      "idle": "0"
+    },
+    {
+      "chainId": "8453",
+      "asset": "0x4200000000000000000000000000000000000006",
+      "rpcForkBlock": "53300000",
+      "evmBlockNumber": "53300000",
+      "timestamp": "1793389347",
+      "priceWad": "2228458284180000000000",
+      "oracleUpdatedAt": "1793389083",
+      "coreNav": "68745557830667741",
+      "invested": "0",
+      "idle": "0"
+    }
+  ],
+  "funding": [
+    {
+      "chainId": "42161",
+      "token": "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1",
+      "holder": "0xF977814e90dA44bFA03b6295A0616a897441aceC",
+      "holderBefore": "664222382477177800",
+      "transferred": "500000000000000000",
+      "holderAfter": "164222382477177800"
+    },
+    {
+      "chainId": "42161",
+      "token": "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1",
+      "holder": "0xF977814e90dA44bFA03b6295A0616a897441aceC",
+      "holderBefore": "664222382477177800",
+      "transferred": "500000000000000000",
+      "holderAfter": "164222382477177800"
+    },
+    {
+      "chainId": "8453",
+      "token": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+      "holder": "0xF977814e90dA44bFA03b6295A0616a897441aceC",
+      "holderBefore": "15115045208",
+      "transferred": "1000000000",
+      "holderAfter": "14115045208"
+    },
+    {
+      "chainId": "8453",
+      "token": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+      "holder": "0xF977814e90dA44bFA03b6295A0616a897441aceC",
+      "holderBefore": "15115045208",
+      "transferred": "1000000000",
+      "holderAfter": "14115045208"
+    }
+  ],
+  "conversions": [
+    {
+      "chainId": "42161",
+      "input": "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1",
+      "output": "0xaf88d065e77c8cC2239327C5EDb3A432268e5831",
+      "amountIn": "200000000000000000",
+      "oracleExpected": "499843066",
+      "amountReceived": "499684137"
+    },
+    {
+      "chainId": "8453",
+      "input": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+      "output": "0x4200000000000000000000000000000000000006",
+      "amountIn": "700000000",
+      "oracleExpected": "279566576478242463",
+      "amountReceived": "279271915482452308"
+    }
+  ]
+}

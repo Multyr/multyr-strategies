@@ -1,0 +1,45 @@
+{
+  "finding": "UPKEEP-ZERO-POKE-INTERVAL",
+  "severity": "MEDIUM",
+  "status": "FIXED_52_FOCUSED_2935_REGRESSION_43_ACTUAL_33_STRUCTURE_PASS",
+  "trigger": "Fresh upkeep configured with APY targets inherited zero interval; a completed poke was selected again ahead of a ready harvest.",
+  "fix": [
+    "Default pokeInterval to one day without changing storage order.",
+    "Reject zero interval updates before events or state changes."
+  ],
+  "proof": {
+    "failingBefore": 2,
+    "focusedPassed": 52,
+    "focusedSuites": 2,
+    "focusedFailed": 0,
+    "actualAcceptance": "r12-actual-43-acceptance.json",
+    "sourceRawSha256": "08483dad319433a143bf5e207bd5a51703ba28e559ae1640e61c38c0ef2be98b",
+    "logsSha256": {
+      "R12-poke-before.log": "05592a76c8986090f7ec5a0f976531b5d6773366b53d47456c05e9ff2a093bbb",
+      "R12-poke-after.log": "c1786ba28c8e5ebef9720287246bd25402f94bd1ac5f73ec36cf82ddcfa2f746",
+      "R12-shadow-poke-inputs.json": "b62f513b61c9e6a58d66c462129e9a6219209dca3d13ddb4985539a36d1763f3"
+    },
+    "regression": {
+      "passed": 2935,
+      "failed": 0,
+      "skipped": 0,
+      "suites": 199
+    },
+    "structure": "r12-structure.json"
+  },
+  "shadowObservation": {
+    "chainId": 42161,
+    "block": 520384312,
+    "upkeep": "0xAB30b7D1ADe850b6b122bcfF29F389CF1D051D44",
+    "pokeIntervalSeconds": 86400,
+    "pokeTargets": 3,
+    "aavePoolConfigured": true,
+    "defaultDefectNotObservedInExistingConfiguredShadow": true
+  },
+  "limits": [
+    "The two focused counterexamples use controlled existing test fixtures; they are not no-mock evidence.",
+    "The 43-case actual fork gate is separate. Native real-PPS upkeep integration and production gas calibration remain pending.",
+    "Existing shadow, Core and main were not modified."
+  ],
+  "readiness": "NOT_PRODUCTION_READY"
+}

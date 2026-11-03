@@ -1,0 +1,43 @@
+{
+  "status": "TARGETED_DOLOMITE_FOLLOWUP_FIX_PASS",
+  "review": "docs/lending-production-remediation-20261101/r24-review-adjudication.json",
+  "controlledBefore": {
+    "note": "Two tuple-ownership counterexamples and exact aggregate principal mismatch1,000USDC vs1,500USDC after a real executed controlled optimize.",
+    "failed": 3,
+    "passed": 0
+  },
+  "after": {
+    "failed": 0,
+    "skipped": 0,
+    "passed": 16,
+    "suites": 1
+  },
+  "fixes": [
+    "Probe readable current PoolLike ownership even before first validation; block nonzero assets or debt. Initial unreadable tuple remains configurable while funding requires validation.",
+    "Update aggregate principal by minus actual proportional source reduction plus actual target funding, preserving sum-of-market-basis invariant."
+  ],
+  "rejected": [
+    "Reviewer claim of guaranteed upward aggregate drift and post-full-exit admin DoS was not established.",
+    "Reviewer stale-economic-deposit trace cannot pass the existing pre-loop suffix check."
+  ],
+  "evidence": [
+    {
+      "path": "deployments/lending-full-validation-20261101/production/coordinator/R25-three-before-2.log",
+      "sha256": "6f2a0ba024c43358c7621c124f915ca0a798935814f98ad746f95efa87887072"
+    },
+    {
+      "path": "deployments/lending-full-validation-20261101/production/coordinator/R25-sixteen-after.log",
+      "sha256": "08d6b52c5322aa672e72aeba8abf653c95b7604f64d6ff0d0e442f80da98408b"
+    },
+    {
+      "path": "src/strategies/usdc-lending/adapters/lending/DolomiteUsdcMultiMarket.sol",
+      "sha256": "08dafc6281ac361d241c719168f6fc9c1cb32978c33aac523547fdbc587653e2"
+    },
+    {
+      "path": "test/strategies/usdc-lending/adapters/DolomitePoolGuard.t.sol",
+      "sha256": "4ba7532a026bec8c5ae6a6bf3771fe77d0c53668fb35a6e2c4b3a446c35d0696"
+    }
+  ],
+  "finalAcceptance": "CURRENT_SOURCE_FULL_GATES_RUNNING",
+  "readiness": "NOT_PRODUCTION_READY"
+}

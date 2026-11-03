@@ -1,0 +1,61 @@
+{
+  "status": "CAPABILITY_TESTS_PASS_ON_INTEGRATED_R2",
+  "releaseReadiness": "NOT_PRODUCTION_READY",
+  "parentManifestSha256": "adc28751fb7f8cdc5c0e6f0f95ec9de450f7c616b5da617f06a663b9d12827f8",
+  "parentVerifiedFiles": 156,
+  "parentMismatches": 0,
+  "testFile": "test/strategies/usdc-lending/fork/actual/FullUserExitE2E.t.sol",
+  "testSha256": "ca53c512c4edd99ec1f00b3afbc8009c7a5957bd3a0c4635c490ab5a328216f0",
+  "passed": 2,
+  "failed": 0,
+  "skipped": 0,
+  "exitCode": 0,
+  "suites": 1,
+  "assets": [
+    "Ethereum USDT six decimals",
+    "Ethereum WETH eighteen decimals"
+  ],
+  "method": "Unmocked historical fork with frozen Core code, real holder transfers/Uniswap funding, real Aave and canonical feeds. Two legitimate users; two real epochs; user2 fully exits and actual investment is recalled; full strategy recall then verifies NAV.",
+  "policy": {
+    "mockedProtocolOrOracleSuccess": false,
+    "syntheticBalances": false,
+    "minDeposit": "Published minimum retained",
+    "epochCapBps": 1000,
+    "reserveLimits": "Published configuration retained"
+  },
+  "log": "C:/Users/Pierre/Multyr/pt-multiply/pc/deployments/lending-full-validation-20261101/production/C/root-full-exit-3.log",
+  "logSha256": "af54aadb691f95937fedc5b4d01ad2d6903826714b870fff40726aeadd4e3936",
+  "observations": [
+    "├─ emit RealScenario(chainId: 1, asset: 0xdAC17F958D2ee523a2206206994597C13D831ec7, rpcForkBlock: 26165000 [2.616e7], evmBlockNumber: 26165000 [2.616e7], timestamp: 1791671003 [1.791e9], priceWad: 999025170000000000 [9.99e17], oracleUpdatedAt: 1791643163 [1.791e9], coreNav: 0, invested: 0, idle: 0)",
+    "├─ emit RealFunding(chainId: 1, token: 0xdAC17F958D2ee523a2206206994597C13D831ec7, holder: 0xF977814e90dA44bFA03b6295A0616a897441aceC, holderBefore: 16000000001124208 [1.6e16], transferred: 1000000000 [1e9], holderAfter: 15999999001124208 [1.599e16])",
+    "├─ emit RealFunding(chainId: 1, token: 0xdAC17F958D2ee523a2206206994597C13D831ec7, holder: 0xF977814e90dA44bFA03b6295A0616a897441aceC, holderBefore: 15999999001124208 [1.599e16], transferred: 1000000000 [1e9], holderAfter: 15999998001124208 [1.599e16])",
+    "├─ emit RealFunding(chainId: 1, token: 0xdAC17F958D2ee523a2206206994597C13D831ec7, holder: 0xF977814e90dA44bFA03b6295A0616a897441aceC, holderBefore: 15999998001124208 [1.599e16], transferred: 1000000000 [1e9], holderAfter: 15999997001124208 [1.599e16])",
+    "├─ emit RealScenario(chainId: 1, asset: 0xdAC17F958D2ee523a2206206994597C13D831ec7, rpcForkBlock: 26165040 [2.616e7], evmBlockNumber: 26165040 [2.616e7], timestamp: 1791671483 [1.791e9], priceWad: 999025170000000000 [9.99e17], oracleUpdatedAt: 1791643163 [1.791e9], coreNav: 2128075483 [2.128e9], invested: 1872706543 [1.872e9], idle: 0)",
+    "│   ├─ emit RealScenario(chainId: 1, asset: 0xdAC17F958D2ee523a2206206994597C13D831ec7, rpcForkBlock: 26250000 [2.625e7], evmBlockNumber: 26250000 [2.625e7], timestamp: 1792694303 [1.792e9], priceWad: 998910000000000000 [9.989e17], oracleUpdatedAt: 1792680239 [1.792e9], coreNav: 1969976077 [1.969e9], invested: 1874777942 [1.874e9], idle: 0)",
+    "│   ├─ emit RealScenario(chainId: 1, asset: 0xdAC17F958D2ee523a2206206994597C13D831ec7, rpcForkBlock: 26310000 [2.631e7], evmBlockNumber: 26310000 [2.631e7], timestamp: 1793416631 [1.793e9], priceWad: 998328150000000000 [9.983e17], oracleUpdatedAt: 1793371595 [1.793e9], coreNav: 1846186123 [1.846e9], invested: 1876240790 [1.876e9], idle: 0)",
+    "│   ├─ emit FullExitVerified(asset: 0xdAC17F958D2ee523a2206206994597C13D831ec7, rpcBlock: 26310000 [2.631e7], exiter: 0x970287F550282B65B2A091558bB504447653Dd12, exitShares: 125121973 [1.251e8], totalSharesBefore: 2128074512 [2.128e9], epochCapBps: 1000, assetsReceived: 125252802 [1.252e8], remainingUser1Shares: 1841795438 [1.841e9], adapterAssetsAfter: 1846035848 [1.846e9], navPerShareBefore: 1001839437049262981 [1.001e18], navPerShareAfter: 1001839437049262981 [1.001e18])",
+    "│   ├─ emit RealScenario(chainId: 1, asset: 0xdAC17F958D2ee523a2206206994597C13D831ec7, rpcForkBlock: 26310000 [2.631e7], evmBlockNumber: 26310000 [2.631e7], timestamp: 1793416631 [1.793e9], priceWad: 998328150000000000 [9.983e17], oracleUpdatedAt: 1793371595 [1.793e9], coreNav: 1846186122 [1.846e9], invested: 0, idle: 0)",
+    "├─ emit RealScenario(chainId: 1, asset: 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2, rpcForkBlock: 26165000 [2.616e7], evmBlockNumber: 26165000 [2.616e7], timestamp: 1791671003 [1.791e9], priceWad: 2506535421100000000000 [2.506e21], oracleUpdatedAt: 1791668543 [1.791e9], coreNav: 0, invested: 0, idle: 0)",
+    "│   ├─ emit RealFunding(chainId: 1, token: 0xdAC17F958D2ee523a2206206994597C13D831ec7, holder: 0xF977814e90dA44bFA03b6295A0616a897441aceC, holderBefore: 16000000001124208 [1.6e16], transferred: 1000000000 [1e9], holderAfter: 15999999001124208 [1.599e16])",
+    "│   ├─ emit RealFundingConversion(chainId: 1, input: 0xdAC17F958D2ee523a2206206994597C13D831ec7, output: 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2, amountIn: 1000000000 [1e9], oracleExpected: 398568143737452168 [3.985e17], amountReceived: 398423734785811236 [3.984e17])",
+    "│   ├─ emit RealFunding(chainId: 1, token: 0xdAC17F958D2ee523a2206206994597C13D831ec7, holder: 0xF977814e90dA44bFA03b6295A0616a897441aceC, holderBefore: 15999999001124208 [1.599e16], transferred: 1000000000 [1e9], holderAfter: 15999998001124208 [1.599e16])",
+    "│   ├─ emit RealFundingConversion(chainId: 1, input: 0xdAC17F958D2ee523a2206206994597C13D831ec7, output: 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2, amountIn: 1000000000 [1e9], oracleExpected: 398568143737452168 [3.985e17], amountReceived: 398403429501088929 [3.984e17])",
+    "│   ├─ emit RealFunding(chainId: 1, token: 0xdAC17F958D2ee523a2206206994597C13D831ec7, holder: 0xF977814e90dA44bFA03b6295A0616a897441aceC, holderBefore: 15999998001124208 [1.599e16], transferred: 1000000000 [1e9], holderAfter: 15999997001124208 [1.599e16])",
+    "│   ├─ emit RealFundingConversion(chainId: 1, input: 0xdAC17F958D2ee523a2206206994597C13D831ec7, output: 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2, amountIn: 1000000000 [1e9], oracleExpected: 398568143737452168 [3.985e17], amountReceived: 398383125768586202 [3.983e17])",
+    "├─ emit RealScenario(chainId: 1, asset: 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2, rpcForkBlock: 26165040 [2.616e7], evmBlockNumber: 26165040 [2.616e7], timestamp: 1791671483 [1.791e9], priceWad: 2506535421100000000000 [2.506e21], oracleUpdatedAt: 1791668543 [1.791e9], coreNav: 848182858163731074 [8.481e17], invested: 746400933259577961 [7.464e17], idle: 0)",
+    "│   ├─ emit RealScenario(chainId: 1, asset: 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2, rpcForkBlock: 26250000 [2.625e7], evmBlockNumber: 26250000 [2.625e7], timestamp: 1792694303 [1.792e9], priceWad: 2372390000000000000000 [2.372e21], oracleUpdatedAt: 1792692227 [1.792e9], coreNav: 784668425663738179 [7.846e17], invested: 746721905089491086 [7.467e17], idle: 0)",
+    "│   ├─ emit RealScenario(chainId: 1, asset: 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2, rpcForkBlock: 26310000 [2.631e7], evmBlockNumber: 26310000 [2.631e7], timestamp: 1793416631 [1.793e9], priceWad: 2241474066400000000000 [2.241e21], oracleUpdatedAt: 1793415911 [1.793e9], coreNav: 735005194908884060 [7.35e17], invested: 746948579323430086 [7.469e17], idle: 0)",
+    "│   ├─ emit FullExitVerified(asset: 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2, rpcBlock: 26310000 [2.631e7], exiter: 0x970287F550282B65B2A091558bB504447653Dd12, exitShares: 49869632380915409 [4.986e16], totalSharesBefore: 848182707534609276 [8.481e17], epochCapBps: 1000, assetsReceived: 49889904988793119 [4.988e16], remainingUser1Shares: 734080988647074820 [7.34e17], adapterAssetsAfter: 734945477986811328 [7.349e17], navPerShareBefore: 1000715130761340182 [1e18], navPerShareAfter: 1000715130761340182 [1e18])",
+    "│   ├─ emit RealScenario(chainId: 1, asset: 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2, rpcForkBlock: 26310000 [2.631e7], evmBlockNumber: 26310000 [2.631e7], timestamp: 1793416631 [1.793e9], priceWad: 2241474066400000000000 [2.241e21], oracleUpdatedAt: 1793415911 [1.793e9], coreNav: 735005194908884059 [7.35e17], invested: 0, idle: 0)"
+  ],
+  "remaining": "Rerun on integrated final source after controller/Morpho fixes and Base integration are reconciled. R0-parent pass does not certify final production candidate.",
+  "integratedInput": {
+    "manifestFilesVerifiedBeforeAndAfter": 162,
+    "sourceDigest": "d4422e2dba60483736fd4c724f8ef880be631a8afa58c239b13644b3a2176fd2",
+    "log": "C:/Users/Pierre/Multyr/pt-multiply/pc/deployments/lending-full-validation-20261101/production/C/root-full-exit-integrated-r2.log",
+    "passed": 2,
+    "skipped": 0,
+    "inputId": "R2-TECHNICAL",
+    "failed": 0
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "scope": "Historical fork files outside the declared acceptance matrix; no execution or support claim",
+  "countMethod": "Static source declarations, not inherited runner ABI expansion",
+  "files": 12,
+  "declaredCases": 29,
+  "inventory": [
+    {
+      "file": "test/strategies/usdc-lending/fork/V92_SafetyTierE2E.t.sol",
+      "declaredCases": 2
+    },
+    {
+      "file": "test/strategies/usdc-lending/fork/V92_MultichainFork.t.sol",
+      "declaredCases": 2
+    },
+    {
+      "file": "test/strategies/usdc-lending/fork/ShadowDeploymentLifecycle.fork.t.sol",
+      "declaredCases": 12
+    },
+    {
+      "file": "test/strategies/usdc-lending/fork/SafeMigrationTransactions.fork.t.sol",
+      "declaredCases": 1
+    },
+    {
+      "file": "test/strategies/usdc-lending/fork/RetiredAdapterAccounting.fork.t.sol",
+      "declaredCases": 1
+    },
+    {
+      "file": "test/strategies/usdc-lending/fork/ReplacementMigration.fork.t.sol",
+      "declaredCases": 3
+    },
+    {
+      "file": "test/strategies/usdc-lending/fork/ReleaseSafeBatch.fork.t.sol",
+      "declaredCases": 1
+    },
+    {
+      "file": "test/strategies/usdc-lending/fork/LiveAdapterActivation.fork.t.sol",
+      "declaredCases": 1
+    },
+    {
+      "file": "test/strategies/usdc-lending/fork/EstimatorTierCalibration.fork.t.sol",
+      "declaredCases": 1
+    },
+    {
+      "file": "test/strategies/usdc-lending/fork/DeployAndDepositReadiness.fork.t.sol",
+      "declaredCases": 1
+    },
+    {
+      "file": "test/strategies/usdc-lending/fork/CoreIntegrationDepositWithdraw.fork.t.sol",
+      "declaredCases": 3
+    },
+    {
+      "file": "test/strategies/usdc-lending/fork/AdapterOnlySafe.fork.t.sol",
+      "declaredCases": 1
+    }
+  ]
+}

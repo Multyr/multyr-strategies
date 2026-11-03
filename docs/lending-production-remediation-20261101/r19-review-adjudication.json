@@ -1,0 +1,33 @@
+{
+  "status": "REVIEW_TRIAGED_R20_COUNTEREXAMPLES_RUNNING",
+  "readiness": "NOT_PRODUCTION_READY",
+  "adapterReview": "deployments/lending-full-validation-20261101/production/coordinator/R19-final-adapter-review.md",
+  "accepted": [
+    "R18 retry, tiny budget, approval, principal and atomic-cap corrections match the actual current source and independently executed nine tests."
+  ],
+  "corrections": [
+    "Review is source-only; it did not execute tests.",
+    "The six actual failing-before tests are Dolomite full-active, partial-active, ambiguity; Euler activation, maxDeposit failure, optimize activation. Tiny budget, optimize rollback and zero-share rollback are three additional guards.",
+    "PoolLike ownership is read through getAccountWei in actual _assetsOn. Direct Dolomite Margin may be excluded by missing baseToken; any admitted compatible wrapper must still use consistent ownership guards.",
+    "R19 stale-plan draft calls methods absent from the concrete vault ABI and asserts a legacy estimator-zero path. Root staged corrected tests using actual plan module, existing real estimator fixture and a genuine safety-mandate path. No execution claim until compilation/test completes."
+  ],
+  "open": [
+    {
+      "id": "R20-POOL-OWNERSHIP",
+      "scope": "Strict type-specific ownership proof before market replacement/refresh; fail closed on unreadable accounts."
+    },
+    {
+      "id": "R20-POOL-TUPLE",
+      "scope": "Do not change market/account tuple with live owned positions, including failed-emergency residuals."
+    },
+    {
+      "id": "R20-POOL-UNDERLYING",
+      "scope": "Validate getMarketTokenAddress matches strategy asset; disallow funding before validated account configuration."
+    },
+    {
+      "id": "R20-PLAN-RECALL",
+      "scope": "Actual estimator-enabled safety-plan recall/donation counterexample; ordinary economic path must remain cancel-safe."
+    }
+  ],
+  "noPublicPoolLikeQualificationClaim": true
+}

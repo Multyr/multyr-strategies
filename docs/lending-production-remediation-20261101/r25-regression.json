@@ -1,0 +1,13 @@
+{
+  "status": "REGRESSION_PASS",
+  "passed": 2995,
+  "failed": 0,
+  "skipped": 0,
+  "suites": 203,
+  "log": "deployments/lending-full-validation-20261101/production/coordinator/R25-regression.log",
+  "logSha256": "327a91df4419ab9f205a7b4440bdd5068bc8620fc596768e2fd42da2b24e9da5",
+  "matchingActualSourceReceipt": "docs/lending-production-remediation-20261101/r25-actual-50-acceptance.json",
+  "actualSourceReceiptSha256": "271895edab84f79bc9400b3088652368723e983cf419f184c445602cca703e42",
+  "sourcesMatchBeforeAfterAndActual": true,
+  "readiness": "NOT_PRODUCTION_READY"
+}

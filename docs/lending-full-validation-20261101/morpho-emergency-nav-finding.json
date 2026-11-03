@@ -1,0 +1,26 @@
+{
+  "finding": "MORPHO-REAL-01",
+  "status": "FIXED_VALIDATED_MATRIX_ALL_FINAL_GATES_PASS",
+  "source": "src/strategies/usdc-lending/adapters/lending/MorphoUsdcMultiMarket.sol",
+  "beforeSourceSha256": "b98f249fc21682f4ef9206f32e9bcacf36a05a1a173680221417a9f91e3999c0",
+  "beforeTestSha256": "a92e70e571994d16773bd01817dd5f9d48c50317a0e7ed5e917a0435fb5d850b",
+  "log": "deployments/lending-full-validation-20261101/morpho-before-fix.log",
+  "logSha256": "3356c992e795a9af6a959aa285e124a848085cd7a0d75c3befc4c5ef55a2d16c",
+  "reproduction": "Ethereum26300000 real USDT and WETH: emergency redeem and transfer return actual remaining assets to vault, but adapter.totalAssets continues reporting the pre-exit cached position (749999999 raw USDT /749999999999999999 raw WETH).",
+  "adjacent": "Emergency routine zeroed principal even when redemption failed; retain unrecovered position principal and refresh NAV. PYUSD flat historical PPS is a separate fixture assumption failure, not proof of an adapter-rate defect.",
+  "afterSourceSha256": "4a3f0c5124b0fa2ed1b62c3f497a7bf1797201d33514af458265b19dd76317b2",
+  "realAfterEvidence": "docs/lending-full-validation-20261101/morpho-usdt-pyusd-weth-real-evidence.json",
+  "faultRegression": "64Morpho unit/fault tests pass without a global fork; includes positive-yield optimize principal conservation, full exit, failed target+source restoration NAV, single/multi-market failed exits and retry.",
+  "faultLogSha256": "1a9b3ec8962d2c7a844544d395f71469bd59c1d8dbf065809e0b68abdc16b272",
+  "independentReviewCorrection": "ClaudeD correctly noticed optimize principal drift but incorrectly called a negative Solidity uint balance nonblocking. Actual targeted reproduction gives principal sum1001000000 vs total1000000000 and emergency panic0x11. Corrected optimize moves cost basis, emergency recomputes unrecovered sum; fallback failure refreshes NAV to avoid double-counting idle.",
+  "independentReview": "deployments/lending-full-validation-20261101/report-D.md",
+  "finalClosure": "docs/lending-full-validation-20261101/final-validation.json",
+  "finalStatus": "FIXED_VALIDATED_MATRIX_ALL_FINAL_GATES_PASS",
+  "historicalStatus": "FIXED_PRIMARY_AND_SECONDARY_ACCOUNTING_REGRESSIONS_PASS",
+  "finalSources": [
+    {
+      "path": "src/strategies/usdc-lending/adapters/lending/MorphoUsdcMultiMarket.sol",
+      "sha256": "cf5fa3b27cd51cc266e506bdd234d88cd8a9085e10fef7bc3b148b7a79167e24"
+    }
+  ]
+}

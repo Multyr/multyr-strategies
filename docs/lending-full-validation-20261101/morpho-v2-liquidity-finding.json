@@ -1,0 +1,33 @@
+{
+  "finding": "MORPHO-REAL-03",
+  "status": "FIXED_VALIDATED_MATRIX_ALL_FINAL_GATES_PASS",
+  "chainId": 1,
+  "rpcBlock": "26300000",
+  "market": "0xb576765fB15505433aF24FEe2c0325895C559FB2",
+  "asset": "PYUSD",
+  "sourceSha256": "4a3f0c5124b0fa2ed1b62c3f497a7bf1797201d33514af458265b19dd76317b2",
+  "testSha256": "475a684e0722aa7f4d3c60cec7fddf8cb9558c32b483f5119c0637e6a4716e95",
+  "log": "deployments/lending-full-validation-20261101/morpho-v2-before.log",
+  "logSha256": "49eb4b433848c73ad161f5e7af6b6bbc926bc8882be0e86195e5e36733814341",
+  "observation": "Actual V2 deposit succeeds and real share NAV is correct. maxWithdraw intentionally returns0 despite41mPYUSDactualidle. Normal adapter partial withdrawal reverts zero.",
+  "officialDocs": "https://docs.morpho.org/developers/contracts/morpho-vaults-v2/",
+  "liquidityModel": "Plain exit pays idle first, then configured liquidity adapter. ForceDeallocate is separate and can charge a penalty; it must not be treated as free immediate liquidity.",
+  "afterAdapterSha256": "994eae1463f34187accbe570b8e5f0b8dfc1cc90905b9bb67ac5e48b40bb541c",
+  "liquidityViewSha256": "ccbc60dbfae68aed4b7068fff1c7c9f19cb0827cad2e16409bef6e11f174faf1",
+  "afterLogSha256": "b67300bab41de91c5a6af9cf5e72379c91e01f69bd3b717d4e7b97cd562f1063",
+  "supportedLiquidity": "Actual gate-checked idle, capped to owner assets. Additional allocated liquidity and force-deallocation penalties are excluded. This is a conservative immediate lower bound, not a claim that every possible V2 adapter family is modeled.",
+  "configuration": "PARAM_ROLE must set a deployed MorphoVaultV2LiquidityView. V2 deposits without a view are rejected atomically; helper deployment and config must be included in preflight/typed manifests.",
+  "finalClosure": "docs/lending-full-validation-20261101/final-validation.json",
+  "finalStatus": "FIXED_VALIDATED_MATRIX_ALL_FINAL_GATES_PASS",
+  "historicalStatus": "FIXED_V2_REAL_DEPOSIT_PARTIAL_AND_FULL_EXIT_PASS_UNIT_RELEASE_GATES_PENDING",
+  "finalSources": [
+    {
+      "path": "src/strategies/usdc-lending/adapters/lending/MorphoUsdcMultiMarket.sol",
+      "sha256": "cf5fa3b27cd51cc266e506bdd234d88cd8a9085e10fef7bc3b148b7a79167e24"
+    },
+    {
+      "path": "src/strategies/usdc-lending/adapters/lending/MorphoVaultV2LiquidityView.sol",
+      "sha256": "ccbc60dbfae68aed4b7068fff1c7c9f19cb0827cad2e16409bef6e11f174faf1"
+    }
+  ]
+}

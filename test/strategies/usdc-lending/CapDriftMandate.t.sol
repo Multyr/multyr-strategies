@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.28;
+import {LendingOracleTestFixture} from "./helpers/LendingOracleTestFixture.sol";
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // CapDriftMandate.t.sol -- P0.4 (2026-04-24) cap drift mandate bypass
@@ -67,7 +68,7 @@ import { StrategySafetyOverflowModule } from "../../../src/strategies/usdc-lendi
 // Shared base: deploy 3 mock adapters + seeded vault.
 // ─────────────────────────────────────────────────────────────────────────────
 
-abstract contract CapDriftBase is Test {
+abstract contract CapDriftBase is LendingOracleTestFixture {
     using stdStorage for StdStorage;
 
     address constant ARBITRUM_USDC = 0xaf88d065e77c8cC2239327C5EDb3A432268e5831;
@@ -85,7 +86,7 @@ abstract contract CapDriftBase is Test {
     StrategyRebalancePlanModule public planMod;
 
     address public admin   = address(0xA11CE);
-    address public core    = address(0xC0FFEE);
+    address public core = _newOracleCore(1e18);
     address public router  = address(0xBEEF);
     address public keeper  = address(0xCAFE);
 

@@ -30,6 +30,7 @@ import { StrategyRebalancePlanModule } from "../../../src/strategies/usdc-lendin
 import { ParamOutOfRange } from "../../../src/strategies/usdc-lending/controller/StrategyStorageLayout.sol";
 import { StrategyBootstrapper } from "../../../src/strategies/usdc-lending/StrategyBootstrapper.sol";
 import { StrategySafetyOverflowModule } from "../../../src/strategies/usdc-lending/controller/StrategySafetyOverflowModule.sol";
+import { LendingOracleTestFixture } from "./helpers/LendingOracleTestFixture.sol";
 
 // ============================================================================
 // MOCK CONTRACTS
@@ -276,7 +277,7 @@ contract MockLendingAdapter is ILendingAdapter {
 // TEST HELPER BASE CONTRACT
 // ============================================================================
 
-contract UsdcMultiLendingVaultTestBase is Test {
+contract UsdcMultiLendingVaultTestBase is LendingOracleTestFixture {
     // Use Arbitrum USDC address for constructor validation
     address constant ARBITRUM_USDC = 0xaf88d065e77c8cC2239327C5EDb3A432268e5831;
 
@@ -287,7 +288,7 @@ contract UsdcMultiLendingVaultTestBase is Test {
     MockLendingAdapter public adapter3;
 
     address public admin = address(0x1);
-    address public core = address(0x2);
+    address public core;
     address public router = address(0x6); // StrategyRouter - gets CORE_ROLE
     address public keeper = address(0x3);
     address public paramSetter = address(0x4);
@@ -305,6 +306,7 @@ contract UsdcMultiLendingVaultTestBase is Test {
         usdc = new MockUSDC();
         vm.etch(ARBITRUM_USDC, address(usdc).code);
         usdc = MockUSDC(ARBITRUM_USDC);
+        core = _newOracleCore(1e18);
 
         // Create adapters
         adapter1 = new MockLendingAdapter(ARBITRUM_USDC);
@@ -353,18 +355,17 @@ contract UsdcMultiLendingVaultTestBase is Test {
         });
 
         // Deploy modules
-        StrategyParamsModule paramsModule = new StrategyParamsModule(ARBITRUM_USDC, core);
-        StrategyAdapterOpsModule adapterOpsMod = new StrategyAdapterOpsModule(
-            ARBITRUM_USDC, core, address(paramsModule), address(0), address(0)
-        );
-        StrategyScoringModule scoringMod = new StrategyScoringModule(
-            ARBITRUM_USDC, core, address(paramsModule), address(0), address(adapterOpsMod)
-        );
-        StrategyRebalanceGateModule gateMod = new StrategyRebalanceGateModule(
-            ARBITRUM_USDC, core, address(paramsModule), address(scoringMod), address(adapterOpsMod)
-        );
+        // Deploy actual compiled production artifacts without embedding every module's
+        // creation code in each inherited test contract. Constructor behavior is unchanged.
+        StrategyParamsModule paramsModule = StrategyParamsModule(deployCode("StrategyParamsModule.sol:StrategyParamsModule", abi.encode(ARBITRUM_USDC, core)));
+        StrategyAdapterOpsModule adapterOpsMod = StrategyAdapterOpsModule(deployCode("StrategyAdapterOpsModule.sol:StrategyAdapterOpsModule",
+            abi.encode(ARBITRUM_USDC, core, address(paramsModule), address(0), address(0))));
+        StrategyScoringModule scoringMod = StrategyScoringModule(deployCode("StrategyScoringModule.sol:StrategyScoringModule",
+            abi.encode(ARBITRUM_USDC, core, address(paramsModule), address(0), address(adapterOpsMod))));
+        StrategyRebalanceGateModule gateMod = StrategyRebalanceGateModule(deployCode("StrategyRebalanceGateModule.sol:StrategyRebalanceGateModule",
+            abi.encode(ARBITRUM_USDC, core, address(paramsModule), address(scoringMod), address(adapterOpsMod))));
 
-        vault = new UsdcMultiLendingVault(
+        vault = UsdcMultiLendingVault(payable(deployCode("UsdcLendingStrategy.sol:UsdcMultiLendingVault", abi.encode(
             ARBITRUM_USDC,
             core,
             router,
@@ -376,25 +377,23 @@ contract UsdcMultiLendingVaultTestBase is Test {
             address(adapterOpsMod),
             address(gateMod),
             defaultParams
-        );
+        ))));
 
         // Architectural completion: wire StrategyRebalancePlanModule (was missing post-EIP170 split)
-        StrategyRebalancePlanModule _planMod = new StrategyRebalancePlanModule(
-            ARBITRUM_USDC, core, address(paramsModule), address(scoringMod), address(adapterOpsMod)
-        );
+        StrategyRebalancePlanModule _planMod = StrategyRebalancePlanModule(deployCode("StrategyRebalancePlanModule.sol:StrategyRebalancePlanModule",
+            abi.encode(ARBITRUM_USDC, core, address(paramsModule), address(scoringMod), address(adapterOpsMod))));
         vm.prank(admin);
         vault.setRebalancePlanModule(address(_planMod));
 
         // REFACTOR-A: wire StrategySettingsModule (governance setters, last in fallback chain)
-        StrategySettingsModule _settingsMod = new StrategySettingsModule(ARBITRUM_USDC, core);
+        StrategySettingsModule _settingsMod = StrategySettingsModule(deployCode("StrategySettingsModule.sol:StrategySettingsModule", abi.encode(ARBITRUM_USDC, core)));
         vm.prank(admin);
         vault.setSettingsModule(address(_settingsMod));
-        StrategyAllocCalcModule _allocCalcMod0 = new StrategyAllocCalcModule(ARBITRUM_USDC, core);
+        StrategyAllocCalcModule _allocCalcMod0 = StrategyAllocCalcModule(deployCode("StrategyAllocCalcModule.sol:StrategyAllocCalcModule", abi.encode(ARBITRUM_USDC, core)));
         vm.prank(admin);
         vault.setAllocCalcModule(address(_allocCalcMod0));
-        StrategySafetyOverflowModule _overflowMod = new StrategySafetyOverflowModule(
-            ARBITRUM_USDC, core, address(0), address(0), address(adapterOpsMod)
-        );
+        StrategySafetyOverflowModule _overflowMod = StrategySafetyOverflowModule(deployCode("StrategySafetyOverflowModule.sol:StrategySafetyOverflowModule",
+            abi.encode(ARBITRUM_USDC, core, address(0), address(0), address(adapterOpsMod))));
         vm.prank(admin);
         StrategySettingsModule(address(vault)).setSafetyOverflowModule(address(_overflowMod));
 
@@ -1392,6 +1391,43 @@ contract UsdcMultiLendingVault_Withdraw_Test is UsdcMultiLendingVaultTestBase {
         vault.withdraw(500e6, receiver);
 
         assertEq(usdc.balanceOf(receiver), 500e6);
+    }
+
+    function test_withdraw_survivesMissingOracleWithExcessIdle() public {
+        _mintAndTransferToVault(core, 100e6);
+        vm.mockCall(core, abi.encodeWithSignature("params()"), abi.encode(address(0)));
+        address receiver = address(0x999);
+        vm.prank(core);
+        assertEq(vault.withdraw(1e6, receiver), 1e6);
+        assertEq(usdc.balanceOf(receiver), 1e6);
+        assertGe(vault.idleCash(), 99e6);
+    }
+
+    function test_settingsExecutorsCannotBypassRoleChecks() public {
+        vm.expectRevert(Unauthorized.selector);
+        StrategyParamsModule(address(vault)).execSetDustTolerance(0);
+        vm.expectRevert(Unauthorized.selector);
+        StrategyParamsModule(address(vault)).execSetRebalancePlanMinDrift(1000e6);
+    }
+
+    function test_strictWithdraw_survivesMissingOracleWithExcessIdle() public {
+        _mintAndTransferToVault(core, 100e6);
+        vm.mockCall(core, abi.encodeWithSignature("params()"), abi.encode(address(0)));
+        address receiver = address(0x999);
+        vm.prank(core);
+        assertEq(vault.withdraw(1e6, receiver, true), 1e6);
+        assertEq(usdc.balanceOf(receiver), 1e6);
+        assertGe(vault.idleCash(), 99e6);
+    }
+
+    function test_withdrawAll_survivesMissingOracle() public {
+        vm.mockCall(core, abi.encodeWithSignature("params()"), abi.encode(address(0)));
+        address receiver = address(0x999);
+        vm.prank(core);
+        uint256 withdrawn = vault.withdrawAll(receiver);
+        assertEq(withdrawn, 250_000e6);
+        assertEq(usdc.balanceOf(receiver), 250_000e6);
+        assertEq(vault.totalAssets(), 0);
     }
 
     function test_withdraw_returns_withdrawn_amount() public {

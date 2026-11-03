@@ -1,0 +1,30 @@
+{
+  "repository": "https://github.com/Multyr/multyr-strategies",
+  "candidateBase": {
+    "sha": "211f1a0a4cb9c63232ae18dac24ccb921e5a4699",
+    "url": "https://github.com/Multyr/multyr-strategies/commit/211f1a0a4cb9c63232ae18dac24ccb921e5a4699",
+    "message": "test: complete lending cleanup regression validation",
+    "parents": [
+      "893740b124d091a47ab0b1c1103f7c8541757fcd"
+    ]
+  },
+  "comparisonToPublicDefault": {
+    "url": "https://github.com/Multyr/multyr-strategies/compare/b77629a1fcedc31a6855d1f82b7cab9833db3757...211f1a0a4cb9c63232ae18dac24ccb921e5a4699",
+    "status": "diverged",
+    "aheadBy": 13,
+    "behindBy": 1,
+    "mergeBase": "0b804f294b2fe07565a520aabd5ec4c4b73a1582",
+    "head": "211f1a0a4cb9c63232ae18dac24ccb921e5a4699",
+    "publicDefault": "b77629a1fcedc31a6855d1f82b7cab9833db3757"
+  },
+  "publicMergeHasNoTreeChanges": {
+    "url": "https://github.com/Multyr/multyr-strategies/compare/0b804f294b2fe07565a520aabd5ec4c4b73a1582...b77629a1fcedc31a6855d1f82b7cab9833db3757",
+    "status": "ahead",
+    "aheadBy": 1,
+    "behindBy": 0,
+    "files": [],
+    "base": "0b804f294b2fe07565a520aabd5ec4c4b73a1582",
+    "head": "b77629a1fcedc31a6855d1f82b7cab9833db3757"
+  },
+  "interpretation": "The candidate base exists on public GitHub. The public default has one merge-only commit beyond common base 0b804; comparison confirms zero file changes in that merge. The local remediation is a separate uncommitted feature-branch candidate, not deployed/public HEAD. GitHub compare file listing is capped at 300 and is not used as the complete candidate manifest."
+}

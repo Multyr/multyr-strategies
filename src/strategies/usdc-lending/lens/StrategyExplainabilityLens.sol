@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.28;
 
-import { ILendingAdapter } from "../interfaces/ILendingAdapter.sol";
+import { ILendingAdapter, IStrategyAssetValuation } from "../interfaces/ILendingAdapter.sol";
 import { StrategyConfigLib } from "../lib/StrategyConfigLib.sol";
 
 /// @title StrategyExplainabilityLens — Read-only external explainability for UsdcLendingStrategy
@@ -56,7 +56,6 @@ contract StrategyExplainabilityLens {
 
     /// @dev Context struct to reduce stack depth in explainAllocation (Yul viaIR).
     struct _AllocContext {
-        uint16 adapterMaxExposureBps;
         uint16 relExpBpsOverride;
         uint256 tvl;
         uint16 effectiveMaxAdapters;
@@ -74,7 +73,9 @@ contract StrategyExplainabilityLens {
     // EXPLAINABILITY VIEWS
     // ═══════════════════════════════════════════════════════════════════
 
-    /// @notice Scoring components for a single adapter (mirrors old ParamsModule.explainScore)
+    /// @notice Legacy single-adapter diagnostics, using raw APY basis points.
+    /// @dev scoreRaw is not an allocation weight or the normalized controller score.
+    ///      Use explainAllocation for allocation ranking and capped targets.
     function explainScore(address adapter)
         external
         view
@@ -117,7 +118,7 @@ contract StrategyExplainabilityLens {
 
         currentPos = strategy.positionAssets(adapter);
         uint256 tvl = strategy.totalAssets();
-        maxExposure = (uint256(strategy.adapterMaxExposureBps()) * tvl) / 1e4;
+        maxExposure = (uint256(strategy.effectiveAbsCapBps(adapter)) * tvl) / 1e4;
         cachedExtTVL = strategy.cachedExternalTVL(adapter);
     }
 
@@ -131,7 +132,6 @@ contract StrategyExplainabilityLens {
         tvl = strategy.totalAssets();
         effectiveMaxAdapters = _effectiveMaxAdapters(tvl);
         _AllocContext memory ctx = _AllocContext({
-            adapterMaxExposureBps: strategy.adapterMaxExposureBps(),
             relExpBpsOverride: strategy.maxRelativeExposureBps(),
             tvl: tvl,
             effectiveMaxAdapters: effectiveMaxAdapters
@@ -162,7 +162,7 @@ contract StrategyExplainabilityLens {
             uint256 idx = order[i];
             address adapter = enabledList[idx];
             (infos[i], ) = _evaluateAdapter(
-                adapter, normScores[idx], ctx.tvl, ctx.adapterMaxExposureBps, ctx.relExpBpsOverride, r.selCount, ctx.effectiveMaxAdapters
+                adapter, normScores[idx], ctx.tvl, ctx.relExpBpsOverride, r.selCount, ctx.effectiveMaxAdapters
             );
             if (infos[i].skipReason == SkipReason.None) {
                 r.selected[r.selCount] = adapter;
@@ -256,13 +256,12 @@ contract StrategyExplainabilityLens {
         address adapter,
         uint256 score,
         uint256 tvl,
-        uint16 _adapterMaxExposureBps,
         uint16 _relExpBpsOverride,
         uint256 selCount,
         uint16 maxAdapters
     ) internal view returns (AdapterAllocationInfo memory info, bool selected_) {
         uint256 current = strategy.positionAssets(adapter);
-        uint256 maxExp = (uint256(_adapterMaxExposureBps) * tvl) / 1e4;
+        uint256 maxExp = (uint256(strategy.effectiveAbsCapBps(adapter)) * tvl) / 1e4;
         uint256 conf = _tvlConfidence(adapter);
         uint256 extTVL = strategy.cachedExternalTVL(adapter);
         uint256 relCapVal = 0;
@@ -346,25 +345,25 @@ contract StrategyExplainabilityLens {
     // returning StrategyConfigLib.CONFIDENCE_MICRO instead of StrategyConfigLib.CONFIDENCE_ZERO when cacheTs==0;
     // (2) returned StrategyConfigLib.CONFIDENCE_MICRO for extTVL==0, core returns StrategyConfigLib.CONFIDENCE_ZERO.
     function _tvlConfidence(address adapter) internal view returns (uint256) {
-        return StrategyConfigLib.tvlConfidence(
+        return IStrategyAssetValuation(address(strategy)).tierConfidence(
             strategy.cachedExternalTVL(adapter),
             strategy.cachedExternalTVLTs(adapter),
             strategy.externalTVLStalenessSeconds()
         );
     }
 
-    function _effectiveRelativeCapBps(uint256 extTVL) internal pure returns (uint16) {
-        return StrategyConfigLib.effectiveRelativeCapBps(extTVL);
+    function _effectiveRelativeCapBps(uint256 extTVL) internal view returns (uint16) {
+        return IStrategyAssetValuation(address(strategy)).tierRelativeCap(extTVL);
     }
 
     // FIX P1.L6: _decayedIncentive deleted (P0.L1A forces wIncentive=0).
 
     function _effectiveMaxAdapters(uint256 tvl) internal view returns (uint16) {
-        return StrategyConfigLib.effectiveMaxAdapters(tvl, strategy.maxAdaptersPerAllocation());
+        return IStrategyAssetValuation(address(strategy)).tierMaxAdapters(tvl, strategy.maxAdaptersPerAllocation());
     }
 
     function _effectiveMinNewAdapterSeed(uint256 tvl) internal view returns (uint256) {
-        return StrategyConfigLib.effectiveMinNewAdapterSeed(tvl, strategy.minNewAdapterSeed());
+        return IStrategyAssetValuation(address(strategy)).tierSeed(tvl, strategy.minNewAdapterSeed());
     }
 
     function _computeNormScores(
@@ -476,6 +475,7 @@ interface IStrategyView {
 
     // Config
     function adapterMaxExposureBps() external view returns (uint16);
+    function effectiveAbsCapBps(address adapter) external view returns (uint16);
     function maxRelativeExposureBps() external view returns (uint16);
     function maxAdaptersPerAllocation() external view returns (uint16);
     function newAdapterRampBps() external view returns (uint16);
@@ -486,6 +486,9 @@ interface IStrategyView {
     function bootstrapEndsAt() external view returns (uint64);
     function dustTolerance() external view returns (uint256);
     function externalTVLStalenessSeconds() external view returns (uint32);
+    /// @dev Tier scale, read from the strategy so the lens cannot hold a divergent copy.
+    function referenceUnit() external view returns (uint256);
+    function usdUnitInAsset() external view returns (uint256);
     function adapterActivatedAt(address adapter) external view returns (uint64);
 
     // Stability EMA params

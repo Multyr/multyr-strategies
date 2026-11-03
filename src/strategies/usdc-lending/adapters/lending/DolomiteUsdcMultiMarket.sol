@@ -7,6 +7,7 @@ import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.s
 import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
 import { ReentrancyGuard } from "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import { Initializable } from "@openzeppelin/contracts/proxy/utils/Initializable.sol";
+import { IStrategyAssetValuation } from "../../interfaces/ILendingAdapter.sol";
 
 // ===== Dolomite Adapter Interfaces =====
 
@@ -106,6 +107,9 @@ error InvalidDolomiteConfig(address market, uint256 marketId, uint256 accountNum
 // ===== Adapter Contract =====
 
 contract DolomiteUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, ReentrancyGuard, Initializable {
+    error PositionsActive();
+    error DuplicateMarket();
+    error EmptyRegistry();
     using SafeERC20 for IERC20;
 
     // --- Roles ---
@@ -267,11 +271,13 @@ contract DolomiteUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reent
     // ===== Registry & Setters (PARAM_ROLE) =====
 
     function addMarket(address m, MarketType t) external onlyRole(PARAM_ROLE) {
+        require(mkts.length < 255, "too many markets");
         require(m != address(0), "m=0");
         // Audit #2 P0.4 — cross-validate the declared type against the on-chain
         // surface; never trust the operator-supplied type alone.
         MarketType detected = _detectMarketType(m);
         require(detected == t, "Dolomite: declared type mismatch with detected");
+        _requireUniqueMarket(m, mkts.length);
         mkts.push(
             Market({
                 addr: m, mtype: t, enabled: true, flagged: false, riskScoreBps: 10000, lastAPYBps: 0
@@ -288,6 +294,8 @@ contract DolomiteUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reent
         require(idx < mkts.length && m != address(0), "bad");
         MarketType detected = _detectMarketType(m);
         require(detected == t, "Dolomite: declared type mismatch with detected");
+        _requireUniqueMarket(m, idx);
+        _requireEmptyMarket(mkts[idx].addr, mkts[idx].mtype, principal[idx]);
         mkts[idx].addr = m;
         mkts[idx].mtype = t;
         dolomiteConfigValid = false;
@@ -394,42 +402,41 @@ contract DolomiteUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reent
     /// @notice Set Dolomite Margin USDC market ID (V9 fix)
     /// @param marketId The USDC market ID on Dolomite Margin (e.g., 17 on Arbitrum)
     function setUsdcMarketId(uint256 marketId) external onlyRole(PARAM_ROLE) {
+        _requireNoLivePoolLike();
         usdcMarketId = marketId;
-        // Audit #2 P0.5 — invalidate config; activation requires an explicit
-        // validateDolomiteConfig() call to pass.
         dolomiteConfigValid = false;
         emit DolomiteMarketIdUpdated(marketId);
     }
 
-    /// @notice Set Dolomite account number (V9 fix)
-    /// @param accNum The account number for getAccountWei (default 0)
+    /// @param accNum Account number for getAccountWei (default 0)
     function setAccountNumber(uint256 accNum) external onlyRole(PARAM_ROLE) {
+        _requireNoLivePoolLike();
         accountNumber = accNum;
         dolomiteConfigValid = false;
         emit DolomiteAccountNumberUpdated(accNum);
     }
 
-    /// @notice Audit #2 P0.5 — probe every enabled PoolLike market with the
-    ///         current (usdcMarketId, accountNumber) tuple. If any call reverts,
-    ///         the config is considered invalid and Margin-market accounting is
-    ///         gated off until this function passes.
+    /// @notice Validates all PoolLike markets: token address match, debt-free, account readable.
     function validateDolomiteConfig() external onlyRole(PARAM_ROLE) {
         uint256 n = mkts.length;
         for (uint256 i; i < n; ++i) {
-            if (!mkts[i].enabled) continue;
             if (mkts[i].mtype != MarketType.PoolLike) continue;
-
+            address mkt = mkts[i].addr;
             IDolomiteMargin.AccountInfo memory account =
                 IDolomiteMargin.AccountInfo({ owner: address(this), number: accountNumber });
-
-            try IDolomiteMargin(mkts[i].addr).getAccountWei(account, usdcMarketId) returns (
-                IDolomiteMargin.Wei memory
-            ) {
-                // success — continue probing other markets
+            try IDolomiteMargin(mkt).getMarketTokenAddress(usdcMarketId) returns (address tok) {
+                if (tok != asset) revert InvalidDolomiteConfig(mkt, usdcMarketId, accountNumber);
             } catch (bytes memory reason) {
                 emit AdapterOperationFailed(msg.sig, reason);
-                revert InvalidDolomiteConfig(mkts[i].addr, usdcMarketId, accountNumber);
+                revert InvalidDolomiteConfig(mkt, usdcMarketId, accountNumber);
             }
+            try IDolomiteMargin(mkt).getAccountWei(account, usdcMarketId) returns (IDolomiteMargin.Wei memory w) {
+                if (!w.sign && w.value != 0) revert InvalidDolomiteConfig(mkt, usdcMarketId, accountNumber);
+            } catch (bytes memory reason) {
+                emit AdapterOperationFailed(msg.sig, reason);
+                revert InvalidDolomiteConfig(mkt, usdcMarketId, accountNumber);
+            }
+            poolAccountConfigured = true;
         }
         dolomiteConfigValid = true;
     }
@@ -441,6 +448,8 @@ contract DolomiteUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reent
             Market storage m = mkts[i];
             if (!m.enabled) continue;
             if (m.mtype != MarketType.ERC4626) continue;
+            // Preserve the legacy public ppsSnap denomination (1e18 shares).
+            // Internal rateSamples use 1e24 shares for precision, not ppsSnap.
             uint256 pps = IERC4626Like(m.addr).convertToAssets(1e18);
             PpsRateLib.update(rateSamples[m.addr], IERC4626Like(m.addr).convertToAssets(1e24));
             ppsSnap[m.addr] = PpsSnap({ pps: pps, ts: nowTs });
@@ -469,7 +478,7 @@ contract DolomiteUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reent
     // Assets currently held in a given market (in USDC)
     function _assetsOn(uint256 idx) internal view returns (uint256 assets) {
         Market storage m = mkts[idx];
-        if (!m.enabled) return 0;
+        // Disabling interactions does not remove ownership or its NAV.
         assets = 0; // Initialize local variable (slither: uninitialized-local)
         if (m.mtype == MarketType.ERC4626) {
             uint256 shares = IERC20(m.addr).balanceOf(address(this));
@@ -589,28 +598,32 @@ contract DolomiteUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reent
     }
 
     mapping(address => PpsRateLib.Sample) internal rateSamples;
+    bool private poolAccountConfigured;
     function currentAPYBps() external view returns (uint16) {
+        return _marketAPYBps(activeIdx);
+    }
+
+    function _marketAPYBps(uint256 idx) internal view returns (uint16) {
         if (apyOverrideBps != 0) return apyOverrideBps;
-        if (activeIdx < mkts.length && mkts[activeIdx].enabled
-            && mkts[activeIdx].mtype == MarketType.ERC4626) {
-            address m = mkts[activeIdx].addr;
+        if (idx < mkts.length && mkts[idx].enabled
+            && mkts[idx].mtype == MarketType.ERC4626) {
+            address m = mkts[idx].addr;
             try IERC4626Like(m).convertToAssets(1e24) returns (uint256 pps) {
                 return PpsRateLib.read(rateSamples[m], pps);
             } catch { return 0; }
         }
         // Else if Pool-like and rate provider configured, use provider
         if (
-            activeIdx < mkts.length && mkts[activeIdx].enabled
-                && mkts[activeIdx].mtype == MarketType.PoolLike && rateProvider != address(0)
+            idx < mkts.length && mkts[idx].enabled
+                && mkts[idx].mtype == MarketType.PoolLike && rateProvider != address(0)
         ) {
-            address m = mkts[activeIdx].addr;
-            uint256 rpsWad = IDolomiteRateProvider(rateProvider).getSupplyRatePerSecond(m);
-            uint256 aprWad = rpsWad * 31_536_000; // seconds per year
-            uint256 bps = aprWad / 1e14;
-            if (bps > type(uint16).max) return type(uint16).max;
-            // casting to uint16 is safe because overflow is checked above
-            // forge-lint: disable-next-line(unsafe-typecast)
-            return uint16(bps);
+            address m = mkts[idx].addr;
+            try IDolomiteRateProvider(rateProvider).getSupplyRatePerSecond(m) returns (uint256 rpsWad) {
+                if (rpsWad > uint256(type(uint16).max) * 1e14 / 31_536_000) return type(uint16).max;
+                // Bounded above before multiplication and narrowing.
+                // forge-lint: disable-next-line(unsafe-typecast)
+                return uint16(rpsWad * 31_536_000 / 1e14);
+            } catch { return 0; }
         }
         // Fallback
         return 0;
@@ -673,31 +686,74 @@ contract DolomiteUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reent
         if (capacity > 0) require(totalAssets() + assets <= capacity, "CAP");
         IERC20(asset).safeTransferFrom(msg.sender, address(this), assets);
 
-        uint256 idx = _pickTargetIndex();
-        Market storage m = mkts[idx];
-        // Gas: `m` is a storage pointer -- each `.addr`/`.mtype` access is its
-        // own SLOAD. Nothing writes m.addr/m.mtype before line "principal[idx]
-        // += assets" below, so caching is exact.
-        address mktAddr = m.addr;
-        MarketType mtype_ = m.mtype;
-
-        _approveMarket(mktAddr, assets);
-        if (mtype_ == MarketType.ERC4626) {
-            // slither: unused-return - capture return value
-            uint256 sharesMinted = IERC4626Like(mktAddr).deposit(assets, address(this));
-            require(sharesMinted > 0, "Dolomite: deposit returned 0 shares");
-        } else {
-            IDolomiteLike(mktAddr).supply(asset, assets);
+        uint256 n = mkts.length;
+        require(n > 0, "no markets");
+        uint256 remaining = assets;
+        uint256 filledMask;
+        uint256 lastIdx = activeIdx;
+        bool anyDeposited;
+        while (remaining > 0) {
+            uint256 bestIdx = type(uint256).max;
+            uint256 bestScore;
+            uint256 ai = activeIdx;
+            // Prefer activeIdx first if eligible and not yet attempted.
+            if ((filledMask >> ai) & 1 == 0 && ai < n && mkts[ai].enabled && !mkts[ai].flagged
+                    && _maxAdditionalDeposit(ai) > 0) {
+                bestIdx = ai;
+            } else {
+                for (uint256 i; i < n; ++i) {
+                    if ((filledMask >> i) & 1 == 1) continue;
+                    if (!mkts[i].enabled || mkts[i].flagged) continue;
+                    if (_maxAdditionalDeposit(i) == 0) continue;
+                    uint256 s = _score(i);
+                    if (bestIdx == type(uint256).max || s > bestScore) { bestScore = s; bestIdx = i; }
+                }
+            }
+            if (bestIdx == type(uint256).max) break;
+            filledMask |= (uint256(1) << bestIdx);
+            uint256 room = _maxAdditionalDeposit(bestIdx);
+            uint256 fill = remaining < room ? remaining : room;
+            address mktAddr = mkts[bestIdx].addr;
+            _approveMarket(mktAddr, fill);
+            bool ok = _tryDeposit(bestIdx, fill);
+            _revokeMarketApproval(mktAddr);
+            if (ok) {
+                principal[bestIdx] += fill;
+                principalTotal += fill;
+                remaining -= fill;
+                lastIdx = bestIdx;
+                anyDeposited = true;
+                emit Supplied(fill, mktAddr);
+            }
         }
-        _revokeMarketApproval(mktAddr);
-
-        principal[idx] += assets;
-        principalTotal += assets;
-        require(idx <= type(uint8).max, "DolomiteUsdcMultiMarket: idx overflow");
-        // casting to uint8 is safe because overflow is checked above
+        require(anyDeposited, "no enabled market");
+        require(lastIdx <= type(uint8).max, "DolomiteUsdcMultiMarket: idx overflow");
         // forge-lint: disable-next-line(unsafe-typecast)
-        activeIdx = uint8(idx);
-        emit Supplied(assets, mktAddr);
+        activeIdx = uint8(lastIdx);
+    }
+
+    /// @dev Attempt to supply `fill` into market `idx`. Approval must be set by
+    ///      the caller before this call and revoked immediately after, regardless
+    ///      of the return value.  Returns true only on a confirmed successful
+    ///      supply; a revert inside the market does not propagate.
+    function _tryDeposit(uint256 idx, uint256 fill) internal returns (bool) {
+        Market storage m = mkts[idx];
+        if (m.mtype == MarketType.ERC4626) {
+            try IERC4626Like(m.addr).deposit(fill, address(this)) returns (uint256 sharesMinted) {
+                // A successful transfer returning zero receipts must roll back
+                // the whole operation, preserving the previous loss guard.
+                require(sharesMinted > 0, "Dolomite: deposit returned 0 shares");
+                return true;
+            } catch { return false; }
+        } else {
+            if (!dolomiteConfigValid) return false;
+            (bool preOk, bool preSgn, uint256 preVal) = _poolLikeWei(m.addr);
+            if (!preOk || (!preSgn && preVal != 0)) return false;
+            try IDolomiteLike(m.addr).supply(asset, fill) {} catch { return false; }
+            (bool postOk, bool postSgn, uint256 postVal) = _poolLikeWei(m.addr);
+            require(postOk && postSgn && postVal >= preVal + fill, "Dolomite: supply not credited");
+            return true;
+        }
     }
 
     function withdraw(
@@ -803,16 +859,10 @@ contract DolomiteUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reent
         } else {
             IDolomiteLike(mf.addr).withdraw(asset, movedPlan);
         }
-        // Deposit into target market with just-in-time approval
         _approveMarket(mt.addr, movedPlan);
-        if (mt.mtype == MarketType.ERC4626) {
-            // slither: unused-return - capture return value
-            uint256 sharesMinted = IERC4626Like(mt.addr).deposit(movedPlan, address(this));
-            require(sharesMinted > 0, "Dolomite: optimize deposit returned 0 shares");
-        } else {
-            IDolomiteLike(mt.addr).supply(asset, movedPlan);
-        }
+        bool tOk = _tryDeposit(toIdx, movedPlan);
         _revokeMarketApproval(mt.addr);
+        require(tOk, "Dolomite: optimize target failed");
 
         // Update principal — HIGH-D-01: proportional reduction mirrors withdraw() fix
         uint256 fromReduction = fromAssetsOnBefore > 0
@@ -820,6 +870,7 @@ contract DolomiteUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reent
             : principal[fromIdx];
         principal[fromIdx] = principal[fromIdx] >= fromReduction ? principal[fromIdx] - fromReduction : 0;
         principal[toIdx] += movedPlan;
+        principalTotal = principalTotal - fromReduction + movedPlan;
         require(toIdx <= type(uint8).max, "DolomiteUsdcMultiMarket: toIdx overflow");
         require(block.timestamp <= type(uint64).max, "DolomiteUsdcMultiMarket: timestamp overflow");
         // casting to uint8 and uint64 is safe because overflow is checked above
@@ -859,8 +910,8 @@ contract DolomiteUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reent
         Market storage m = mkts[idx];
         if (!m.enabled) return 0;
 
-        // APY: If not available, treat as 0. (Can be extended in future)
-        uint16 apyBps = m.lastAPYBps;
+        // Use the same per-market observed rate as the public APY view.
+        uint16 apyBps = _marketAPYBps(idx);
         uint16 apyNorm = apyBps; // Already in 0..10000
 
         // Liquidity: availableLiquidity / (availableLiquidity + allocOnMarket), scaled to 0..10000
@@ -884,8 +935,8 @@ contract DolomiteUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reent
         // Risk: 10000 - riskScoreBps (higher = riskier)
         uint16 riskBps = 10000 - m.riskScoreBps;
 
-        // Stability: use lastAPYBps as a proxy (normalized)
-        uint16 stabBps = m.lastAPYBps;
+        // Stability uses the observed APY as a proxy (normalized).
+        uint16 stabBps = apyBps;
 
         // Incentive: global param, normalized
         uint16 incBps = incentiveBpsGlobal;
@@ -934,9 +985,8 @@ contract DolomiteUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reent
         view
         returns (int256)
     {
-        // Use lastAPYBps as proxy for APY
-        uint16 apyFrom = mkts[fromIdx].lastAPYBps;
-        uint16 apyTo = mkts[toIdx].lastAPYBps;
+        uint16 apyFrom = _marketAPYBps(fromIdx);
+        uint16 apyTo = _marketAPYBps(toIdx);
 
         if (apyTo <= apyFrom) return -1; // No benefit
 
@@ -946,7 +996,10 @@ contract DolomiteUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reent
         uint256 grossBenefit = (movedAmount * deltaAPY * gateHorizonDays) / (10000 * 365);
 
         // Move cost: gas + slippage + withdrawal spread
-        uint256 moveCost = gasCostUSDC
+        uint256 gasCostAsset = gasCostUSDC == 0
+            ? 0
+            : IStrategyAssetValuation(vault).usd6ToAssetUnits(gasCostUSDC);
+        uint256 moveCost = gasCostAsset
             + (movedAmount * (slippageBpsEstimate + withdrawalSpreadBpsEstimate)) / 10000;
 
         // Net benefit per movedAmount, in bps
@@ -1004,9 +1057,13 @@ contract DolomiteUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reent
         try registry.getEnabledVaults(IProtocolRegistry.ProtocolType.DOLOMITE) returns (
             address[] memory vaults
         ) {
+            require(vaults.length <= 255, "too many markets");
             for (uint256 i = 0; i < vaults.length; i++) {
                 if (vaults[i] != address(0)) {
+                    _requireUniqueMarket(vaults[i], mkts.length);
                     bool isERC4626 = _tryERC4626(vaults[i]);
+                    (bool poolOk, address poolAsset) = _tryPoolLike(vaults[i]);
+                    if (isERC4626 && poolOk && poolAsset == asset) continue;
                     if (isERC4626) {
                         mkts.push(
                             Market({
@@ -1047,8 +1104,7 @@ contract DolomiteUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reent
 
     function _tryERC4626(address vaultAddr) internal view returns (bool) {
         try IERC4626Like(vaultAddr).asset() returns (address assetAddr) {
-            // Return true if asset call succeeds (assetAddr captured for slither)
-            return assetAddr != address(0);
+            return assetAddr == asset;
         } catch {
             return false;
         }
@@ -1064,9 +1120,53 @@ contract DolomiteUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reent
 
     function refreshFromRegistry() external onlyRole(PARAM_ROLE) {
         require(address(registry) != address(0), "no registry");
+        if (principalTotal != 0) revert PositionsActive();
+        for (uint256 i; i < mkts.length; ++i) _requireEmptyMarket(mkts[i].addr, mkts[i].mtype, principal[i]);
+        activeIdx = 0;
         delete mkts;
         delete principal;
         _loadFromRegistry();
+        if (mkts.length == 0) revert EmptyRegistry();
+    }
+
+    function _requireUniqueMarket(address market, uint256 excluded) internal view {
+        for (uint256 i; i < mkts.length; ++i)
+            if (i != excluded && mkts[i].addr == market) revert DuplicateMarket();
+    }
+
+    /// @dev Bypasses dolomiteConfigValid; direct getAccountWei probe for PoolLike.
+    function _poolLikeWei(address mkt) internal view returns (bool ok, bool sign, uint256 val) {
+        IDolomiteMargin.AccountInfo memory acc =
+            IDolomiteMargin.AccountInfo({owner: address(this), number: accountNumber});
+        try IDolomiteMargin(mkt).getAccountWei(acc, usdcMarketId) returns (IDolomiteMargin.Wei memory w) {
+            return (true, w.sign, w.value);
+        } catch { return (false, false, 0); }
+    }
+
+    /// @dev Blocks tuple mutation (setUsdcMarketId / setAccountNumber).
+    ///      Inspects ALL PoolLike markets (enabled and disabled) once poolAccountConfigured.
+    ///      Even before validation, a readable nonzero account blocks mutation.
+    ///      An unreadable initial tuple may be configured; after validation it fails closed.
+    function _requireNoLivePoolLike() internal view {
+        uint256 n = mkts.length;
+        for (uint256 i; i < n; ++i) {
+            if (mkts[i].mtype != MarketType.PoolLike) continue;
+            if (principal[i] != 0) revert PositionsActive();
+            (bool ok,, uint256 val) = _poolLikeWei(mkts[i].addr);
+            if ((!ok && poolAccountConfigured) || val != 0) revert PositionsActive();
+        }
+    }
+
+    /// @dev Destructive market changes require a strict ownership proof:
+    ///      ERC4626 receipt balance or PoolLike account Wei, including invalid config.
+    function _requireEmptyMarket(address market, MarketType mtype, uint256 costBasis) internal view {
+        if (costBasis != 0) revert PositionsActive();
+        if (mtype == MarketType.ERC4626) {
+            if (IERC20(market).balanceOf(address(this)) != 0) revert PositionsActive();
+        } else {
+            (bool ok,, uint256 val) = _poolLikeWei(market);
+            if (!ok || val != 0) revert PositionsActive();
+        }
     }
 
     // ===== Idle Asset & Emergency Recovery =====
@@ -1085,34 +1185,42 @@ contract DolomiteUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reent
     function emergencyPullAllToVault() external nonReentrant onlyVault {
         uint256 n = mkts.length;
         for (uint256 i = 0; i < n; ++i) {
-            if (!mkts[i].enabled) continue;
-            uint256 bal = _assetsOn(i);
-            if (bal > 0) {
-                Market storage m = mkts[i];
-                if (m.mtype == MarketType.ERC4626) {
-                    try IERC4626Like(m.addr).withdraw(bal, address(this), address(this)) returns (uint256 _sharesBurned) {
-                        emit EmergencyDolomiteMarketWithdrawn(i, m.addr, uint8(m.mtype), bal, _sharesBurned);
+            Market storage m = mkts[i];
+            if (m.mtype == MarketType.ERC4626) {
+                uint256 bal = _assetsOn(i);
+                if (bal == 0) { principal[i] = 0; continue; }
+                try IERC4626Like(m.addr).withdraw(bal, address(this), address(this)) returns (uint256 sb) {
+                    emit EmergencyDolomiteMarketWithdrawn(i, m.addr, uint8(m.mtype), bal, sb);
+                    principal[i] = 0;
+                } catch (bytes memory reason) {
+                    emit AdapterOperationFailed(msg.sig, reason);
+                    emit EmergencyDolomiteMarketWithdrawn(i, m.addr, uint8(m.mtype), bal, 0);
+                    // principal[i] preserved — position still live
+                }
+            } else {
+                // PoolLike: inspect ALL markets (disabled can still own positions)
+                (bool ok, bool sign, uint256 val) = _poolLikeWei(m.addr);
+                if (!ok) {
+                    emit EmergencyDolomiteMarketWithdrawn(i, m.addr, uint8(m.mtype), 0, 0);
+                } else if (val == 0) {
+                    principal[i] = 0;
+                } else if (sign) {
+                    try IDolomiteLike(m.addr).withdraw(asset, val) {
+                        emit EmergencyDolomiteMarketWithdrawn(i, m.addr, uint8(m.mtype), val, 0);
+                        principal[i] = 0;
                     } catch (bytes memory reason) {
-                emit AdapterOperationFailed(msg.sig, reason);
-                        emit EmergencyDolomiteMarketWithdrawn(i, m.addr, uint8(m.mtype), bal, 0);
-                    }
-                } else {
-                    try IDolomiteLike(m.addr).withdraw(asset, bal) {
-                        emit EmergencyDolomiteMarketWithdrawn(i, m.addr, uint8(m.mtype), bal, 0);
-                    } catch (bytes memory reason) {
-                emit AdapterOperationFailed(msg.sig, reason);
-                        emit EmergencyDolomiteMarketWithdrawn(i, m.addr, uint8(m.mtype), bal, 0);
+                        emit AdapterOperationFailed(msg.sig, reason);
+                        emit EmergencyDolomiteMarketWithdrawn(i, m.addr, uint8(m.mtype), val, 0);
                     }
                 }
-                principal[i] = 0;
+                // sign=false val>0: debt — no withdraw, principal preserved
             }
         }
-        principalTotal = 0;
-        // Transfer FULL balance (withdrawn + any pre-existing idle) to vault
+        uint256 pt;
+        for (uint256 i; i < n; ++i) pt += principal[i];
+        principalTotal = pt;
         uint256 fullBalance = IERC20(asset).balanceOf(address(this));
-        if (fullBalance > 0) {
-            IERC20(asset).safeTransfer(vault, fullBalance);
-        }
+        if (fullBalance > 0) IERC20(asset).safeTransfer(vault, fullBalance);
         emit EmergencyPullExecuted(fullBalance);
     }
 

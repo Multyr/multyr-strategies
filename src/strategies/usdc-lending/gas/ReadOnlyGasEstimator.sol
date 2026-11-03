@@ -24,6 +24,8 @@ interface IMeasurements {
 /// @notice Read-only plan cost model. Governance calibration writes are separate.
 /// @dev Cost model, not an RPC simulator or a proven upper bound on Nitro fees.
 contract ReadOnlyGasEstimator {
+    /// @notice Economic quote unit; historical USDC field names preserve the ABI.
+    function quoteCurrency() external pure returns (bytes32) { return bytes32("USD6"); }
     struct Action {
         address adapter;
         uint256 amount;
@@ -40,14 +42,14 @@ contract ReadOnlyGasEstimator {
         uint16 calldataBytes; // exact wrapper calldata length for this prototype
         uint16 marginBps;
         uint32 maxPriceAge; // ETH/USD heartbeat tolerance
-        uint32 usdcMaxPriceAge; // USDC/USD may have a different heartbeat
+        uint32 usdcMaxPriceAge; // Deprecated ABI field; USD6 quotes do not consume USDC/USD.
         uint32 sequencerGrace;
-        uint256 fallbackUSDC;
+        uint256 fallbackUSDC; // USD6; legacy field name only.
     }
 
     struct Quote {
         bytes32 actionsHash;
-        uint256 costUSDC;
+        uint256 costUSDC; // USD6; never a raw quantity of the strategy asset.
         uint256 l2Gas;
         uint256 posterWei;
         uint256 executionWei;
@@ -57,8 +59,10 @@ contract ReadOnlyGasEstimator {
     }
     IFeeInfo public immutable feeInfo;
     IFeed public immutable ethUSD;
-    IFeed public immutable usdcUSD;
+    IFeed public immutable usdcUSD; // Optional legacy binding, not a pricing dependency.
     IFeed public immutable sequencer;
+    // Captured at construction; re-checked in _sequencerUp so cross-chain replay fails closed.
+    uint256 private immutable _deployChainId;
     Config public config;
     address public calibrator;
     address public pendingCalibrator;
@@ -130,11 +134,20 @@ contract ReadOnlyGasEstimator {
     error InvalidPlan();
 
     constructor(IFeeInfo f, IFeed e, IFeed u, IFeed s, Config memory c) {
+        // Zero sequencer is permitted only on chains with no sequencer feed: Ethereum (1),
+        // BSC (56), and Polygon PoS (137). A non-zero address with no code is invalid everywhere.
+        bool _seqValid = address(s) == address(0)
+            ? (block.chainid == 1 || block.chainid == 56 || block.chainid == 137)
+            : address(s).code.length > 0;
         require(
-            address(f) != address(0) && address(e).code.length > 0 && address(u).code.length > 0
-                && address(s).code.length > 0,
+            address(f) != address(0)
+                && (address(f).code.length > 0 || (block.chainid == 42161 && address(f) == address(0x6c)))
+                && address(e).code.length > 0
+                && (address(u) == address(0) || address(u).code.length > 0)
+                && _seqValid,
             "dependency"
         );
+        _deployChainId = block.chainid;
         _validate(c);
         calibrator = msg.sender;
         feeInfo = f;
@@ -148,7 +161,7 @@ contract ReadOnlyGasEstimator {
         if (
             c.marginBps < 1000 || c.marginBps > 10000 || c.prepareGas == 0 || c.stepGas == 0
                 || c.finalizeGas == 0 || c.defaultDepositGas < 21000 || c.defaultWithdrawGas < 21000
-                || c.maxPriceAge == 0 || c.maxPriceAge > 7 days || c.usdcMaxPriceAge == 0
+                || c.maxPriceAge == 0 || c.maxPriceAge > 7 days
                 || c.usdcMaxPriceAge > 7 days || c.sequencerGrace < 1 hours || c.fallbackUSDC == 0
                 || c.intrinsicGas < 21000 || c.calldataBytes < 4
         ) revert InvalidConfig();
@@ -181,6 +194,12 @@ contract ReadOnlyGasEstimator {
     }
 
     function _sequencerUp() internal view returns (bool) {
+        if (address(sequencer) == address(0)) {
+            // Native path for chains without a sequencer feed (Ethereum, BSC, Polygon PoS).
+            // Re-check live chainId so a cross-chain replay fails closed.
+            return block.chainid == _deployChainId
+                && (block.chainid == 1 || block.chainid == 56 || block.chainid == 137);
+        }
         try sequencer.latestRoundData() returns (
             uint80, int256 answer, uint256 started, uint256, uint80
         ) {
@@ -191,12 +210,21 @@ contract ReadOnlyGasEstimator {
         }
     }
 
-    /// @notice Validated conversion inputs for receipt reconciliation at an explicit block.
+    // POL/USD on Polygon PoS trades well below the ETH/BNB sanity floor; selecting the
+    // correct bounds at call time is safe because _sequencerUp() already gates both callers.
+    function _nativePriceBounds() private view returns (uint256 low, uint256 high) {
+        if (block.chainid == 137) return (1e14, 1000e18); // POL: $0.0001 .. $1000
+        return (100e18, 100000e18);                        // ETH/BNB: $100 .. $100000
+    }
+
+    /// @notice Native gas USD price and nominal USD unit for receipt reconciliation.
+    /// @dev Historical `usdc` return slot is exactly 1e18; no USDC feed is queried.
     function validatedPrices() external view returns (bool valid, uint256 eth, uint256 usdc) {
         if (!_sequencerUp()) return (false, 0, 0);
-        eth = _price(ethUSD, 100e18, 100000e18, config.maxPriceAge);
-        usdc = _price(usdcUSD, 0.8e18, 1.2e18, config.usdcMaxPriceAge);
-        valid = eth > 0 && usdc > 0;
+        (uint256 priceLow, uint256 priceHigh) = _nativePriceBounds();
+        eth = _price(ethUSD, priceLow, priceHigh, config.maxPriceAge);
+        usdc = 1e18; // Historical return slot now represents one USD, exactly.
+        valid = eth > 0;
     }
 
     function estimate(
@@ -253,15 +281,15 @@ contract ReadOnlyGasEstimator {
             q.l2Gas += sample;
         }
         if (!_sequencerUp()) return q;
-        uint256 eth = _price(ethUSD, 100e18, 100000e18, config.maxPriceAge);
-        uint256 usdc = _price(usdcUSD, 0.8e18, 1.2e18, config.usdcMaxPriceAge);
-        if (eth == 0 || usdc == 0) return q;
+        (uint256 priceLow, uint256 priceHigh) = _nativePriceBounds();
+        uint256 eth = _price(ethUSD, priceLow, priceHigh, config.maxPriceAge);
+        if (eth == 0) return q;
         try feeInfo.getPricesInWei() returns (
             uint256 perTx, uint256 perByte, uint256, uint256, uint256, uint256 l2Price
         ) {
             // Operational bounds prevent overflow/unusable estimates; no clipping downward.
             if (
-                l2Price == 0 || perByte == 0 || l2Price > 1000 gwei || perByte > 1e15
+                l2Price == 0 || l2Price > 1000 gwei || perByte > 1e15
                     || perTx > 1 ether
             ) return q;
             // eth_call usually supplies zero; on-chain include any higher transaction gas price.
@@ -271,9 +299,10 @@ contract ReadOnlyGasEstimator {
             // Dynamic poster pricing × uncompressed wrapper bytes + per-tx charge.
             // Compression/serialization must be calibrated against NodeInterface off-chain.
             q.posterWei = q.txCount * (perTx + uint256(config.calldataBytes) * perByte);
-            uint256 usdWei = Math.mulDiv(q.executionWei + q.posterWei, eth, usdc, Math.Rounding.Up);
-            uint256 usdc6 = Math.ceilDiv(usdWei, 1e12);
-            q.costUSDC = Math.mulDiv(usdc6, 10000 + config.marginBps, 10000, Math.Rounding.Up);
+            // Quote USD value independently of the strategy asset or USDC's peg.
+            uint256 usdWei = Math.mulDiv(q.executionWei + q.posterWei, eth, 1e18, Math.Rounding.Up);
+            uint256 usd6 = Math.ceilDiv(usdWei, 1e12);
+            q.costUSDC = Math.mulDiv(usd6, 10000 + config.marginBps, 10000, Math.Rounding.Up);
             q.reliable = true;
         } catch {}
     }

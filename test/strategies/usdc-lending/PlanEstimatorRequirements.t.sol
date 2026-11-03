@@ -5,9 +5,19 @@ import {StrategyAllocCalcModule} from "../../../src/strategies/usdc-lending/cont
 import {AdapterScore} from "../../../src/strategies/usdc-lending/controller/StrategyStorageLayout.sol";
 import {CandidateActions} from "../../../src/strategies/usdc-lending/gas/CandidateActions.sol";
 import {ReadOnlyGasEstimator as E} from "../../../src/strategies/usdc-lending/gas/ReadOnlyGasEstimator.sol";
+import {StrategyConfigLib} from "../../../src/strategies/usdc-lending/lib/StrategyConfigLib.sol";
+
+contract PlanEvidenceAsset {
+    function decimals() external pure returns (uint8) { return 6; }
+    function balanceOf(address) external pure returns (uint256) { return 0; }
+}
 
 contract AllocationEvidenceHarness is StrategyAllocCalcModule {
-    constructor() StrategyAllocCalcModule(address(1), address(2)) {}
+    constructor(address asset_) StrategyAllocCalcModule(asset_, address(2)) {}
+    // Isolated policy harness: amounts in these literal boundary tests are USD6.
+    function tierMaxAdapters(uint256 assets, uint16 ceiling) external pure returns (uint16) {
+        return StrategyConfigLib.effectiveMaxAdapters(assets, ceiling, 1e6);
+    }
     function limit(uint256 tvl, uint16 configured) external returns(uint16) {
         maxAdaptersPerAllocation = configured;
         return _effectiveMaxAdapters(tvl);
@@ -21,7 +31,7 @@ contract AllocationEvidenceHarness is StrategyAllocCalcModule {
 }
 contract PlanEstimatorRequirementsTest is Test {
     AllocationEvidenceHarness h;
-    function setUp() public { vm.warp(1800000000); h = new AllocationEvidenceHarness(); }
+    function setUp() public { vm.warp(1800000000); h = new AllocationEvidenceHarness(address(new PlanEvidenceAsset())); }
     function test_tierBoundariesAndStaticCeiling() public {
         uint256[9] memory tvls = [uint256(24999e6),25000e6,249999e6,250000e6,999999e6,1000000e6,4999999e6,5000000e6,10000000e6];
         uint16[9] memory expected = [uint16(1),2,2,3,3,4,4,5,5];

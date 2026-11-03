@@ -1,0 +1,13 @@
+{
+  "status": "INDEPENDENT_CORRECTION_REVIEW_NO_CONCRETE_NEW_DEFECT",
+  "scope": [
+    "R25 Dolomite readable initial ownership guard",
+    "R25 optimize aggregate basis correction",
+    "R24 stale-economic-deposit allegation withdrawn"
+  ],
+  "report": "deployments/lending-full-validation-20261101/production/coordinator/R26-final-correction.md",
+  "reportSha256": "b7040a0f304723b7cde4b3cca3c49718b65437516c83d15125f32bac3765690d",
+  "note": "Reviewer repeats an incorrect economic-control test name; Root verifies actual test_recalledEconomicSourceCancelsBeforeDonationMovement. Static review complements execution and is not a production certificate.",
+  "sourceSha256": "08dafc6281ac361d241c719168f6fc9c1cb32978c33aac523547fdbc587653e2",
+  "readiness": "NOT_PRODUCTION_READY"
+}

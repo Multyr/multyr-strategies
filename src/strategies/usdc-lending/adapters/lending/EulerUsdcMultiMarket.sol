@@ -7,6 +7,7 @@ import { IERC20Metadata } from "@openzeppelin/contracts/token/ERC20/extensions/I
 import { ReentrancyGuard } from "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import { Initializable } from "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
+import { IStrategyAssetValuation } from "../../interfaces/ILendingAdapter.sol";
 
 /// @notice Minimal interface for protocol registry
 interface IProtocolRegistry {
@@ -72,6 +73,8 @@ interface IPermit2Allowance {
 }
 
 contract EulerUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, ReentrancyGuard, Initializable {
+    error PositionsActive();
+    error DuplicateMarket();
     using SafeERC20 for IERC20Metadata;
 
     // --- STRUCTS & STORAGE ---
@@ -167,9 +170,12 @@ contract EulerUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
         USDC = IERC20Metadata(_usdc);
         vault = _vault;
         registry = IProtocolRegistry(_registry); // Can be address(0)
+        // One whole unit of the vault asset, whatever its precision.
+        minMarketCapacity = 10 ** uint256(IERC20Metadata(_usdc).decimals());
 
         // Validate and initialize markets from constructor array
         uint256 marketCount = _markets.length;
+        require(marketCount <= 255, "too many markets");
         for (uint256 i = 0; i < marketCount; ++i) {
             require(_markets[i] != address(0), "market zero");
             require(IEulerUsdcMarket(_markets[i]).asset() == address(USDC), "asset mismatch");
@@ -404,7 +410,10 @@ contract EulerUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
 
     /// @dev Minimum deposit capacity for a market to be eligible.
     ///      Markets with capacity below this are skipped (avoids partial fills on tiny caps).
-    uint256 public minMarketCapacity = 1e6; // 1 USDC default
+    /// @dev Set in initialize() to one whole unit of the vault asset. Previously a hard
+    ///      `1e6` literal, i.e. 1 USDC -- on an 18-decimal asset that is 1e-12 of a token,
+    ///      so the eligibility floor was effectively zero.
+    uint256 public minMarketCapacity;
 
     /// @notice Set minimum market capacity for target selection
     function setMinMarketCapacity(uint256 _min) external onlyRole(PARAM_ROLE) {
@@ -426,33 +435,14 @@ contract EulerUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
         for (uint256 i = 0; i < n; ++i) {
             if (excludeUpTo > 0 && i < excludeUpTo) continue;
             if (mkts[i].enabled && !mkts[i].flagged) {
-                uint256 maxDep = IEulerUsdcMarket(mkts[i].addr).maxDeposit(address(this));
-                if (maxDep < _minCap) continue;
-                uint16 apy = _supplyAPYBps(i);
-                if (!found || apy > bestAPY) {
-                    bestAPY = apy;
-                    idx = i;
-                    found = true;
-                }
-            }
-        }
-    }
-
-    /// @dev Non-view: find best market with capacity + emit skip events
-    function _targetMarketWithEvents(uint256 excludeUpTo) internal returns (uint256 idx, bool found) {
-        uint16 bestAPY = 0;
-        idx = 0;
-        found = false;
-        uint256 n = mkts.length;
-        uint256 _minCap = minMarketCapacity;
-        for (uint256 i = 0; i < n; ++i) {
-            if (excludeUpTo > 0 && i < excludeUpTo) continue;
-            if (mkts[i].enabled && !mkts[i].flagged) {
-                uint256 maxDep = IEulerUsdcMarket(mkts[i].addr).maxDeposit(address(this));
-                if (maxDep < _minCap) {
-                    emit MarketSkippedLowCapacity(mkts[i].addr, maxDep);
+                uint256 maxDep;
+                try IEulerUsdcMarket(mkts[i].addr).maxDeposit(address(this)) returns (uint256 _md) {
+                    maxDep = _md;
+                } catch {
+                    // Reverting maxDeposit must not hide healthy markets (INV-8).
                     continue;
                 }
+                if (maxDep < _minCap) continue;
                 uint16 apy = _supplyAPYBps(i);
                 if (!found || apy > bestAPY) {
                     bestAPY = apy;
@@ -555,82 +545,130 @@ contract EulerUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
         }
     }
 
-    /// @dev Try to deposit into the best available market. If it fails, retry with next best.
-    ///      Fix 2: clamps deposit to maxDeposit. Fix 3: retry fallback on failure.
-    function _tryDepositToMarket(uint256 assets, uint256 excludeIdx) internal returns (bool) {
-        (uint256 targetIdx, bool found) = _targetMarketWithEvents(excludeIdx);
-        if (!found) return false;
-        require(mkts[targetIdx].enabled && !mkts[targetIdx].flagged, "target not allowed");
+    /// @dev Iterative best-unattempted-market deposit across ALL eligible indexes.
+    ///      Each market is visited at most once per call. One poke+retry on first failure.
+    ///      Never permanently flags markets. Approvals revoked on every success/failure path.
+    ///      Principal recorded only on actual successful deposits.
+    function _tryDepositToMarket(uint256 assets, uint256 /*_unused*/) internal returns (bool) {
+        uint256 n = mkts.length;
+        bool[] memory attempted = new bool[](n);
+        uint256 remaining = assets;
+        bool anyDeposited = false;
+        uint256 _minCap = minMarketCapacity;
 
-        // Gas: `mkts[targetIdx].addr` was re-read from storage up to 13x in
-        // this function (each `mkts[targetIdx].addr` recomputes the array's
-        // keccak-derived slot + a fresh SLOAD). Nothing in this function --
-        // including _pokeMarket(targetIdx), which only reads market state --
-        // writes mkts[targetIdx].addr, so caching it once is exact.
-        address mktAddr = mkts[targetIdx].addr;
+        while (remaining > 0) {
+            // Select best unattempted eligible market by APY
+            uint16 bestAPY = 0;
+            uint256 bestIdx = 0;
+            bool found = false;
 
-        // Fix 2: Clamp deposit to market's available capacity
-        uint256 maxDep = IEulerUsdcMarket(mktAddr).maxDeposit(address(this));
-        uint256 amountToDeposit = assets;
-        if (amountToDeposit > maxDep) {
-            amountToDeposit = maxDep;
-            emit DepositCapped(mktAddr, assets, amountToDeposit);
-        }
-        if (amountToDeposit == 0) return false;
-
-        // Ensure Permit2 internal allowance + standard approval
-        _ensurePermit2(mktAddr);
-        _approveMarket(mktAddr, amountToDeposit);
-
-        // Try deposit
-        try IEulerUsdcMarket(mktAddr).deposit(amountToDeposit, address(this)) returns (
-            uint256 sharesMinted
-        ) {
-            if (sharesMinted < 1) { } // slither: intentionally empty
-            _revokeMarketApproval(mktAddr);
-
-            // Update accounting
-            principal[targetIdx] += amountToDeposit;
-            principalTotal += amountToDeposit;
-            emit Deposited(mktAddr, amountToDeposit);
-
-            // If we capped and have remaining, try next market
-            uint256 remaining = assets - amountToDeposit;
-            if (remaining > 0) {
-                // Recursive retry with next best market (exclude current)
-                // Uses 1-based index to distinguish from "no exclusion" (0)
-                _tryDepositToMarket(remaining, targetIdx + 1);
-                // If remaining deposit fails, that's OK — we already deposited the capped amount
-            }
-            return true;
-        } catch (bytes memory reason) {
-                emit AdapterOperationFailed(msg.sig, reason);
-            // Fix 3: Retry fallback — try poke first, then next market
-            _revokeMarketApproval(mktAddr);
-
-            bool poked = _pokeMarket(targetIdx);
-            if (poked) {
-                // Retry same market after poke
-                _approveMarket(mktAddr, amountToDeposit);
-                try IEulerUsdcMarket(mktAddr).deposit(amountToDeposit, address(this)) returns (
-                    uint256 retryShares
-                ) {
-                    if (retryShares < 1) { } // slither: intentionally empty
-                    _revokeMarketApproval(mktAddr);
-                    principal[targetIdx] += amountToDeposit;
-                    principalTotal += amountToDeposit;
-                    emit Deposited(mktAddr, amountToDeposit);
-                    return true;
-                } catch (bytes memory reason) {
-                emit AdapterOperationFailed(msg.sig, reason);
-                    _revokeMarketApproval(mktAddr);
+            for (uint256 i = 0; i < n; ++i) {
+                if (attempted[i]) continue;
+                if (!mkts[i].enabled || mkts[i].flagged) { attempted[i] = true; continue; }
+                uint256 maxDepI;
+                try IEulerUsdcMarket(mkts[i].addr).maxDeposit(address(this)) returns (uint256 md) {
+                    maxDepI = md;
+                } catch (bytes memory _r) {
+                    emit AdapterOperationFailed(msg.sig, _r);
+                    emit MarketSkippedLowCapacity(mkts[i].addr, 0);
+                    attempted[i] = true;
+                    continue;
+                }
+                if (maxDepI < _minCap) {
+                    emit MarketSkippedLowCapacity(mkts[i].addr, maxDepI);
+                    attempted[i] = true;
+                    continue;
+                }
+                uint16 apy = _supplyAPYBps(i);
+                if (!found || apy > bestAPY) {
+                    bestAPY = apy;
+                    bestIdx = i;
+                    found = true;
                 }
             }
 
-            // Fallback to next best market
-            emit MarketSelectionFallback(mktAddr, address(0));
-            return _tryDepositToMarket(assets, targetIdx + 1);
+            if (!found) break;
+
+            attempted[bestIdx] = true;
+            address mktAddr = mkts[bestIdx].addr;
+
+            // Re-read maxDeposit at execution time (cap may have changed since selection)
+            uint256 maxDep2;
+            try IEulerUsdcMarket(mktAddr).maxDeposit(address(this)) returns (uint256 md2) {
+                maxDep2 = md2;
+            } catch (bytes memory _r2) {
+                emit AdapterOperationFailed(msg.sig, _r2);
+                emit MarketSkippedLowCapacity(mktAddr, 0);
+                continue;
+            }
+            uint256 toDeposit = remaining < maxDep2 ? remaining : maxDep2;
+            if (toDeposit == 0) continue;
+            if (toDeposit < remaining) emit DepositCapped(mktAddr, remaining, toDeposit);
+
+            _ensurePermit2(mktAddr);
+            _approveMarket(mktAddr, toDeposit);
+
+            bool depositOk = false;
+            try IEulerUsdcMarket(mktAddr).deposit(toDeposit, address(this)) returns (uint256 shares) {
+                if (shares < 1) { } // slither: intentionally empty
+                _revokeMarketApproval(mktAddr);
+                principal[bestIdx] += toDeposit;
+                principalTotal += toDeposit;
+                emit Deposited(mktAddr, toDeposit);
+                remaining -= toDeposit;
+                anyDeposited = true;
+                depositOk = true;
+            } catch (bytes memory reason) {
+                emit AdapterOperationFailed(msg.sig, reason);
+                _revokeMarketApproval(mktAddr);
+                // One poke+retry per market (BUG-B fix: account dust, re-read cap, fresh approval)
+                bool poked = remaining >= POKE_DUST && _pokeMarket(bestIdx);
+                if (poked) {
+                    // Poke invested POKE_DUST; account it exactly once (INV-1, INV-2)
+                    principal[bestIdx] += POKE_DUST;
+                    principalTotal += POKE_DUST;
+                    emit Deposited(mktAddr, POKE_DUST);
+                    remaining -= POKE_DUST;
+                    anyDeposited = true;
+                    depositOk = true;
+                    if (remaining > 0) {
+                        // Re-read maxDeposit after poke; cap state may have changed (INV-5)
+                        uint256 freshMaxDepR;
+                        bool freshCapOk;
+                        try IEulerUsdcMarket(mktAddr).maxDeposit(address(this)) returns (uint256 _fmd) {
+                            freshMaxDepR = _fmd;
+                            freshCapOk = true;
+                        } catch (bytes memory _r3) {
+                            emit AdapterOperationFailed(msg.sig, _r3);
+                        }
+                        if (freshCapOk) {
+                            uint256 retryDeposit = remaining < freshMaxDepR ? remaining : freshMaxDepR;
+                            if (retryDeposit > 0) {
+                                // Fresh Permit2 + JIT approval for exact retry amount (INV-3, INV-4)
+                                _ensurePermit2(mktAddr);
+                                _approveMarket(mktAddr, retryDeposit);
+                                try IEulerUsdcMarket(mktAddr).deposit(retryDeposit, address(this)) returns (
+                                    uint256 retryShares
+                                ) {
+                                    if (retryShares < 1) {} // slither: intentionally empty
+                                    _revokeMarketApproval(mktAddr);
+                                    principal[bestIdx] += retryDeposit;
+                                    principalTotal += retryDeposit;
+                                    emit Deposited(mktAddr, retryDeposit);
+                                    remaining -= retryDeposit;
+                                } catch (bytes memory reason2) {
+                                    emit AdapterOperationFailed(msg.sig, reason2);
+                                    _revokeMarketApproval(mktAddr);
+                                }
+                            }
+                        }
+                    }
+                }
+                if (!depositOk) emit MarketSelectionFallback(mktAddr, address(0));
+            }
         }
+
+        return anyDeposited;
     }
 
     function withdraw(uint256 assets, address receiver)
@@ -813,7 +851,10 @@ contract EulerUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
 
         // Estimate grossBenefit ~ movedCandidate * deltaAPY/10000 * (7 days / 365 days)
         uint256 grossBenefit = movedCandidate * deltaAPY * 7 / 365 / 10000;
-        uint256 moveCost = gasCostUSDC
+        uint256 gasCostAsset = gasCostUSDC == 0
+            ? 0
+            : IStrategyAssetValuation(vault).usd6ToAssetUnits(gasCostUSDC);
+        uint256 moveCost = gasCostAsset
             + (movedCandidate * (slippageBpsEstimate + withdrawalSpreadBpsEstimate)) / 10000;
         uint256 netBenefitBps =
             grossBenefit > moveCost ? ((grossBenefit - moveCost) * 10000 / movedCandidate) : 0;
@@ -847,16 +888,41 @@ contract EulerUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
         } catch (bytes memory reason) {
                 emit AdapterOperationFailed(msg.sig, reason);
             // Deposit to target failed - try to poke it first
+            _revokeMarketApproval(mkts[toIdx].addr);
+            require(movedOut >= POKE_DUST, "Optimize: insufficient poke budget");
             bool poked = _pokeMarket(toIdx);
             require(poked, "Optimize deposit failed - market not activated");
 
-            // Retry deposit
-            uint256 retryShares =
-                IEulerUsdcMarket(mkts[toIdx].addr).deposit(movedOut, address(this));
-            if (retryShares < 1) { } // intentionally empty check
-
-            // Revoke approval after successful deposit
-            _revokeMarketApproval(mkts[toIdx].addr);
+            // Poke consumed POKE_DUST from adapter balance; recompute actual available (INV-6)
+            uint256 freshMovedOut = movedOut - POKE_DUST;
+            // Re-read maxDeposit after poke; fresh JIT approval (INV-4, INV-5)
+            uint256 freshMaxDepO;
+            try IEulerUsdcMarket(mkts[toIdx].addr).maxDeposit(address(this)) returns (uint256 _fmd2) {
+                freshMaxDepO = _fmd2;
+            } catch (bytes memory _r3) {
+                emit AdapterOperationFailed(msg.sig, _r3);
+                revert("Optimize: maxDeposit failed after poke");
+            }
+            // Optimization is atomic: do not withdraw principal from the source
+            // and leave a cap-limited remainder idle with a stale source basis.
+            require(freshMaxDepO >= freshMovedOut, "no capacity after poke");
+            uint256 retryAmt = freshMovedOut;
+            if (retryAmt > 0) {
+            _ensurePermit2(mkts[toIdx].addr);
+            _approveMarket(mkts[toIdx].addr, retryAmt);
+            try IEulerUsdcMarket(mkts[toIdx].addr).deposit(retryAmt, address(this)) returns (
+                uint256 retryShares
+            ) {
+                if (retryShares < 1) {} // intentionally empty check
+                _revokeMarketApproval(mkts[toIdx].addr);
+                // Update movedOut: poke dust + retry = total landed in toIdx (INV-6, INV-7)
+                movedOut = POKE_DUST + retryAmt;
+            } catch (bytes memory reason2) {
+                emit AdapterOperationFailed(msg.sig, reason2);
+                _revokeMarketApproval(mkts[toIdx].addr);
+                revert("Optimize deposit retry failed");
+            }
+            }
         }
 
         // Move principal portion
@@ -1001,6 +1067,9 @@ contract EulerUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
         require(idx < mkts.length, "idx out of bounds");
         require(newAddr != address(0), "zero");
         require(IEulerUsdcMarket(newAddr).asset() == address(USDC), "asset mismatch");
+        for (uint256 i; i < mkts.length; ++i)
+            if (i != idx && mkts[i].addr == newAddr) revert DuplicateMarket();
+        if (principal[idx] != 0 || IEulerUsdcMarket(mkts[idx].addr).balanceOf(address(this)) != 0) revert PositionsActive();
         address old = mkts[idx].addr;
         mkts[idx].addr = newAddr;
         emit MarketAddressUpdated(idx, old, newAddr);
@@ -1019,6 +1088,7 @@ contract EulerUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
         try registry.getEnabledVaults(IProtocolRegistry.ProtocolType.EULER_V2) returns (
             address[] memory vaults
         ) {
+            require(vaults.length <= 255, "too many markets");
             for (uint256 i = 0; i < vaults.length; i++) {
                 if (vaults[i] != address(0)) {
                     // V9 FIX: Check for duplicates before adding
@@ -1030,6 +1100,7 @@ contract EulerUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
                         }
                     }
                     if (!isDuplicate) {
+                        require(mkts.length < 255, "too many markets");
                         require(IEulerUsdcMarket(vaults[i]).asset() == address(USDC), "asset mismatch");
                         mkts.push(
                             Market({

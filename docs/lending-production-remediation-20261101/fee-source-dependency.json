@@ -1,0 +1,40 @@
+{
+  "status": "FIXED_INTEGRATED_COMPONENT_VALIDATION_PASS",
+  "readiness": "NOT_PRODUCTION_READY",
+  "finding": "Estimator constructor accepted fee-source EOAs on Ethereum/BSC/Arbitrum, allowing an invalid immutable fee dependency. Production deployment preflight already rejected it; constructor now rejects it directly.",
+  "fix": "Require deployed fee-source code except native ArbGasInfo0x6c on chain42161; retain nonzero/feed/config/sequencer bounds. No runtime authority or layout changes.",
+  "before": {
+    "passed": 1,
+    "failed": 3,
+    "skipped": 0,
+    "log": "C:\\Users\\Pierre\\Multyr\\pt-multiply\\pd\\deployments\\lending-full-validation-20261101\\production\\R-native-review\\dependency-before.log",
+    "sha256": "f6f6f400552076e938b8072190fb34cac605380349b791a39fcb84a37204ba27"
+  },
+  "after": {
+    "passed": 49,
+    "failed": 0,
+    "skipped": 0,
+    "suites": 2,
+    "log": "C:\\Users\\Pierre\\Multyr\\pt-multiply\\pd\\deployments\\lending-full-validation-20261101\\production\\R-native-review\\dependency-after-related-final.log",
+    "sha256": "c543b12f1768889f698fb8a713d3d8dad8604e1a42d5ddc693856dc517243ce0"
+  },
+  "coverage": [
+    "Reject source EOA on1/56/42161",
+    "Accept codeless native0x6c on42161",
+    "Reject codeless0x6c on1/56/8453",
+    "All previous native source and estimator component cases preserved"
+  ],
+  "changes": [
+    "src/strategies/usdc-lending/gas/ReadOnlyGasEstimator.sol",
+    "test/strategies/usdc-lending/NativeL1FeeInfo.t.sol"
+  ],
+  "limits": [
+    "Controlled negative/component tests, not positive protocol fork evidence",
+    "Final whole-source release checks remain open"
+  ],
+  "rejectedReviewChanges": [
+    "Do not clamp extreme basefee into a falsely reliable lower price",
+    "Do not require deployed code from valid native Arbitrum precompile",
+    "No extra finalization transaction: final step invokes finalization inline"
+  ]
+}

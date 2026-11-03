@@ -1,0 +1,411 @@
+{
+  "meta": {
+    "chain_id": 42161,
+    "pinned_block": 520384312,
+    "pinned_hex": "0x1f046f38",
+    "pinned_hash": "0xe6beee34bcbb8e6876788b2fc361d85265e03189c059b03b6c28a082408c4bd7",
+    "core": "0x5e0cdb76487BD96Ff069Ef7F78eaDF5b5909C8cb",
+    "expected_registry": "0x57719e54f531d49f73a49d453b594fc857247fee"
+  },
+  "chain_verification": {
+    "chain_id": {
+      "expected": 42161,
+      "actual": 42161,
+      "ok": true
+    },
+    "block": {
+      "number": "0x1f046f38",
+      "hash": "0xe6beee34bcbb8e6876788b2fc361d85265e03189c059b03b6c28a082408c4bd7",
+      "expected_hash": "0xe6beee34bcbb8e6876788b2fc361d85265e03189c059b03b6c28a082408c4bd7",
+      "ok": true
+    }
+  },
+  "registry": {
+    "call_selector": "7dd873c8",
+    "raw_result": "0x00000000000000000000000057719e54f531d49f73a49d453b594fc857247fee",
+    "address": "0x57719e54f531d49f73a49d453b594fc857247fee",
+    "expected": "0x57719e54f531d49f73a49d453b594fc857247fee",
+    "match": true,
+    "bytecode_len": 3886,
+    "sha256": "6276912a972724717dee9ff50427eed26ff56b9d2951fa0e427f0279afbb375c",
+    "evm_keccak": "0xc8d7c37ffa1eaa04a64db5c40885f26cfd02a6e0d1a10e21ae4f853ee478fe61",
+    "source_binding": "PINNED_PURE_ROLE_REGISTRY_EXECUTABLE_BODY_MATCH"
+  },
+  "forge_inspect": {
+    "AdminModule": {
+      "acceptBufferManager()": "704b23ed",
+      "acceptFeeParams()": "6c80b11c",
+      "acceptMinDelay()": "05e2cc9d",
+      "acceptPerfParams()": "155fd67b",
+      "acceptRouter()": "09b2370e",
+      "enableComponentsTimelock()": "0ed29818",
+      "freezeParams()": "80aaa41f",
+      "getEcosystem()": "a0f2c977",
+      "getFeeParams()": "be6fc181",
+      "getForceExitPenalty()": "1ccafe01",
+      "getImmediateExitPenalty()": "58f3edcb",
+      "getMinDelay()": "f27a0c92",
+      "getPendingBufferManager()": "c718372f",
+      "getPendingFeeParams()": "e6686439",
+      "getPendingMinDelay()": "ec8827de",
+      "getPendingPerfParams()": "f05b1890",
+      "getPendingRouter()": "289645d4",
+      "getPerfParams()": "be57a03a",
+      "isComponentsTimelocked()": "6030d1d8",
+      "isDeadDepositDone()": "d486ff45",
+      "isFeesInitialized()": "df7a01a6",
+      "isParamsFrozen()": "7e138aab",
+      "isPerfInitialized()": "c5ea6c10",
+      "revokeBufferManager()": "7cd96618",
+      "revokeFeeParams()": "6056c57f",
+      "revokeMinDelay()": "8ed86fc4",
+      "revokePerfParams()": "2b7ebdf8",
+      "revokeRouter()": "727595c1",
+      "seedDeadDeposit(uint256)": "9a823b81",
+      "setBufferManager(address)": "823a71c9",
+      "setEcosystem((address,address,address,address,address,address))": "85c79147",
+      "setExecutionMemory(address)": "f8ab607c",
+      "setFeeCollector(address)": "a42dce80",
+      "setHealthRegistry(address)": "599c3f7b",
+      "setIncentives(address)": "560a9c47",
+      "setIncentivesEngine(address)": "b67deb15",
+      "setInitialFees(uint16,uint16,uint16,uint16,address)": "e7176df9",
+      "setInitialPerfParams(uint256,uint64)": "ac0dad18",
+      "setParams(address)": "4e49acac",
+      "setRebalanceGuard(address)": "9d8757e0",
+      "setRebalancePolicy(address)": "f5eabe1a",
+      "setRewardsPayoutManager(address)": "291723e8",
+      "setRewardsTreasury(address)": "0baf0a48",
+      "setRouter(address)": "c0d78655",
+      "setStrictExecutionMemory(bool)": "93f4c917",
+      "setVetoer(address)": "d152a32e",
+      "submitBufferManager(address)": "f3754575",
+      "submitFeeParams(uint16,uint16,uint16,uint16,address)": "4ef03b66",
+      "submitMinDelay(uint64)": "cd710665",
+      "submitPerfParams(uint256,uint64)": "f47f45ed",
+      "submitRouter(address)": "489cf11d"
+    },
+    "ERC4626Module": {
+      "MAX_FORCE_LEGS()": "488629d1",
+      "MAX_WARM_NAV_AGE()": "73d3acd5",
+      "deposit(uint256,address)": "6e553f65",
+      "deposit(uint256,address,uint256)": "bc157ac1",
+      "depositFor(uint256,address)": "36efd16f",
+      "forceWithdraw(uint256,address,address,(address,uint256)[],uint256)": "439fdeb4",
+      "forceWithdrawAll(address,uint256)": "e375b48f",
+      "mint(uint256,address)": "94bf804d",
+      "mint(uint256,address,uint256)": "836a1040",
+      "redeem(uint256,address,address)": "ba087652",
+      "redeem(uint256,address,address,uint256)": "9f40a7b3",
+      "withdraw(uint256,address,address)": "b460af94",
+      "withdraw(uint256,address,address,uint256)": "a318c1a4"
+    },
+    "EpochedQueueModule": {
+      "INSOLVENCY_FUNDING_ROUNDING()": "4792eb14",
+      "MAX_CURSOR_SCAN()": "e6b38a90",
+      "MAX_WARM_NAV_AGE()": "73d3acd5",
+      "STRATEGY_REDEEM_BUFFER_BPS()": "bd2ff589",
+      "batchClaimEpochAssets(uint256,uint256[])": "4f4e694a",
+      "canCloseCurrentEpoch()": "5c8570f0",
+      "claimEpochAssets(uint256,uint256)": "5631b540",
+      "closeCurrentEpoch()": "f5383909",
+      "currentEpochClaimCount()": "c957cf4e",
+      "currentEpochId()": "eacdc5ff",
+      "endEpochCrystallize()": "e484454e",
+      "epochClaim(uint256,uint256)": "b5e48478",
+      "epochData(uint256)": "6e821b2e",
+      "epochDeficit(uint256)": "e3fcdcf1",
+      "fundEpoch(uint256)": "08b70ef2",
+      "fundedEpochCount()": "365990a2",
+      "fundedOutstandingClaimCount()": "be4e6a1b",
+      "keeperSettleClaims(uint256,uint256[])": "1f1c331f",
+      "nextClaimIdForEpoch(uint256)": "2a4381a4",
+      "oldestUnfundedEpochId()": "84f0bf5b",
+      "outstandingClaimCount()": "f1671ae0",
+      "requestEpochWithdrawal(uint256)": "28a21583",
+      "requestInstantWithdrawal(uint256)": "db5c823d",
+      "reservedForClaims()": "12b8984a",
+      "rollCapEpochIfNeeded()": "9d892015",
+      "syncInsolvencyState()": "8f5c0f6b",
+      "syncOldestUnfundedEpoch()": "252fbd8b"
+    },
+    "LiquidityOpsModule": {
+      "canDeploy()": "80c60de9",
+      "canRebalanceStrategies()": "3dc3b46c",
+      "deployToStrategies(uint256)": "96841d7a",
+      "deployToStrategiesWithPlan((address,uint256,bool)[],uint256)": "fffe8ed5",
+      "realizeForQueue(uint256)": "90e30343",
+      "realizeForReserveAndOps(uint256)": "ff99d249",
+      "rebalanceStrategies()": "ae48242d"
+    }
+  },
+  "selector_table": [
+    {
+      "fn": "setBufferManager",
+      "contract": "AdminModule",
+      "sig": "setBufferManager(address)",
+      "selector": "823a71c9",
+      "source": "forge_inspect",
+      "module_addr": "0x0693ffe87ee54494c4ead1da679bb01af765938b",
+      "code_nonzero": true,
+      "code_bytes": 13094,
+      "role_raw": 1
+    },
+    {
+      "fn": "setRouter",
+      "contract": "AdminModule",
+      "sig": "setRouter(address)",
+      "selector": "c0d78655",
+      "source": "forge_inspect",
+      "module_addr": "0x0693ffe87ee54494c4ead1da679bb01af765938b",
+      "code_nonzero": true,
+      "code_bytes": 13094,
+      "role_raw": 1
+    },
+    {
+      "fn": "setInitialFees",
+      "contract": "AdminModule",
+      "sig": "setInitialFees(uint16,uint16,uint16,uint16,address)",
+      "selector": "e7176df9",
+      "source": "forge_inspect",
+      "module_addr": "0x0693ffe87ee54494c4ead1da679bb01af765938b",
+      "code_nonzero": true,
+      "code_bytes": 13094,
+      "role_raw": 1
+    },
+    {
+      "fn": "setInitialPerfParams",
+      "contract": "AdminModule",
+      "sig": "setInitialPerfParams(uint256,uint64)",
+      "selector": "ac0dad18",
+      "source": "forge_inspect",
+      "module_addr": "0x0693ffe87ee54494c4ead1da679bb01af765938b",
+      "code_nonzero": true,
+      "code_bytes": 13094,
+      "role_raw": 1
+    },
+    {
+      "fn": "seedDeadDeposit",
+      "contract": "AdminModule",
+      "sig": "seedDeadDeposit(uint256)",
+      "selector": "9a823b81",
+      "source": "forge_inspect",
+      "module_addr": "0x0693ffe87ee54494c4ead1da679bb01af765938b",
+      "code_nonzero": true,
+      "code_bytes": 13094,
+      "role_raw": 1
+    },
+    {
+      "fn": "freezeParams",
+      "contract": "AdminModule",
+      "sig": "freezeParams()",
+      "selector": "80aaa41f",
+      "source": "forge_inspect",
+      "module_addr": "0x0693ffe87ee54494c4ead1da679bb01af765938b",
+      "code_nonzero": true,
+      "code_bytes": 13094,
+      "role_raw": 1
+    },
+    {
+      "fn": "deposit",
+      "contract": "ERC4626Module",
+      "sig": "deposit(uint256,address)",
+      "selector": "6e553f65",
+      "source": "forge_inspect_exact_fixture_signature",
+      "all_overloads": [
+        "deposit(uint256,address)",
+        "deposit(uint256,address,uint256)"
+      ],
+      "module_addr": "0x1e4884436f1447f491a137c497d1a94c864a991f",
+      "code_nonzero": true,
+      "code_bytes": 12030,
+      "role_raw": 0,
+      "rootAdjudication": "Exact standard overload matches fixture; other compiler overloads do not create ambiguity."
+    },
+    {
+      "fn": "mint",
+      "contract": "ERC4626Module",
+      "sig": "mint(uint256,address)",
+      "selector": "94bf804d",
+      "source": "forge_inspect_exact_fixture_signature",
+      "all_overloads": [
+        "mint(uint256,address)",
+        "mint(uint256,address,uint256)"
+      ],
+      "module_addr": "0x1e4884436f1447f491a137c497d1a94c864a991f",
+      "code_nonzero": true,
+      "code_bytes": 12030,
+      "role_raw": 0,
+      "rootAdjudication": "Exact standard overload matches fixture; other compiler overloads do not create ambiguity."
+    },
+    {
+      "fn": "withdraw",
+      "contract": "ERC4626Module",
+      "sig": "withdraw(uint256,address,address)",
+      "selector": "b460af94",
+      "source": "forge_inspect_exact_fixture_signature",
+      "all_overloads": [
+        "withdraw(uint256,address,address)",
+        "withdraw(uint256,address,address,uint256)"
+      ],
+      "module_addr": "0x1e4884436f1447f491a137c497d1a94c864a991f",
+      "code_nonzero": true,
+      "code_bytes": 12030,
+      "role_raw": 0,
+      "rootAdjudication": "Exact standard overload matches fixture; other compiler overloads do not create ambiguity."
+    },
+    {
+      "fn": "redeem",
+      "contract": "ERC4626Module",
+      "sig": "redeem(uint256,address,address)",
+      "selector": "ba087652",
+      "source": "forge_inspect_exact_fixture_signature",
+      "all_overloads": [
+        "redeem(uint256,address,address)",
+        "redeem(uint256,address,address,uint256)"
+      ],
+      "module_addr": "0x1e4884436f1447f491a137c497d1a94c864a991f",
+      "code_nonzero": true,
+      "code_bytes": 12030,
+      "role_raw": 0,
+      "rootAdjudication": "Exact standard overload matches fixture; other compiler overloads do not create ambiguity."
+    },
+    {
+      "fn": "requestEpochWithdrawal",
+      "contract": "EpochedQueueModule",
+      "sig": "requestEpochWithdrawal(uint256)",
+      "selector": "28a21583",
+      "source": "forge_inspect",
+      "module_addr": "0xccad3125667639b1a49667be8dd201e66b0a3b21",
+      "code_nonzero": true,
+      "code_bytes": 18594,
+      "role_raw": 0
+    },
+    {
+      "fn": "closeCurrentEpoch",
+      "contract": "EpochedQueueModule",
+      "sig": "closeCurrentEpoch()",
+      "selector": "f5383909",
+      "source": "forge_inspect",
+      "module_addr": "0xccad3125667639b1a49667be8dd201e66b0a3b21",
+      "code_nonzero": true,
+      "code_bytes": 18594,
+      "role_raw": 0
+    },
+    {
+      "fn": "fundEpoch",
+      "contract": "EpochedQueueModule",
+      "sig": "fundEpoch(uint256)",
+      "selector": "08b70ef2",
+      "source": "forge_inspect",
+      "module_addr": "0xccad3125667639b1a49667be8dd201e66b0a3b21",
+      "code_nonzero": true,
+      "code_bytes": 18594,
+      "role_raw": 0
+    },
+    {
+      "fn": "claimEpochAssets",
+      "contract": "EpochedQueueModule",
+      "sig": "claimEpochAssets(uint256,uint256)",
+      "selector": "5631b540",
+      "source": "forge_inspect",
+      "module_addr": "0xccad3125667639b1a49667be8dd201e66b0a3b21",
+      "code_nonzero": true,
+      "code_bytes": 18594,
+      "role_raw": 0
+    },
+    {
+      "fn": "epochClaim",
+      "contract": "EpochedQueueModule",
+      "sig": "epochClaim(uint256,uint256)",
+      "selector": "b5e48478",
+      "source": "forge_inspect",
+      "module_addr": "0xccad3125667639b1a49667be8dd201e66b0a3b21",
+      "code_nonzero": true,
+      "code_bytes": 18594,
+      "role_raw": 0
+    },
+    {
+      "fn": "epochDeficit",
+      "contract": "EpochedQueueModule",
+      "sig": "epochDeficit(uint256)",
+      "selector": "e3fcdcf1",
+      "source": "forge_inspect",
+      "module_addr": "0xccad3125667639b1a49667be8dd201e66b0a3b21",
+      "code_nonzero": true,
+      "code_bytes": 18594,
+      "role_raw": 0
+    },
+    {
+      "fn": "deployToStrategies",
+      "contract": "LiquidityOpsModule",
+      "sig": "deployToStrategies(uint256)",
+      "selector": "96841d7a",
+      "source": "forge_inspect",
+      "module_addr": "0x24715ed56e665b4391a2cc83ad6958534e60d84d",
+      "code_nonzero": true,
+      "code_bytes": 15796,
+      "role_raw": 0
+    },
+    {
+      "fn": "realizeForQueue",
+      "contract": "LiquidityOpsModule",
+      "sig": "realizeForQueue(uint256)",
+      "selector": "90e30343",
+      "source": "forge_inspect",
+      "module_addr": "0x24715ed56e665b4391a2cc83ad6958534e60d84d",
+      "code_nonzero": true,
+      "code_bytes": 15796,
+      "role_raw": 0
+    }
+  ],
+  "modules": {
+    "0x0693ffe87ee54494c4ead1da679bb01af765938b": {
+      "bytecode_len": 13094,
+      "code_nonzero": true,
+      "sha256": "8e9efaca3a27c0fcfecc7bb6b9c83edeb5a608c477725b911887cc33a193a708",
+      "evm_keccak": "0x264a358d8f049e798f74ba018aab890df287762a200b0f7d58b135b51737c2b7",
+      "source_binding": "PINNED_EXECUTABLE_BODY_MATCH"
+    },
+    "0x1e4884436f1447f491a137c497d1a94c864a991f": {
+      "bytecode_len": 12030,
+      "code_nonzero": true,
+      "sha256": "233c373f97ade2d2eff16bd1735bb072ba2c987756a23607de94ac92929e3c5c",
+      "evm_keccak": "0x74f88ab7fee2e472c09b55ade06db18d4971023365201df3a1bdd3b08439436b",
+      "source_binding": "PINNED_EXECUTABLE_BODY_MATCH"
+    },
+    "0xccad3125667639b1a49667be8dd201e66b0a3b21": {
+      "bytecode_len": 18594,
+      "code_nonzero": true,
+      "sha256": "ae2ab3c6b72c6047df329ddd4a139d0fde9683670f0e7d6f690b2e076914865a",
+      "evm_keccak": "0xe79846c441be284cb8cac36f587df1b8e5522fb6c357122e655e5d66c6fbfa2c",
+      "source_binding": "PINNED_EXECUTABLE_BODY_MATCH"
+    },
+    "0x24715ed56e665b4391a2cc83ad6958534e60d84d": {
+      "bytecode_len": 15796,
+      "code_nonzero": true,
+      "sha256": "24342a5cbcb54c735cde2f2fd604d4a31345a5b438236d7c70006a6cf83803e0",
+      "evm_keccak": "0xfb92c6b1ecce7bdb3a329dd5464f37c2324724220019f5c0190b5a6d66998a51",
+      "source_binding": "PINNED_EXECUTABLE_BODY_MATCH"
+    }
+  },
+  "summary": {
+    "total_bound_selectors": 18,
+    "nonzero_module_code": 18,
+    "zero_module_addr": 0,
+    "missing_module_addr": 0,
+    "distinct_modules": 4,
+    "archive_calls_used": 0,
+    "archive_cap": 120,
+    "issues_count": 0,
+    "issues": [],
+    "unverified_source_binding_count": 0,
+    "unverified_source_binding_addrs": []
+  },
+  "rootAdjudication": "Four initially flagged overload ambiguities resolved from exact fixture signatures and recorded compiler selectors; original actual calls used those signatures. No RPC replay needed.",
+  "status": "CRITICAL18_BINDINGS_STORED_ROLES_AND_MODULE_SOURCE_TEMPLATES_VERIFIED",
+  "readiness": "NOT_PRODUCTION_READY",
+  "coreStoredRoleProof": "C:\\Users\\Pierre\\Multyr\\pt-multiply\\p0\\deployments\\lending-full-validation-20261101\\production\\P1-modules\\role-binding-check.json",
+  "runtimeProof": "C:\\Users\\Pierre\\Multyr\\pt-multiply\\pd\\deployments\\lending-full-validation-20261101\\production\\A-core-parity\\additional-modules-comparison.json",
+  "scope": "18criticalselectors and their4modules plus registry; metadata hashes excluded explicitly; optional selectors, governance history and operational candidate activation remain separate."
+}

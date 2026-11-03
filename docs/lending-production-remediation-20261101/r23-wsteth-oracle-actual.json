@@ -1,0 +1,42 @@
+{
+  "status": "ACTUAL_WSTETH_FROZEN_CORE_ORACLE_PASS",
+  "passed": 2,
+  "failed": 0,
+  "skipped": 0,
+  "suites": 1,
+  "chainId": 1,
+  "rpcBlock": 26300000,
+  "asset": "0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0",
+  "stEthUsdFeed": "0xCfE54B5cD566aB89272946F602D76Ea879CAb4a8",
+  "stEthUsdAnswer": "234673262198",
+  "stEthPerWstEth": "1247480841390501154",
+  "wstEthUsdAnswer8": "292750398578",
+  "frozenCorePriceWad": "2927503985780000000000",
+  "independentReference": "Plain integer multiplication/division of actual native conversion and actual Chainlink USD answer; exact forwarded round metadata.",
+  "legacyFeed": "0x8B6851156023f4f5A66F68BEA80851c3D905Ac93",
+  "legacyFeedResult": "Actual latestRoundData reverts; frozen Core configuration rejects with InvalidPrice().",
+  "independentReview": "Static Claude R23 review found no concrete defect; actual Core integration prerequisite subsequently passed.",
+  "evidence": [
+    {
+      "path": "deployments/lending-full-validation-20261101/production/coordinator/R23-wsteth-oracle-real-3.log",
+      "sha256": "fdeee2ab7621e7a806b158d89d0037ba786a14acd1ff58a2d53a08290a641e95"
+    },
+    {
+      "path": "deployments/lending-full-validation-20261101/production/coordinator/R23-wsteth-oracle-review.md",
+      "sha256": "6c09565d9b3ca0d1354cc266edc7ccbfa70094e9d827552ec46aaa8d6753d77c"
+    },
+    {
+      "path": "src/strategies/usdc-lending/oracles/WstEthUsdPriceFeed.sol",
+      "sha256": "437a81007ca3ec5c4e136f5de12b00135d5529898d0627c239aaa0d3f609d79f"
+    },
+    {
+      "path": "test/strategies/usdc-lending/fork/actual/WstEthOracleActual.t.sol",
+      "sha256": "d948408c526119317a77058a8ecf2814b55d57b66a7938fa03ca479f575d326f"
+    }
+  ],
+  "limits": [
+    "Native Ethereum wstETH only; bridged variants require a chain-specific price source.",
+    "Oracle integration does not approve a lending market or production release."
+  ],
+  "readiness": "NOT_PRODUCTION_READY"
+}

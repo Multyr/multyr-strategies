@@ -1288,7 +1288,7 @@ contract MockAaveSwapHelper {
         return canSwapDefault;
     }
     function previewExpectedOut(address, uint256) external view returns (uint256) { return expectedOut; }
-    function swapToUSDC(address rewardToken, uint256 amountIn, address receiver) external returns (uint256) {
+    function swapToAsset(address rewardToken, uint256 amountIn, address receiver) external returns (uint256) {
         if (revertOnSwap) revert("swap-revert");
         MockERC20Reward(rewardToken).transferFrom(msg.sender, address(this), amountIn);
         (bool ok,) = usdc.call(abi.encodeWithSignature("mint(address,uint256)", receiver, outAmount));

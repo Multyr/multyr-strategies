@@ -1,0 +1,122 @@
+{
+  "contract": "UsdcMultiLendingVault",
+  "address": "0x2AD722B6241605481829E4B251AE8A4Ba8Be86cE",
+  "block": 520094008,
+  "blockHash": "0xd0e4d2d28e0d9a60d819743930f9f2843409bf37a895a411620a632da53fa600",
+  "compilerInputSha256": "9892d22a80d7f8305eb2b065c518ae226c0f8c7debd748591937bb1ee4186a6c",
+  "runtimeBytes": 22786,
+  "compiledRuntimeBytes": 22786,
+  "observedKeccak": "0x0ca215f519e1f07888b19b51436dc989e297cfe25efbdbbc696c3ef7bf86cd49",
+  "compiledBoundKeccak": "0x0ca215f519e1f07888b19b51436dc989e297cfe25efbdbbc696c3ef7bf86cd49",
+  "immutableBindings": [
+    {
+      "astId": "117064",
+      "name": "ASSET",
+      "value": "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+      "ranges": [
+        {
+          "length": 32,
+          "start": 3148
+        },
+        {
+          "length": 32,
+          "start": 3553
+        },
+        {
+          "length": 32,
+          "start": 5992
+        },
+        {
+          "length": 32,
+          "start": 6891
+        },
+        {
+          "length": 32,
+          "start": 10309
+        },
+        {
+          "length": 32,
+          "start": 15919
+        },
+        {
+          "length": 32,
+          "start": 16346
+        },
+        {
+          "length": 32,
+          "start": 17414
+        }
+      ]
+    },
+    {
+      "astId": "117066",
+      "name": "core",
+      "value": "0x5e0cdb76487bd96ff069ef7f78eadf5b5909c8cb",
+      "ranges": [
+        {
+          "length": 32,
+          "start": 15438
+        }
+      ]
+    },
+    {
+      "astId": "117068",
+      "name": "paramsModule",
+      "value": "0x9ddbff7a2d6cbfda7fe5fe72a7e7a09eef8f2772",
+      "ranges": [
+        {
+          "length": 32,
+          "start": 15664
+        },
+        {
+          "length": 32,
+          "start": 18443
+        }
+      ]
+    },
+    {
+      "astId": "117070",
+      "name": "scoringModule",
+      "value": "0x5aa4d01cee130f5c5cfadd091c1aff12496f7a01",
+      "ranges": [
+        {
+          "length": 32,
+          "start": 5894
+        },
+        {
+          "length": 32,
+          "start": 18332
+        },
+        {
+          "length": 32,
+          "start": 19125
+        }
+      ]
+    },
+    {
+      "astId": "117072",
+      "name": "adapterOpsModule",
+      "value": "0xe55fb758f1b7e418670849af812a1b9c80b40f59",
+      "ranges": [
+        {
+          "length": 32,
+          "start": 5192
+        },
+        {
+          "length": 32,
+          "start": 5654
+        },
+        {
+          "length": 32,
+          "start": 18403
+        },
+        {
+          "length": 32,
+          "start": 18845
+        }
+      ]
+    }
+  ],
+  "immutableBindingErrors": [],
+  "exactRuntimeMatch": true
+}

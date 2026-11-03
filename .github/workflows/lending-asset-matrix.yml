@@ -1,0 +1,120 @@
+name: Lending asset matrix
+
+on:
+  push:
+    branches: ['codex/lending-multitoken-multichain']
+    paths:
+      - 'src/strategies/usdc-lending/**'
+      - 'script/**'
+      - 'foundry.toml'
+      - 'lib/multyr-core'
+      - '.gitmodules'
+      - 'test/strategies/usdc-lending/**'
+      - '.github/workflows/lending-asset-matrix.yml'
+  pull_request:
+    paths:
+      - 'src/strategies/usdc-lending/**'
+      - 'script/**'
+      - 'foundry.toml'
+      - 'lib/multyr-core'
+      - '.gitmodules'
+      - 'test/strategies/usdc-lending/**'
+      - '.github/workflows/lending-asset-matrix.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  pinned-market-roundtrips:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      LENDING_RPC_BASE: https://mainnet.base.org
+      LENDING_RPC_POLYGON: https://polygon.drpc.org
+      LENDING_RPC_OPTIMISM: https://mainnet.optimism.io
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: v1.4.2
+      - name: USDC and WETH on Arbitrum and Base (adapter, strategy, core and swaps)
+        run: |
+          forge test --match-contract 'Lending((Asset|Strategy|Core)Matrix|RewardRoutes)ForkTest' -vv --summary *> lending-matrix.log
+          $code=$LASTEXITCODE
+          Get-Content lending-matrix.log -Tail 40
+          if ($code -ne 0) { exit $code }
+          ./script/AssertLendingTestSummary.ps1 -LogPath lending-matrix.log -ExpectedPassed 19 -ExpectedSuites 4
+      - name: Actual frozen router and explicit legacy migration rejection
+        env:
+          RUN_ROUTER_HARVEST_FORK: 'true'
+          ROUTER_HARVEST_RPC: https://arbitrum-one.public.blastapi.io
+          ROUTER_HARVEST_BLOCK: '520094008'
+        run: |
+          forge test --match-contract 'RouterHarvestForkTest|StrategySettingsCopyTest' --match-test 'test_deployedRouterHarvestAndRecallWithUnchangedCoreCode|test_liveDeprecatedDiversificationRequiresExplicitMigration' -vv --summary *> lending-legacy.log
+          $code=$LASTEXITCODE
+          Get-Content lending-legacy.log -Tail 40
+          if ($code -ne 0) { exit $code }
+          ./script/AssertLendingTestSummary.ps1 -LogPath lending-legacy.log -ExpectedPassed 2 -ExpectedSuites 2
+      - name: Generic manifest deployment and complete role handoff
+        run: |
+          forge test --match-contract LendingDeploymentManifestTest -vv --summary *> lending-manifest.log
+          $code=$LASTEXITCODE
+          Get-Content lending-manifest.log -Tail 40
+          if ($code -ne 0) { exit $code }
+          ./script/AssertLendingTestSummary.ps1 -LogPath lending-manifest.log -ExpectedPassed 5 -ExpectedSuites 1
+      - name: Unmocked production core, real funding and two withdrawal epochs
+        run: |
+          forge test --match-contract LendingUnmockedE2ETest --threads 1 --fork-url https://mainnet.base.org --fork-block-number 52500000 --compute-units-per-second 40 --fork-retries 8 --fork-retry-backoff 2000 -vvvv --summary *> lending-unmocked.log
+          $code=$LASTEXITCODE
+          Get-Content lending-unmocked.log -Tail 40
+          if ($code -ne 0) { exit $code }
+          ./script/AssertLendingTestSummary.ps1 -LogPath lending-unmocked.log -ExpectedPassed 4 -ExpectedSuites 1
+      - name: Published USDC and WETH Comet total supply ABI
+        run: |
+          forge test --match-contract CometPublishedTotalsForkTest --threads 1 -vv --summary *> lending-comet.log
+          $code=$LASTEXITCODE
+          Get-Content lending-comet.log -Tail 40
+          if ($code -ne 0) { exit $code }
+          ./script/AssertLendingTestSummary.ps1 -LogPath lending-comet.log -ExpectedPassed 2 -ExpectedSuites 1
+      - name: All seven real adapter families, additional tokens and production scoring/rebalance
+        run: ./script/RunLendingActualMarkets.ps1
+      - name: Seven adapter families on two chains each with actual local-fork transaction receipts
+        run: ./script/RunLendingTransactionGas.ps1
+      - name: Morpho V2 deployment helper runtime and configuration authority
+        run: |
+          forge test --match-contract '^MorphoDeploymentWiringTest$' --summary *> lending-v2-wiring.log
+          $code=$LASTEXITCODE
+          Get-Content lending-v2-wiring.log -Tail 25
+          if ($code -ne 0) { exit $code }
+          ./script/AssertLendingTestSummary.ps1 -LogPath lending-v2-wiring.log -ExpectedPassed 6 -ExpectedSuites 1
+      - name: Lending regression, fuzz and invariants with legacy opt-ins enabled
+        env:
+          RUN_ROUTER_HARVEST_FORK: 'true'
+          ROUTER_HARVEST_RPC: https://arbitrum-one.public.blastapi.io
+          ROUTER_HARVEST_BLOCK: '520094008'
+        run: |
+          forge test --match-path 'test/strategies/usdc-lending/**' --no-match-path 'test/strategies/usdc-lending/fork/**' --summary *> lending-regression.log
+          $code=$LASTEXITCODE
+          Get-Content lending-regression.log -Tail 40
+          if ($code -ne 0) { exit $code }
+          ./script/AssertLendingTestSummary.ps1 -LogPath lending-regression.log -ExpectedPassed 2995 -ExpectedSuites 203
+      - name: Production size, frozen layout and selector checks
+        shell: pwsh
+        run: ./script/CheckLendingRelease.ps1
+      - name: Preserve source-bound validation evidence and failed attempts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lending-validation-evidence
+          path: |
+            lending-*.log
+            deployments/lending-full-validation-20261101/**
+            docs/lending-full-validation-20261101/actual-acceptance.json
+            docs/lending-full-validation-20261101/canonical-headers.json
+            docs/lending-verification-20261031/candidate-structure.json

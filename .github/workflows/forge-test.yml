@@ -2,7 +2,7 @@ name: forge-test
 
 on:
   push:
-    branches: [main, "feature/**", "fix/**"]
+    branches: [main, "feature/**", "fix/**", "codex/**"]
   pull_request:
     branches: [main]
   workflow_dispatch:
@@ -19,7 +19,7 @@ jobs:
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@v1
         with:
-          version: nightly
+          version: v1.4.2
 
       - name: forge --version
         run: forge --version
@@ -28,8 +28,8 @@ jobs:
         run: forge build
 
       - name: forge test
-        run: forge test --no-match-path "test/fork*" -vv
+        run: forge test --no-match-path 'test/{fork*,**/fork*/**}' -vv
 
       - name: forge coverage (informational)
-        run: forge coverage --no-match-path "test/fork*" --report summary || true
+        run: forge coverage --no-match-path 'test/{fork*,**/fork*/**}' --report summary || true
         continue-on-error: true

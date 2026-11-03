@@ -1,0 +1,35 @@
+{
+  "status": "ACTUAL_WARM_PROFILE_DISCOVERED_AND_NAMED_NONEMPTY_USDC_EXIT_PASSED",
+  "readiness": "NOT_PRODUCTION_READY",
+  "chainId": 42161,
+  "pinnedBlock": 520384312,
+  "pinnedBlockHash": "0xe6beee34bcbb8e6876788b2fc361d85265e03189c059b03b6c28a082408c4bd7",
+  "buffer": "0x9b3fE5c76e0C10de254Ee2153f71DF6a96020D96",
+  "warmAdapters": [
+    "0xd9a47bda143819bc01962bf43acd928789a90b66",
+    "0x1df16ac92908feee3b104c630d818edfd3c75c1e"
+  ],
+  "cachedWarmNavRaw": "1292424",
+  "warmBalanceRaw": "1292424",
+  "warmNavValid": true,
+  "currentAaveRewards": {
+    "rewardsController()": 0,
+    "swapHelper()": 0
+  },
+  "rawEvidence": [
+    {
+      "path": "deployments\\lending-full-validation-20261101\\production\\coordinator\\current-warm-profile.json",
+      "sha256": "cf93f7e041c3c878252955e28cff1f0451d8732d0f7c7cb1de74d4a49789a836"
+    },
+    {
+      "path": "deployments\\lending-full-validation-20261101\\production\\coordinator\\current-warm-reward-details.json",
+      "sha256": "b2e0bd98601d434187c67d9da0d0ef8983fb16f45d8fa5340ee2fe4f4ea7780f"
+    }
+  ],
+  "limits": [
+    "Observed current shadow configuration only; candidate intent remains unspecified.",
+    "Zero reward-controller/helper on the observed Aave adapter does not establish rewards disabled on every adapter or future manifest.",
+    "No live transaction or source modification; reverting optional getters are retained as raw evidence, not inferred zero values."
+  ],
+  "warmRehearsal": "docs/lending-production-remediation-20261101/warm-full-exit-acceptance.json"
+}

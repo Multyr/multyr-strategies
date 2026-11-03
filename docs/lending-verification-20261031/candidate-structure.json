@@ -1,0 +1,45 @@
+{
+  "foundry": "forge Version: 1.4.2-stable",
+  "solc": "0.8.28",
+  "optimizerRuns": 200,
+  "viaIR": true,
+  "evmVersion": "cancun",
+  "runtimeLimitBytes": 23552,
+  "runtimeBytes": {
+    "UsdcMultiLendingVault": 23031,
+    "StrategyParamsModule": 18236,
+    "StrategyScoringModule": 22148,
+    "StrategyAdapterOpsModule": 18280,
+    "StrategyRebalanceGateModule": 22981,
+    "StrategyRebalancePlanModule": 23040,
+    "StrategyAllocCalcModule": 21390,
+    "StrategySafetyOverflowModule": 13505,
+    "StrategySettingsModule": 23415,
+    "AaveV3USDCAdapter": 13348,
+    "CometUsdcMultiMarketAdapter": 19676,
+    "DolomiteUsdcMultiMarketAdapter": 21819,
+    "EulerUsdcMultiMarketAdapter": 20576,
+    "FluidUsdcMultiMarketAdapter": 9720,
+    "MorphoUsdcMultiMarketAdapter": 23044,
+    "VenusUsdcMultiMarketAdapter": 11342,
+    "RewardSwapHelper": 11557,
+    "StrategyBootstrapper": 2276,
+    "ReadOnlyGasEstimator": 7336,
+    "OPStackFeeInfo": 1118
+  },
+  "uniqueSelectors": 296,
+  "distinctSignatureCollisions": 0,
+  "identicalModuleLayouts": 9,
+  "appendOnly": {
+    "CometUsdcMultiMarketAdapter": {
+      "preservedFields": 25,
+      "appendedFields": 1
+    },
+    "RewardSwapHelper": {
+      "preservedFields": 9,
+      "appendedFields": 5
+    }
+  },
+  "strategyReferenceUnitLast": true,
+  "strategyReferenceUnitSlot": "88"
+}

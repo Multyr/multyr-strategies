@@ -5,6 +5,7 @@ import {UsdcMultiLendingVaultTestBase, MockLendingAdapter} from "./UsdcMultiLend
 import {UsdcMultiLendingVault as Strategy} from "../../../src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol";
 import {StrategySettingsModule as Settings} from "../../../src/strategies/usdc-lending/controller/StrategySettingsModule.sol";
 import {StrategySettingsCopy as Copy} from "../../../script/StrategySettingsCopy.sol";
+import {ParamOutOfRange} from "../../../src/strategies/usdc-lending/controller/StrategyStorageLayout.sol";
 
 contract StrategySettingsCopyTest is UsdcMultiLendingVaultTestBase {
     function replacement(address source) internal returns (Strategy next) {
@@ -103,7 +104,7 @@ contract StrategySettingsCopyTest is UsdcMultiLendingVaultTestBase {
         Copy.verifyInit(address(vault), address(next));
     }
 
-    function test_liveConfigurationCanBeCopiedOnPinnedFork() public {
+    function test_liveDeprecatedDiversificationRequiresExplicitMigration() public {
         if (!vm.envOr("RUN_ROUTER_HARVEST_FORK", false)) { vm.skip(true); return; }
         // Persist the local fixture modules; only source configuration is read from the fork.
         vm.makePersistent(address(vault));
@@ -114,11 +115,17 @@ contract StrategySettingsCopyTest is UsdcMultiLendingVaultTestBase {
         vm.makePersistent(vault.settingsModule_addr());
         vm.createSelectFork(vm.envString("ROUTER_HARVEST_RPC"), vm.envUint("ROUTER_HARVEST_BLOCK"));
         address source = 0x7bF0f446BB20b54597E66a602cB94D0F231D24E2;
-        Strategy next = replacement(source);
-        vm.startPrank(admin);
-        Copy.globals(source, address(next), true);
-        vm.stopPrank();
-        Copy.globals(source, address(next), false);
-        Copy.verifyInit(source, address(next));
+        // Public source retains the old unenforced floor. The candidate rejects
+        // it deliberately; copying cannot silently normalize governance policy.
+        assertEq(Strategy(payable(source)).minAdaptersActive(), 2);
+        Strategy.StrategyInitParams memory inherited = Copy.initParams(source);
+        assertEq(inherited.minAdaptersActive, 2);
+        address paramsModule = vault.paramsModule();
+        address scoringModule = vault.scoringModule();
+        address opsModule = vault.adapterOpsModule();
+        address gateModule = vault.rebalanceGateModule_addr();
+        vm.expectRevert(ParamOutOfRange.selector);
+        new Strategy(ARBITRUM_USDC, core, router, admin, admin, address(0),
+            paramsModule, scoringModule, opsModule, gateModule, inherited);
     }
 }

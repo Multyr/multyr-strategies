@@ -22,7 +22,7 @@ import { Pausable } from "@openzeppelin/contracts/security/Pausable.sol";
 import { ReentrancyGuard } from "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import { IERC20Metadata } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import { ILendingAdapter } from "../interfaces/ILendingAdapter.sol";
+import { ILendingAdapter, IStrategyAssetValuation } from "../interfaces/ILendingAdapter.sol";
 import { StrategyConfigLib } from "../lib/StrategyConfigLib.sol";
 
 // ── Structs ──────────────────────────────────────────────────────────────────
@@ -493,6 +493,19 @@ contract StrategyStorageLayout is AccessControl, Pausable, ReentrancyGuard {
 
     /// @notice Idle reserve in basis points of TVL; configure 1000 for a 10% buffer.
     uint16 public targetIdleBufferBps;
+
+    // ── Whole-asset unit for dimensional conversion (not a USD tier scale) ──
+    /// @notice One whole underlying token in raw asset units.
+    /// @dev USD-calibrated risk tiers value complete amounts through the fresh core oracle.
+    ///
+    ///         This is STORAGE, not an immutable, and that is deliberate: every module runs
+    ///         by `delegatecall` in this contract's storage context and inherits this exact
+    ///         layout, so strategy and modules necessarily read the same value. An immutable
+    ///         would live in each module's own bytecode, and a module built with a different
+    ///         scale would be silently wrong rather than detectably wrong.
+    ///
+    ///         It is not used as USD value for volatile assets.
+    uint256 public referenceUnit;
     event TargetIdleBufferUpdated(uint16 previousBps, uint16 nextBps);
 
     function _deployableIdle() internal view returns (uint256) {
@@ -655,6 +668,10 @@ contract StrategyStorageLayout is AccessControl, Pausable, ReentrancyGuard {
         paramsModule = _paramsModule;
         scoringModule = _scoringModule;
         adapterOpsModule = _adapterOpsModule;
+        // Dimensional scale only. Price-dependent thresholds are valued separately.
+        uint8 dec = IERC20Metadata(asset_).decimals();
+        if (dec == 0 || dec > 36) revert InvalidAsset();
+        referenceUnit = 10 ** uint256(dec);
     }
 
     // Phase 1 added events (preserved across reload)
@@ -790,7 +807,7 @@ contract StrategyStorageLayout is AccessControl, Pausable, ReentrancyGuard {
     /// @dev TVL confidence -- delegates to StrategyConfigLib (single source of truth).
     ///      3-state: UNAVAILABLE (cacheTs==0), STALE (beyond window), FRESH.
     function _tvlConfidence(address adapter) internal view returns (uint256) {
-        return StrategyConfigLib.tvlConfidence(
+        return IStrategyAssetValuation(address(this)).tierConfidence(
             cachedExternalTVL[adapter],
             cachedExternalTVLTs[adapter],
             externalTVLStalenessSeconds
@@ -798,7 +815,15 @@ contract StrategyStorageLayout is AccessControl, Pausable, ReentrancyGuard {
     }
 
     /// @dev Dynamic relative exposure cap -- delegates to StrategyConfigLib (single source of truth).
-    function _effectiveRelativeCapBps(uint256 extTVL) internal pure returns (uint16) {
-        return StrategyConfigLib.effectiveRelativeCapBps(extTVL);
+    function _effectiveRelativeCapBps(uint256 extTVL) internal view returns (uint16) {
+        return IStrategyAssetValuation(address(this)).tierRelativeCap(extTVL);
+    }
+
+    function _usdUnitInAsset() internal view returns (uint256) {
+        return IStrategyAssetValuation(address(this)).usdUnitInAsset();
+    }
+
+    function _usd6ToAssetUnits(uint256 usd6) internal view returns (uint256) {
+        return IStrategyAssetValuation(address(this)).usd6ToAssetUnits(usd6);
     }
 }

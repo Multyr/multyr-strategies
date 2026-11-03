@@ -171,6 +171,7 @@ contract LendingReplayDefenseTest is Test {
     MockERC20 internal usdc;
     MockERC20 internal comp;
     MockChainlinkFeed internal feed;
+    MockChainlinkFeed internal outputAssetFeed;
     MockSequencerFeed internal seqFeed;
     MockUniV3Router internal uni;
     MockCamelotV3Router internal camelot;
@@ -179,8 +180,8 @@ contract LendingReplayDefenseTest is Test {
     address internal alice = address(0xA1);
     address internal core = address(0xC04E);
 
-    bytes internal uniPath = abi.encodePacked(uint8(0xAB));
-    bytes internal camelotPath = abi.encodePacked(uint8(0xCD));
+    bytes internal uniPath;
+    bytes internal camelotPath;
 
     function setUp() public {
         // Advance baseline timestamp so `block.timestamp - N` doesn't underflow
@@ -190,12 +191,18 @@ contract LendingReplayDefenseTest is Test {
         usdc = new MockERC20("USD Coin", "USDC", 6);
         comp = new MockERC20("Compound", "COMP", 18);
         feed = new MockChainlinkFeed(8);
+        outputAssetFeed = new MockChainlinkFeed(8);
         seqFeed = new MockSequencerFeed();
         uni = new MockUniV3Router(address(usdc));
         camelot = new MockCamelotV3Router(address(usdc));
+        uniPath = abi.encodePacked(address(comp), uint24(3000), address(usdc));
+        camelotPath = abi.encodePacked(address(comp), address(usdc));
 
         helper = new RewardSwapHelper();
         helper.initialize(address(usdc), admin, address(uni), address(camelot));
+        outputAssetFeed.set(1e8, block.timestamp);
+        vm.prank(admin);
+        helper.setOutputAssetOracle(address(outputAssetFeed), 90_000);
 
         // Grant KEEPER_ROLE to alice — she is the authorized keeper/adapter in these RA tests
         bytes32 keeperRole = keccak256("KEEPER_ROLE");
@@ -253,10 +260,11 @@ contract LendingReplayDefenseTest is Test {
     function test_RA4_reentrancy_swapToUSDC_blocksReentry() public {
         MaliciousReentrantToken evil = new MaliciousReentrantToken();
         MockChainlinkFeed evilFeed = new MockChainlinkFeed(8);
+        bytes memory evilUniPath = abi.encodePacked(address(evil), uint24(3000), address(usdc));
         evilFeed.set(10e8, block.timestamp);
         vm.prank(admin);
         helper.setRewardConfig(
-            address(evil), address(evilFeed), 8, 18, 90_000, uniPath, camelotPath, 100
+            address(evil), address(evilFeed), 8, 18, 90_000, evilUniPath, abi.encodePacked(address(evil), address(usdc)), 100
         );
 
         // Arm evil token to call swapToUSDC again during transferFrom

@@ -1,0 +1,415 @@
+{
+  "status": "FIVE_PINNED_SOURCE_MATCHES_TWO_EXACT_SHADOW_TIMING_VARIANTS",
+  "block": 520384312,
+  "blockHash": "0xe6beee34bcbb8e6876788b2fc361d85265e03189c059b03b6c28a082408c4bd7",
+  "coreSourcePin": "9a9d120709de99a6216e9fe75d36e9ffdcb1a4d9",
+  "compilerSettings": {
+    "remappings": [
+      "@openzeppelin/=lib/openzeppelin-contracts/",
+      "@openzeppelin-upgradeable/=lib/openzeppelin-contracts-upgradeable/",
+      "forge-std/=lib/forge-std/src/",
+      "@chainlink/contracts/=lib/chainlink-brownie-contracts/contracts/",
+      "@multyr-core/=lib/multyr-core/src/",
+      "@multyr-periphery/=lib/multyr-periphery/src/",
+      "@multyr-strategies/=src/",
+      "chainlink-brownie-contracts/=lib/chainlink-brownie-contracts/",
+      "ds-test/=lib/openzeppelin-contracts/lib/forge-std/lib/ds-test/src/",
+      "erc4626-tests/=lib/openzeppelin-contracts/lib/erc4626-tests/",
+      "multyr-core/=lib/multyr-core/",
+      "multyr-periphery/=lib/multyr-periphery/",
+      "openzeppelin-contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/",
+      "openzeppelin-contracts/=lib/openzeppelin-contracts/",
+      "openzeppelin/=lib/openzeppelin-contracts/contracts/"
+    ],
+    "optimizer": {
+      "enabled": true,
+      "runs": 200
+    },
+    "metadata": {
+      "useLiteralContent": false,
+      "bytecodeHash": "ipfs",
+      "appendCBOR": true
+    },
+    "evmVersion": "shanghai",
+    "viaIR": true,
+    "libraries": {}
+  },
+  "contracts": [
+    {
+      "label": "Core",
+      "contract": "CoreVault",
+      "address": "0x5e0cdb76487BD96Ff069Ef7F78eaDF5b5909C8cb",
+      "source": "lib/multyr-core/src/core/CoreVault.sol",
+      "actualBytes": 22587,
+      "compiledBytes": 22587,
+      "actualSha256": "e6854e70cb16071ae4441c2eed40f14b0e76a509b312e8f6555a969ec82ff380",
+      "compiledSha256": "28eb1a8c1ecfc9b961cb0cabf4473976ddcd75be8195ba91e2efdeb6e218f91d",
+      "actualMetadataBytes": 53,
+      "compiledMetadataBytes": 53,
+      "unexpectedDifferenceCount": 0,
+      "unexpectedDifferenceOffsets": [],
+      "immutableReferences": [
+        {
+          "id": "40533",
+          "identity": {
+            "name": "_asset",
+            "source": "lib/openzeppelin-contracts/contracts/token/ERC20/extensions/ERC4626.sol",
+            "type": "contract IERC20"
+          },
+          "locations": [
+            {
+              "length": 32,
+              "start": 4642
+            },
+            {
+              "length": 32,
+              "start": 11338
+            },
+            {
+              "length": 32,
+              "start": 11705
+            },
+            {
+              "length": 32,
+              "start": 14928
+            },
+            {
+              "length": 32,
+              "start": 15568
+            },
+            {
+              "length": 32,
+              "start": 18690
+            }
+          ],
+          "consistent": true,
+          "values": [
+            "0x000000000000000000000000af88d065e77c8cc2239327c5edb3a432268e5831"
+          ],
+          "bindingVerification": "MATCHES_PINNED_RPC_BINDING"
+        },
+        {
+          "id": "40535",
+          "identity": {
+            "name": "_underlyingDecimals",
+            "source": "lib/openzeppelin-contracts/contracts/token/ERC20/extensions/ERC4626.sol",
+            "type": "uint8"
+          },
+          "locations": [
+            {
+              "length": 32,
+              "start": 4533
+            }
+          ],
+          "consistent": true,
+          "values": [
+            "0x0000000000000000000000000000000000000000000000000000000000000006"
+          ],
+          "bindingVerification": "MATCHES_PINNED_RPC_BINDING"
+        }
+      ],
+      "status": "EXECUTABLE_AND_IMMUTABLE_BINDINGS_MATCH"
+    },
+    {
+      "label": "Router",
+      "contract": "StrategyRouter",
+      "address": "0x37847D2e12892e3298DEE695e7E971fba0Ca3e24",
+      "source": "lib/multyr-core/src/core/modules/StrategyRouter.sol",
+      "actualBytes": 24564,
+      "compiledBytes": 24566,
+      "actualSha256": "50455b862df1b646d368f2d4f3cbd119250b3d6bd6f777d964017a824bf94772",
+      "compiledSha256": "7e9322864ed71a8598ba08b24d48ca25204cd64b9c7f6311d2ca7c33cd278dba",
+      "actualMetadataBytes": 53,
+      "compiledMetadataBytes": 53,
+      "unexpectedDifferenceCount": 18982,
+      "unexpectedDifferenceOffsets": [
+        611,
+        616,
+        621,
+        626,
+        631,
+        636,
+        641,
+        646,
+        651,
+        656,
+        661,
+        666,
+        671,
+        676,
+        681,
+        686,
+        691,
+        696,
+        701,
+        706,
+        711,
+        716,
+        720,
+        721,
+        726,
+        731,
+        736,
+        741,
+        746,
+        751,
+        756,
+        761,
+        766,
+        942,
+        1102,
+        1208,
+        1229,
+        1251,
+        1311,
+        1316,
+        1383,
+        1416,
+        1421,
+        1445,
+        1526,
+        1573,
+        1587,
+        1613,
+        1647,
+        1662
+      ],
+      "immutableReferences": [],
+      "status": "SHADOW_VARIANT_EXECUTABLE_MATCH_SOURCE_PIN_DIFFERS",
+      "sourceVariant": {
+        "file": "lib/multyr-core/src/core/modules/StrategyRouter.sol",
+        "old": "MIN_ALLOWLIST_DELAY = 1 days;",
+        "new": "MIN_ALLOWLIST_DELAY = 5 minutes;"
+      }
+    },
+    {
+      "label": "Buffer",
+      "contract": "BufferManager",
+      "address": "0x9b3fE5c76e0C10de254Ee2153f71DF6a96020D96",
+      "source": "lib/multyr-core/src/core/modules/BufferManager.sol",
+      "actualBytes": 9992,
+      "compiledBytes": 9992,
+      "actualSha256": "31cd745e0c104b3bcc998ba6656888bac9a2e75e24b18a3d629cc6d0556a52cc",
+      "compiledSha256": "8f7ab33885660b0ffa5b4320eb3b41ce65142de67b8688d9e936617454e13e76",
+      "actualMetadataBytes": 53,
+      "compiledMetadataBytes": 53,
+      "unexpectedDifferenceCount": 0,
+      "unexpectedDifferenceOffsets": [],
+      "immutableReferences": [
+        {
+          "id": "16665",
+          "identity": {
+            "name": "core",
+            "source": "lib/multyr-core/src/core/modules/BufferManager.sol",
+            "type": "address"
+          },
+          "locations": [
+            {
+              "length": 32,
+              "start": 451
+            },
+            {
+              "length": 32,
+              "start": 937
+            },
+            {
+              "length": 32,
+              "start": 1409
+            },
+            {
+              "length": 32,
+              "start": 1586
+            },
+            {
+              "length": 32,
+              "start": 3494
+            },
+            {
+              "length": 32,
+              "start": 4318
+            },
+            {
+              "length": 32,
+              "start": 5974
+            },
+            {
+              "length": 32,
+              "start": 6990
+            },
+            {
+              "length": 32,
+              "start": 7138
+            },
+            {
+              "length": 32,
+              "start": 8869
+            },
+            {
+              "length": 32,
+              "start": 9528
+            }
+          ],
+          "consistent": true,
+          "values": [
+            "0x0000000000000000000000005e0cdb76487bd96ff069ef7f78eadf5b5909c8cb"
+          ],
+          "bindingVerification": "MATCHES_PINNED_RPC_BINDING"
+        }
+      ],
+      "status": "EXECUTABLE_AND_IMMUTABLE_BINDINGS_MATCH"
+    },
+    {
+      "label": "Params",
+      "contract": "GlobalConfig",
+      "address": "0x5680E4948759569DCB9D2eAB6a5504d733c83B2A",
+      "source": "lib/multyr-core/src/core/config/GlobalConfig.sol",
+      "actualBytes": 16796,
+      "compiledBytes": 16798,
+      "actualSha256": "570798ef79c2cf8f8d1b24b35fde9b6c2a2f85d0243650f4526ef99225017ab7",
+      "compiledSha256": "c7da9983b114591b6cef21524057b81d064af14bb9e5ed91e074e3e34af9dd89",
+      "actualMetadataBytes": 53,
+      "compiledMetadataBytes": 53,
+      "unexpectedDifferenceCount": 5875,
+      "unexpectedDifferenceOffsets": [
+        34,
+        46,
+        57,
+        68,
+        79,
+        90,
+        101,
+        112,
+        123,
+        134,
+        145,
+        156,
+        167,
+        178,
+        189,
+        200,
+        222,
+        233,
+        244,
+        255,
+        266,
+        277,
+        288,
+        299,
+        310,
+        321,
+        332,
+        1258,
+        1318,
+        1519,
+        1621,
+        1626,
+        1698,
+        1811,
+        1894,
+        1976,
+        1984,
+        2050,
+        2173,
+        2326,
+        2374,
+        2494,
+        2654,
+        2677,
+        2848,
+        2922,
+        2967,
+        3027,
+        3180,
+        3362
+      ],
+      "immutableReferences": [],
+      "status": "SHADOW_VARIANT_EXECUTABLE_MATCH_SOURCE_PIN_DIFFERS",
+      "sourceVariant": {
+        "file": "lib/multyr-core/src/core/config/GlobalConfig.sol",
+        "old": "cfg.epochDuration < 1 hours",
+        "new": "cfg.epochDuration < 2 minutes"
+      }
+    },
+    {
+      "label": "Oracle",
+      "contract": "PriceOracleMiddleware",
+      "address": "0x93c94aF96e7e52AD5029cE8fEa84d14583518B76",
+      "source": "lib/multyr-core/src/core/modules/PriceOracleMiddleware.sol",
+      "actualBytes": 2586,
+      "compiledBytes": 2586,
+      "actualSha256": "1e4a12e105357cd03fe95dcd49ad0f32e70c31697120216b1f6a8881f72bb550",
+      "compiledSha256": "04161e0ca08c1fa29260f2478b4e5e7340f8f5ae63ce822c2c541fd0fe034827",
+      "actualMetadataBytes": 53,
+      "compiledMetadataBytes": 53,
+      "unexpectedDifferenceCount": 0,
+      "unexpectedDifferenceOffsets": [],
+      "immutableReferences": [],
+      "status": "EXECUTABLE_AND_IMMUTABLE_BINDINGS_MATCH"
+    },
+    {
+      "label": "ERC4626",
+      "contract": "ERC4626Module",
+      "address": "0x1e4884436f1447f491a137c497d1a94c864a991f",
+      "source": "lib/multyr-core/src/core/modules/ERC4626Module.sol",
+      "actualBytes": 12030,
+      "compiledBytes": 12030,
+      "actualSha256": "233c373f97ade2d2eff16bd1735bb072ba2c987756a23607de94ac92929e3c5c",
+      "compiledSha256": "3394bcaaaf741aa2cba3e7f231ff4bac6674c911ae478721cabc6606daa7c578",
+      "actualMetadataBytes": 53,
+      "compiledMetadataBytes": 53,
+      "unexpectedDifferenceCount": 0,
+      "unexpectedDifferenceOffsets": [],
+      "immutableReferences": [],
+      "status": "EXECUTABLE_AND_IMMUTABLE_BINDINGS_MATCH"
+    },
+    {
+      "label": "Queue",
+      "contract": "EpochedQueueModule",
+      "address": "0xccad3125667639b1a49667be8dd201e66b0a3b21",
+      "source": "lib/multyr-core/src/core/modules/EpochedQueueModule.sol",
+      "actualBytes": 18594,
+      "compiledBytes": 18594,
+      "actualSha256": "ae2ab3c6b72c6047df329ddd4a139d0fde9683670f0e7d6f690b2e076914865a",
+      "compiledSha256": "a73c29843b6da08545790a76e20285ed2c39499e1019875a423f97ba089e587c",
+      "actualMetadataBytes": 53,
+      "compiledMetadataBytes": 53,
+      "unexpectedDifferenceCount": 0,
+      "unexpectedDifferenceOffsets": [],
+      "immutableReferences": [],
+      "status": "EXECUTABLE_AND_IMMUTABLE_BINDINGS_MATCH"
+    }
+  ],
+  "limits": [
+    "Metadata hash excluded explicitly; executable bytes and immutable locations compared separately.",
+    "No proxy-history, governance-history or later-block equivalence claimed.",
+    "Selector registry and additional modules not yet covered by these seven comparisons."
+  ],
+  "tokenDecimalsRpc": {
+    "request": {
+      "jsonrpc": "2.0",
+      "id": 1,
+      "method": "eth_call",
+      "params": [
+        {
+          "to": "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+          "data": "0x313ce567"
+        },
+        "0x1f046f38"
+      ]
+    },
+    "response": {
+      "jsonrpc": "2.0",
+      "id": 1,
+      "result": "0x0000000000000000000000000000000000000000000000000000000000000006"
+    }
+  },
+  "sourcePinConfigUrl": "https://github.com/Multyr/multyr-core/blob/9a9d120709de99a6216e9fe75d36e9ffdcb1a4d9/foundry.toml",
+  "readiness": "NOT_PRODUCTION_READY",
+  "interpretation": "Deployed shadow is not identical to the unmodified public source pin. Two timing-only source variants reproduce all remaining executable bytes. No Core edits or live changes performed.",
+  "verificationWorkspaceDependencyCheck": {
+    "workspace": "pd",
+    "gitDiffLibExit": 0,
+    "coreSubmoduleHead": "9a9d120709de99a6216e9fe75d36e9ffdcb1a4d9",
+    "note": "Read-only Git checks confirmed frozen dependency clean and pinned during source comparison."
+  }
+}

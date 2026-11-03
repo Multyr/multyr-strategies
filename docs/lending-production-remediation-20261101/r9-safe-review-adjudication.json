@@ -1,0 +1,16 @@
+{
+  "review": "R9-safe-atomic-review.md",
+  "verdict": "PASS_WITH_LIMITS",
+  "rootCorrections": [
+    "Invested amount is 103995819 raw USDC units, or 103.995819 USDC; the review's '103 M USDC' wording is incorrect.",
+    "The one-raw-unit Aave difference is receipt conversion rounding. It is not proof of timestamp-based interest accrual between same-transaction reads."
+  ],
+  "acceptedEvidence": "r10-actual-43-safe-acceptance.json",
+  "batchEvidence": "reference-safe-batches.json",
+  "limits": [
+    "Historical fork and locally approved Safe hashes only; no public transaction broadcast.",
+    "Reference batches use ephemeral candidate addresses and are not a production deployment manifest.",
+    "Gasleft deltas are not transaction receipts or production gas calibration."
+  ],
+  "readiness": "NOT_PRODUCTION_READY"
+}

@@ -1,0 +1,28 @@
+{
+  "status": "ALL_ADAPTER_TESTS_PASS",
+  "passed": 1471,
+  "suites": 41,
+  "failed": 0,
+  "skipped": 0,
+  "log": "deployments/lending-full-validation-20261101/production/coordinator/R18-all-adapters-2.log",
+  "logSha256": "af9157f6f1ca865f4d39c7e282051b334f25f39511ad284118e054b832b7dfbf",
+  "sources": [
+    {
+      "path": "src/strategies/usdc-lending/adapters/lending/EulerUsdcMultiMarket.sol",
+      "sha256": "59452094c484a5d976db1c416d1d347cce993cadda4834eeab52f96cbe89bf1f"
+    },
+    {
+      "path": "src/strategies/usdc-lending/adapters/lending/DolomiteUsdcMultiMarket.sol",
+      "sha256": "686fcb1164bd6fa7ab3cc7b5f921fe5fcf48680b2a9c3e9d0c1a1280e16be1b1"
+    },
+    {
+      "path": "test/strategies/usdc-lending/adapters/AdapterReviewFollowup.t.sol",
+      "sha256": "85d85b31fa3c9dcf0f08e0ae43c0fae10eed5d111497e8db7b3c1357e66cc20c"
+    }
+  ],
+  "limits": [
+    "Controlled adapter regression gate, distinct from unmocked real-market/Native acceptance.",
+    "All enabled/disabled error compatibility restored without changing the fail-closed outcome."
+  ],
+  "readiness": "NOT_PRODUCTION_READY"
+}

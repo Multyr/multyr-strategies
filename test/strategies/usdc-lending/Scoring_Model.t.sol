@@ -25,6 +25,7 @@ import { StrategyAdapterOpsModule } from "../../../src/strategies/usdc-lending/c
 import {
     ILendingAdapter
 } from "../../../src/strategies/usdc-lending/interfaces/ILendingAdapter.sol";
+import { LendingOracleTestFixture } from "./helpers/LendingOracleTestFixture.sol";
 import { StrategySafetyOverflowModule } from "../../../src/strategies/usdc-lending/controller/StrategySafetyOverflowModule.sol";
 
 // ============================================================================
@@ -114,7 +115,7 @@ contract ScoringMockAdapter is ILendingAdapter {
 // SCORING MODEL TESTS — BLOCCO B + J + K + L
 // ============================================================================
 
-contract Scoring_Model is Test {
+contract Scoring_Model is LendingOracleTestFixture {
     address constant ARBITRUM_USDC = 0xaf88d065e77c8cC2239327C5EDb3A432268e5831;
 
     UsdcMultiLendingVault public vault;
@@ -126,7 +127,7 @@ contract Scoring_Model is Test {
     ScoringMockAdapter public adapterE; // extra adapter
 
     address public admin = address(0x1);
-    address public core = address(0x2);
+    address public core;
     address public router = address(0x6);
     address public keeper = address(0x3);
 
@@ -138,6 +139,8 @@ contract Scoring_Model is Test {
         usdc = new MockUSDC();
         vm.etch(ARBITRUM_USDC, address(usdc).code);
         usdc = MockUSDC(ARBITRUM_USDC);
+
+        core = _newOracleCore(1e18);
 
         // Create scoring mock adapters with different APYs
         adapterA = new ScoringMockAdapter(ARBITRUM_USDC);

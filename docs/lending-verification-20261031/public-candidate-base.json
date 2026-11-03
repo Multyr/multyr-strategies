@@ -1,0 +1,23 @@
+{
+  "checkedAt": "2026-11-01",
+  "repository": "Multyr/multyr-strategies",
+  "publicBaseCommit": "211f1a0a4cb9c63232ae18dac24ccb921e5a4699",
+  "url": "https://github.com/Multyr/multyr-strategies/commit/211f1a0a4cb9c63232ae18dac24ccb921e5a4699",
+  "message": "test: complete lending cleanup regression validation",
+  "localCandidate": "codex/lending-multitoken-multichain plus uncommitted patch",
+  "boundary": "The candidate changes are local and must be distributed with their complete patch/manifest; this public base commit alone is not the candidate. Frozen existing deployment source/runtime proofs are separate.",
+  "anonymousRepositoryVerification": {
+    "repository": "Multyr/multyr-strategies",
+    "visibility": "public",
+    "private": false,
+    "request": "Unauthenticated GitHub REST GET /repos/Multyr/multyr-strategies",
+    "checkedAt": "2026-11-01T10:47:40.1209968Z"
+  },
+  "frozenCoreRepository": {
+    "repository": "Multyr/multyr-core",
+    "visibility": "public",
+    "frozenCommit": "9a9d120709de99a6216e9fe75d36e9ffdcb1a4d9",
+    "request": "Unauthenticated GitHub REST repository metadata",
+    "checkedAt": "2026-11-01T10:59:40.8340782Z"
+  }
+}

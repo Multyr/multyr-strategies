@@ -1,0 +1,71 @@
+{
+  "status": "NAMED_TOKEN_TECHNICAL_LIFECYCLES_PASS",
+  "sourceAcceptance": "docs/lending-production-remediation-20261101/r25-actual-50-acceptance.json",
+  "sourceAcceptanceSha256": "271895edab84f79bc9400b3088652368723e983cf419f184c445602cca703e42",
+  "actualGate": {
+    "suites": 21,
+    "passed": 50,
+    "skipped": 0,
+    "failed": 0
+  },
+  "newRows": [
+    {
+      "symbol": "wstETH",
+      "chainId": 1,
+      "asset": "0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0",
+      "decimals": 18,
+      "family": "AaveV3",
+      "receipt": "0x0B925eD163218f6662a35e0f0371Ac234f9E9371",
+      "price": "Native wstETH conversion times actual Chainlink stETH/USD, through strategy-owned immutable helper",
+      "directActualLifecycle": true,
+      "twoUserCoreFullExit": true,
+      "nativeEthereumQuote": true,
+      "rawLiquidityRateRayAt26300000": "1866051480250711043021",
+      "adapterLendingAprBpsAt26300000": 0,
+      "economicCaveat": "Nonzero raw lending rate rounds to zero integer basis points. No staking APR is added; technical compatibility is not approval of a profitable lending trade."
+    },
+    {
+      "symbol": "RLUSD",
+      "chainId": 1,
+      "asset": "0x8292Bb45bf1Ee4d140127049757C2E0fF06317eD",
+      "decimals": 18,
+      "family": "AaveV3",
+      "receipt": "0xFa82580c16A31D0c1bC632A36F82e83EfEF3Eec0",
+      "feed": "0x26C46B7aD0012cA71F2298ada567dC9Af14E7f2A",
+      "directActualLifecycle": true,
+      "twoUserCoreFullExit": true,
+      "nativeEthereumQuote": true,
+      "rawLiquidityRateRayAt26300000": "31074410347543940669251289",
+      "adapterLendingAprBpsAt26300000": 310
+    },
+    {
+      "symbol": "USDT0",
+      "chainId": 42161,
+      "asset": "0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9",
+      "decimals": 6,
+      "family": "AaveV3",
+      "receipt": "0x6ab707Aca953eDAeFBc4fD23bA73294241490620",
+      "feed": "0x3f3f5dF88dC9F13eac63DF89EC16ef6e7E25DdE7",
+      "twoUserCoreFullExit": true,
+      "existingActualDolomiteLifecycle": true,
+      "nativeForgePrecompileMock": false,
+      "feeScope": "This USDT0 Core lifecycle does not claim a native-Nitro gas quote. Separate genuine eth_simulateV1 matrix uses a USDC vault and actual USDT0 funding swap."
+    }
+  ],
+  "policy": [
+    "Frozen Core implementation and all original epoch/deposit lock/cap/role controls retained.",
+    "Real holder transfers; balances/supply deltas asserted; actual prices, supply rates, cash and indexed NAV.",
+    "Closed protocol counterfactual rolled over canonical historical headers; no replay of intervening transactions or historical earned-return claim.",
+    "Only these named chain/asset/market rows are qualified; not every adapter for every token, not bridged variants by symbol.",
+    "Native ETH and native XRPL assets are not ERC20 underlyings for this frozen Core."
+  ],
+  "observations": [
+    "├─ emit ActualMarketObservation(asset: 0x8292Bb45bf1Ee4d140127049757C2E0fF06317eD, rpcBlock: 26300000 [2.63e7], timestamp: 1793296163 [1.793e9], decimals: 18, protocolSupply: 2938878254420490006356541 [2.938e24], protocolCash: 633416113824286572856963 [6.334e23], liquidityRateRay: 31074410347543940669251289 [3.107e25], adapterAprBps: 310, priceAnswer: 100001625 [1e8], feedDecimals: 8, priceUpdatedAt: 1793249843 [1.793e9], position: 0, positionUsd6: 0)",
+    "├─ emit ActualMarketObservation(asset: 0x8292Bb45bf1Ee4d140127049757C2E0fF06317eD, rpcBlock: 26310000 [2.631e7], timestamp: 1793416631 [1.793e9], decimals: 18, protocolSupply: 2939627083989862023912371 [2.939e24], protocolCash: 633816113824286572856963 [6.338e23], liquidityRateRay: 31070002607974214836101126 [3.107e25], adapterAprBps: 310, priceAnswer: 99972302 [9.997e7], feedDecimals: 8, priceUpdatedAt: 1793336279 [1.793e9], position: 400059337305235795634 [4e20], positionUsd6: 399948528 [3.999e8])",
+    "├─ emit ActualMarketObservation(asset: 0x8292Bb45bf1Ee4d140127049757C2E0fF06317eD, rpcBlock: 26310000 [2.631e7], timestamp: 1793416631 [1.793e9], decimals: 18, protocolSupply: 2939227024652556788116736 [2.939e24], protocolCash: 633416054486981337061329 [6.334e23], liquidityRateRay: 31076325212574199621061887 [3.107e25], adapterAprBps: 310, priceAnswer: 99972302 [9.997e7], feedDecimals: 8, priceUpdatedAt: 1793336279 [1.793e9], position: 0, positionUsd6: 0)",
+    "├─ emit ActualMarketObservation(asset: 0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0, rpcBlock: 26300000 [2.63e7], timestamp: 1793296163 [1.793e9], decimals: 18, protocolSupply: 773548257091987936695621 [7.735e23], protocolCash: 761825277111713549219403 [7.618e23], liquidityRateRay: 1866051480250711043021 [1.866e21], adapterAprBps: 0, priceAnswer: 292750398578 [2.927e11], feedDecimals: 8, priceUpdatedAt: 1793295515 [1.793e9], position: 0, positionUsd6: 0)",
+    "├─ emit ActualMarketObservation(asset: 0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0, rpcBlock: 26310000 [2.631e7], timestamp: 1793416631 [1.793e9], decimals: 18, protocolSupply: 773549062606099709545239 [7.735e23], protocolCash: 761826077111713549219403 [7.618e23], liquidityRateRay: 1866050282432506134957 [1.866e21], adapterAprBps: 0, priceAnswer: 279578516328 [2.795e11], feedDecimals: 8, priceUpdatedAt: 1793413991 [1.793e9], position: 800000007128326634 [8e17], positionUsd6: 2236628150 [2.236e9])",
+    "├─ emit ActualMarketObservation(asset: 0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0, rpcBlock: 26310000 [2.631e7], timestamp: 1793416631 [1.793e9], decimals: 18, protocolSupply: 773548262606092581218605 [7.735e23], protocolCash: 761825277111706420892769 [7.618e23], liquidityRateRay: 1866054142155542291664 [1.866e21], adapterAprBps: 0, priceAnswer: 279578516328 [2.795e11], feedDecimals: 8, priceUpdatedAt: 1793413991 [1.793e9], position: 0, positionUsd6: 0)"
+  ],
+  "readiness": "NOT_PRODUCTION_READY"
+}

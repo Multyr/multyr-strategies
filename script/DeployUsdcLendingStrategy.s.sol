@@ -241,7 +241,7 @@ contract DeployUsdcLendingStrategy is Script {
 
     // ─── Entry point ─────────────────────────────────────────────────────────
 
-    function run() external returns (DeploymentResult memory result) {
+    function run() external virtual returns (DeploymentResult memory result) {
         require(block.chainid == 42161, "WRONG_CHAIN: DeployUsdcLendingStrategy is Arbitrum-only");
 
         UsdcLendingChainConfig memory chainCfg = UsdcLendingConfigArbitrum.get();
@@ -1238,6 +1238,7 @@ contract DeployUsdcLendingStrategy is Script {
     function _defaultParams()
         internal
         view
+        virtual
         returns (UsdcMultiLendingVault.StrategyInitParams memory)
     {
         uint16 maxExpBps = 0; // Use the existing TVL-tier caps, including single-adapter T1.

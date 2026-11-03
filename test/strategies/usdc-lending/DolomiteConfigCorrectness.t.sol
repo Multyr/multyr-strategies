@@ -50,6 +50,7 @@ contract MockPoolLikeMarket {
 
     // IDolomiteLike
     function baseToken() external view returns (address) { return baseTokenAddr; }
+    function getMarketTokenAddress(uint256) external view returns (address) { return baseTokenAddr; }
     function availableLiquidity(address) external view returns (uint256) { return liquidBalance; }
 
     // IDolomiteMargin.getAccountWei

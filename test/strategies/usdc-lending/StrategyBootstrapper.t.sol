@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.28;
+import {LendingOracleTestFixture} from "./helpers/LendingOracleTestFixture.sol";
 
 import { Test } from "forge-std/Test.sol";
 import {
@@ -102,7 +103,7 @@ contract BootstrapMockAdapter is ILendingAdapter {
 // TEST BASE
 // ============================================================================
 
-contract StrategyBootstrapperTestBase is Test {
+contract StrategyBootstrapperTestBase is LendingOracleTestFixture {
     address constant ARBITRUM_USDC = 0xaf88d065e77c8cC2239327C5EDb3A432268e5831;
 
     UsdcMultiLendingVault public vault;
@@ -111,7 +112,7 @@ contract StrategyBootstrapperTestBase is Test {
     BootstrapMockAdapter public adapter2;
 
     address public admin = address(0x10);
-    address public core  = address(0x20);
+    address public core = _newOracleCore(1e18);
     address public router = address(0x60);
     address public keeper = address(0x30);
     address public deployer = address(0x99);

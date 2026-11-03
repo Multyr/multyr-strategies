@@ -1,0 +1,178 @@
+{
+  "status": "ISOLATED_REAL_PROTOCOL_WRAPPER_OBSERVATIONS_PASS",
+  "readiness": "NOT_PRODUCTION_READY",
+  "passed": 3,
+  "failed": 0,
+  "skipped": 0,
+  "observations": [
+    {
+      "phase": "deployIdle.initial",
+      "asset": "0x6c3ea9036406852006290770BEdFcAbA0e23A0e8",
+      "rpcBlock": 26165400,
+      "selector": "0x4c16052c",
+      "calldataBytes": 4,
+      "harnessGasDelta": 1806114
+    },
+    {
+      "phase": "deployIdle.fresh",
+      "asset": "0x6c3ea9036406852006290770BEdFcAbA0e23A0e8",
+      "rpcBlock": 26173000,
+      "selector": "0x4c16052c",
+      "calldataBytes": 4,
+      "harnessGasDelta": 131194
+    },
+    {
+      "phase": "prepareRebalance",
+      "asset": "0x6c3ea9036406852006290770BEdFcAbA0e23A0e8",
+      "rpcBlock": 26173000,
+      "selector": "0x73d36b6a",
+      "calldataBytes": 4,
+      "harnessGasDelta": 926098
+    },
+    {
+      "phase": "executeRebalanceStep",
+      "asset": "0x6c3ea9036406852006290770BEdFcAbA0e23A0e8",
+      "rpcBlock": 26173000,
+      "selector": "0x77dd1671",
+      "calldataBytes": 4,
+      "harnessGasDelta": 1256900
+    },
+    {
+      "phase": "deployIdle.initial",
+      "asset": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+      "rpcBlock": 26165400,
+      "selector": "0x4c16052c",
+      "calldataBytes": 4,
+      "harnessGasDelta": 3375489
+    },
+    {
+      "phase": "deployIdle.fresh",
+      "asset": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+      "rpcBlock": 26173000,
+      "selector": "0x4c16052c",
+      "calldataBytes": 4,
+      "harnessGasDelta": 2823694
+    },
+    {
+      "phase": "prepareRebalance",
+      "asset": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+      "rpcBlock": 26173000,
+      "selector": "0x73d36b6a",
+      "calldataBytes": 4,
+      "harnessGasDelta": 1603083
+    },
+    {
+      "phase": "executeRebalanceStep",
+      "asset": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+      "rpcBlock": 26173000,
+      "selector": "0x77dd1671",
+      "calldataBytes": 4,
+      "harnessGasDelta": 1360094
+    },
+    {
+      "phase": "executeRebalanceStep",
+      "asset": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+      "rpcBlock": 26173000,
+      "selector": "0x77dd1671",
+      "calldataBytes": 4,
+      "harnessGasDelta": 2546526
+    },
+    {
+      "phase": "prepareRebalance",
+      "asset": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+      "rpcBlock": 26181000,
+      "selector": "0x73d36b6a",
+      "calldataBytes": 4,
+      "harnessGasDelta": 1523486
+    },
+    {
+      "phase": "executeRebalanceStep",
+      "asset": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+      "rpcBlock": 26181000,
+      "selector": "0x77dd1671",
+      "calldataBytes": 4,
+      "harnessGasDelta": 1380076
+    },
+    {
+      "phase": "executeRebalanceStep",
+      "asset": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+      "rpcBlock": 26181000,
+      "selector": "0x77dd1671",
+      "calldataBytes": 4,
+      "harnessGasDelta": 2381445
+    },
+    {
+      "phase": "deployIdle.initial",
+      "asset": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+      "rpcBlock": 26165400,
+      "selector": "0x4c16052c",
+      "calldataBytes": 4,
+      "harnessGasDelta": 2461986
+    },
+    {
+      "phase": "deployIdle.fresh",
+      "asset": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+      "rpcBlock": 26173000,
+      "selector": "0x4c16052c",
+      "calldataBytes": 4,
+      "harnessGasDelta": 151377
+    },
+    {
+      "phase": "prepareRebalance",
+      "asset": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+      "rpcBlock": 26173000,
+      "selector": "0x73d36b6a",
+      "calldataBytes": 4,
+      "harnessGasDelta": 1425578
+    },
+    {
+      "phase": "executeRebalanceStep",
+      "asset": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+      "rpcBlock": 26173000,
+      "selector": "0x77dd1671",
+      "calldataBytes": 4,
+      "harnessGasDelta": 1072057
+    },
+    {
+      "phase": "executeRebalanceStep",
+      "asset": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+      "rpcBlock": 26173000,
+      "selector": "0x77dd1671",
+      "calldataBytes": 4,
+      "harnessGasDelta": 468290
+    },
+    {
+      "phase": "prepareRebalance",
+      "asset": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+      "rpcBlock": 26181000,
+      "selector": "0x73d36b6a",
+      "calldataBytes": 4,
+      "harnessGasDelta": 861464
+    },
+    {
+      "phase": "executeRebalanceStep",
+      "asset": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+      "rpcBlock": 26181000,
+      "selector": "0x77dd1671",
+      "calldataBytes": 4,
+      "harnessGasDelta": 2577301
+    }
+  ],
+  "maxObservedByPhase": {
+    "deployIdle.fresh": 2823694,
+    "deployIdle.initial": 3375489,
+    "executeRebalanceStep": 2577301,
+    "prepareRebalance": 1603083
+  },
+  "log": "C:\\Users\\Pierre\\Multyr\\pt-multiply\\pc\\deployments\\lending-full-validation-20261101\\production\\C-wrapper\\root-isolated-bounded-rpc.log",
+  "logSha256": "e2009e1c7cdb5110ad858e3768d8d86cdb01387cf70dcad6f0363620f8f8373b",
+  "testSourceUtf8LfSha256": "6f23b9ab93a2cc086dbf4e4c5a29f98577fa3ee7a8dc3433730a382a7acaf887",
+  "limits": [
+    "USDT/PYUSD/WETH genuine historical Ethereum scenarios; all independent scoring/economic/exit assertions retained.",
+    "Forge --isolate separates top-level EVM call contexts. Event gasleft deltas include harness call/returndata overhead and are NOT transaction receipts.",
+    "Observed preparation reaches1603083gas, above illustrative400000 prototype coefficient. Calibrate production overhead; prototype coefficients remain unapproved.",
+    "Static benchmark cost reference in original3 scenarios unchanged; no native dynamic-gate calibration claim.",
+    "Separate Anvil receipts cover seven representative adapter cases; complete keeper wrapper bytes/native fees/max-market bounds remain open.",
+    "Failed memoryguard compile and WETH429 attempts retained. Root corrected allocated-memory assembly annotations; bounded-RPC retry passes3."
+  ]
+}

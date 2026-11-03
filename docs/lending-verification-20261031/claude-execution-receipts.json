@@ -1,0 +1,55 @@
+{
+  "reviewedOriginalManifest": "reviewed-input-86.json",
+  "originalManifestSha256": "5a989edd92063fcfef12f9a1daf85481f82b471c5f84b778bfd4f085232225a1",
+  "note": "These are terminal CLI receipts, not proof that every review claim is correct. Reconciliation and source-bound coordinator tests decide acceptance.",
+  "sessions": [
+    {
+      "localTranscript": "deployments\\lending-source-review-20261031\\claude-A-20261101.ndjson",
+      "sha256": "afcb560520696086c56e2535814f9a51510ebcbd8f3ea7e53270fccfc1602da8",
+      "terminalType": "result",
+      "terminalSubtype": "success",
+      "isError": false,
+      "restrictedToReadOnlyToolset": false
+    },
+    {
+      "localTranscript": "deployments\\lending-source-review-20261031\\claude-B-20261101.ndjson",
+      "sha256": "f421f6d7ce6d9ebb0f568d0ce92731edb0cb8f7ecc1cecfb851338513ff6859e",
+      "terminalType": "result",
+      "terminalSubtype": "success",
+      "isError": false,
+      "restrictedToReadOnlyToolset": false
+    },
+    {
+      "localTranscript": "deployments\\lending-source-review-20261031\\claude-C-20261101.ndjson",
+      "sha256": "bfc394420fc333949fab2cf9f0f1bbf1546b2ee1b6013f4840beebf94c5636cd",
+      "terminalType": "result",
+      "terminalSubtype": "success",
+      "isError": false,
+      "restrictedToReadOnlyToolset": false
+    },
+    {
+      "localTranscript": "deployments\\lending-source-review-20261031\\claude-C-execution-20261101.ndjson",
+      "sha256": "27f1249aa9a214999bc0c6c1cbd0a9195c03e038e51ecf35a75975b07c7dab6a",
+      "terminalType": "result",
+      "terminalSubtype": "success",
+      "isError": false,
+      "restrictedToReadOnlyToolset": false
+    },
+    {
+      "localTranscript": "deployments\\lending-source-review-20261031\\claude-C-delta-20261101.ndjson",
+      "sha256": "68158a16f8c421943f0b973a05105c4f24f0cdcf412cb8704fbac0c7acc7ff3a",
+      "terminalType": "result",
+      "terminalSubtype": "success",
+      "isError": false,
+      "restrictedToReadOnlyToolset": true
+    },
+    {
+      "localTranscript": "deployments\\lending-source-review-20261031\\claude-B-delta-20261101.ndjson",
+      "sha256": "94f5cf4aa2a543d9c9a4745549ab386c077ea815fd0825d2cc6b4a255a614916",
+      "terminalType": "result",
+      "terminalSubtype": "success",
+      "isError": false,
+      "restrictedToReadOnlyToolset": true
+    }
+  ]
+}

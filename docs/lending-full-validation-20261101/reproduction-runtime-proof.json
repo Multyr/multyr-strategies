@@ -1,0 +1,6 @@
+{
+  "runtimes": 32,
+  "templateHashMismatches": 0,
+  "base": "211f1a0a4cb9c63232ae18dac24ccb921e5a4699",
+  "method": "Clean independent clone, recursively fetched pinned dependencies, checked/applied provisional source patch; identical compiler options and all 32 runtime templates"
+}

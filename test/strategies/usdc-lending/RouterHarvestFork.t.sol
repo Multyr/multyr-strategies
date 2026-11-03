@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.28;
 
-import {UsdcMultiLendingVaultTestBase} from "./UsdcMultiLendingVault.t.sol";
+import {LendingStrategyMatrixFixture} from "./fork/LendingStrategyMatrix.fork.t.sol";
+import {UsdcMultiLendingVault} from "../../../src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol";
 import {StrategyRouter} from "@multyr-core/core/modules/StrategyRouter.sol";
 import {IStrategyRouter} from "@multyr-core/interfaces/IStrategyRouter.sol";
 import {StrategySettingsModule} from "../../../src/strategies/usdc-lending/controller/StrategySettingsModule.sol";
@@ -26,13 +27,18 @@ contract ForkHarvestReward {
 
 /// @dev Opt-in RPC fork. All registration/funding/role operations are local fork mutations.
 /// Core, router and native USDC runtime code is unchanged during the tested calls.
-contract RouterHarvestForkTest is UsdcMultiLendingVaultTestBase {
+contract RouterHarvestForkTest is LendingStrategyMatrixFixture {
+    address constant ARBITRUM_USDC = 0xaf88d065e77c8cC2239327C5EDb3A432268e5831;
+    bytes32 constant KEEPER_ROLE = keccak256("KEEPER_ROLE");
+    address core;
+    address router;
+    UsdcMultiLendingVault vault;
     bool runFork;
     bytes32 coreCodeHash;
     bytes32 routerCodeHash;
     bytes32 tokenCodeHash;
 
-    function setUp() public override {
+    function setUp() public {
         runFork = vm.envOr("RUN_ROUTER_HARVEST_FORK", false);
         if (!runFork) return;
         vm.createSelectFork(vm.envString("ROUTER_HARVEST_RPC"), vm.envUint("ROUTER_HARVEST_BLOCK"));
@@ -40,12 +46,10 @@ contract RouterHarvestForkTest is UsdcMultiLendingVaultTestBase {
         router = 0x37847D2e12892e3298DEE695e7E971fba0Ca3e24;
         coreCodeHash = core.codehash;
         routerCodeHash = router.codehash;
-        bytes memory nativeTokenCode = ARBITRUM_USDC.code;
         tokenCodeHash = ARBITRUM_USDC.codehash;
-        super.setUp();
-        // The common deployment fixture temporarily installs mock token code;
-        // restore native USDC before any integration operation or funding.
-        vm.etch(ARBITRUM_USDC, nativeTokenCode);
+        // Use the actual core binding from construction; a unit-test oracle core
+        // must never overwrite it before calls into the deployed router.
+        vault = _deployForRouter(ARBITRUM_USDC, core, router);
         StrategyRouter liveRouter = StrategyRouter(router);
         address governor = liveRouter.owner();
         vm.prank(governor);
@@ -64,7 +68,7 @@ contract RouterHarvestForkTest is UsdcMultiLendingVaultTestBase {
     function test_deployedRouterHarvestAndRecallWithUnchangedCoreCode() public {
         if (!runFork) { vm.skip(true); return; }
         ForkHarvestReward adapter = new ForkHarvestReward(address(vault), ARBITRUM_USDC);
-        vm.startPrank(admin);
+        vm.startPrank(address(this));
         StrategySettingsModule(address(vault)).whitelistAdapter(address(adapter), true);
         vault.addAdapter(address(adapter));
         vault.toggleAdapter(address(adapter), true);

@@ -1,0 +1,1237 @@
+{
+  "baseCommit": "211f1a0a4cb9c63232ae18dac24ccb921e5a4699",
+  "branch": "codex/lending-multitoken-multichain",
+  "dependencies": [
+    " 5cb41fbc9b525338b6098da5ea7dd0b7e92f89e4 lib/chainlink-brownie-contracts (1.3.0)",
+    " 8e40513d678f392f398620b3ef2b418648b33e89 lib/forge-std (v1.11.0)",
+    " 9a9d120709de99a6216e9fe75d36e9ffdcb1a4d9 lib/multyr-core (v1.0.0-67-g9a9d120)",
+    " e2e9457d956b3127b126812588a7d67fdbfe8c72 lib/multyr-periphery (v1.0.0)",
+    " bd325d56b4c62c9c5c1aff048c37c6bb18ac0290 lib/openzeppelin-contracts (v4.8.0-272-gbd325d56)",
+    " 3d4c0d5741b131c231e558d7a6213392ab3672a5 lib/openzeppelin-contracts-upgradeable (3d4c0d57)"
+  ],
+  "foundry": "forge Version: 1.4.2-stable",
+  "compiler": "0.8.28",
+  "optimizerRuns": 200,
+  "viaIR": true,
+  "evmVersion": "cancun",
+  "passed": 43,
+  "failed": 0,
+  "skipped": 0,
+  "suites": 18,
+  "positiveLifecycleAndIntegrationTests": 42,
+  "negativeCappedMarketRejectionTests": 1,
+  "log": "deployments/lending-full-validation-20261101/production/R17-actual/root-43.log",
+  "logSha256": "31b9fac45ffd77fb11ea7ac3a02efa52af1e58883c8cbd41ce116aac26309811",
+  "runnerSha256": "96b9e0485a216e26981f5dd2897533ffaed0264fab90bdf74086f5281ba363bb",
+  "canonicalHeaders": "docs\\lending-production-remediation-20261101\\canonical-headers.json",
+  "canonicalHeadersSha256": "f03efc2c9955cdf0737be6f059625faa4a0026a9ff20327c3ab594018d61c495",
+  "sources": [
+    {
+      "path": "foundry.toml",
+      "sha256": "c735f4db8cd22df0f444ed52091ec57b6de0d6a7cbab810b5b4417be83574361"
+    },
+    {
+      "path": "script/AdapterSettingsCopy.sol",
+      "sha256": "a799a5bed8faf5c378e3a0e2a7b04e0ec69c0b99927b9bb28451aa2e19e0d2d9"
+    },
+    {
+      "path": "script/DeployAdapterFactory.s.sol",
+      "sha256": "0d64abe5ba45aaeb4fa5e15d3fe7d304303cc27759b5dbc050885f583a64377d"
+    },
+    {
+      "path": "script/DeployAdapterOnly.s.sol",
+      "sha256": "06ca996c4a85e70877e5bdabba452c653733fe3a34dedc561e56186c55e9798c"
+    },
+    {
+      "path": "script/DeployLendingStrategy.s.sol",
+      "sha256": "a2568ef6b4826f4a29232995126970700a28c76a305b683a0d524aa61acca92e"
+    },
+    {
+      "path": "script/DeployReadOnlyGasEstimator.s.sol",
+      "sha256": "508759f63e8c42528b58441b975a30443833ec05fbe3ba568f53816c342c8e2b"
+    },
+    {
+      "path": "script/DeployStrategyMigrationGuard.s.sol",
+      "sha256": "062ae941f12b78bf5a5dedcc6e2abf5b064a9918e1d5b9a41fad485b70ec0f30"
+    },
+    {
+      "path": "script/DeployStrategyUpkeep.s.sol",
+      "sha256": "034ae1ab307999b870714937050c9f36844c46354337ef2fcb293a6b7f009928"
+    },
+    {
+      "path": "script/DeployUsdcLendingStrategy.s.sol",
+      "sha256": "0ba649296c4e5f0c299085e3cc5a5d2c3919e0411c1f2e9ec79e9ba7b7335c46"
+    },
+    {
+      "path": "script/GasEstimatorPreflight.sol",
+      "sha256": "826b0ff4005473473021494087412657f1f96c12574eca26f84537b6d958d5d1"
+    },
+    {
+      "path": "script/lib/UsdcLendingShadowPreflight.sol",
+      "sha256": "7e5f6e6fc66d9b2c73e2472c6fa0edc61a362d60ca885ec8a6c6eac0cd43ecf1"
+    },
+    {
+      "path": "script/PostflightUsdcLendingShadow.s.sol",
+      "sha256": "67c7be31e582cebf39ca49c268abc67181a253e89b3404c02fdf6fccf162b28a"
+    },
+    {
+      "path": "script/PreflightUsdcLendingShadow.s.sol",
+      "sha256": "6bab6f847f813babd535558c7e4371c0e56354ee54ac00dddf7c64710ef27464"
+    },
+    {
+      "path": "script/StrategySettingsCopy.sol",
+      "sha256": "468c7f725c3a418d1d4e949c6c49d5f256fed8a9f752175cfa11a9c9381122d5"
+    },
+    {
+      "path": "src/strategies/usdc-lending/adapters/lending/AaveV3USDCmarket.sol",
+      "sha256": "6c25d820f39182d6d808770283b8c2156c57989b4a7428ce19b20baf24faf43a"
+    },
+    {
+      "path": "src/strategies/usdc-lending/adapters/lending/CometUsdcMultiMarket.sol",
+      "sha256": "4ce6cca641d067020649b94961546e6885d4efeb0f569736d392bcbb1f6a611d"
+    },
+    {
+      "path": "src/strategies/usdc-lending/adapters/lending/DolomiteUsdcMultiMarket.sol",
+      "sha256": "59dab3cec967b697089a6e6f2c9b75302eb5560f77fc3d676bd859ea031ee603"
+    },
+    {
+      "path": "src/strategies/usdc-lending/adapters/lending/EulerUsdcMultiMarket.sol",
+      "sha256": "35b7b2013bbbb06538523ac1e11f2016bb336a9b286dd9f60a9a4e513ff86f11"
+    },
+    {
+      "path": "src/strategies/usdc-lending/adapters/lending/FluidUsdcMultiMarket.sol",
+      "sha256": "c9f53a81bed1b1db9aa5a97e27f14d36d2636cb4961781857fc2b938bbe24c39"
+    },
+    {
+      "path": "src/strategies/usdc-lending/adapters/lending/MorphoUsdcMultiMarket.sol",
+      "sha256": "4c529dbb4de41efffcb04ac56b0a67163332650acdc150654d422ebe849bd917"
+    },
+    {
+      "path": "src/strategies/usdc-lending/adapters/lending/MorphoVaultV2LiquidityView.sol",
+      "sha256": "ccbc60dbfae68aed4b7068fff1c7c9f19cb0827cad2e16409bef6e11f174faf1"
+    },
+    {
+      "path": "src/strategies/usdc-lending/adapters/lending/PpsRateLib.sol",
+      "sha256": "968e87a0c489ec670b2b018d8069fd856eeed6f445bf078812a671b9ba627946"
+    },
+    {
+      "path": "src/strategies/usdc-lending/adapters/lending/VenusUsdcMultiMarket.sol",
+      "sha256": "b152e077d891b04a89fd45461243741ee2c5a16a50a59b3314861d7aec6309c2"
+    },
+    {
+      "path": "src/strategies/usdc-lending/adapters/rates/AaveLiquidityRateProvider.sol",
+      "sha256": "77cbbb9f8e6238f7427daf42b05a1b068cf4c41d7276c7ed5bf913177c2d929c"
+    },
+    {
+      "path": "src/strategies/usdc-lending/adapters/rates/DolomiteSupplyRateProvider.sol",
+      "sha256": "3a10c6ade242c70357001fc0ec5c36f671a32846c0971a21c0a2023d1d3321c5"
+    },
+    {
+      "path": "src/strategies/usdc-lending/automation/LendingStrategyUpkeep.sol",
+      "sha256": "08483dad319433a143bf5e207bd5a51703ba28e559ae1640e61c38c0ef2be98b"
+    },
+    {
+      "path": "src/strategies/usdc-lending/config/LendingAssetConfig.sol",
+      "sha256": "258260ffa3081c8b6ecfa6d57be4d03123307a8797abde23690f42e85c5c5fe2"
+    },
+    {
+      "path": "src/strategies/usdc-lending/config/UsdcLendingChainConfig.sol",
+      "sha256": "1c07c7a58ce7be0785c42bfbfd1c38baf940463378bb71e964be155efbea4f1f"
+    },
+    {
+      "path": "src/strategies/usdc-lending/config/UsdcLendingConfigArbitrum.sol",
+      "sha256": "9666b5b4f141634524dc8d1b7173e40db8bf28e4fbd327dda0c951d7d0bcf230"
+    },
+    {
+      "path": "src/strategies/usdc-lending/config/UsdcLendingConfigBase.sol",
+      "sha256": "8decebe6247f4a94f97991b0544eaa151a776e675a6a45fdf9b3f3b4291418d5"
+    },
+    {
+      "path": "src/strategies/usdc-lending/config/UsdcLendingConfigEthereum.sol",
+      "sha256": "a3b1a95ff1ecd0f877ed9ddd67397d88bfd458ccfbc335c391b2aad556240caf"
+    },
+    {
+      "path": "src/strategies/usdc-lending/config/UsdcLendingConfigOptimism.sol",
+      "sha256": "41c622224b952d7d9a19418f677938bfc9d9a3bbb8c03a4f9fec00cf1da6a3b8"
+    },
+    {
+      "path": "src/strategies/usdc-lending/config/UsdcLendingConfigPolygon.sol",
+      "sha256": "56b61d7dce13e84debf6355341fc85b7e13da1996167bb311d59e5debde1d7e1"
+    },
+    {
+      "path": "src/strategies/usdc-lending/controller/StrategyAdapterOpsModule.sol",
+      "sha256": "35a7eb6e34236088321499adf963e8002143713b875e842c50f5086eae7b31db"
+    },
+    {
+      "path": "src/strategies/usdc-lending/controller/StrategyAllocCalcModule.sol",
+      "sha256": "06c16e550c51105d3ae7b512ae40426105820db3c6f5ffee5a2c2d5c48738ec2"
+    },
+    {
+      "path": "src/strategies/usdc-lending/controller/StrategyParamsModule.sol",
+      "sha256": "99485f67b122ed6cfa66ba5024c087057226a15a9b31b9c8e8b513f267b7602b"
+    },
+    {
+      "path": "src/strategies/usdc-lending/controller/StrategyRebalanceGateModule.sol",
+      "sha256": "375be3ecd504b17dcb3d83fdb65176b96e270b2174421253c8ab649d145ca50b"
+    },
+    {
+      "path": "src/strategies/usdc-lending/controller/StrategyRebalancePlanModule.sol",
+      "sha256": "7aa216e946e2557ccd4762e920345ae0bb426dad7259781c342ffec25dea6a3a"
+    },
+    {
+      "path": "src/strategies/usdc-lending/controller/StrategySafetyOverflowModule.sol",
+      "sha256": "d857c6df444f6b95156778d7250c55a787546cfcf5d18b83a67aa0a7afe7a837"
+    },
+    {
+      "path": "src/strategies/usdc-lending/controller/StrategyScoringModule.sol",
+      "sha256": "9a2ec831d069450ffde04cbb49e6a2fa2cdd8ff0f44549b2d0c612c58264b549"
+    },
+    {
+      "path": "src/strategies/usdc-lending/controller/StrategySettingsModule.sol",
+      "sha256": "2f935b868ef8a446d92eba48d3aae04d2c7a1d8a0822a8e7e732ee50ae0d4003"
+    },
+    {
+      "path": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol",
+      "sha256": "c168c39d8aa2eb098d696f3d53fe81420cedb5b321f079000270a7714b5962ef"
+    },
+    {
+      "path": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol",
+      "sha256": "326153ab6b3f8aaba75f2deaa87bd7218e2254e33a03291a25ec6035f0229ed0"
+    },
+    {
+      "path": "src/strategies/usdc-lending/factory/AdapterFactory.sol",
+      "sha256": "84dcb321016aff1bb5c15aa33dd574f92dc2b3579582d8b0b8719a4064c2d925"
+    },
+    {
+      "path": "src/strategies/usdc-lending/gas/AdapterMigrationGuard.sol",
+      "sha256": "43d552c968682568f6872fa89e100b34243d48c96c8df38f7b83844a3d8aaf15"
+    },
+    {
+      "path": "src/strategies/usdc-lending/gas/AdapterSwapGuard.sol",
+      "sha256": "7d509129c2ed91c5fdd277bef7b6e1636562db9c90db6250d0c9d5f4db766e16"
+    },
+    {
+      "path": "src/strategies/usdc-lending/gas/CandidateActions.sol",
+      "sha256": "8c715fd5f2523de5484d5c0a8e33f12f44ae22cc5523367f25a00952630bb4de"
+    },
+    {
+      "path": "src/strategies/usdc-lending/gas/GovernedReadOnlyGasEstimator.sol",
+      "sha256": "86e0f192200ced36d5970f462952b2854d5d814da21074e3077766a5200ad98d"
+    },
+    {
+      "path": "src/strategies/usdc-lending/gas/NativeL1FeeInfo.sol",
+      "sha256": "7efc0124d65d4fc8ddd0d7401882909d9ef6be67acd5fa8cc85ebc1cb57dffdb"
+    },
+    {
+      "path": "src/strategies/usdc-lending/gas/OPStackFeeInfo.sol",
+      "sha256": "440fc0d7a06b949c947937472578d8e8c8bc4d4235855cc75084a6cd54537950"
+    },
+    {
+      "path": "src/strategies/usdc-lending/gas/ReadOnlyGasEstimator.sol",
+      "sha256": "6244b424cc37e8724d859bc80573d0f11a2472622b0b01a7b17f92f05b19bed1"
+    },
+    {
+      "path": "src/strategies/usdc-lending/gas/StrategyMigrationGuard.sol",
+      "sha256": "19946ede5b5538b083880ee36d739a70059360c7b2e82ad42bc83ecb8fdee515"
+    },
+    {
+      "path": "src/strategies/usdc-lending/interfaces/ILendingAdapter.sol",
+      "sha256": "1277caeac78952d65808d3f39235ac05769e2555a5c77979953d32d0c9dc672b"
+    },
+    {
+      "path": "src/strategies/usdc-lending/lens/StrategyExplainabilityLens.sol",
+      "sha256": "db8ccfb7dca90fb22c5511b72bfb807c746fb95ba88959f60c080d3070d40de3"
+    },
+    {
+      "path": "src/strategies/usdc-lending/lib/StrategyConfigLib.sol",
+      "sha256": "9e94ceab893ae7d8d799881d230fe195d895c9fd20e766aa56e274bd49a3341f"
+    },
+    {
+      "path": "src/strategies/usdc-lending/registry/ProtocolRegistry.sol",
+      "sha256": "3e9be23b1aeed43b4b54d0f4f49f653aa3a231cc43d68852d3febd56599ada82"
+    },
+    {
+      "path": "src/strategies/usdc-lending/StrategyBootstrapper.sol",
+      "sha256": "e46b696bdda55f84cf92f59d151ac2fa8f5679647eacf6a5a475d5a7b41777f3"
+    },
+    {
+      "path": "src/strategies/usdc-lending/swap/RewardSwapHelper.sol",
+      "sha256": "726f68dbb884e440578ce6a362de71753689616a167e095bb7dc840e950af226"
+    },
+    {
+      "path": "test/fork_pre/adapters/AaveV3AdapterFork.t.sol",
+      "sha256": "38568cb4e6e9f27eff608657c493981bd71971dd568e3c3c067414093dfb11a7"
+    },
+    {
+      "path": "test/fork_pre/adapters/CometAdapterFork.t.sol",
+      "sha256": "a57b24dd2022e878cc56bdd565d79678eca71c1e9085cbd343f42818f8071db6"
+    },
+    {
+      "path": "test/fork_pre/adapters/DolomiteAdapterFork.t.sol",
+      "sha256": "f888b0de26b1841d92fc80bfd2dfbee04484fbad2eaac07f9fef8d28870e4b91"
+    },
+    {
+      "path": "test/fork_pre/adapters/EulerAdapterFork.t.sol",
+      "sha256": "d72ab2304e45c692f5f24cf30569c811104034cb14c8b74378e5ef5642c8023d"
+    },
+    {
+      "path": "test/fork_pre/adapters/FluidAdapterFork.t.sol",
+      "sha256": "5781f95f330ef606f035573069564ba6a590c24c173d892ca7cebd4d19069ef7"
+    },
+    {
+      "path": "test/fork_pre/adapters/MorphoAdapterFork.t.sol",
+      "sha256": "0e2fea13ca64007a7f24bdbc91bd1881a5494b7538f6ce5111956df1b3648205"
+    },
+    {
+      "path": "test/fork_pre/adapters/VenusAdapterFork.t.sol",
+      "sha256": "2fc96bc5a4bbb2cf6010ef2ed8d05767c077585bf994714086d2160d84403481"
+    },
+    {
+      "path": "test/fork_pre/helpers/ForkTestBase.sol",
+      "sha256": "2cbf4805e40ff8559be7c444a3eba3cf1bcde7e8468ed5279e84e1214da8988f"
+    },
+    {
+      "path": "test/fork_pre/v92/V92_AdversarialScenarios.t.sol",
+      "sha256": "70a51845b9069192a6414b6df520375bf5f7860ae2a51a68eb0caa75e3c38907"
+    },
+    {
+      "path": "test/helpers/CoreHarness.sol",
+      "sha256": "2f4518a10f66d82b0f7197e1bfa6417e9ca149d46dac36ae4cc9afec53a18067"
+    },
+    {
+      "path": "test/helpers/MockBufferManagerForTests.sol",
+      "sha256": "5b73a52a90d43cd888d3b9ee56f93717541a286622aeba3e237da4c8bd8c9da9"
+    },
+    {
+      "path": "test/helpers/MockParamsProvider.sol",
+      "sha256": "31f4be02892a8ce24e57f1420c49a14374c0cdec697d7bd3e0a120a927a1cace"
+    },
+    {
+      "path": "test/helpers/SimpleProtocolRegistry.sol",
+      "sha256": "8fcdb36412f0834f74fb06efc47160a70ed568fe877504b95fb6a7d14c4c723a"
+    },
+    {
+      "path": "test/helpers/V10AdapterTestHelper.sol",
+      "sha256": "03eeab4114e73236bb0a6d5e2809132e2a719ab7ae8c5ab41e83f0907523bccf"
+    },
+    {
+      "path": "test/strategies/usdc-lending/AdapterApproveHygiene.t.sol",
+      "sha256": "0abe020ae66afddc3d15c622c2ca7414794179b6d0be7a7b9709138562736e14"
+    },
+    {
+      "path": "test/strategies/usdc-lending/AdapterFailureResilience.t.sol",
+      "sha256": "7a9b3ebc3d60ed7f54b85d1a00edfb28b7bc14b7fbfe4a5528b78cf30b4a9346"
+    },
+    {
+      "path": "test/strategies/usdc-lending/AdapterFailureTelemetry.t.sol",
+      "sha256": "412d4039352a7360017504d74dd3408967fa0d1964a7c09f6679900656b22f97"
+    },
+    {
+      "path": "test/strategies/usdc-lending/AdapterRateRemediation.t.sol",
+      "sha256": "77422bc7e6f17567070e05ae9eb17304c1cd21b5400b33559418361ec43d5d1f"
+    },
+    {
+      "path": "test/strategies/usdc-lending/adapters/AaveV3USDCAdapter.t.sol",
+      "sha256": "eb872c7191d074bbb266a5c0956e027412a070b1dabc70a808043b42efd9b1e0"
+    },
+    {
+      "path": "test/strategies/usdc-lending/adapters/AdapterFullReviewRegression.t.sol",
+      "sha256": "24c3e2ec81c1b95818693953ca9096e57f6b52849f57d3dd722e87b5eaaa5408"
+    },
+    {
+      "path": "test/strategies/usdc-lending/adapters/CometNetBenefit.t.sol",
+      "sha256": "607b6c0dcceabbe1114344f967a4547caac8c57c14e2f9903d7f4eaa93df1b03"
+    },
+    {
+      "path": "test/strategies/usdc-lending/adapters/CometUsdcMultiMarketAdapter.t.sol",
+      "sha256": "3f2ca401091412a1c3d37ba5c02e733bfa49cfbb5d3bb232507785bfce464520"
+    },
+    {
+      "path": "test/strategies/usdc-lending/adapters/DolomiteUsdcMultiMarketAdapter.t.sol",
+      "sha256": "fc573236d2c1b7108a7deb13390cdbc7efac62584a9eda56e989c4dc2b9a7249"
+    },
+    {
+      "path": "test/strategies/usdc-lending/adapters/EulerAdapter.t.sol",
+      "sha256": "3b3b26ad27cab58da87806c0f32f9caadfa1d6becd498cdc94cb3b68ee1be526"
+    },
+    {
+      "path": "test/strategies/usdc-lending/adapters/EulerUsdcMultiMarketAdapter.t.sol",
+      "sha256": "84954f432249081730908a5eb5e5794edf4248177409ed23b5f800cea8357c0a"
+    },
+    {
+      "path": "test/strategies/usdc-lending/adapters/FluidUsdcMultiMarketAdapter.t.sol",
+      "sha256": "474d538c2850f7b4c3be3f3bef33e1afdf8123bfc88e1164822dc9f45d5c0dea"
+    },
+    {
+      "path": "test/strategies/usdc-lending/adapters/MarketConfigSafety.t.sol",
+      "sha256": "fbf14dd50daed144331bbfe89381d6d08287987c93783045f59023252622235c"
+    },
+    {
+      "path": "test/strategies/usdc-lending/adapters/MorphoAdapter.t.sol",
+      "sha256": "80bb4189b9fe753aa3ab8efee9e70e98d8665b8cbb63f57abbef1011857c48d0"
+    },
+    {
+      "path": "test/strategies/usdc-lending/adapters/MorphoV2LiquidityView.t.sol",
+      "sha256": "30ff96751b044bd6929b2bf2893cab08d7e58c20048737169277ed03ae672112"
+    },
+    {
+      "path": "test/strategies/usdc-lending/adapters/MultiAdapterBase.t.sol",
+      "sha256": "b0e2a5df7aa781174845cc77250a398212a983f5c50697d6f7a34914f3c5e3cd"
+    },
+    {
+      "path": "test/strategies/usdc-lending/adapters/StorageLayoutV10Adapters.t.sol",
+      "sha256": "c0e47780fc3f901a2c6deddd170935d975efc71b8be5018ca19c016570ad83c6"
+    },
+    {
+      "path": "test/strategies/usdc-lending/adapters/VenusUsdcMultiMarketAdapter.t.sol",
+      "sha256": "a8c3735ed0f9a87370821cc5b8a7612cd2e4d74aff9101c5205b3d94f5818095"
+    },
+    {
+      "path": "test/strategies/usdc-lending/AdapterSwapGuard.t.sol",
+      "sha256": "41c159f7dfb5c66bde38f8e31b6665b9cd486b76e5c9d57b2785ea3a670c9122"
+    },
+    {
+      "path": "test/strategies/usdc-lending/Allocation_Consistency.t.sol",
+      "sha256": "6209f006e72bc9952574fa1d0381bcb0a44d2d5ad710f180d2fba445424952b6"
+    },
+    {
+      "path": "test/strategies/usdc-lending/audit-pocs-v10/AccessControlBypass_AdapterOpsAndScoring.t.sol",
+      "sha256": "bc130675400d394b2e0e02760e138c08e54cbf90cb52fd542bd7e73c336b0f8e"
+    },
+    {
+      "path": "test/strategies/usdc-lending/audit-pocs-v10/AdapterInitializeFrontRun_Comet.t.sol",
+      "sha256": "7a84aa18b58bd6c9a4e414991a72a9b2e692d8dbbc4a539c14397a9a64a02ecc"
+    },
+    {
+      "path": "test/strategies/usdc-lending/audit-pocs-v10/BootstrapperFrontRun_AdapterHijack.t.sol",
+      "sha256": "f717ce1f26816393bb315a50456ebf80431ebecf30225c830b4809398a2041ee"
+    },
+    {
+      "path": "test/strategies/usdc-lending/audit-pocs-v10/CometAdapter_SingleMarketRevertNoLongerBricksAdapter.t.sol",
+      "sha256": "28bd078639610e0df298e2a5f11fcea73a11ecff8303aa90b631c8f9220f08ec"
+    },
+    {
+      "path": "test/strategies/usdc-lending/audit-pocs-v10/DeadCapacityJumpLimiter.t.sol",
+      "sha256": "8d5ac6d7c8ed56ff944595298e90b5d3948c56f61555203d0fb81c0088c21f5f"
+    },
+    {
+      "path": "test/strategies/usdc-lending/audit-pocs-v10/OverlayParityRegression_T1GovernanceCeiling.t.sol",
+      "sha256": "08c079f1aea8b818fd85f62b7ffc63a4d6f439b948eab1d720d00bf0627f2614"
+    },
+    {
+      "path": "test/strategies/usdc-lending/audit-pocs-v10/UnauthenticatedCheckGate_AdapterLockout.t.sol",
+      "sha256": "3a729516cd218cf6a827c23b84b897964d70b20ad68c7111767ffb6d5b84e79b"
+    },
+    {
+      "path": "test/strategies/usdc-lending/audit-pocs-v10/UnboundedDustTolerance_NoCashInvariantBypass.t.sol",
+      "sha256": "579eb5f9e6474152d5998fde4ab72e6bdc4e5ee244794e03e966c210e35731a5"
+    },
+    {
+      "path": "test/strategies/usdc-lending/CandidateFunding.t.sol",
+      "sha256": "4ae051cab08c90e46575bdb32f948b7e6ef1b5d019239d205a871b245591525c"
+    },
+    {
+      "path": "test/strategies/usdc-lending/CapacityConsistency.t.sol",
+      "sha256": "ccb7286b2b792c6aafbf398cc8ec16128e1678cb1e3c3c71753d267a63cc6ff8"
+    },
+    {
+      "path": "test/strategies/usdc-lending/CapDriftMandate.t.sol",
+      "sha256": "d65e0e00c6171bd4a42d2e7d198806400226628025d3aadc6ab5798f2bf5ae85"
+    },
+    {
+      "path": "test/strategies/usdc-lending/CTO_Corrections.t.sol",
+      "sha256": "d0d02aee6a8ef0489c58ad75d8e909041aa858bb22d3c1e1c878ced20110126e"
+    },
+    {
+      "path": "test/strategies/usdc-lending/CtoHardeningFixes.t.sol",
+      "sha256": "4e477b50736c17ddf7a40f6d47e488c070d55352888da1db70b6df9fff40a23f"
+    },
+    {
+      "path": "test/strategies/usdc-lending/DegradedModeSemantics.t.sol",
+      "sha256": "2d84f029b95ecf1532181cddb38fa37a8d88132c94b347d3f4e12af79abd0c28"
+    },
+    {
+      "path": "test/strategies/usdc-lending/DelegatecallEquivalence.t.sol",
+      "sha256": "09d34d42eb360c65cef9d688446ddb032d5d1a439473f521d3b6ffc4a69a5170"
+    },
+    {
+      "path": "test/strategies/usdc-lending/deploy/UsdcLendingDeploy.t.sol",
+      "sha256": "b1fead7fabd7f191ccffe8e0215276df0c957003557081eda1ed7ad2d194fdfc"
+    },
+    {
+      "path": "test/strategies/usdc-lending/DepositIdleDenominator.t.sol",
+      "sha256": "7ce4038037f25ebb3460ab5da2013545309379bde280b45b8a63d4243112dcc1"
+    },
+    {
+      "path": "test/strategies/usdc-lending/DolomiteConfigCorrectness.t.sol",
+      "sha256": "439e1b96c8a0bbad6e929ba1b1c25cc10a2fba43cce522f9211c5d410a6598b1"
+    },
+    {
+      "path": "test/strategies/usdc-lending/Dynamic_Seed.t.sol",
+      "sha256": "fc90ae270893c56de9a5662c7cb8c9d256382734772cfcc4cb253ec69735ec7b"
+    },
+    {
+      "path": "test/strategies/usdc-lending/echidna/EchidnaSafetyAdapterCapTier.sol",
+      "sha256": "049fa30036d04ae016e1ce5d880875e840e1a1f65a0fcf557bd391e6423f4314"
+    },
+    {
+      "path": "test/strategies/usdc-lending/EconomicSanity.t.sol",
+      "sha256": "1b3c57d40bc37b61552efd488dbb5a1ad9440681b2182aeb0bec93f0f8baf9c3"
+    },
+    {
+      "path": "test/strategies/usdc-lending/F_SCORING_INV2_CapFix.t.sol",
+      "sha256": "00699fe326122033bedccd2cefc1f405e6bda516410e4c6faa87bffa550ed26a"
+    },
+    {
+      "path": "test/strategies/usdc-lending/F_SIZE_01_Parity.t.sol",
+      "sha256": "b0aa5e5457acbe8651fb0bd7dc02bb58e2932b07c4e413a40549e671ff786daa"
+    },
+    {
+      "path": "test/strategies/usdc-lending/F_SIZE_02_Parity.t.sol",
+      "sha256": "279ba7bbd286cdb1275305971034b9a20ef1b21965841a0ebc14059d602a8edd"
+    },
+    {
+      "path": "test/strategies/usdc-lending/factory/AdapterFactory.t.sol",
+      "sha256": "ce0a1114aa320581dfb8026591727bcfdcf364947503e9f62885c69a10faa68e"
+    },
+    {
+      "path": "test/strategies/usdc-lending/FailureOverlay.t.sol",
+      "sha256": "226d905dc74ff024323b076fc2092417cb1ca35ce0683fad86fd8daaae1db16a"
+    },
+    {
+      "path": "test/strategies/usdc-lending/fork/actual/AaveAdditionalRealAssets.t.sol",
+      "sha256": "89247dad74c866b890defecd693ec26db42d8b211073042bd8805b68a84b1bbe"
+    },
+    {
+      "path": "test/strategies/usdc-lending/fork/actual/ActualFrozenCoreCutover.t.sol",
+      "sha256": "3f5938526967856a6faca485296a48651e21c18d273a726c140b51150c10013f"
+    },
+    {
+      "path": "test/strategies/usdc-lending/fork/actual/ActualMultiAdapterScoring.t.sol",
+      "sha256": "b56111af193cafd44f11acf95f7983e04f8ce61ea510b46ef6f34bafc231a543"
+    },
+    {
+      "path": "test/strategies/usdc-lending/fork/actual/ActualNativeGasGateReference.sol",
+      "sha256": "f439b43030963d2006aaac2c90c90b3f6f19e31100b1169060b91faf48a3cc96"
+    },
+    {
+      "path": "test/strategies/usdc-lending/fork/actual/ActualSafeBatch.sol",
+      "sha256": "71fc8a332d120ae501e1da462d05ed3b76d57d669b83c914fea9f0bc6c51f6bf"
+    },
+    {
+      "path": "test/strategies/usdc-lending/fork/actual/ArbitrumRemainingCore.t.sol",
+      "sha256": "1d972fab0b48aafebf4a2661af61d0a8f315439b50448127db91cbe0986198c6"
+    },
+    {
+      "path": "test/strategies/usdc-lending/fork/actual/BaseNativeFeeIntegration.t.sol",
+      "sha256": "2ffa2d244ef678d4cbdc658b7b28aa34be2ae058ac265f150d819c4b9392e5c8"
+    },
+    {
+      "path": "test/strategies/usdc-lending/fork/actual/BscNativeFeeStrategyIntegration.t.sol",
+      "sha256": "d782186de6d2567d364d190a92ebf68114a5ee610ba5bcd8b691ae984b55ffe3"
+    },
+    {
+      "path": "test/strategies/usdc-lending/fork/actual/CometActualAssets.t.sol",
+      "sha256": "d844d21d8bb143e53ee2c0e22891e9c44f0b63a7ced72b160c025fa4a9c7e163"
+    },
+    {
+      "path": "test/strategies/usdc-lending/fork/actual/DolomiteActualAssets.t.sol",
+      "sha256": "de8ee0b071556860f5b21e8a73dfda01312093ac26cc00691a8f107609f37f3f"
+    },
+    {
+      "path": "test/strategies/usdc-lending/fork/actual/EthereumNativeFeeFullExit.t.sol",
+      "sha256": "c3294ce419079bd6a653564842f5b58fab679930b9442f75c6bfa2d9a4032431"
+    },
+    {
+      "path": "test/strategies/usdc-lending/fork/actual/EulerActualAssets.t.sol",
+      "sha256": "43755dca5dc7c71f32554f973e6ad10c1600852f1ca679ff177e871a674fa66b"
+    },
+    {
+      "path": "test/strategies/usdc-lending/fork/actual/FluidActualAssets.t.sol",
+      "sha256": "accf061e446d741f18bec124d20cec4c641bb4a20dc0df9b65e94ecd778f4e26"
+    },
+    {
+      "path": "test/strategies/usdc-lending/fork/actual/FullUserExitE2E.t.sol",
+      "sha256": "729eb2751b6e68b54baa2890a0128ff96383d9b79cda3c71fafb15fbc67add08"
+    },
+    {
+      "path": "test/strategies/usdc-lending/fork/actual/LendingEthereumAdditionalUnmockedE2E.t.sol",
+      "sha256": "f297e187991985ea054f923d8d0edd2caf39faeb6c00cecb88111cf6b7b979a7"
+    },
+    {
+      "path": "test/strategies/usdc-lending/fork/actual/MorphoActualAssets.t.sol",
+      "sha256": "48bdf33754922acbdfa11d30e3063c9316090fbab99b41d670238487bd0f0a64"
+    },
+    {
+      "path": "test/strategies/usdc-lending/fork/actual/NonemptyWarmFullExit.t.sol",
+      "sha256": "7c91f070c88e8a37d4c8fbbbae6f61f1e09b655250dcefbc9b41fd81fb43badc"
+    },
+    {
+      "path": "test/strategies/usdc-lending/fork/actual/OptimismNativeFeeStrategyIntegration.t.sol",
+      "sha256": "3e3f375be8fa7a5768030a7154a7e9a63c204ad541fbe7555b49a86043919977"
+    },
+    {
+      "path": "test/strategies/usdc-lending/fork/actual/PolygonNativeFeeStrategyIntegration.t.sol",
+      "sha256": "03498d1849a437bd211972c69020765e9ea5e184a2e7582d00f48a44e8085bae"
+    },
+    {
+      "path": "test/strategies/usdc-lending/fork/actual/VenusActualAssets.t.sol",
+      "sha256": "eec889d907755d4ffdc1095462a4981e7b2a8eaa97a64364758519a46d645cf6"
+    },
+    {
+      "path": "test/strategies/usdc-lending/fork/AdapterOnlySafe.fork.t.sol",
+      "sha256": "55b2a577ca28d415c9ce9ed6f2e4c434075f601a51c77455f035834bf54c10c0"
+    },
+    {
+      "path": "test/strategies/usdc-lending/fork/CometPublishedTotals.fork.t.sol",
+      "sha256": "0ec0ab0352bd44ccaabe38ae3ef5dbf00c5506702059cd8b59e96338b0a35bae"
+    },
+    {
+      "path": "test/strategies/usdc-lending/fork/CoreIntegrationDepositWithdraw.fork.t.sol",
+      "sha256": "67b6869ed5b2e448846fc5d8ee30726703adba4e453c0d73ac8f02aa96146383"
+    },
+    {
+      "path": "test/strategies/usdc-lending/fork/DeployAndDepositReadiness.fork.t.sol",
+      "sha256": "dd2cb140342cea95f6bc967b8722d3ce3d592da9bc7fae24a1f35d21ea5e545a"
+    },
+    {
+      "path": "test/strategies/usdc-lending/fork/EstimatorTierCalibration.fork.t.sol",
+      "sha256": "71d03018e2de8e9800aa8a060a69392c7d568e476cce72c5c0d4aca2e3e939cc"
+    },
+    {
+      "path": "test/strategies/usdc-lending/fork/LendingAssetMatrix.fork.t.sol",
+      "sha256": "fafeb01d2f0c483bc09a5d65181fd9c74273c8a7ab5e97acc3188b9a109e51e3"
+    },
+    {
+      "path": "test/strategies/usdc-lending/fork/LendingCoreMatrix.fork.t.sol",
+      "sha256": "86c8a6b020551bc4b023eff440a360d7648e5a1e2c3fe5d67da37cef931042b7"
+    },
+    {
+      "path": "test/strategies/usdc-lending/fork/LendingRewardRoutes.fork.t.sol",
+      "sha256": "34152d86f18a5f5e3268bee7eb419df26199824830abbd4b3407d49e97a89958"
+    },
+    {
+      "path": "test/strategies/usdc-lending/fork/LendingStrategyMatrix.fork.t.sol",
+      "sha256": "2cadfaeba28cbac358c2ab5837f3497109f81cb4449c60a257b2b2411e58a0ae"
+    },
+    {
+      "path": "test/strategies/usdc-lending/fork/LendingUnmockedE2E.fork.t.sol",
+      "sha256": "c92a363af7be05fb8f39040749284dcffe12c22412eb4494ca7db0554e1374c4"
+    },
+    {
+      "path": "test/strategies/usdc-lending/fork/LiveAdapterActivation.fork.t.sol",
+      "sha256": "053d36ce766049751f4b21737d35efc54783ee50d6d54654a4b7727092036602"
+    },
+    {
+      "path": "test/strategies/usdc-lending/fork/ReleaseSafeBatch.fork.t.sol",
+      "sha256": "86e95a09b73e7aac4bf41162d8837fdb5a744beb8177a7003a96b2c6b8731ed6"
+    },
+    {
+      "path": "test/strategies/usdc-lending/fork/ReplacementMigration.fork.t.sol",
+      "sha256": "32a844ff6502b98bb5e12a7f47b8fbce58e85d8839115a5eac66dd2903553ef8"
+    },
+    {
+      "path": "test/strategies/usdc-lending/fork/RetiredAdapterAccounting.fork.t.sol",
+      "sha256": "4807ad39ab60e0c7ac91298c49b076dff9f1761b75d874fa8ee0067bfe7426a4"
+    },
+    {
+      "path": "test/strategies/usdc-lending/fork/SafeMigrationTransactions.fork.t.sol",
+      "sha256": "760760b836cf3805b8704da9cdc194b50798deb3d2f2c3e5375430247e5e87ee"
+    },
+    {
+      "path": "test/strategies/usdc-lending/fork/ShadowDeploymentLifecycle.fork.t.sol",
+      "sha256": "64fcbbfb812e63efe541af663434ad50d40ce4f3b57e1201c242bd01181a0193"
+    },
+    {
+      "path": "test/strategies/usdc-lending/fork/V92_MultichainFork.t.sol",
+      "sha256": "341aad5a32c3a622d3ba17dd7c592407f8a5700636071a8a6376af3857db4e58"
+    },
+    {
+      "path": "test/strategies/usdc-lending/fork/V92_SafetyTierE2E.t.sol",
+      "sha256": "be4797c91f1a0e2f1c6a37690451e6f9099f15f93aad7dff08a2e7dfbc939555"
+    },
+    {
+      "path": "test/strategies/usdc-lending/GasLoopSafety.t.sol",
+      "sha256": "2d1372a968ba12eb5501e38fae10a9d00cf6f89e6086d84332f300d1d553427f"
+    },
+    {
+      "path": "test/strategies/usdc-lending/halmos/HalmosConservation.t.sol",
+      "sha256": "415ab3b47df90fb198cce268d8a8fa14d1d3d4d7cc59f1c9105328e55f905b7f"
+    },
+    {
+      "path": "test/strategies/usdc-lending/halmos/HalmosQueueFIFO.t.sol",
+      "sha256": "0041fcb6a4c0ecedf05efbcbda003a2e9bcce4a12048a6538b7a3d309bd50f02"
+    },
+    {
+      "path": "test/strategies/usdc-lending/halmos/HalmosRoles.t.sol",
+      "sha256": "d57ac66e4a43b17d79b9dd4bd638225a56149b10cec5722cc665b835d2e4082b"
+    },
+    {
+      "path": "test/strategies/usdc-lending/halmos/HalmosSafetyAdapterCapTier.t.sol",
+      "sha256": "afd68ad04825c5290040dcdacaa12c2b018ccdf9660ea72d25593c70ebe852fd"
+    },
+    {
+      "path": "test/strategies/usdc-lending/halmos/helpers/V10StoragePins.sol",
+      "sha256": "29e5c88b42b83ef06e5a1e325b82f1dd776b802dcf07463f52097869ea643e7c"
+    },
+    {
+      "path": "test/strategies/usdc-lending/helpers/LendingOracleTestFixture.sol",
+      "sha256": "bde59740a10ce2dd6e6f91b958200527110583559f2f16261233251f8dbda8a4"
+    },
+    {
+      "path": "test/strategies/usdc-lending/IdleConvergence.t.sol",
+      "sha256": "ef469cac07e9e6952afa27fc85822aefbeecdf995c7ecd028ff7e0d1b9b1bf70"
+    },
+    {
+      "path": "test/strategies/usdc-lending/KeeperFailure.t.sol",
+      "sha256": "1a89b886c8edfe16154198ac8cb2410447d7e62d75ed2614098d7b095abef679"
+    },
+    {
+      "path": "test/strategies/usdc-lending/LendingDeploymentManifest.t.sol",
+      "sha256": "a7124d80edf6ed23ab4311d955afad7ce538253397d9090173f6258c2b39ccb7"
+    },
+    {
+      "path": "test/strategies/usdc-lending/LendingLensCapParity.t.sol",
+      "sha256": "6e6bffefd4fe51aa8467ec23734014026f20fe59db691cced47d473d55d79faf"
+    },
+    {
+      "path": "test/strategies/usdc-lending/LendingStrategyUpkeep.t.sol",
+      "sha256": "e2c69cdbf3b14a4d148c53c33595f81e56648f1ccb4061c29861090709cb4a4c"
+    },
+    {
+      "path": "test/strategies/usdc-lending/lens/Lens_Core_Parity.t.sol",
+      "sha256": "ff90167cdc8e97e15407b1e4ec51d5439b2bb39c085b1bf13aef32cb0bccce00"
+    },
+    {
+      "path": "test/strategies/usdc-lending/LiquidityOverlay.t.sol",
+      "sha256": "765f3a692e1a41fd50c088a94a63ad47242acefe21c10a5a4b368cddaed403a1"
+    },
+    {
+      "path": "test/strategies/usdc-lending/MorphoDeploymentWiring.t.sol",
+      "sha256": "790f625547dae1dccf6e07e22d43ea7bb11d7aa77e9e2fa867064d4bfa05e71f"
+    },
+    {
+      "path": "test/strategies/usdc-lending/MorphoRegistryBound.t.sol",
+      "sha256": "4803da278621eac0495ebedf925b83ddf3499464d6d5307a31e8cd9fb005a801"
+    },
+    {
+      "path": "test/strategies/usdc-lending/MultiCycleStability.t.sol",
+      "sha256": "ddb73fca7c965532242e40df9bfa5f92f5270065524ceb01d20e0fa639d9b41a"
+    },
+    {
+      "path": "test/strategies/usdc-lending/MultiStepRebalance.t.sol",
+      "sha256": "1bfb5c0b25e81754747dbcbd0336d60ad0058b23eb84e4da13fada585367b039"
+    },
+    {
+      "path": "test/strategies/usdc-lending/NativeL1FeeInfo.t.sol",
+      "sha256": "2c9c8d9a1f0809e4e7c582012d1dc88a6a67e91e3cfd34b9bc648d6e3ebc3dce"
+    },
+    {
+      "path": "test/strategies/usdc-lending/OPStackFeeInfo.t.sol",
+      "sha256": "15174e67074150f95b247efc3ea7819b966d973e9dd16fd83d50a3feee00fd08"
+    },
+    {
+      "path": "test/strategies/usdc-lending/OracleAssetValuation.t.sol",
+      "sha256": "fe53f1daae5ea6c984fc54022446e7a1e690761c839a6cffb5dd1a553e9be7c1"
+    },
+    {
+      "path": "test/strategies/usdc-lending/Overlay_Parity.t.sol",
+      "sha256": "7a73a3570decff151c32ff1434d85d323c7247e576c31bba59ab5ed25c3a1c70"
+    },
+    {
+      "path": "test/strategies/usdc-lending/OverlayParityFuzz.t.sol",
+      "sha256": "92db06f845860ef486891732d5d4b2e3fb65d7544cdb25e8fb81d43394870402"
+    },
+    {
+      "path": "test/strategies/usdc-lending/P07NegativePathsAllocCalc.t.sol",
+      "sha256": "e455fff0899b6da15a2ae58cc0a4e38838638839dbd8606ce354c48187df81e9"
+    },
+    {
+      "path": "test/strategies/usdc-lending/P07NegativePathsScoring.t.sol",
+      "sha256": "615537f51ce0a0175aa7c8aae0f7cec6830a2e9095e87305a265f85caaec0032"
+    },
+    {
+      "path": "test/strategies/usdc-lending/P07NegativePathsSettings.t.sol",
+      "sha256": "4ee877973f4b623a340f8163623b3a7c3ccc54c12c97ed9c6ed74c9c5ea0b4c6"
+    },
+    {
+      "path": "test/strategies/usdc-lending/Parameter_Sensitivity.t.sol",
+      "sha256": "2911798f581062c3d31fce00e9ca2eb43916550e96626c730c1acd870a476e8d"
+    },
+    {
+      "path": "test/strategies/usdc-lending/PlanEstimatorRequirements.t.sol",
+      "sha256": "6b1a0de556f05390d624703280a37292773e80405cd21642b2ea87ed6d697886"
+    },
+    {
+      "path": "test/strategies/usdc-lending/PolygonNativeGas.t.sol",
+      "sha256": "fb7ca5c965fb294d5a70e06dd14dbf19ed9ffc31bd5b3b303195d2ba19535404"
+    },
+    {
+      "path": "test/strategies/usdc-lending/PositionAssetsSync.t.sol",
+      "sha256": "30a9231eb540dd172ded7998fd43c018934dfb4cc2499df0afd3de9e4d5f218a"
+    },
+    {
+      "path": "test/strategies/usdc-lending/PpsRateLib.t.sol",
+      "sha256": "06fffd1247176af8779f4f80546e27f39a20df2919b1765a07f5faa97d0670c4"
+    },
+    {
+      "path": "test/strategies/usdc-lending/PreAuditCleanup.t.sol",
+      "sha256": "90f3bdd0809a0b5f22d2bc62e9ea5d7bb670ddf420e9528df56ad89877be20e3"
+    },
+    {
+      "path": "test/strategies/usdc-lending/ReadOnlyGasEstimator.t.sol",
+      "sha256": "3dba9dc742a3bd02167af1dc011a0d697e2ca52ec725bac498d306ef5a478eec"
+    },
+    {
+      "path": "test/strategies/usdc-lending/ReadOnlyGasIntegration.t.sol",
+      "sha256": "1f517f1f1f3c5d66aa8863c6490d173ce05de5a625fbf67878f7478e44316acf"
+    },
+    {
+      "path": "test/strategies/usdc-lending/RebalanceAccounting.t.sol",
+      "sha256": "3b2bceb41d7a995eb718e6f2007b0e63933e14e98d7ad86bb08458512cc7d7f2"
+    },
+    {
+      "path": "test/strategies/usdc-lending/RebalanceEngineV10.t.sol",
+      "sha256": "3d564e88685cf8fc7e62f9133cc7e38f8c52be383fc5e0b37653739d1c6394b8"
+    },
+    {
+      "path": "test/strategies/usdc-lending/registry/ProtocolRegistry.t.sol",
+      "sha256": "a4abca713d08fb113c3320ddfd8129e14cdca7541712556ab5524ad8f5198d84"
+    },
+    {
+      "path": "test/strategies/usdc-lending/RelCapStability.t.sol",
+      "sha256": "af698ffe1ce6053ade10c74b678424c9ac61257aeeba1d65b4ed9ea9a3a1adca"
+    },
+    {
+      "path": "test/strategies/usdc-lending/RemediationSprint.t.sol",
+      "sha256": "e6cc2ff3f08a265901ea24addf53420c0547e1738c4d4da19c134fb545678ece"
+    },
+    {
+      "path": "test/strategies/usdc-lending/replay-defense/LendingReplayDefense.t.sol",
+      "sha256": "3cef22964c92982d4ab4fea79f8b46403e700ab4db51aa770e1ace7abd714d5a"
+    },
+    {
+      "path": "test/strategies/usdc-lending/replay-defense/RAPatternRegression.t.sol",
+      "sha256": "ef6937b682ad952a0a0d17cf8fa789f0fe8a2c10e7171d85acad1752d0c55a08"
+    },
+    {
+      "path": "test/strategies/usdc-lending/ReviewAvailabilityRemediation.t.sol",
+      "sha256": "b5e88b682fe30b615fe2e703d02dd3246a52695aede3a3506b55f82b9fb63eff"
+    },
+    {
+      "path": "test/strategies/usdc-lending/RiskOverlay.t.sol",
+      "sha256": "a0c19f8d587b35979cef40f9efd5767399156d8af0c805bf5fbf2413446763cb"
+    },
+    {
+      "path": "test/strategies/usdc-lending/RoleGateMatrix.t.sol",
+      "sha256": "09cf88b4879df79268c184e7a5b61e169095fb4ece097e4fcec1d43bd76894b8"
+    },
+    {
+      "path": "test/strategies/usdc-lending/RouterHarvestFork.t.sol",
+      "sha256": "d166b18cefe3475017b67fcd43db253931f2777762455ad51ce483a8c86adb15"
+    },
+    {
+      "path": "test/strategies/usdc-lending/RouterHarvestIntegration.t.sol",
+      "sha256": "cf28bad91c3b65ba52cf65684e949cd9cef0c5010b8bef5df4434b477f2129c1"
+    },
+    {
+      "path": "test/strategies/usdc-lending/SafetyAdapterCapTier.properties.t.sol",
+      "sha256": "48d28566924180b6402602fd146dda8ef837f15f61678a60b705d100da50e767"
+    },
+    {
+      "path": "test/strategies/usdc-lending/Scoring_Model.t.sol",
+      "sha256": "78e7e6979414ad254aba932ec787d87a0ddb56d8c4daa141252bd7c3dcdcf641"
+    },
+    {
+      "path": "test/strategies/usdc-lending/StabilityEMA.t.sol",
+      "sha256": "ef7ffe5ba09e59f74b7122c99c40f9d9bf6424dc44dafe0cde408a93b6fc8f17"
+    },
+    {
+      "path": "test/strategies/usdc-lending/StorageLayoutP07.t.sol",
+      "sha256": "20bdcf0537b84f332b5346654bc6e0ffd238c3d1e881dbca91f0e6313dda5005"
+    },
+    {
+      "path": "test/strategies/usdc-lending/StrategyBootstrapper.t.sol",
+      "sha256": "a8d9ffce2c2916ace7554e14293b998fec94a72da9f70e6c555526b588bed2be"
+    },
+    {
+      "path": "test/strategies/usdc-lending/StrategySettingsCopy.t.sol",
+      "sha256": "68681ca211f2c52e634e2c9b41430a6b54838c0b95835c73fd69589152b12379"
+    },
+    {
+      "path": "test/strategies/usdc-lending/StrictExposureCap.t.sol",
+      "sha256": "a35d05caf0690699f1148aec950a1eaeea056a873d3fb06337d903caad4e08b6"
+    },
+    {
+      "path": "test/strategies/usdc-lending/swap/RewardSwapHelper.t.sol",
+      "sha256": "a269cfb9d7deba2f2aa7acd4e473e1c348d986459a2286adbbf4da7a6a42870c"
+    },
+    {
+      "path": "test/strategies/usdc-lending/TVL_Confidence.t.sol",
+      "sha256": "482a3de726cd0c258d52015ce48792103ac8d0f49a413db7e884beb0da3fc6cf"
+    },
+    {
+      "path": "test/strategies/usdc-lending/UpkeepLiveness.t.sol",
+      "sha256": "0237135df50dea0f03c4ea965049a4c898b0bfc36ad81104130fe1179c552c8f"
+    },
+    {
+      "path": "test/strategies/usdc-lending/UsdcLendingStrategy_CoreVault_Integration.t.sol",
+      "sha256": "8e72b1c8f658845a729943da0712a0b1d44e227cd941a147773a69be3b18f6d0"
+    },
+    {
+      "path": "test/strategies/usdc-lending/UsdcMultiLendingVault.fuzz.t.sol",
+      "sha256": "3268565160d58007b2759e2086d4cc89efea3482502a08488cf94872342aa4f6"
+    },
+    {
+      "path": "test/strategies/usdc-lending/UsdcMultiLendingVault.invariant.t.sol",
+      "sha256": "ecc0dc3060bbcb45a12b38d302e36e87492a082d2b92445f28b0f846b70ce231"
+    },
+    {
+      "path": "test/strategies/usdc-lending/UsdcMultiLendingVault.t.sol",
+      "sha256": "78868700e68d08d413699bdc4408758a2bcc2af447ae63c64990582006db30a0"
+    },
+    {
+      "path": "test/strategies/usdc-lending/VenusAccrualRecall.t.sol",
+      "sha256": "3e93282f7e44469efb855228e48ee579f0afca19f2d2e7a0401dd31f74d9665c"
+    }
+  ],
+  "quantityEncoding": "Raw event text preserves every integer exactly, without JSON floating-point conversion.",
+  "observations": [
+    "├─ emit ActualHolderTransfer(asset: 0x6c3ea9036406852006290770BEdFcAbA0e23A0e8, holder: 0xAFBb1a7E9ddEf38D9bC4A220E702B18DAcaa2a62, holderBefore: 500861601438863 [5.008e14], transferred: 1000000000 [1e9], holderAfter: 500860601438863 [5.008e14])",
+    "│   ├─ emit ActualIndexReference(asset: 0x6c3ea9036406852006290770BEdFcAbA0e23A0e8, scaledReceiptBalance: 0, normalizedIncome: 1096431055511509914890246396 [1.096e27], independentlyCalculatedAssets: 0)",
+    "├─ emit ActualMarketObservation(asset: 0x6c3ea9036406852006290770BEdFcAbA0e23A0e8, rpcBlock: 26300000 [2.63e7], timestamp: 1793296163 [1.793e9], decimals: 6, protocolSupply: 7462052908126 [7.462e12], protocolCash: 642120861966 [6.421e11], liquidityRateRay: 98509266118218132353492729 [9.85e25], adapterAprBps: 985, priceAnswer: 99991233 [9.999e7], feedDecimals: 8, priceUpdatedAt: 1793217599 [1.793e9], position: 0, positionUsd6: 0)",
+    "│   ├─ emit ActualIndexReference(asset: 0x6c3ea9036406852006290770BEdFcAbA0e23A0e8, scaledReceiptBalance: 364854240 [3.648e8], normalizedIncome: 1096842593592679165810029743 [1.096e27], independentlyCalculatedAssets: 400187671 [4.001e8])",
+    "├─ emit ActualMarketObservation(asset: 0x6c3ea9036406852006290770BEdFcAbA0e23A0e8, rpcBlock: 26310000 [2.631e7], timestamp: 1793416631 [1.793e9], decimals: 6, protocolSupply: 7465253927569 [7.465e12], protocolCash: 642520861966 [6.425e11], liquidityRateRay: 98460211908257966360017703 [9.846e25], adapterAprBps: 984, priceAnswer: 99994894 [9.999e7], feedDecimals: 8, priceUpdatedAt: 1793390435 [1.793e9], position: 400187670 [4.001e8], positionUsd6: 400167236 [4.001e8])",
+    "│   ├─ emit ActualIndexReference(asset: 0x6c3ea9036406852006290770BEdFcAbA0e23A0e8, scaledReceiptBalance: 0, normalizedIncome: 1096842593592679165810029743 [1.096e27], independentlyCalculatedAssets: 0)",
+    "├─ emit ActualMarketObservation(asset: 0x6c3ea9036406852006290770BEdFcAbA0e23A0e8, rpcBlock: 26310000 [2.631e7], timestamp: 1793416631 [1.793e9], decimals: 6, protocolSupply: 7464853739898 [7.464e12], protocolCash: 642120674296 [6.421e11], liquidityRateRay: 98666994800858885091137516 [9.866e25], adapterAprBps: 986, priceAnswer: 99994894 [9.999e7], feedDecimals: 8, priceUpdatedAt: 1793390435 [1.793e9], position: 0, positionUsd6: 0)",
+    "├─ emit ActualHolderTransfer(asset: 0xdAC17F958D2ee523a2206206994597C13D831ec7, holder: 0xF977814e90dA44bFA03b6295A0616a897441aceC, holderBefore: 16000000001136208 [1.6e16], transferred: 1000000000 [1e9], holderAfter: 15999999001136208 [1.599e16])",
+    "│   ├─ emit ActualIndexReference(asset: 0xdAC17F958D2ee523a2206206994597C13D831ec7, scaledReceiptBalance: 0, normalizedIncome: 1180687472424999832288518196 [1.18e27], independentlyCalculatedAssets: 0)",
+    "├─ emit ActualMarketObservation(asset: 0xdAC17F958D2ee523a2206206994597C13D831ec7, rpcBlock: 26300000 [2.63e7], timestamp: 1793296163 [1.793e9], decimals: 6, protocolSupply: 2700095199552044 [2.7e15], protocolCash: 193863999398600 [1.938e14], liquidityRateRay: 46156974741049836371223604 [4.615e25], adapterAprBps: 461, priceAnswer: 99888865 [9.988e7], feedDecimals: 8, priceUpdatedAt: 1793285171 [1.793e9], position: 0, positionUsd6: 0)",
+    "│   ├─ emit ActualIndexReference(asset: 0xdAC17F958D2ee523a2206206994597C13D831ec7, scaledReceiptBalance: 338800603 [3.388e8], normalizedIncome: 1180895650814477083962879228 [1.18e27], independentlyCalculatedAssets: 400088159 [4e8])",
+    "├─ emit ActualMarketObservation(asset: 0xdAC17F958D2ee523a2206206994597C13D831ec7, rpcBlock: 26310000 [2.631e7], timestamp: 1793416631 [1.793e9], decimals: 6, protocolSupply: 2700571679452350 [2.7e15], protocolCash: 193864399398600 [1.938e14], liquidityRateRay: 42311453602705611037102384 [4.231e25], adapterAprBps: 423, priceAnswer: 99832815 [9.983e7], feedDecimals: 8, priceUpdatedAt: 1793371595 [1.793e9], position: 400088158 [4e8], positionUsd6: 399419270 [3.994e8])",
+    "│   ├─ emit ActualIndexReference(asset: 0xdAC17F958D2ee523a2206206994597C13D831ec7, scaledReceiptBalance: 0, normalizedIncome: 1180895650814477083962879228 [1.18e27], independentlyCalculatedAssets: 0)",
+    "├─ emit ActualMarketObservation(asset: 0xdAC17F958D2ee523a2206206994597C13D831ec7, rpcBlock: 26310000 [2.631e7], timestamp: 1793416631 [1.793e9], decimals: 6, protocolSupply: 2700571279364192 [2.7e15], protocolCash: 193863999310442 [1.938e14], liquidityRateRay: 42311538848267292299049142 [4.231e25], adapterAprBps: 423, priceAnswer: 99832815 [9.983e7], feedDecimals: 8, priceUpdatedAt: 1793371595 [1.793e9], position: 0, positionUsd6: 0)",
+    "├─ emit ActualSafeBatchExecuted(governance: 0x70ef444799D6FBbE0865bA598Bee6795e064a326, nonce: 82, txHash: 0x5e9b1992ba1d549e993a9081d572a4d04e4730323f85724987cc9c67571dabc6, threshold: 3, targets: [0x37847D2e12892e3298DEE695e7E971fba0Ca3e24], calls: [0xdcc04ceb000000000000000000000000c7183455a4c133ae270771860664b6b7ec320bb1], fullExecCalldata: 0x6a76120200000000000000000000000040a2accbd92bca938b02010e17a5b8929b49130d00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000140000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000024000000000000000000000000000000000000000000000000000000000000000c48d80ff0a000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000790037847d2e12892e3298dee695e7e971fba0ca3e2400000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000024dcc04ceb000000000000000000000000c7183455a4c133ae270771860664b6b7ec320bb1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000c3000000000000000000000000178a885437def51b769f592169656e035a74b7fb00000000000000000000000000000000000000000000000000000000000000000100000000000000000000000035e5f1cab839b9ab2fb0ceb28072c69ff14e0097000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000ab62c1d75b4d2f907d95274e5d66df00c892c67f0000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000, executionGas: 58613 [5.861e4])",
+    "├─ emit ActualSafeBatchExecuted(governance: 0x70ef444799D6FBbE0865bA598Bee6795e064a326, nonce: 83, txHash: 0xe78e9036d0dc70960d120dd8366307dfe712b4b9ea3104c55d658f3202186e0f, threshold: 3, targets: [0xAB30b7D1ADe850b6b122bcfF29F389CF1D051D44, 0x212224D2F2d262cd093eE13240ca4873fcCBbA3C, 0x2AD722B6241605481829E4B251AE8A4Ba8Be86cE, 0x2AD722B6241605481829E4B251AE8A4Ba8Be86cE, 0x2AD722B6241605481829E4B251AE8A4Ba8Be86cE, 0x2AD722B6241605481829E4B251AE8A4Ba8Be86cE, 0x2AD722B6241605481829E4B251AE8A4Ba8Be86cE, 0x2AD722B6241605481829E4B251AE8A4Ba8Be86cE, 0x2AD722B6241605481829E4B251AE8A4Ba8Be86cE, 0x2AD722B6241605481829E4B251AE8A4Ba8Be86cE, 0x37847D2e12892e3298DEE695e7E971fba0Ca3e24, 0x212224D2F2d262cd093eE13240ca4873fcCBbA3C, 0x37847D2e12892e3298DEE695e7E971fba0Ca3e24, 0x37847D2e12892e3298DEE695e7E971fba0Ca3e24, 0x37847D2e12892e3298DEE695e7E971fba0Ca3e24, 0x37847D2e12892e3298DEE695e7E971fba0Ca3e24, 0x37847D2e12892e3298DEE695e7E971fba0Ca3e24, 0x9b3fE5c76e0C10de254Ee2153f71DF6a96020D96, 0x5e0cdb76487BD96Ff069Ef7F78eaDF5b5909C8cb, 0x15cF58144EF33af1e14b5208015d11F9143E27b9], calls: [0xc0b143630000000000000000000000002ad722b6241605481829e4b251ae8a4ba8be86ce0000000000000000000000000000000000000000000000000000000000000000, 0x1e4596830000000000000000000000002ad722b6241605481829e4b251ae8a4ba8be86ce, 0xea0cde850000000000000000000000000000000000000000000000000000000000000001, 0x93f454560000000000000000000000007a853ffba027847295e2fbd0397dd4a6432b52fd, 0x93f454560000000000000000000000001d223ab1e5590ff64de97cedb7d47b4bbc7a29a4, 0x93f454560000000000000000000000003f7386eb35c315c06664106f0ce0f4ffbec42779, 0x93f45456000000000000000000000000e2247c76f1a6f40967f70f114aba44c8ba0e0f66, 0x93f45456000000000000000000000000479b7edf425d2729187f8385b326efeafa6f3ddf, 0x93f4545600000000000000000000000029370e43914c31597496a5a805194c8403292bac, 0x93f45456000000000000000000000000883bb97a5cd4c0e0ae5798632e1ec8c87e4fddb3, 0xf8ce7a8c0000000000000000000000002ad722b6241605481829e4b251ae8a4ba8be86ce, 0xc2a2d2970000000000000000000000002ad722b6241605481829e4b251ae8a4ba8be86ce0000000000000000000000000000000000000000000000000000000000000064, 0xa8f1aadd000000000000000000000000c7183455a4c133ae270771860664b6b7ec320bb1, 0x696c680f000000000000000000000000c7183455a4c133ae270771860664b6b7ec320bb100000000000000000000000000000000000000000000000000000000000000640000000000000000000000000000000000000000000000000000000000002710, 0x9d822f91000000000000000000000000c7183455a4c133ae270771860664b6b7ec320bb10000000000000000000000000000000000000000000000000000000000002710, 0x808024ac000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000a000000000000000000000000000000000000000000000000000000000000000020000000000000000000000002ad722b6241605481829e4b251ae8a4ba8be86ce000000000000000000000000c7183455a4c133ae270771860664b6b7ec320bb1000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002710, 0x3c8393850000000000000000000000002ad722b6241605481829e4b251ae8a4ba8be86ce0000000000000000000000000000000000000000000000000000000000000000, 0x6695d985, 0x96841d7affffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff, 0x4585e33b0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000000], fullExecCalldata: 0x6a76120200000000000000000000000040a2accbd92bca938b02010e17a5b8929b49130d000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001400000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000d200000000000000000000000000000000000000000000000000000000000000ba48d80ff0a00000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000b5400ab30b7d1ade850b6b122bcff29f389cf1d051d4400000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000044c0b143630000000000000000000000002ad722b6241605481829e4b251ae8a4ba8be86ce000000000000000000000000000000000000000000000000000000000000000000212224d2f2d262cd093ee13240ca4873fccbba3c000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000241e4596830000000000000000000000002ad722b6241605481829e4b251ae8a4ba8be86ce002ad722b6241605481829e4b251ae8a4ba8be86ce00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000024ea0cde850000000000000000000000000000000000000000000000000000000000000001002ad722b6241605481829e4b251ae8a4ba8be86ce0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002493f454560000000000000000000000007a853ffba027847295e2fbd0397dd4a6432b52fd002ad722b6241605481829e4b251ae8a4ba8be86ce0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002493f454560000000000000000000000001d223ab1e5590ff64de97cedb7d47b4bbc7a29a4002ad722b6241605481829e4b251ae8a4ba8be86ce0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002493f454560000000000000000000000003f7386eb35c315c06664106f0ce0f4ffbec42779002ad722b6241605481829e4b251ae8a4ba8be86ce0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002493f45456000000000000000000000000e2247c76f1a6f40967f70f114aba44c8ba0e0f66002ad722b6241605481829e4b251ae8a4ba8be86ce0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002493f45456000000000000000000000000479b7edf425d2729187f8385b326efeafa6f3ddf002ad722b6241605481829e4b251ae8a4ba8be86ce0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002493f4545600000000000000000000000029370e43914c31597496a5a805194c8403292bac002ad722b6241605481829e4b251ae8a4ba8be86ce0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002493f45456000000000000000000000000883bb97a5cd4c0e0ae5798632e1ec8c87e4fddb30037847d2e12892e3298dee695e7e971fba0ca3e2400000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000024f8ce7a8c0000000000000000000000002ad722b6241605481829e4b251ae8a4ba8be86ce00212224d2f2d262cd093ee13240ca4873fccbba3c00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000044c2a2d2970000000000000000000000002ad722b6241605481829e4b251ae8a4ba8be86ce00000000000000000000000000000000000000000000000000000000000000640037847d2e12892e3298dee695e7e971fba0ca3e2400000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000024a8f1aadd000000000000000000000000c7183455a4c133ae270771860664b6b7ec320bb10037847d2e12892e3298dee695e7e971fba0ca3e2400000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000064696c680f000000000000000000000000c7183455a4c133ae270771860664b6b7ec320bb1000000000000000000000000000000000000000000000000000000000000006400000000000000000000000000000000000000000000000000000000000027100037847d2e12892e3298dee695e7e971fba0ca3e24000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000449d822f91000000000000000000000000c7183455a4c133ae270771860664b6b7ec320bb100000000000000000000000000000000000000000000000000000000000027100037847d2e12892e3298dee695e7e971fba0ca3e2400000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000104808024ac000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000a000000000000000000000000000000000000000000000000000000000000000020000000000000000000000002ad722b6241605481829e4b251ae8a4ba8be86ce000000000000000000000000c7183455a4c133ae270771860664b6b7ec320bb10000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000027100037847d2e12892e3298dee695e7e971fba0ca3e24000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000443c8393850000000000000000000000002ad722b6241605481829e4b251ae8a4ba8be86ce0000000000000000000000000000000000000000000000000000000000000000009b3fe5c76e0c10de254ee2153f71df6a96020d96000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000046695d985005e0cdb76487bd96ff069ef7f78eadf5b5909c8cb0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002496841d7affffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0015cf58144ef33af1e14b5208015d11f9143e27b9000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000844585e33b00000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000c3000000000000000000000000178a885437def51b769f592169656e035a74b7fb00000000000000000000000000000000000000000000000000000000000000000100000000000000000000000035e5f1cab839b9ab2fb0ceb28072c69ff14e0097000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000ab62c1d75b4d2f907d95274e5d66df00c892c67f0000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000, executionGas: 3133500 [3.133e6])",
+    "├─ emit ActualSafeBatchExecuted(governance: 0x70ef444799D6FBbE0865bA598Bee6795e064a326, nonce: 84, txHash: 0x4c640609c9ad969021942adf35bbf8865b8b76cf68967fc733933ee6879da06d, threshold: 3, targets: [0x15cF58144EF33af1e14b5208015d11F9143E27b9, 0xc7183455a4C133Ae270771860664b6B7ec320bB1, 0x37847D2e12892e3298DEE695e7E971fba0Ca3e24, 0x212224D2F2d262cd093eE13240ca4873fcCBbA3C, 0x37847D2e12892e3298DEE695e7E971fba0Ca3e24, 0x37847D2e12892e3298DEE695e7E971fba0Ca3e24, 0x37847D2e12892e3298DEE695e7E971fba0Ca3e24, 0x2AD722B6241605481829E4B251AE8A4Ba8Be86cE, 0xAB30b7D1ADe850b6b122bcfF29F389CF1D051D44], calls: [0xc0b14363000000000000000000000000c7183455a4c133ae270771860664b6b7ec320bb10000000000000000000000000000000000000000000000000000000000000000, 0xea0cde850000000000000000000000000000000000000000000000000000000000000001, 0xf8ce7a8c000000000000000000000000c7183455a4c133ae270771860664b6b7ec320bb1, 0xc2a2d297000000000000000000000000c7183455a4c133ae270771860664b6b7ec320bb10000000000000000000000000000000000000000000000000000000000000064, 0x3c8393850000000000000000000000002ad722b6241605481829e4b251ae8a4ba8be86ce0000000000000000000000000000000000000000000000000000000000000001, 0x808024ac000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000a000000000000000000000000000000000000000000000000000000000000000020000000000000000000000002ad722b6241605481829e4b251ae8a4ba8be86ce000000000000000000000000c7183455a4c133ae270771860664b6b7ec320bb1000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000027100000000000000000000000000000000000000000000000000000000000000000, 0x3c839385000000000000000000000000c7183455a4c133ae270771860664b6b7ec320bb10000000000000000000000000000000000000000000000000000000000000000, 0xea0cde850000000000000000000000000000000000000000000000000000000000000000, 0xc0b143630000000000000000000000002ad722b6241605481829e4b251ae8a4ba8be86ce0000000000000000000000000000000000000000000000000000000000000001], fullExecCalldata: 0x6a76120200000000000000000000000040a2accbd92bca938b02010e17a5b8929b49130d0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000014000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000007a000000000000000000000000000000000000000000000000000000000000006248d80ff0a000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000005c10015cf58144ef33af1e14b5208015d11f9143e27b900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000044c0b14363000000000000000000000000c7183455a4c133ae270771860664b6b7ec320bb1000000000000000000000000000000000000000000000000000000000000000000c7183455a4c133ae270771860664b6b7ec320bb100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000024ea0cde8500000000000000000000000000000000000000000000000000000000000000010037847d2e12892e3298dee695e7e971fba0ca3e2400000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000024f8ce7a8c000000000000000000000000c7183455a4c133ae270771860664b6b7ec320bb100212224d2f2d262cd093ee13240ca4873fccbba3c00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000044c2a2d297000000000000000000000000c7183455a4c133ae270771860664b6b7ec320bb100000000000000000000000000000000000000000000000000000000000000640037847d2e12892e3298dee695e7e971fba0ca3e24000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000443c8393850000000000000000000000002ad722b6241605481829e4b251ae8a4ba8be86ce00000000000000000000000000000000000000000000000000000000000000010037847d2e12892e3298dee695e7e971fba0ca3e2400000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000104808024ac000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000a000000000000000000000000000000000000000000000000000000000000000020000000000000000000000002ad722b6241605481829e4b251ae8a4ba8be86ce000000000000000000000000c7183455a4c133ae270771860664b6b7ec320bb10000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000271000000000000000000000000000000000000000000000000000000000000000000037847d2e12892e3298dee695e7e971fba0ca3e24000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000443c839385000000000000000000000000c7183455a4c133ae270771860664b6b7ec320bb10000000000000000000000000000000000000000000000000000000000000000002ad722b6241605481829e4b251ae8a4ba8be86ce00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000024ea0cde85000000000000000000000000000000000000000000000000000000000000000000ab30b7d1ade850b6b122bcff29f389cf1d051d4400000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000044c0b143630000000000000000000000002ad722b6241605481829e4b251ae8a4ba8be86ce0000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000c3000000000000000000000000178a885437def51b769f592169656e035a74b7fb00000000000000000000000000000000000000000000000000000000000000000100000000000000000000000035e5f1cab839b9ab2fb0ceb28072c69ff14e0097000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000ab62c1d75b4d2f907d95274e5d66df00c892c67f0000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000, executionGas: 283714 [2.837e5])",
+    "├─ emit ActualFrozenCutover(rpcBlock: 520388312 [5.203e8], oldStrategy: 0x2AD722B6241605481829E4B251AE8A4Ba8Be86cE, candidate: UsdcMultiLendingVault: [0xc7183455a4C133Ae270771860664b6B7ec320bB1], oldNav: 112156816 [1.121e8], recalled: 112156816 [1.121e8], candidateInvested: 103995819 [1.039e8], candidateRecalled: 103995819 [1.039e8], finalCoreCash: 116884641 [1.168e8])",
+    "│   ├─ emit RealFunding(chainId: 1, token: 0x6c3ea9036406852006290770BEdFcAbA0e23A0e8, holder: 0xAFBb1a7E9ddEf38D9bC4A220E702B18DAcaa2a62, holderBefore: 500861601438863 [5.008e14], transferred: 1000000000000 [1e12], holderAfter: 499861601438863 [4.998e14])",
+    "├─ emit ActualWrapperGas(phase: 0x6465706c6f7949646c652e696e697469616c0000000000000000000000000000, asset: 0x6c3ea9036406852006290770BEdFcAbA0e23A0e8, forkBlock: 26165400 [2.616e7], target: UsdcMultiLendingVault: [0xD16d567549A2a2a2005aEACf7fB193851603dd70], selector: 0x4c16052c, calldataBytes: 4, gasDelta: 1530850 [1.53e6])",
+    "│   │   ├─ emit ActualPreservedNavDependency(account: 0xb576765fB15505433aF24FEe2c0325895C559FB2)",
+    "├─ emit ActualWrapperGas(phase: 0x6465706c6f7949646c652e667265736800000000000000000000000000000000, asset: 0x6c3ea9036406852006290770BEdFcAbA0e23A0e8, forkBlock: 26173000 [2.617e7], target: UsdcMultiLendingVault: [0xD16d567549A2a2a2005aEACf7fB193851603dd70], selector: 0x4c16052c, calldataBytes: 4, gasDelta: 67630 [6.763e4])",
+    "│   ├─ emit ActualScoringReference(asset: 0x6c3ea9036406852006290770BEdFcAbA0e23A0e8, rpcBlock: 26173000 [2.617e7], adapter: AaveV3USDCAdapter: [0x756e0562323ADcDA4430d6cb456d9151f605290B], apr: 315, externalAssets: 8048121295853 [8.048e12], externalUsd6: 8048845626769 [8.048e12], confidence: 7000, liquidityBps: 10000 [1e4], stability: 7750, independentRawScore: 87550000 [8.755e7], normalizedScore: 6771, targetAssets: 96190331295 [9.619e10])",
+    "│   ├─ emit ActualScoringReference(asset: 0x6c3ea9036406852006290770BEdFcAbA0e23A0e8, rpcBlock: 26173000 [2.617e7], adapter: MorphoUsdcMultiMarketAdapter: [0xe8dc788818033232EF9772CB2e6622F1Ec8bc840], apr: 0, externalAssets: 408997120553124 [4.089e14], externalUsd6: 409033930293973 [4.09e14], confidence: 10000 [1e4], liquidityBps: 10000 [1e4], stability: 7750, independentRawScore: 41750000 [4.175e7], normalizedScore: 3228, targetAssets: 56460625957 [5.646e10])",
+    "│   ├─ emit ActualNativeKeeperObservation(asset: 0x6c3ea9036406852006290770BEdFcAbA0e23A0e8, rpcBlock: 26173000 [2.617e7], prepareGas: 0, maxStepGas: 0, calldataBytes: 132)",
+    "│   ├─ emit ActualNativeGateObservation(asset: 0x6c3ea9036406852006290770BEdFcAbA0e23A0e8, rpcBlock: 26173000 [2.617e7], moved: 38604778128 [3.86e10], grossBenefit: 4942892 [4.942e6], costUSD6: 23743530 [2.374e7], costAsset: 23741394 [2.374e7], netBenefitBps: 0, accepted: false, executedSteps: 0, quotedReliable: true, quotedCostUSD6: 23743530 [2.374e7], quotedTxCount: 2, quotedUsedDefaults: true, surplusTransferred: 0, economicCancelled: false)",
+    "│   ├─ emit ActualNativeKeeperObservation(asset: 0x6c3ea9036406852006290770BEdFcAbA0e23A0e8, rpcBlock: 26173000 [2.617e7], prepareGas: 1153416 [1.153e6], maxStepGas: 1497939 [1.497e6], calldataBytes: 132)",
+    "│   ├─ emit ActualNativeGateObservation(asset: 0x6c3ea9036406852006290770BEdFcAbA0e23A0e8, rpcBlock: 26173000 [2.617e7], moved: 497327389424 [4.973e11], grossBenefit: 162798082 [1.627e8], costUSD6: 22058689 [2.205e7], costAsset: 22056704 [2.205e7], netBenefitBps: 2, accepted: true, executedSteps: 1, quotedReliable: true, quotedCostUSD6: 22058689 [2.205e7], quotedTxCount: 2, quotedUsedDefaults: true, surplusTransferred: 799999610001 [7.999e11], economicCancelled: false)",
+    "│   │   ├─ emit ActualNegativeYieldGate(asset: 0x6c3ea9036406852006290770BEdFcAbA0e23A0e8, rpcBlock: 26173000 [2.617e7], grossBenefit: 2961462 [2.961e6], conservativeCost: 2971461 [2.971e6], moved: 38604778128 [3.86e10], accepted: false)",
+    "│   ├─ emit ActualWrapperGas(phase: 0x70726570617265526562616c616e636500000000000000000000000000000000, asset: 0x6c3ea9036406852006290770BEdFcAbA0e23A0e8, forkBlock: 26173000 [2.617e7], target: UsdcMultiLendingVault: [0xD16d567549A2a2a2005aEACf7fB193851603dd70], selector: 0x73d36b6a, calldataBytes: 4, gasDelta: 1001768 [1.001e6])",
+    "│   ├─ emit ActualWrapperGas(phase: 0x65786563757465526562616c616e636553746570000000000000000000000000, asset: 0x6c3ea9036406852006290770BEdFcAbA0e23A0e8, forkBlock: 26173000 [2.617e7], target: UsdcMultiLendingVault: [0xD16d567549A2a2a2005aEACf7fB193851603dd70], selector: 0x77dd1671, calldataBytes: 4, gasDelta: 1390034 [1.39e6])",
+    "│   ├─ emit ActualYieldEconomics(asset: 0x6c3ea9036406852006290770BEdFcAbA0e23A0e8, rpcBlock: 26173000 [2.617e7], moved: 38604778128 [3.86e10], grossBenefit: 2961462 [2.961e6], cost: 999911 [9.999e5], netBenefitBps: 0, accepted: true, executedSteps: 1)",
+    "│   ├─ emit ActualWrapperGas(phase: 0x70726570617265526562616c616e636500000000000000000000000000000000, asset: 0x6c3ea9036406852006290770BEdFcAbA0e23A0e8, forkBlock: 26181000 [2.618e7], target: UsdcMultiLendingVault: [0xD16d567549A2a2a2005aEACf7fB193851603dd70], selector: 0x73d36b6a, calldataBytes: 4, gasDelta: 871227 [8.712e5])",
+    "│   ├─ emit ActualWrapperGas(phase: 0x65786563757465526562616c616e636553746570000000000000000000000000, asset: 0x6c3ea9036406852006290770BEdFcAbA0e23A0e8, forkBlock: 26181000 [2.618e7], target: UsdcMultiLendingVault: [0xD16d567549A2a2a2005aEACf7fB193851603dd70], selector: 0x77dd1671, calldataBytes: 4, gasDelta: 1130102 [1.13e6])",
+    "│   ├─ emit ActualRiskRebalance(asset: 0x6c3ea9036406852006290770BEdFcAbA0e23A0e8, rpcBlock: 26181000 [2.618e7], moved: 87393169789 [8.739e10], beforeInvested: 174786339575 [1.747e11], afterInvested: 87393169786 [8.739e10], steps: 1)",
+    "│   ├─ emit ActualScoringReference(asset: 0x6c3ea9036406852006290770BEdFcAbA0e23A0e8, rpcBlock: 26250000 [2.625e7], adapter: AaveV3USDCAdapter: [0x756e0562323ADcDA4430d6cb456d9151f605290B], apr: 318, externalAssets: 8011286365507 [8.011e12], externalUsd6: 8012319821448 [8.012e12], confidence: 7000, liquidityBps: 10000 [1e4], stability: 9988, independentRawScore: 89788000 [8.978e7], normalizedScore: 5520, targetAssets: 42835535978 [4.283e10])",
+    "│   ├─ emit ActualScoringReference(asset: 0x6c3ea9036406852006290770BEdFcAbA0e23A0e8, rpcBlock: 26250000 [2.625e7], adapter: MorphoUsdcMultiMarketAdapter: [0xe8dc788818033232EF9772CB2e6622F1Ec8bc840], apr: 220, externalAssets: 375940383840430 [3.759e14], externalUsd6: 375988880149945 [3.759e14], confidence: 10000 [1e4], liquidityBps: 10000 [1e4], stability: 4265, independentRawScore: 72855000 [7.285e7], normalizedScore: 4479, targetAssets: 42835535978 [4.283e10])",
+    "├─ emit ActualIntegratedExit(asset: 0x6c3ea9036406852006290770BEdFcAbA0e23A0e8, rpcBlock: 26250000 [2.625e7], userReceived: 18884612282 [1.888e10], coreReceived: 171342143912 [1.713e11], investedVenues: 2)",
+    "│   ├─ emit RealFunding(chainId: 1, token: 0xdAC17F958D2ee523a2206206994597C13D831ec7, holder: 0xF977814e90dA44bFA03b6295A0616a897441aceC, holderBefore: 16000000001124208 [1.6e16], transferred: 1000000000000 [1e12], holderAfter: 15999000001124208 [1.599e16])",
+    "├─ emit ActualWrapperGas(phase: 0x6465706c6f7949646c652e696e697469616c0000000000000000000000000000, asset: 0xdAC17F958D2ee523a2206206994597C13D831ec7, forkBlock: 26165400 [2.616e7], target: UsdcMultiLendingVault: [0xD16d567549A2a2a2005aEACf7fB193851603dd70], selector: 0x4c16052c, calldataBytes: 4, gasDelta: 2990441 [2.99e6])",
+    "├─ emit ActualWrapperGas(phase: 0x6465706c6f7949646c652e667265736800000000000000000000000000000000, asset: 0xdAC17F958D2ee523a2206206994597C13D831ec7, forkBlock: 26173000 [2.617e7], target: UsdcMultiLendingVault: [0xD16d567549A2a2a2005aEACf7fB193851603dd70], selector: 0x4c16052c, calldataBytes: 4, gasDelta: 2226040 [2.226e6])",
+    "│   ├─ emit ActualScoringReference(asset: 0xdAC17F958D2ee523a2206206994597C13D831ec7, rpcBlock: 26173000 [2.617e7], adapter: AaveV3USDCAdapter: [0x756e0562323ADcDA4430d6cb456d9151f605290B], apr: 340, externalAssets: 2754472958164738 [2.754e15], externalUsd6: 2751525672099501 [2.751e15], confidence: 10000 [1e4], liquidityBps: 10000 [1e4], stability: 7750, independentRawScore: 87945000 [8.794e7], normalizedScore: 3638, targetAssets: 91200013336 [9.12e10])",
+    "│   ├─ emit ActualScoringReference(asset: 0xdAC17F958D2ee523a2206206994597C13D831ec7, rpcBlock: 26173000 [2.617e7], adapter: MorphoUsdcMultiMarketAdapter: [0xe8dc788818033232EF9772CB2e6622F1Ec8bc840], apr: 232, externalAssets: 81963355227066 [8.196e13], externalUsd6: 81875654436973 [8.187e13], confidence: 9500, liquidityBps: 10000 [1e4], stability: 7000, independentRawScore: 71820000 [7.182e7], normalizedScore: 2971, targetAssets: 0)",
+    "│   ├─ emit ActualScoringReference(asset: 0xdAC17F958D2ee523a2206206994597C13D831ec7, rpcBlock: 26173000 [2.617e7], adapter: EulerUsdcMultiMarketAdapter: [0x3Cff5E7eBecb676c3Cb602D0ef2d46710b88854E], apr: 368, externalAssets: 371440906587 [3.714e11], externalUsd6: 371043464816 [3.71e11], confidence: 3000, liquidityBps: 10000 [1e4], stability: 7750, independentRawScore: 81950000 [8.195e7], normalizedScore: 3390, targetAssets: 7428818131 [7.428e9])",
+    "│   ├─ emit ActualNativeKeeperObservation(asset: 0xdAC17F958D2ee523a2206206994597C13D831ec7, rpcBlock: 26173000 [2.617e7], prepareGas: 0, maxStepGas: 0, calldataBytes: 132)",
+    "│   ├─ emit ActualNativeGateObservation(asset: 0xdAC17F958D2ee523a2206206994597C13D831ec7, rpcBlock: 26173000 [2.617e7], moved: 77559979665 [7.755e10], grossBenefit: 0, costUSD6: 33930454 [3.393e7], costAsset: 33966799 [3.396e7], netBenefitBps: 0, accepted: false, executedSteps: 0, quotedReliable: true, quotedCostUSD6: 33930454 [3.393e7], quotedTxCount: 3, quotedUsedDefaults: true, surplusTransferred: 0, economicCancelled: false)",
+    "│   ├─ emit ActualNativeKeeperObservation(asset: 0xdAC17F958D2ee523a2206206994597C13D831ec7, rpcBlock: 26173000 [2.617e7], prepareGas: 1715207 [1.715e6], maxStepGas: 2254563 [2.254e6], calldataBytes: 132)",
+    "│   ├─ emit ActualNativeGateObservation(asset: 0xdAC17F958D2ee523a2206206994597C13D831ec7, rpcBlock: 26173000 [2.617e7], moved: 476406134171 [4.764e11], grossBenefit: 265454590 [2.654e8], costUSD6: 30560773 [3.056e7], costAsset: 30593509 [3.059e7], netBenefitBps: 4, accepted: true, executedSteps: 2, quotedReliable: true, quotedCostUSD6: 30560773 [3.056e7], quotedTxCount: 3, quotedUsedDefaults: true, surplusTransferred: 799903842779 [7.999e11], economicCancelled: true)",
+    "│   │   ├─ emit ActualNegativeYieldGate(asset: 0xdAC17F958D2ee523a2206206994597C13D831ec7, rpcBlock: 26173000 [2.617e7], grossBenefit: 6693532 [6.693e6], conservativeCost: 6703542 [6.703e6], moved: 77559979665 [7.755e10], accepted: false)",
+    "│   ├─ emit ActualWrapperGas(phase: 0x70726570617265526562616c616e636500000000000000000000000000000000, asset: 0xdAC17F958D2ee523a2206206994597C13D831ec7, forkBlock: 26173000 [2.617e7], target: UsdcMultiLendingVault: [0xD16d567549A2a2a2005aEACf7fB193851603dd70], selector: 0x73d36b6a, calldataBytes: 4, gasDelta: 1590283 [1.59e6])",
+    "│   ├─ emit ActualWrapperGas(phase: 0x65786563757465526562616c616e636553746570000000000000000000000000, asset: 0xdAC17F958D2ee523a2206206994597C13D831ec7, forkBlock: 26173000 [2.617e7], target: UsdcMultiLendingVault: [0xD16d567549A2a2a2005aEACf7fB193851603dd70], selector: 0x77dd1671, calldataBytes: 4, gasDelta: 1252294 [1.252e6])",
+    "│   ├─ emit ActualWrapperGas(phase: 0x65786563757465526562616c616e636553746570000000000000000000000000, asset: 0xdAC17F958D2ee523a2206206994597C13D831ec7, forkBlock: 26173000 [2.617e7], target: UsdcMultiLendingVault: [0xD16d567549A2a2a2005aEACf7fB193851603dd70], selector: 0x77dd1671, calldataBytes: 4, gasDelta: 2451621 [2.451e6])",
+    "│   ├─ emit ActualYieldEconomics(asset: 0xdAC17F958D2ee523a2206206994597C13D831ec7, rpcBlock: 26173000 [2.617e7], moved: 77559979665 [7.755e10], grossBenefit: 6693532 [6.693e6], cost: 1001072 [1.001e6], netBenefitBps: 0, accepted: true, executedSteps: 2)",
+    "│   ├─ emit ActualWrapperGas(phase: 0x70726570617265526562616c616e636500000000000000000000000000000000, asset: 0xdAC17F958D2ee523a2206206994597C13D831ec7, forkBlock: 26181000 [2.618e7], target: UsdcMultiLendingVault: [0xD16d567549A2a2a2005aEACf7fB193851603dd70], selector: 0x73d36b6a, calldataBytes: 4, gasDelta: 1482586 [1.482e6])",
+    "│   ├─ emit ActualWrapperGas(phase: 0x65786563757465526562616c616e636553746570000000000000000000000000, asset: 0xdAC17F958D2ee523a2206206994597C13D831ec7, forkBlock: 26181000 [2.618e7], target: UsdcMultiLendingVault: [0xD16d567549A2a2a2005aEACf7fB193851603dd70], selector: 0x77dd1671, calldataBytes: 4, gasDelta: 1231876 [1.231e6])",
+    "│   ├─ emit ActualWrapperGas(phase: 0x65786563757465526562616c616e636553746570000000000000000000000000, asset: 0xdAC17F958D2ee523a2206206994597C13D831ec7, forkBlock: 26181000 [2.618e7], target: UsdcMultiLendingVault: [0xD16d567549A2a2a2005aEACf7fB193851603dd70], selector: 0x77dd1671, calldataBytes: 4, gasDelta: 2297150 [2.297e6])",
+    "│   ├─ emit ActualRiskRebalance(asset: 0xdAC17F958D2ee523a2206206994597C13D831ec7, rpcBlock: 26181000 [2.618e7], moved: 124719704887 [1.247e11], beforeInvested: 176198942331 [1.761e11], afterInvested: 95529275104 [9.552e10], steps: 2)",
+    "│   ├─ emit ActualScoringReference(asset: 0xdAC17F958D2ee523a2206206994597C13D831ec7, rpcBlock: 26250000 [2.625e7], adapter: AaveV3USDCAdapter: [0x756e0562323ADcDA4430d6cb456d9151f605290B], apr: 341, externalAssets: 2757181401047519 [2.757e15], externalUsd6: 2754176073320377 [2.754e15], confidence: 10000 [1e4], liquidityBps: 10000 [1e4], stability: 9989, independentRawScore: 90319000 [9.031e7], normalizedScore: 3688, targetAssets: 44067639941 [4.406e10])",
+    "│   ├─ emit ActualScoringReference(asset: 0xdAC17F958D2ee523a2206206994597C13D831ec7, rpcBlock: 26250000 [2.625e7], adapter: MorphoUsdcMultiMarketAdapter: [0xe8dc788818033232EF9772CB2e6622F1Ec8bc840], apr: 200, externalAssets: 81990222531863 [8.199e13], externalUsd6: 81900853189303 [8.19e13], confidence: 9500, liquidityBps: 10000 [1e4], stability: 9915, independentRawScore: 70385000 [7.038e7], normalizedScore: 2874, targetAssets: 0)",
+    "│   ├─ emit ActualScoringReference(asset: 0xdAC17F958D2ee523a2206206994597C13D831ec7, rpcBlock: 26250000 [2.625e7], adapter: EulerUsdcMultiMarketAdapter: [0x3Cff5E7eBecb676c3Cb602D0ef2d46710b88854E], apr: 368, externalAssets: 371891165301 [3.718e11], externalUsd6: 371485803930 [3.714e11], confidence: 3000, liquidityBps: 10000 [1e4], stability: 9989, independentRawScore: 84189000 [8.418e7], normalizedScore: 3437, targetAssets: 7437823306 [7.437e9])",
+    "├─ emit ActualIntegratedExit(asset: 0xdAC17F958D2ee523a2206206994597C13D831ec7, rpcBlock: 26250000 [2.625e7], userReceived: 19021040607 [1.902e10], coreReceived: 176270559766 [1.762e11], investedVenues: 3)",
+    "│   │   ├─ emit RealFunding(chainId: 1, token: 0xdAC17F958D2ee523a2206206994597C13D831ec7, holder: 0xF977814e90dA44bFA03b6295A0616a897441aceC, holderBefore: 16000000001124208 [1.6e16], transferred: 300000000000 [3e11], holderAfter: 15999700001124208 [1.599e16])",
+    "│   │   ├─ emit RealFundingConversion(chainId: 1, input: 0xdAC17F958D2ee523a2206206994597C13D831ec7, output: 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2, amountIn: 300000000000 [3e11], oracleExpected: 119687351085226387704 [1.196e20], amountReceived: 118681113308015026008 [1.186e20])",
+    "├─ emit ActualWrapperGas(phase: 0x6465706c6f7949646c652e696e697469616c0000000000000000000000000000, asset: 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2, forkBlock: 26165400 [2.616e7], target: UsdcMultiLendingVault: [0xD16d567549A2a2a2005aEACf7fB193851603dd70], selector: 0x4c16052c, calldataBytes: 4, gasDelta: 2103322 [2.103e6])",
+    "│   ├─ emit ActualPreservedNavDependency(account: 0x90551c1795392094FE6D29B758EcCD233cFAa260)",
+    "│   ├─ emit ActualPreservedNavDependency(account: 0x52Aa899454998Be5b000Ad077a46Bbe360F4e497)",
+    "│   ├─ emit ActualPreservedNavDependency(account: 0x90551c1795392094FE6D29B758EcCD233cFAa260)",
+    "├─ emit ActualWrapperGas(phase: 0x6465706c6f7949646c652e667265736800000000000000000000000000000000, asset: 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2, forkBlock: 26173000 [2.617e7], target: UsdcMultiLendingVault: [0xD16d567549A2a2a2005aEACf7fB193851603dd70], selector: 0x4c16052c, calldataBytes: 4, gasDelta: 77813 [7.781e4])",
+    "│   ├─ emit ActualScoringReference(asset: 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2, rpcBlock: 26173000 [2.617e7], adapter: AaveV3USDCAdapter: [0x756e0562323ADcDA4430d6cb456d9151f605290B], apr: 132, externalAssets: 2192843906692156451962147 [2.192e24], externalUsd6: 5586466869148489 [5.586e15], confidence: 10000 [1e4], liquidityBps: 10000 [1e4], stability: 7000, independentRawScore: 77260000 [7.726e7], normalizedScore: 2373, targetAssets: 0)",
+    "│   ├─ emit ActualScoringReference(asset: 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2, rpcBlock: 26173000 [2.617e7], adapter: MorphoUsdcMultiMarketAdapter: [0xe8dc788818033232EF9772CB2e6622F1Ec8bc840], apr: 148, externalAssets: 9744778959706541504721 [9.744e21], externalUsd6: 24825699923026 [2.482e13], confidence: 8500, liquidityBps: 10000 [1e4], stability: 7750, independentRawScore: 80305000 [8.03e7], normalizedScore: 2466, targetAssets: 0)",
+    "│   ├─ emit ActualScoringReference(asset: 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2, rpcBlock: 26173000 [2.617e7], adapter: CometUsdcMultiMarketAdapter: [0x3Cff5E7eBecb676c3Cb602D0ef2d46710b88854E], apr: 146, externalAssets: 50527933993896942715797 [5.052e22], externalUsd6: 128724451549872 [1.287e14], confidence: 9500, liquidityBps: 10000 [1e4], stability: 7750, independentRawScore: 81155000 [8.115e7], normalizedScore: 2493, targetAssets: 33965713845570682131 [3.396e19])",
+    "│   ├─ emit ActualScoringReference(asset: 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2, rpcBlock: 26173000 [2.617e7], adapter: FluidUsdcMultiMarketAdapter: [0x27cc01A4676C73fe8b6d0933Ac991BfF1D77C4da], apr: 182, externalAssets: 896659841689028605902 [8.966e20], externalUsd6: 2284321507429 [2.284e12], confidence: 7000, liquidityBps: 10000 [1e4], stability: 7000, independentRawScore: 86800000 [8.68e7], normalizedScore: 2666, targetAssets: 36322740919491150646 [3.632e19])",
+    "│   ├─ emit ActualNativeKeeperObservation(asset: 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2, rpcBlock: 26173000 [2.617e7], prepareGas: 0, maxStepGas: 0, calldataBytes: 132)",
+    "│   ├─ emit ActualNativeGateObservation(asset: 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2, rpcBlock: 26173000 [2.617e7], moved: 72645481838982301293 [7.264e19], grossBenefit: 2372962025603386 [2.372e15], costUSD6: 33930454 [3.393e7], costAsset: 13318648628545341 [1.331e16], netBenefitBps: 0, accepted: false, executedSteps: 0, quotedReliable: true, quotedCostUSD6: 33930454 [3.393e7], quotedTxCount: 3, quotedUsedDefaults: true, surplusTransferred: 0, economicCancelled: false)",
+    "│   ├─ emit ActualNativeKeeperObservation(asset: 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2, rpcBlock: 26173000 [2.617e7], prepareGas: 1655588 [1.655e6], maxStepGas: 1837223 [1.837e6], calldataBytes: 132)",
+    "│   ├─ emit ActualNativeGateObservation(asset: 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2, rpcBlock: 26173000 [2.617e7], moved: 39013500731956657606 [3.901e19], grossBenefit: 13563059604016321 [1.356e16], costUSD6: 30560773 [3.056e7], costAsset: 11995954943713264 [1.199e16], netBenefitBps: 0, accepted: true, executedSteps: 2, quotedReliable: true, quotedCostUSD6: 30560773 [3.056e7], quotedTxCount: 3, quotedUsedDefaults: true, surplusTransferred: 39013500731956657607 [3.901e19], economicCancelled: false)",
+    "│   │   ├─ emit ActualNegativeYieldGate(asset: 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2, rpcBlock: 26173000 [2.617e7], grossBenefit: 2368441736668190 [2.368e15], conservativeCost: 2372366969120945 [2.372e15], moved: 72645481838982301293 [7.264e19], accepted: false)",
+    "│   ├─ emit ActualWrapperGas(phase: 0x70726570617265526562616c616e636500000000000000000000000000000000, asset: 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2, forkBlock: 26173000 [2.617e7], target: UsdcMultiLendingVault: [0xD16d567549A2a2a2005aEACf7fB193851603dd70], selector: 0x73d36b6a, calldataBytes: 4, gasDelta: 1422778 [1.422e6])",
+    "│   ├─ emit ActualWrapperGas(phase: 0x65786563757465526562616c616e636553746570000000000000000000000000, asset: 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2, forkBlock: 26173000 [2.617e7], target: UsdcMultiLendingVault: [0xD16d567549A2a2a2005aEACf7fB193851603dd70], selector: 0x77dd1671, calldataBytes: 4, gasDelta: 1018857 [1.018e6])",
+    "│   ├─ emit ActualWrapperGas(phase: 0x65786563757465526562616c616e636553746570000000000000000000000000, asset: 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2, forkBlock: 26173000 [2.617e7], target: UsdcMultiLendingVault: [0xD16d567549A2a2a2005aEACf7fB193851603dd70], selector: 0x77dd1671, calldataBytes: 4, gasDelta: 462690 [4.626e5])",
+    "│   ├─ emit ActualYieldEconomics(asset: 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2, rpcBlock: 26173000 [2.617e7], moved: 72645481838982301293 [7.264e19], grossBenefit: 2368441736668190 [2.368e15], cost: 392527863863695 [3.925e14], netBenefitBps: 0, accepted: true, executedSteps: 2)",
+    "│   ├─ emit ActualWrapperGas(phase: 0x70726570617265526562616c616e636500000000000000000000000000000000, asset: 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2, forkBlock: 26181000 [2.618e7], target: UsdcMultiLendingVault: [0xD16d567549A2a2a2005aEACf7fB193851603dd70], selector: 0x73d36b6a, calldataBytes: 4, gasDelta: 841864 [8.418e5])",
+    "│   ├─ emit ActualWrapperGas(phase: 0x65786563757465526562616c616e636553746570000000000000000000000000, asset: 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2, forkBlock: 26181000 [2.618e7], target: UsdcMultiLendingVault: [0xD16d567549A2a2a2005aEACf7fB193851603dd70], selector: 0x77dd1671, calldataBytes: 4, gasDelta: 2471801 [2.471e6])",
+    "│   ├─ emit ActualRiskRebalance(asset: 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2, rpcBlock: 26181000 [2.618e7], moved: 35145992750469553582 [3.514e19], beforeInvested: 70291985500939107164 [7.029e19], afterInvested: 70291985500939107160 [7.029e19], steps: 1)",
+    "│   ├─ emit ActualScoringReference(asset: 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2, rpcBlock: 26250000 [2.625e7], adapter: AaveV3USDCAdapter: [0x756e0562323ADcDA4430d6cb456d9151f605290B], apr: 132, externalAssets: 2193715491385917716256905 [2.193e24], externalUsd6: 5204348694609037 [5.204e15], confidence: 10000 [1e4], liquidityBps: 10000 [1e4], stability: 9976, independentRawScore: 80436000 [8.043e7], normalizedScore: 2419, targetAssets: 0)",
+    "│   ├─ emit ActualScoringReference(asset: 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2, rpcBlock: 26250000 [2.625e7], adapter: MorphoUsdcMultiMarketAdapter: [0xe8dc788818033232EF9772CB2e6622F1Ec8bc840], apr: 133, externalAssets: 9731433580115968672895 [9.731e21], externalUsd6: 23086755711131 [2.308e13], confidence: 8500, liquidityBps: 10000 [1e4], stability: 9926, independentRawScore: 78566000 [7.856e7], normalizedScore: 2363, targetAssets: 0)",
+    "│   ├─ emit ActualScoringReference(asset: 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2, rpcBlock: 26250000 [2.625e7], adapter: CometUsdcMultiMarketAdapter: [0x3Cff5E7eBecb676c3Cb602D0ef2d46710b88854E], apr: 146, externalAssets: 50532129857241541903897 [5.053e22], externalUsd6: 119881919552021 [1.198e14], confidence: 9500, liquidityBps: 10000 [1e4], stability: 9989, independentRawScore: 83619000 [8.361e7], normalizedScore: 2515, targetAssets: 17579944799159112051 [1.757e19])",
+    "│   ├─ emit ActualScoringReference(asset: 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2, rpcBlock: 26250000 [2.625e7], adapter: FluidUsdcMultiMarketAdapter: [0x27cc01A4676C73fe8b6d0933Ac991BfF1D77C4da], apr: 181, externalAssets: 914719974716117907328 [9.147e20], externalUsd6: 2170072520816 [2.17e12], confidence: 7000, liquidityBps: 10000 [1e4], stability: 9982, independentRawScore: 89782000 [8.978e7], normalizedScore: 2700, targetAssets: 17579944799159112051 [1.757e19])",
+    "├─ emit ActualIntegratedExit(asset: 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2, rpcBlock: 26250000 [2.625e7], userReceived: 7588216696199399794 [7.588e18], coreReceived: 70319779196636448207 [7.031e19], investedVenues: 2)",
+    "│   ├─ emit RealFunding(chainId: 42161 [4.216e4], token: 0xaf88d065e77c8cC2239327C5EDb3A432268e5831, holder: 0xB38e8c17e38363aF6EbdCb3dAE12e0243582891D, holderBefore: 2534086971 [2.534e9], transferred: 1001173495 [1.001e9], holderAfter: 1532913476 [1.532e9])",
+    "├─ emit ActualRemainingCore(adapter: DolomiteUsdcMultiMarketAdapter: [0x1aF7f588A501EA2B5bB3feeFA744892aA2CF00e6], actualMarket: 0x444868B6e8079ac2c55eea115250f92C2b2c4D14, asset: 0xaf88d065e77c8cC2239327C5EDb3A432268e5831, rpcBlock: 520094008 [5.2e8], invested: 881032677 [8.81e8], recalled: 881032677 [8.81e8], independentExternalUsd6: 3957832834038 [3.957e12])",
+    "│   ├─ emit RealFunding(chainId: 42161 [4.216e4], token: 0xaf88d065e77c8cC2239327C5EDb3A432268e5831, holder: 0xB38e8c17e38363aF6EbdCb3dAE12e0243582891D, holderBefore: 2534086971 [2.534e9], transferred: 1001173495 [1.001e9], holderAfter: 1532913476 [1.532e9])",
+    "├─ emit ActualRemainingCore(adapter: VenusUsdcMultiMarketAdapter: [0x756e0562323ADcDA4430d6cb456d9151f605290B], actualMarket: 0x7D8609f8da70fF9027E9bc5229Af4F6727662707, asset: 0xaf88d065e77c8cC2239327C5EDb3A432268e5831, rpcBlock: 520094008 [5.2e8], invested: 881032676 [8.81e8], recalled: 881032676 [8.81e8], independentExternalUsd6: 246190939432 [2.461e11])",
+    "├─ emit RealScenario(chainId: 8453, asset: 0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913, rpcForkBlock: 52590000 [5.259e7], evmBlockNumber: 52590000 [5.259e7], timestamp: 1791969347 [1.791e9], priceWad: 999864390000000000 [9.998e17], oracleUpdatedAt: 1791895809 [1.791e9], coreNav: 0, invested: 0, idle: 0)",
+    "├─ emit RealFunding(chainId: 8453, token: 0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913, holder: 0xF977814e90dA44bFA03b6295A0616a897441aceC, holderBefore: 15115045208 [1.511e10], transferred: 1000000000 [1e9], holderAfter: 14115045208 [1.411e10])",
+    "├─ emit RealScenario(chainId: 8453, asset: 0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913, rpcForkBlock: 52590180 [5.259e7], evmBlockNumber: 52590180 [5.259e7], timestamp: 1791969707 [1.791e9], priceWad: 999864390000000000 [9.998e17], oracleUpdatedAt: 1791895809 [1.791e9], coreNav: 201027337 [2.01e8], invested: 176904067 [1.769e8], idle: 0)",
+    "├─ emit RealScenario(chainId: 8453, asset: 0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913, rpcForkBlock: 53300000 [5.33e7], evmBlockNumber: 53300000 [5.33e7], timestamp: 1793389347 [1.793e9], priceWad: 999754680000000000 [9.997e17], oracleUpdatedAt: 1793364883 [1.793e9], coreNav: 172315697 [1.723e8], invested: 177206695 [1.772e8], idle: 0)",
+    "│   │   ├─ emit RealizedForQueue(target: 4890998 [4.89e6], got: 4890998 [4.89e6])",
+    "├─ emit RealScenario(chainId: 8453, asset: 0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913, rpcForkBlock: 53300000 [5.33e7], evmBlockNumber: 53300000 [5.33e7], timestamp: 1793389347 [1.793e9], priceWad: 999754680000000000 [9.997e17], oracleUpdatedAt: 1793364883 [1.793e9], coreNav: 172315696 [1.723e8], invested: 0, idle: 0)",
+    "├─ emit RealScenario(chainId: 8453, asset: 0x4200000000000000000000000000000000000006, rpcForkBlock: 52590000 [5.259e7], evmBlockNumber: 52590000 [5.259e7], timestamp: 1791969347 [1.791e9], priceWad: 2503536301860000000000 [2.503e21], oracleUpdatedAt: 1791968359 [1.791e9], coreNav: 0, invested: 0, idle: 0)",
+    "├─ emit RealFunding(chainId: 8453, token: 0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913, holder: 0xF977814e90dA44bFA03b6295A0616a897441aceC, holderBefore: 15115045208 [1.511e10], transferred: 1000000000 [1e9], holderAfter: 14115045208 [1.411e10])",
+    "├─ emit RealFundingConversion(chainId: 8453, input: 0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913, output: 0x4200000000000000000000000000000000000006, amountIn: 700000000 [7e8], oracleExpected: 279566576478242463 [2.795e17], amountReceived: 279271915482452308 [2.792e17])",
+    "├─ emit RealScenario(chainId: 8453, asset: 0x4200000000000000000000000000000000000006, rpcForkBlock: 52590180 [5.259e7], evmBlockNumber: 52590180 [5.259e7], timestamp: 1791969707 [1.791e9], priceWad: 2504000000000000000000 [2.504e21], oracleUpdatedAt: 1791969589 [1.791e9], coreNav: 80286444393267940 [8.028e16], invested: 70652072412290446 [7.065e16], idle: 0)",
+    "├─ emit RealScenario(chainId: 8453, asset: 0x4200000000000000000000000000000000000006, rpcForkBlock: 53300000 [5.33e7], evmBlockNumber: 53300000 [5.33e7], timestamp: 1793389347 [1.793e9], priceWad: 2228458284180000000000 [2.228e21], oracleUpdatedAt: 1793389083 [1.793e9], coreNav: 68745557830667741 [6.874e16], invested: 70696311768237254 [7.069e16], idle: 0)",
+    "│   │   ├─ emit RealizedForQueue(target: 1950753937569513 [1.95e15], got: 1950753937569513 [1.95e15])",
+    "├─ emit RealScenario(chainId: 8453, asset: 0x4200000000000000000000000000000000000006, rpcForkBlock: 53300000 [5.33e7], evmBlockNumber: 53300000 [5.33e7], timestamp: 1793389347 [1.793e9], priceWad: 2228458284180000000000 [2.228e21], oracleUpdatedAt: 1793389083 [1.793e9], coreNav: 68745557830667741 [6.874e16], invested: 0, idle: 0)",
+    "├─ emit ActualBscNativeFee(chainId: 56, rpcBlock: 129400000 [1.294e8], asset: 0x55d398326f99059fF775485246999027B3197955, annualSlots: 70080000 [7.008e7], priceWad: 740167014550000000000 [7.401e20], sourcePrice: 1000000000 [1e9], gasUnits: 1796224 [1.796e6], executionWei: 1796224000000000 [1.796e15], costUSD6: 1661883 [1.661e6])",
+    "├─ emit RealFunding(chainId: 56, token: 0x55d398326f99059fF775485246999027B3197955, holder: 0xF977814e90dA44bFA03b6295A0616a897441aceC, holderBefore: 385068320872879868144835317 [3.85e26], transferred: 3000000000000000000000 [3e21], holderAfter: 385065320872879868144835317 [3.85e26])",
+    "├─ emit ActualFunding(token: 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1, holder: 0xF977814e90dA44bFA03b6295A0616a897441aceC, beforeBalance: 42912299352477177800 [4.291e19], amount: 1000000000000000000 [1e18], afterBalance: 41912299352477177800 [4.191e19])",
+    "├─ emit ActualComet(token: 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1, market: 0x6f7D514bbD4aFf3BcD1140B7344b32f063dEe486, chainId: 42161 [4.216e4], rpcBlock: 520094008 [5.2e8], decimals: 18, supply: 841312473676247466119 [8.413e20], cash: 287577392097476108595 [2.875e20], utilization: 712822778945916459 [7.128e17], ratePerSecond: 339051930 [3.39e8], independentlyCalculatedBps: 106, position: 0)",
+    "├─ emit ActualComet(token: 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1, market: 0x6f7D514bbD4aFf3BcD1140B7344b32f063dEe486, chainId: 42161 [4.216e4], rpcBlock: 520094008 [5.2e8], decimals: 18, supply: 842312473676247466119 [8.423e20], cash: 288577392097476108595 [2.885e20], utilization: 711978299616194848 [7.119e17], ratePerSecond: 338650256 [3.386e8], independentlyCalculatedBps: 106, position: 999999999999999999 [9.999e17])",
+    "├─ emit ActualComet(token: 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1, market: 0x6f7D514bbD4aFf3BcD1140B7344b32f063dEe486, chainId: 42161 [4.216e4], rpcBlock: 520094008 [5.2e8], decimals: 18, supply: 842062473676247466117 [8.42e20], cash: 288327392097476108595 [2.883e20], utilization: 712189678914606005 [7.121e17], ratePerSecond: 338750798 [3.387e8], independentlyCalculatedBps: 106, position: 749999999999999998 [7.499e17])",
+    "├─ emit ActualComet(token: 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1, market: 0x6f7D514bbD4aFf3BcD1140B7344b32f063dEe486, chainId: 42161 [4.216e4], rpcBlock: 520094008 [5.2e8], decimals: 18, supply: 841312473676247466119 [8.413e20], cash: 287577392097476108597 [2.875e20], utilization: 712824570558197043 [7.128e17], ratePerSecond: 339052782 [3.39e8], independentlyCalculatedBps: 106, position: 0)",
+    "├─ emit ActualFunding(token: 0xdAC17F958D2ee523a2206206994597C13D831ec7, holder: 0xF977814e90dA44bFA03b6295A0616a897441aceC, beforeBalance: 16000000001136208 [1.6e16], amount: 1000000000 [1e9], afterBalance: 15999999001136208 [1.599e16])",
+    "├─ emit ActualComet(token: 0xdAC17F958D2ee523a2206206994597C13D831ec7, market: 0x3Afdc9BCA9213A35503b077a6072F3D0d5AB0840, chainId: 1, rpcBlock: 26300000 [2.63e7], decimals: 6, supply: 158044497366433 [1.58e14], cash: 15634935186540 [1.563e13], utilization: 909268245075074881 [9.092e17], ratePerSecond: 1966682877 [1.966e9], independentlyCalculatedBps: 620, position: 0)",
+    "├─ emit ActualComet(token: 0xdAC17F958D2ee523a2206206994597C13D831ec7, market: 0x3Afdc9BCA9213A35503b077a6072F3D0d5AB0840, chainId: 1, rpcBlock: 26300000 [2.63e7], decimals: 6, supply: 158045497366433 [1.58e14], cash: 15635935186540 [1.563e13], utilization: 909262703825197497 [9.092e17], ratePerSecond: 1966121302 [1.966e9], independentlyCalculatedBps: 620, position: 999999999 [9.999e8])",
+    "├─ emit ActualComet(token: 0xdAC17F958D2ee523a2206206994597C13D831ec7, market: 0x3Afdc9BCA9213A35503b077a6072F3D0d5AB0840, chainId: 1, rpcBlock: 26300000 [2.63e7], decimals: 6, supply: 158045247366431 [1.58e14], cash: 15635685186540 [1.563e13], utilization: 909264142120126087 [9.092e17], ratePerSecond: 1966267065 [1.966e9], independentlyCalculatedBps: 620, position: 749999998 [7.499e8])",
+    "├─ emit ActualComet(token: 0xdAC17F958D2ee523a2206206994597C13D831ec7, market: 0x3Afdc9BCA9213A35503b077a6072F3D0d5AB0840, chainId: 1, rpcBlock: 26300000 [2.63e7], decimals: 6, supply: 158044497366433 [1.58e14], cash: 15634935186542 [1.563e13], utilization: 909268457032167538 [9.092e17], ratePerSecond: 1966704358 [1.966e9], independentlyCalculatedBps: 620, position: 0)",
+    "├─ emit ActualFunding(token: 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2, holder: 0xF977814e90dA44bFA03b6295A0616a897441aceC, beforeBalance: 15520719728819056416 [1.552e19], amount: 1000000000000000000 [1e18], afterBalance: 14520719728819056416 [1.452e19])",
+    "├─ emit ActualComet(token: 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2, market: 0xA17581A9E3356d9A858b789D68B4d866e593aE94, chainId: 1, rpcBlock: 26300000 [2.63e7], decimals: 18, supply: 50586272522297241346592 [5.058e22], cash: 11433206805099327046182 [1.143e22], utilization: 791715132888615168 [7.917e17], ratePerSecond: 502102442 [5.021e8], independentlyCalculatedBps: 158, position: 0)",
+    "├─ emit ActualComet(token: 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2, market: 0xA17581A9E3356d9A858b789D68B4d866e593aE94, chainId: 1, rpcBlock: 26300000 [2.63e7], decimals: 18, supply: 50587272522297241346591 [5.058e22], cash: 11434206805099327046182 [1.143e22], utilization: 791699864685298793 [7.916e17], ratePerSecond: 502092759 [5.02e8], independentlyCalculatedBps: 158, position: 999999999999999999 [9.999e17])",
+    "├─ emit ActualComet(token: 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2, market: 0xA17581A9E3356d9A858b789D68B4d866e593aE94, chainId: 1, rpcBlock: 26300000 [2.63e7], decimals: 18, supply: 50587022522297241346590 [5.058e22], cash: 11433956805099327046182 [1.143e22], utilization: 791703777249357769 [7.917e17], ratePerSecond: 502095241 [5.02e8], independentlyCalculatedBps: 158, position: 749999999999999998 [7.499e17])",
+    "├─ emit ActualComet(token: 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2, market: 0xA17581A9E3356d9A858b789D68B4d866e593aE94, chainId: 1, rpcBlock: 26300000 [2.63e7], decimals: 18, supply: 50586272522297241346592 [5.058e22], cash: 11433206805099327046184 [1.143e22], utilization: 791715515173567846 [7.917e17], ratePerSecond: 502102685 [5.021e8], independentlyCalculatedBps: 158, position: 0)",
+    "│   ├─ emit ActualPpsReference(market: 0x444868B6e8079ac2c55eea115250f92C2b2c4D14, firstBlock: 26299000 [2.629e7], secondBlock: 26300000 [2.63e7], firstTimestamp: 1793284163 [1.793e9], secondTimestamp: 1793296163 [1.793e9], firstPps: 1053643946308048659000000 [1.053e24], secondPps: 1053657744562734581000000 [1.053e24], independentlyCalculatedBps: 344)",
+    "├─ emit ActualFunding(token: 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48, holder: 0x55FE002aefF02F77364de339a1292923A15844B8, beforeBalance: 57296016173638 [5.729e13], amount: 1000000000 [1e9], afterBalance: 57295016173638 [5.729e13])",
+    "├─ emit ActualDolomite(token: 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48, market: 0x444868B6e8079ac2c55eea115250f92C2b2c4D14, rpcBlock: 26300000 [2.63e7], decimals: 6, tvl: 139552700862623 [1.395e14], wrapperCash: 0, position: 0, redeemable: 0, rate: 344)",
+    "├─ emit ActualDolomite(token: 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48, market: 0x444868B6e8079ac2c55eea115250f92C2b2c4D14, rpcBlock: 26300000 [2.63e7], decimals: 6, tvl: 139553700862623 [1.395e14], wrapperCash: 0, position: 999999999 [9.999e8], redeemable: 999999999 [9.999e8], rate: 344)",
+    "├─ emit ActualDolomite(token: 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48, market: 0x444868B6e8079ac2c55eea115250f92C2b2c4D14, rpcBlock: 26300000 [2.63e7], decimals: 6, tvl: 139553450862623 [1.395e14], wrapperCash: 0, position: 749999999 [7.499e8], redeemable: 749999999 [7.499e8], rate: 344)",
+    "├─ emit ActualDolomite(token: 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48, market: 0x444868B6e8079ac2c55eea115250f92C2b2c4D14, rpcBlock: 26300000 [2.63e7], decimals: 6, tvl: 139552700862623 [1.395e14], wrapperCash: 0, position: 0, redeemable: 0, rate: 344)",
+    "│   ├─ emit ActualPpsReference(market: 0xF2d2d55Daf93b0660297eaA10969eBe90ead5CE8, firstBlock: 519994008 [5.199e8], secondBlock: 520094008 [5.2e8], firstTimestamp: 1793451436 [1.793e9], secondTimestamp: 1793480259 [1.793e9], firstPps: 1364613084356369265000000 [1.364e24], secondPps: 1364676051574178658000000 [1.364e24], independentlyCalculatedBps: 504)",
+    "├─ emit ActualFunding(token: 0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9, holder: 0xF977814e90dA44bFA03b6295A0616a897441aceC, beforeBalance: 99414783701626 [9.941e13], amount: 1000000000 [1e9], afterBalance: 99413783701626 [9.941e13])",
+    "├─ emit ActualDolomite(token: 0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9, market: 0xF2d2d55Daf93b0660297eaA10969eBe90ead5CE8, rpcBlock: 520094008 [5.2e8], decimals: 6, tvl: 170008898954 [1.7e11], wrapperCash: 0, position: 0, redeemable: 0, rate: 504)",
+    "├─ emit ActualDolomite(token: 0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9, market: 0xF2d2d55Daf93b0660297eaA10969eBe90ead5CE8, rpcBlock: 520094008 [5.2e8], decimals: 6, tvl: 171008898954 [1.71e11], wrapperCash: 0, position: 1000000000 [1e9], redeemable: 1000000000 [1e9], rate: 504)",
+    "├─ emit ActualDolomite(token: 0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9, market: 0xF2d2d55Daf93b0660297eaA10969eBe90ead5CE8, rpcBlock: 520094008 [5.2e8], decimals: 6, tvl: 170758898955 [1.707e11], wrapperCash: 0, position: 750000000 [7.5e8], redeemable: 750000000 [7.5e8], rate: 504)",
+    "├─ emit ActualDolomite(token: 0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9, market: 0xF2d2d55Daf93b0660297eaA10969eBe90ead5CE8, rpcBlock: 520094008 [5.2e8], decimals: 6, tvl: 170008898954 [1.7e11], wrapperCash: 0, position: 0, redeemable: 0, rate: 504)",
+    "│   ├─ emit ActualPpsReference(market: 0xf7b5127B510E568fdC39e6Bb54e2081BFaD489AF, firstBlock: 519994008 [5.199e8], secondBlock: 520094008 [5.2e8], firstTimestamp: 1793451436 [1.793e9], secondTimestamp: 1793480259 [1.793e9], firstPps: 1109733764037159552000000 [1.109e24], secondPps: 1109763806128371139000000 [1.109e24], independentlyCalculatedBps: 296)",
+    "├─ emit ActualFunding(token: 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1, holder: 0xF977814e90dA44bFA03b6295A0616a897441aceC, beforeBalance: 42912299352477177800 [4.291e19], amount: 1000000000000000000 [1e18], afterBalance: 41912299352477177800 [4.191e19])",
+    "├─ emit ActualDolomite(token: 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1, market: 0xf7b5127B510E568fdC39e6Bb54e2081BFaD489AF, rpcBlock: 520094008 [5.2e8], decimals: 18, tvl: 2495250521829336468472 [2.495e21], wrapperCash: 0, position: 0, redeemable: 0, rate: 296)",
+    "├─ emit ActualDolomite(token: 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1, market: 0xf7b5127B510E568fdC39e6Bb54e2081BFaD489AF, rpcBlock: 520094008 [5.2e8], decimals: 18, tvl: 2496250521829336468471 [2.496e21], wrapperCash: 0, position: 1000000000000000000 [1e18], redeemable: 1000000000000000000 [1e18], rate: 296)",
+    "├─ emit ActualDolomite(token: 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1, market: 0xf7b5127B510E568fdC39e6Bb54e2081BFaD489AF, rpcBlock: 520094008 [5.2e8], decimals: 18, tvl: 2496000521829336468472 [2.496e21], wrapperCash: 0, position: 750000000000000000 [7.5e17], redeemable: 750000000000000000 [7.5e17], rate: 296)",
+    "├─ emit ActualDolomite(token: 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1, market: 0xf7b5127B510E568fdC39e6Bb54e2081BFaD489AF, rpcBlock: 520094008 [5.2e8], decimals: 18, tvl: 2495250521829336468472 [2.495e21], wrapperCash: 0, position: 0, redeemable: 0, rate: 296)",
+    "├─ emit RealScenario(chainId: 1, asset: 0xdAC17F958D2ee523a2206206994597C13D831ec7, rpcForkBlock: 26165000 [2.616e7], evmBlockNumber: 26165000 [2.616e7], timestamp: 1791671003 [1.791e9], priceWad: 999025170000000000 [9.99e17], oracleUpdatedAt: 1791643163 [1.791e9], coreNav: 0, invested: 0, idle: 0)",
+    "├─ emit NativeFeeRawContext(chainId: 1, blockNumber: 26165000 [2.616e7], basefee: 65346817 [6.534e7], sourcePricePerGas: 1065346817 [1.065e9], txGasPrice: 37302311 [3.73e7])",
+    "├─ emit NativeFeeRawFees(perTx: 0, perByte: 0, l2Price: 1065346817 [1.065e9])",
+    "├─ emit NativeFeeEthPrice(round: 129127208515966895811 [1.291e20], answer: 250653542110 [2.506e11], updatedAt: 1791668543 [1.791e9], decimals: 8, priceWad: 2506535421100000000000 [2.506e21])",
+    "├─ emit NativeFeeExpected(expectedGas: 1796224 [1.796e6], executionWei: 1913601521019008 [1.913e15], posterWei: 0, usdWei: 4796509994304979719 [4.796e18], usd6: 4796510 [4.796e6], costUSDC: 5995638 [5.995e6])",
+    "├─ emit NativeFeeActualQuote(l2Gas: 1796224 [1.796e6], executionWei: 1913601521019008 [1.913e15], posterWei: 0, txCount: 2, costUSDC: 5995638 [5.995e6], reliable: true, usedDefaults: true)",
+    "├─ emit RealFunding(chainId: 1, token: 0xdAC17F958D2ee523a2206206994597C13D831ec7, holder: 0xF977814e90dA44bFA03b6295A0616a897441aceC, holderBefore: 16000000001124208 [1.6e16], transferred: 1000000000 [1e9], holderAfter: 15999999001124208 [1.599e16])",
+    "├─ emit RealFunding(chainId: 1, token: 0xdAC17F958D2ee523a2206206994597C13D831ec7, holder: 0xF977814e90dA44bFA03b6295A0616a897441aceC, holderBefore: 15999999001124208 [1.599e16], transferred: 1000000000 [1e9], holderAfter: 15999998001124208 [1.599e16])",
+    "├─ emit RealFunding(chainId: 1, token: 0xdAC17F958D2ee523a2206206994597C13D831ec7, holder: 0xF977814e90dA44bFA03b6295A0616a897441aceC, holderBefore: 15999998001124208 [1.599e16], transferred: 1000000000 [1e9], holderAfter: 15999997001124208 [1.599e16])",
+    "├─ emit RealScenario(chainId: 1, asset: 0xdAC17F958D2ee523a2206206994597C13D831ec7, rpcForkBlock: 26165040 [2.616e7], evmBlockNumber: 26165040 [2.616e7], timestamp: 1791671483 [1.791e9], priceWad: 999025170000000000 [9.99e17], oracleUpdatedAt: 1791643163 [1.791e9], coreNav: 2128075483 [2.128e9], invested: 1872706543 [1.872e9], idle: 0)",
+    "│   ├─ emit RealScenario(chainId: 1, asset: 0xdAC17F958D2ee523a2206206994597C13D831ec7, rpcForkBlock: 26250000 [2.625e7], evmBlockNumber: 26250000 [2.625e7], timestamp: 1792694303 [1.792e9], priceWad: 998910000000000000 [9.989e17], oracleUpdatedAt: 1792680239 [1.792e9], coreNav: 1969976077 [1.969e9], invested: 1874777942 [1.874e9], idle: 0)",
+    "│   │   ├─ emit RealScenario(chainId: 1, asset: 0xdAC17F958D2ee523a2206206994597C13D831ec7, rpcForkBlock: 26310000 [2.631e7], evmBlockNumber: 26310000 [2.631e7], timestamp: 1793416631 [1.793e9], priceWad: 998328150000000000 [9.983e17], oracleUpdatedAt: 1793371595 [1.793e9], coreNav: 1846186123 [1.846e9], invested: 1876240790 [1.876e9], idle: 0)",
+    "│   │   │   │   ├─ emit RealizedForQueue(target: 30054667 [3.005e7], got: 30204941 [3.02e7])",
+    "│   │   ├─ emit RealScenario(chainId: 1, asset: 0xdAC17F958D2ee523a2206206994597C13D831ec7, rpcForkBlock: 26310000 [2.631e7], evmBlockNumber: 26310000 [2.631e7], timestamp: 1793416631 [1.793e9], priceWad: 998328150000000000 [9.983e17], oracleUpdatedAt: 1793371595 [1.793e9], coreNav: 1846186122 [1.846e9], invested: 0, idle: 0)",
+    "├─ emit RealScenario(chainId: 1, asset: 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2, rpcForkBlock: 26165000 [2.616e7], evmBlockNumber: 26165000 [2.616e7], timestamp: 1791671003 [1.791e9], priceWad: 2506535421100000000000 [2.506e21], oracleUpdatedAt: 1791668543 [1.791e9], coreNav: 0, invested: 0, idle: 0)",
+    "├─ emit NativeFeeRawContext(chainId: 1, blockNumber: 26165000 [2.616e7], basefee: 65346817 [6.534e7], sourcePricePerGas: 1065346817 [1.065e9], txGasPrice: 37302311 [3.73e7])",
+    "├─ emit NativeFeeRawFees(perTx: 0, perByte: 0, l2Price: 1065346817 [1.065e9])",
+    "├─ emit NativeFeeEthPrice(round: 129127208515966895811 [1.291e20], answer: 250653542110 [2.506e11], updatedAt: 1791668543 [1.791e9], decimals: 8, priceWad: 2506535421100000000000 [2.506e21])",
+    "├─ emit NativeFeeExpected(expectedGas: 1796224 [1.796e6], executionWei: 1913601521019008 [1.913e15], posterWei: 0, usdWei: 4796509994304979719 [4.796e18], usd6: 4796510 [4.796e6], costUSDC: 5995638 [5.995e6])",
+    "├─ emit NativeFeeActualQuote(l2Gas: 1796224 [1.796e6], executionWei: 1913601521019008 [1.913e15], posterWei: 0, txCount: 2, costUSDC: 5995638 [5.995e6], reliable: true, usedDefaults: true)",
+    "│   ├─ emit RealFunding(chainId: 1, token: 0xdAC17F958D2ee523a2206206994597C13D831ec7, holder: 0xF977814e90dA44bFA03b6295A0616a897441aceC, holderBefore: 16000000001124208 [1.6e16], transferred: 1000000000 [1e9], holderAfter: 15999999001124208 [1.599e16])",
+    "│   ├─ emit RealFundingConversion(chainId: 1, input: 0xdAC17F958D2ee523a2206206994597C13D831ec7, output: 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2, amountIn: 1000000000 [1e9], oracleExpected: 398568143737452168 [3.985e17], amountReceived: 398423734785811236 [3.984e17])",
+    "│   ├─ emit RealFunding(chainId: 1, token: 0xdAC17F958D2ee523a2206206994597C13D831ec7, holder: 0xF977814e90dA44bFA03b6295A0616a897441aceC, holderBefore: 15999999001124208 [1.599e16], transferred: 1000000000 [1e9], holderAfter: 15999998001124208 [1.599e16])",
+    "│   ├─ emit RealFundingConversion(chainId: 1, input: 0xdAC17F958D2ee523a2206206994597C13D831ec7, output: 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2, amountIn: 1000000000 [1e9], oracleExpected: 398568143737452168 [3.985e17], amountReceived: 398403429501088929 [3.984e17])",
+    "│   ├─ emit RealFunding(chainId: 1, token: 0xdAC17F958D2ee523a2206206994597C13D831ec7, holder: 0xF977814e90dA44bFA03b6295A0616a897441aceC, holderBefore: 15999998001124208 [1.599e16], transferred: 1000000000 [1e9], holderAfter: 15999997001124208 [1.599e16])",
+    "│   ├─ emit RealFundingConversion(chainId: 1, input: 0xdAC17F958D2ee523a2206206994597C13D831ec7, output: 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2, amountIn: 1000000000 [1e9], oracleExpected: 398568143737452168 [3.985e17], amountReceived: 398383125768586202 [3.983e17])",
+    "├─ emit RealScenario(chainId: 1, asset: 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2, rpcForkBlock: 26165040 [2.616e7], evmBlockNumber: 26165040 [2.616e7], timestamp: 1791671483 [1.791e9], priceWad: 2506535421100000000000 [2.506e21], oracleUpdatedAt: 1791668543 [1.791e9], coreNav: 848182858163731074 [8.481e17], invested: 746400933259577961 [7.464e17], idle: 0)",
+    "│   ├─ emit RealScenario(chainId: 1, asset: 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2, rpcForkBlock: 26250000 [2.625e7], evmBlockNumber: 26250000 [2.625e7], timestamp: 1792694303 [1.792e9], priceWad: 2372390000000000000000 [2.372e21], oracleUpdatedAt: 1792692227 [1.792e9], coreNav: 784668425663738179 [7.846e17], invested: 746721905089491086 [7.467e17], idle: 0)",
+    "│   │   ├─ emit RealScenario(chainId: 1, asset: 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2, rpcForkBlock: 26310000 [2.631e7], evmBlockNumber: 26310000 [2.631e7], timestamp: 1793416631 [1.793e9], priceWad: 2241474066400000000000 [2.241e21], oracleUpdatedAt: 1793415911 [1.793e9], coreNav: 735005194908884060 [7.35e17], invested: 746948579323430086 [7.469e17], idle: 0)",
+    "│   │   │   │   ├─ emit RealizedForQueue(target: 11943384414546026 [1.194e16], got: 12003101336618757 [1.2e16])",
+    "│   │   ├─ emit RealScenario(chainId: 1, asset: 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2, rpcForkBlock: 26310000 [2.631e7], evmBlockNumber: 26310000 [2.631e7], timestamp: 1793416631 [1.793e9], priceWad: 2241474066400000000000 [2.241e21], oracleUpdatedAt: 1793415911 [1.793e9], coreNav: 735005194908884059 [7.35e17], invested: 0, idle: 0)",
+    "├─ emit ActualFunding(token: 0xaf88d065e77c8cC2239327C5EDb3A432268e5831, holder: 0xB38e8c17e38363aF6EbdCb3dAE12e0243582891D, beforeBalance: 2534086971 [2.534e9], amount: 1000000000 [1e9], afterBalance: 1534086971 [1.534e9])",
+    "├─ emit ActualEuler(asset: 0xaf88d065e77c8cC2239327C5EDb3A432268e5831, market: 0x0a1eCC5Fe8C9be3C809844fcBe615B46A869b899, rpcBlock: 520094008 [5.2e8], supply: 33769452517 [3.376e10], borrows: 29218630695 [2.921e10], feeBps: 1000, borrowRateRayPerSecond: 1194830330581808096 [1.194e18], independent365DayAprBps: 293, independentJulianYearAprBps: 293, adapterRateBps: 293, position: 0)",
+    "├─ emit ActualEuler(asset: 0xaf88d065e77c8cC2239327C5EDb3A432268e5831, market: 0x0a1eCC5Fe8C9be3C809844fcBe615B46A869b899, rpcBlock: 520094008 [5.2e8], supply: 34769452517 [3.476e10], borrows: 29218630695 [2.921e10], feeBps: 1000, borrowRateRayPerSecond: 1160486071525722176 [1.16e18], independent365DayAprBps: 276, independentJulianYearAprBps: 276, adapterRateBps: 276, position: 999999999 [9.999e8])",
+    "├─ emit ActualEarnedEulerInterest(asset: 0xaf88d065e77c8cC2239327C5EDb3A432268e5831, market: 0x0a1eCC5Fe8C9be3C809844fcBe615B46A869b899, rpcBlock: 520194008 [5.201e8], elapsedSeconds: 31549 [3.154e4], principal: 1000000000 [1e9], earned: 27690 [2.769e4], realized: 27690 [2.769e4])",
+    "├─ emit ActualEuler(asset: 0xaf88d065e77c8cC2239327C5EDb3A432268e5831, market: 0x0a1eCC5Fe8C9be3C809844fcBe615B46A869b899, rpcBlock: 520194008 [5.201e8], supply: 34520494604 [3.452e10], borrows: 29219700472 [2.921e10], feeBps: 1000, borrowRateRayPerSecond: 1168898161239722208 [1.168e18], independent365DayAprBps: 280, independentJulianYearAprBps: 281, adapterRateBps: 280, position: 749999998 [7.499e8])",
+    "├─ emit ActualEuler(asset: 0xaf88d065e77c8cC2239327C5EDb3A432268e5831, market: 0x0a1eCC5Fe8C9be3C809844fcBe615B46A869b899, rpcBlock: 520194008 [5.201e8], supply: 33770494606 [3.377e10], borrows: 29219700472 [2.921e10], feeBps: 1000, borrowRateRayPerSecond: 1194857911850038688 [1.194e18], independent365DayAprBps: 293, independentJulianYearAprBps: 293, adapterRateBps: 293, position: 0)",
+    "├─ emit ActualFunding(token: 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48, holder: 0x55FE002aefF02F77364de339a1292923A15844B8, beforeBalance: 57296016173638 [5.729e13], amount: 1000000000 [1e9], afterBalance: 57295016173638 [5.729e13])",
+    "├─ emit ActualEuler(asset: 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48, market: 0x797DD80692c3b2dAdabCe8e30C07fDE5307D48a9, rpcBlock: 26300000 [2.63e7], supply: 2018316678553 [2.018e12], borrows: 1860178224826 [1.86e12], feeBps: 1000, borrowRateRayPerSecond: 3871807584031523226 [3.871e18], independent365DayAprBps: 1012, independentJulianYearAprBps: 1013, adapterRateBps: 1012, position: 0)",
+    "├─ emit ActualEuler(asset: 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48, market: 0x797DD80692c3b2dAdabCe8e30C07fDE5307D48a9, rpcBlock: 26300000 [2.63e7], supply: 2019316678553 [2.019e12], borrows: 1860178224826 [1.86e12], feeBps: 1000, borrowRateRayPerSecond: 3832251574664951960 [3.832e18], independent365DayAprBps: 1001, independentJulianYearAprBps: 1002, adapterRateBps: 1002, position: 999999998 [9.999e8])",
+    "├─ emit ActualEarnedEulerInterest(asset: 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48, market: 0x797DD80692c3b2dAdabCe8e30C07fDE5307D48a9, rpcBlock: 26304000 [2.63e7], elapsedSeconds: 48204 [4.82e4], principal: 1000000000 [1e9], earned: 153167 [1.531e5], realized: 153167 [1.531e5])",
+    "├─ emit ActualEuler(asset: 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48, market: 0x797DD80692c3b2dAdabCe8e30C07fDE5307D48a9, rpcBlock: 26304000 [2.63e7], supply: 2019410187580 [2.019e12], borrows: 1860521887020 [1.86e12], feeBps: 1000, borrowRateRayPerSecond: 3843303761736963447 [3.843e18], independent365DayAprBps: 1004, independentJulianYearAprBps: 1005, adapterRateBps: 1004, position: 749999999 [7.499e8])",
+    "├─ emit ActualEuler(asset: 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48, market: 0x797DD80692c3b2dAdabCe8e30C07fDE5307D48a9, rpcBlock: 26304000 [2.63e7], supply: 2018660187581 [2.018e12], borrows: 1860521887020 [1.86e12], feeBps: 1000, borrowRateRayPerSecond: 3872970274377860843 [3.872e18], independent365DayAprBps: 1013, independentJulianYearAprBps: 1013, adapterRateBps: 1013, position: 0)",
+    "├─ emit ActualFunding(token: 0xdAC17F958D2ee523a2206206994597C13D831ec7, holder: 0xF977814e90dA44bFA03b6295A0616a897441aceC, beforeBalance: 16000000001136208 [1.6e16], amount: 1000000000 [1e9], afterBalance: 15999999001136208 [1.599e16])",
+    "├─ emit ActualEuler(asset: 0xdAC17F958D2ee523a2206206994597C13D831ec7, market: 0x313603FA690301b0CaeEf8069c065862f9162162, rpcBlock: 26300000 [2.63e7], supply: 310581805426 [3.105e11], borrows: 285069285018 [2.85e11], feeBps: 1000, borrowRateRayPerSecond: 3542881195618342629 [3.542e18], independent365DayAprBps: 922, independentJulianYearAprBps: 923, adapterRateBps: 923, position: 0)",
+    "├─ emit ActualEuler(asset: 0xdAC17F958D2ee523a2206206994597C13D831ec7, market: 0x313603FA690301b0CaeEf8069c065862f9162162, rpcBlock: 26300000 [2.63e7], supply: 311581805426 [3.115e11], borrows: 285069285018 [2.85e11], feeBps: 1000, borrowRateRayPerSecond: 3287803270501728272 [3.287e18], independent365DayAprBps: 853, independentJulianYearAprBps: 854, adapterRateBps: 853, position: 999999999 [9.999e8])",
+    "├─ emit ActualEarnedEulerInterest(asset: 0xdAC17F958D2ee523a2206206994597C13D831ec7, market: 0x313603FA690301b0CaeEf8069c065862f9162162, rpcBlock: 26304000 [2.63e7], elapsedSeconds: 48204 [4.82e4], principal: 1000000000 [1e9], earned: 130509 [1.305e5], realized: 130509 [1.305e5])",
+    "├─ emit ActualEuler(asset: 0xdAC17F958D2ee523a2206206994597C13D831ec7, market: 0x313603FA690301b0CaeEf8069c065862f9162162, rpcBlock: 26304000 [2.63e7], supply: 311376857780 [3.113e11], borrows: 285114467881 [2.851e11], feeBps: 1000, borrowRateRayPerSecond: 3352570080758302104 [3.352e18], independent365DayAprBps: 871, independentJulianYearAprBps: 871, adapterRateBps: 871, position: 750000000 [7.5e8])",
+    "├─ emit ActualEuler(asset: 0xdAC17F958D2ee523a2206206994597C13D831ec7, market: 0x313603FA690301b0CaeEf8069c065862f9162162, rpcBlock: 26304000 [2.63e7], supply: 310626857780 [3.106e11], borrows: 285114467881 [2.851e11], feeBps: 1000, borrowRateRayPerSecond: 3544177975021265981 [3.544e18], independent365DayAprBps: 923, independentJulianYearAprBps: 923, adapterRateBps: 923, position: 0)",
+    "│   ├─ emit ActualPpsReference(market: 0x1A996cb54bb95462040408C06122D45D6Cdb6096, firstBlock: 519994008 [5.199e8], secondBlock: 520094008 [5.2e8], firstTimestamp: 1793451436 [1.793e9], secondTimestamp: 1793480259 [1.793e9], firstPps: 1136902751944000000000000 [1.136e24], secondPps: 1136947720251000000000000 [1.136e24], independentlyCalculatedBps: 432)",
+    "├─ emit ActualFunding(token: 0xaf88d065e77c8cC2239327C5EDb3A432268e5831, holder: 0xB38e8c17e38363aF6EbdCb3dAE12e0243582891D, beforeBalance: 2534086971 [2.534e9], amount: 1000000000 [1e9], afterBalance: 1534086971 [1.534e9])",
+    "├─ emit ActualFluid(token: 0xaf88d065e77c8cC2239327C5EDb3A432268e5831, market: 0x1A996cb54bb95462040408C06122D45D6Cdb6096, chainId: 42161 [4.216e4], rpcBlock: 520094008 [5.2e8], decimals: 6, supply: 57057185853274 [5.705e13], wrapperCash: 3298890 [3.298e6], redeemable: 0, rate: 432, position: 0)",
+    "├─ emit ActualFluid(token: 0xaf88d065e77c8cC2239327C5EDb3A432268e5831, market: 0x1A996cb54bb95462040408C06122D45D6Cdb6096, chainId: 42161 [4.216e4], rpcBlock: 520094008 [5.2e8], decimals: 6, supply: 57058185853273 [5.705e13], wrapperCash: 3298890 [3.298e6], redeemable: 999999999 [9.999e8], rate: 432, position: 999999999 [9.999e8])",
+    "├─ emit ActualFluid(token: 0xaf88d065e77c8cC2239327C5EDb3A432268e5831, market: 0x1A996cb54bb95462040408C06122D45D6Cdb6096, chainId: 42161 [4.216e4], rpcBlock: 520094008 [5.2e8], decimals: 6, supply: 57057935853272 [5.705e13], wrapperCash: 3298890 [3.298e6], redeemable: 749999998 [7.499e8], rate: 432, position: 749999998 [7.499e8])",
+    "├─ emit ActualFluid(token: 0xaf88d065e77c8cC2239327C5EDb3A432268e5831, market: 0x1A996cb54bb95462040408C06122D45D6Cdb6096, chainId: 42161 [4.216e4], rpcBlock: 520094008 [5.2e8], decimals: 6, supply: 57057185853274 [5.705e13], wrapperCash: 3298890 [3.298e6], redeemable: 0, rate: 432, position: 0)",
+    "│   ├─ emit ActualPpsReference(market: 0x5C20B550819128074FD538Edf79791733ccEdd18, firstBlock: 26299000 [2.629e7], secondBlock: 26300000 [2.63e7], firstTimestamp: 1793284163 [1.793e9], secondTimestamp: 1793296163 [1.793e9], firstPps: 1212250964020000000000000 [1.212e24], secondPps: 1212273058654000000000000 [1.212e24], independentlyCalculatedBps: 478)",
+    "├─ emit ActualFunding(token: 0xdAC17F958D2ee523a2206206994597C13D831ec7, holder: 0xF977814e90dA44bFA03b6295A0616a897441aceC, beforeBalance: 16000000001136208 [1.6e16], amount: 1000000000 [1e9], afterBalance: 15999999001136208 [1.599e16])",
+    "├─ emit ActualFluid(token: 0xdAC17F958D2ee523a2206206994597C13D831ec7, market: 0x5C20B550819128074FD538Edf79791733ccEdd18, chainId: 1, rpcBlock: 26300000 [2.63e7], decimals: 6, supply: 126638276746799 [1.266e14], wrapperCash: 0, redeemable: 0, rate: 478, position: 0)",
+    "├─ emit ActualFluid(token: 0xdAC17F958D2ee523a2206206994597C13D831ec7, market: 0x5C20B550819128074FD538Edf79791733ccEdd18, chainId: 1, rpcBlock: 26300000 [2.63e7], decimals: 6, supply: 126639276746798 [1.266e14], wrapperCash: 0, redeemable: 999999999 [9.999e8], rate: 478, position: 999999999 [9.999e8])",
+    "├─ emit ActualFluid(token: 0xdAC17F958D2ee523a2206206994597C13D831ec7, market: 0x5C20B550819128074FD538Edf79791733ccEdd18, chainId: 1, rpcBlock: 26300000 [2.63e7], decimals: 6, supply: 126639026746798 [1.266e14], wrapperCash: 0, redeemable: 749999999 [7.499e8], rate: 478, position: 749999999 [7.499e8])",
+    "├─ emit ActualFluid(token: 0xdAC17F958D2ee523a2206206994597C13D831ec7, market: 0x5C20B550819128074FD538Edf79791733ccEdd18, chainId: 1, rpcBlock: 26300000 [2.63e7], decimals: 6, supply: 126638276746799 [1.266e14], wrapperCash: 0, redeemable: 0, rate: 478, position: 0)",
+    "│   ├─ emit ActualPpsReference(market: 0x90551c1795392094FE6D29B758EcCD233cFAa260, firstBlock: 26299000 [2.629e7], secondBlock: 26300000 [2.63e7], firstTimestamp: 1793284163 [1.793e9], secondTimestamp: 1793296163 [1.793e9], firstPps: 1083646604410000000000000 [1.083e24], secondPps: 1083653112613000000000000 [1.083e24], independentlyCalculatedBps: 157)",
+    "├─ emit ActualFunding(token: 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2, holder: 0xF977814e90dA44bFA03b6295A0616a897441aceC, beforeBalance: 15520719728819056416 [1.552e19], amount: 1000000000000000000 [1e18], afterBalance: 14520719728819056416 [1.452e19])",
+    "├─ emit ActualFluid(token: 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2, market: 0x90551c1795392094FE6D29B758EcCD233cFAa260, chainId: 1, rpcBlock: 26300000 [2.63e7], decimals: 18, supply: 799406446631814258354 [7.994e20], wrapperCash: 0, redeemable: 0, rate: 157, position: 0)",
+    "├─ emit ActualFluid(token: 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2, market: 0x90551c1795392094FE6D29B758EcCD233cFAa260, chainId: 1, rpcBlock: 26300000 [2.63e7], decimals: 18, supply: 800406446631814258353 [8.004e20], wrapperCash: 0, redeemable: 999999999999999999 [9.999e17], rate: 157, position: 999999999999999999 [9.999e17])",
+    "├─ emit ActualFluid(token: 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2, market: 0x90551c1795392094FE6D29B758EcCD233cFAa260, chainId: 1, rpcBlock: 26300000 [2.63e7], decimals: 18, supply: 800156446631814258352 [8.001e20], wrapperCash: 0, redeemable: 749999999999999998 [7.499e17], rate: 157, position: 749999999999999998 [7.499e17])",
+    "├─ emit ActualFluid(token: 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2, market: 0x90551c1795392094FE6D29B758EcCD233cFAa260, chainId: 1, rpcBlock: 26300000 [2.63e7], decimals: 18, supply: 799406446631814258354 [7.994e20], wrapperCash: 0, redeemable: 0, rate: 157, position: 0)",
+    "├─ emit RealScenario(chainId: 1, asset: 0xdAC17F958D2ee523a2206206994597C13D831ec7, rpcForkBlock: 26165000 [2.616e7], evmBlockNumber: 26165000 [2.616e7], timestamp: 1791671003 [1.791e9], priceWad: 999025170000000000 [9.99e17], oracleUpdatedAt: 1791643163 [1.791e9], coreNav: 0, invested: 0, idle: 0)",
+    "├─ emit RealFunding(chainId: 1, token: 0xdAC17F958D2ee523a2206206994597C13D831ec7, holder: 0xF977814e90dA44bFA03b6295A0616a897441aceC, holderBefore: 16000000001124208 [1.6e16], transferred: 1000000000 [1e9], holderAfter: 15999999001124208 [1.599e16])",
+    "├─ emit RealFunding(chainId: 1, token: 0xdAC17F958D2ee523a2206206994597C13D831ec7, holder: 0xF977814e90dA44bFA03b6295A0616a897441aceC, holderBefore: 15999999001124208 [1.599e16], transferred: 1000000000 [1e9], holderAfter: 15999998001124208 [1.599e16])",
+    "├─ emit RealFunding(chainId: 1, token: 0xdAC17F958D2ee523a2206206994597C13D831ec7, holder: 0xF977814e90dA44bFA03b6295A0616a897441aceC, holderBefore: 15999998001124208 [1.599e16], transferred: 1000000000 [1e9], holderAfter: 15999997001124208 [1.599e16])",
+    "├─ emit RealScenario(chainId: 1, asset: 0xdAC17F958D2ee523a2206206994597C13D831ec7, rpcForkBlock: 26165040 [2.616e7], evmBlockNumber: 26165040 [2.616e7], timestamp: 1791671483 [1.791e9], priceWad: 999025170000000000 [9.99e17], oracleUpdatedAt: 1791643163 [1.791e9], coreNav: 2128075483 [2.128e9], invested: 1872706543 [1.872e9], idle: 0)",
+    "│   ├─ emit RealScenario(chainId: 1, asset: 0xdAC17F958D2ee523a2206206994597C13D831ec7, rpcForkBlock: 26250000 [2.625e7], evmBlockNumber: 26250000 [2.625e7], timestamp: 1792694303 [1.792e9], priceWad: 998910000000000000 [9.989e17], oracleUpdatedAt: 1792680239 [1.792e9], coreNav: 1969976077 [1.969e9], invested: 1874777942 [1.874e9], idle: 0)",
+    "│   │   ├─ emit RealScenario(chainId: 1, asset: 0xdAC17F958D2ee523a2206206994597C13D831ec7, rpcForkBlock: 26310000 [2.631e7], evmBlockNumber: 26310000 [2.631e7], timestamp: 1793416631 [1.793e9], priceWad: 998328150000000000 [9.983e17], oracleUpdatedAt: 1793371595 [1.793e9], coreNav: 1846186123 [1.846e9], invested: 1876240790 [1.876e9], idle: 0)",
+    "│   │   │   │   ├─ emit RealizedForQueue(target: 30054667 [3.005e7], got: 30204941 [3.02e7])",
+    "│   │   ├─ emit RealScenario(chainId: 1, asset: 0xdAC17F958D2ee523a2206206994597C13D831ec7, rpcForkBlock: 26310000 [2.631e7], evmBlockNumber: 26310000 [2.631e7], timestamp: 1793416631 [1.793e9], priceWad: 998328150000000000 [9.983e17], oracleUpdatedAt: 1793371595 [1.793e9], coreNav: 1846186122 [1.846e9], invested: 0, idle: 0)",
+    "├─ emit RealScenario(chainId: 1, asset: 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2, rpcForkBlock: 26165000 [2.616e7], evmBlockNumber: 26165000 [2.616e7], timestamp: 1791671003 [1.791e9], priceWad: 2506535421100000000000 [2.506e21], oracleUpdatedAt: 1791668543 [1.791e9], coreNav: 0, invested: 0, idle: 0)",
+    "│   ├─ emit RealFunding(chainId: 1, token: 0xdAC17F958D2ee523a2206206994597C13D831ec7, holder: 0xF977814e90dA44bFA03b6295A0616a897441aceC, holderBefore: 16000000001124208 [1.6e16], transferred: 1000000000 [1e9], holderAfter: 15999999001124208 [1.599e16])",
+    "│   ├─ emit RealFundingConversion(chainId: 1, input: 0xdAC17F958D2ee523a2206206994597C13D831ec7, output: 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2, amountIn: 1000000000 [1e9], oracleExpected: 398568143737452168 [3.985e17], amountReceived: 398423734785811236 [3.984e17])",
+    "│   ├─ emit RealFunding(chainId: 1, token: 0xdAC17F958D2ee523a2206206994597C13D831ec7, holder: 0xF977814e90dA44bFA03b6295A0616a897441aceC, holderBefore: 15999999001124208 [1.599e16], transferred: 1000000000 [1e9], holderAfter: 15999998001124208 [1.599e16])",
+    "│   ├─ emit RealFundingConversion(chainId: 1, input: 0xdAC17F958D2ee523a2206206994597C13D831ec7, output: 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2, amountIn: 1000000000 [1e9], oracleExpected: 398568143737452168 [3.985e17], amountReceived: 398403429501088929 [3.984e17])",
+    "│   ├─ emit RealFunding(chainId: 1, token: 0xdAC17F958D2ee523a2206206994597C13D831ec7, holder: 0xF977814e90dA44bFA03b6295A0616a897441aceC, holderBefore: 15999998001124208 [1.599e16], transferred: 1000000000 [1e9], holderAfter: 15999997001124208 [1.599e16])",
+    "│   ├─ emit RealFundingConversion(chainId: 1, input: 0xdAC17F958D2ee523a2206206994597C13D831ec7, output: 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2, amountIn: 1000000000 [1e9], oracleExpected: 398568143737452168 [3.985e17], amountReceived: 398383125768586202 [3.983e17])",
+    "├─ emit RealScenario(chainId: 1, asset: 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2, rpcForkBlock: 26165040 [2.616e7], evmBlockNumber: 26165040 [2.616e7], timestamp: 1791671483 [1.791e9], priceWad: 2506535421100000000000 [2.506e21], oracleUpdatedAt: 1791668543 [1.791e9], coreNav: 848182858163731074 [8.481e17], invested: 746400933259577961 [7.464e17], idle: 0)",
+    "│   ├─ emit RealScenario(chainId: 1, asset: 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2, rpcForkBlock: 26250000 [2.625e7], evmBlockNumber: 26250000 [2.625e7], timestamp: 1792694303 [1.792e9], priceWad: 2372390000000000000000 [2.372e21], oracleUpdatedAt: 1792692227 [1.792e9], coreNav: 784668425663738179 [7.846e17], invested: 746721905089491086 [7.467e17], idle: 0)",
+    "│   │   ├─ emit RealScenario(chainId: 1, asset: 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2, rpcForkBlock: 26310000 [2.631e7], evmBlockNumber: 26310000 [2.631e7], timestamp: 1793416631 [1.793e9], priceWad: 2241474066400000000000 [2.241e21], oracleUpdatedAt: 1793415911 [1.793e9], coreNav: 735005194908884060 [7.35e17], invested: 746948579323430086 [7.469e17], idle: 0)",
+    "│   │   │   │   ├─ emit RealizedForQueue(target: 11943384414546026 [1.194e16], got: 12003101336618757 [1.2e16])",
+    "│   │   ├─ emit RealScenario(chainId: 1, asset: 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2, rpcForkBlock: 26310000 [2.631e7], evmBlockNumber: 26310000 [2.631e7], timestamp: 1793416631 [1.793e9], priceWad: 2241474066400000000000 [2.241e21], oracleUpdatedAt: 1793415911 [1.793e9], coreNav: 735005194908884059 [7.35e17], invested: 0, idle: 0)",
+    "├─ emit RealScenario(chainId: 1, asset: 0x6c3ea9036406852006290770BEdFcAbA0e23A0e8, rpcForkBlock: 26165000 [2.616e7], evmBlockNumber: 26165000 [2.616e7], timestamp: 1791671003 [1.791e9], priceWad: 1000003050000000000 [1e18], oracleUpdatedAt: 1791662015 [1.791e9], coreNav: 0, invested: 0, idle: 0)",
+    "├─ emit RealFunding(chainId: 1, token: 0x6c3ea9036406852006290770BEdFcAbA0e23A0e8, holder: 0xAFBb1a7E9ddEf38D9bC4A220E702B18DAcaa2a62, holderBefore: 500861601438863 [5.008e14], transferred: 1000000000 [1e9], holderAfter: 500860601438863 [5.008e14])",
+    "├─ emit RealScenario(chainId: 1, asset: 0x6c3ea9036406852006290770BEdFcAbA0e23A0e8, rpcForkBlock: 26165040 [2.616e7], evmBlockNumber: 26165040 [2.616e7], timestamp: 1791671483 [1.791e9], priceWad: 1000003050000000000 [1e18], oracleUpdatedAt: 1791662015 [1.791e9], coreNav: 200999473 [2.009e8], invested: 176879547 [1.768e8], idle: 0)",
+    "│   ├─ emit RealScenario(chainId: 1, asset: 0x6c3ea9036406852006290770BEdFcAbA0e23A0e8, rpcForkBlock: 26310000 [2.631e7], evmBlockNumber: 26310000 [2.631e7], timestamp: 1793416631 [1.793e9], priceWad: 999948940000000000 [9.999e17], oracleUpdatedAt: 1793390435 [1.793e9], coreNav: 172302468 [1.723e8], invested: 177194139 [1.771e8], idle: 0)",
+    "│   │   │   ├─ emit RealizedForQueue(target: 4891671 [4.891e6], got: 4891671 [4.891e6])",
+    "│   ├─ emit RealScenario(chainId: 1, asset: 0x6c3ea9036406852006290770BEdFcAbA0e23A0e8, rpcForkBlock: 26310000 [2.631e7], evmBlockNumber: 26310000 [2.631e7], timestamp: 1793416631 [1.793e9], priceWad: 999948940000000000 [9.999e17], oracleUpdatedAt: 1793390435 [1.793e9], coreNav: 172302468 [1.723e8], invested: 0, idle: 0)",
+    "├─ emit RealScenario(chainId: 1, asset: 0xdAC17F958D2ee523a2206206994597C13D831ec7, rpcForkBlock: 26165000 [2.616e7], evmBlockNumber: 26165000 [2.616e7], timestamp: 1791671003 [1.791e9], priceWad: 999025170000000000 [9.99e17], oracleUpdatedAt: 1791643163 [1.791e9], coreNav: 0, invested: 0, idle: 0)",
+    "├─ emit RealFunding(chainId: 1, token: 0xdAC17F958D2ee523a2206206994597C13D831ec7, holder: 0xF977814e90dA44bFA03b6295A0616a897441aceC, holderBefore: 16000000001124208 [1.6e16], transferred: 1000000000 [1e9], holderAfter: 15999999001124208 [1.599e16])",
+    "├─ emit RealScenario(chainId: 1, asset: 0xdAC17F958D2ee523a2206206994597C13D831ec7, rpcForkBlock: 26165040 [2.616e7], evmBlockNumber: 26165040 [2.616e7], timestamp: 1791671483 [1.791e9], priceWad: 999025170000000000 [9.99e17], oracleUpdatedAt: 1791643163 [1.791e9], coreNav: 201196224 [2.011e8], invested: 177052689 [1.77e8], idle: 0)",
+    "│   ├─ emit RealScenario(chainId: 1, asset: 0xdAC17F958D2ee523a2206206994597C13D831ec7, rpcForkBlock: 26310000 [2.631e7], evmBlockNumber: 26310000 [2.631e7], timestamp: 1793416631 [1.793e9], priceWad: 998328150000000000 [9.983e17], oracleUpdatedAt: 1793371595 [1.793e9], coreNav: 172489657 [1.724e8], invested: 177386830 [1.773e8], idle: 0)",
+    "│   │   │   ├─ emit RealizedForQueue(target: 4897173 [4.897e6], got: 4897173 [4.897e6])",
+    "│   ├─ emit RealScenario(chainId: 1, asset: 0xdAC17F958D2ee523a2206206994597C13D831ec7, rpcForkBlock: 26310000 [2.631e7], evmBlockNumber: 26310000 [2.631e7], timestamp: 1793416631 [1.793e9], priceWad: 998328150000000000 [9.983e17], oracleUpdatedAt: 1793371595 [1.793e9], coreNav: 172489657 [1.724e8], invested: 0, idle: 0)",
+    "│   ├─ emit ActualPpsReference(market: 0x7e97fa6893871A2751B5fE961978DCCb2c201E65, firstBlock: 519994008 [5.199e8], secondBlock: 520094008 [5.2e8], firstTimestamp: 1793451436 [1.793e9], secondTimestamp: 1793480259 [1.793e9], firstPps: 1051320734320 [1.051e12], secondPps: 1051355914624 [1.051e12], independentlyCalculatedBps: 366)",
+    "├─ emit ActualFunding(token: 0xaf88d065e77c8cC2239327C5EDb3A432268e5831, holder: 0xB38e8c17e38363aF6EbdCb3dAE12e0243582891D, beforeBalance: 2534086971 [2.534e9], amount: 1000000000 [1e9], afterBalance: 1534086971 [1.534e9])",
+    "├─ emit ActualMorpho(token: 0xaf88d065e77c8cC2239327C5EDb3A432268e5831, market: 0x7e97fa6893871A2751B5fE961978DCCb2c201E65, rpcBlock: 520094008 [5.2e8], decimals: 6, tvl: 402470920147 [4.024e11], wrapperCash: 0, position: 0, redeemable: 0, rate: 366)",
+    "├─ emit ActualCappedMarketRejected(market: 0x7e97fa6893871A2751B5fE961978DCCb2c201E65, rpcBlock: 520094008 [5.2e8], requestedAssets: 1000000000 [1e9], unchangedCallerAssets: 1000000000 [1e9], adapterAssets: 0)",
+    "│   ├─ emit ActualPpsReference(market: 0x7c574174DA4b2be3f705c6244B4BfA0815a8B3Ed, firstBlock: 519994008 [5.199e8], secondBlock: 520094008 [5.2e8], firstTimestamp: 1793451436 [1.793e9], secondTimestamp: 1793480259 [1.793e9], firstPps: 1039741113700 [1.039e12], secondPps: 1039775863271 [1.039e12], independentlyCalculatedBps: 365)",
+    "├─ emit ActualFunding(token: 0xaf88d065e77c8cC2239327C5EDb3A432268e5831, holder: 0xB38e8c17e38363aF6EbdCb3dAE12e0243582891D, beforeBalance: 2534086971 [2.534e9], amount: 1000000000 [1e9], afterBalance: 1534086971 [1.534e9])",
+    "├─ emit ActualMorpho(token: 0xaf88d065e77c8cC2239327C5EDb3A432268e5831, market: 0x7c574174DA4b2be3f705c6244B4BfA0815a8B3Ed, rpcBlock: 520094008 [5.2e8], decimals: 6, tvl: 470942717429 [4.709e11], wrapperCash: 2209259 [2.209e6], position: 0, redeemable: 0, rate: 365)",
+    "├─ emit ActualMorpho(token: 0xaf88d065e77c8cC2239327C5EDb3A432268e5831, market: 0x7c574174DA4b2be3f705c6244B4BfA0815a8B3Ed, rpcBlock: 520094008 [5.2e8], decimals: 6, tvl: 471942717429 [4.719e11], wrapperCash: 2209259 [2.209e6], position: 999999999 [9.999e8], redeemable: 999999999 [9.999e8], rate: 365)",
+    "├─ emit ActualMorpho(token: 0xaf88d065e77c8cC2239327C5EDb3A432268e5831, market: 0x7c574174DA4b2be3f705c6244B4BfA0815a8B3Ed, rpcBlock: 520094008 [5.2e8], decimals: 6, tvl: 471692717429 [4.716e11], wrapperCash: 2209259 [2.209e6], position: 749999999 [7.499e8], redeemable: 749999999 [7.499e8], rate: 365)",
+    "├─ emit ActualMorpho(token: 0xaf88d065e77c8cC2239327C5EDb3A432268e5831, market: 0x7c574174DA4b2be3f705c6244B4BfA0815a8B3Ed, rpcBlock: 520094008 [5.2e8], decimals: 6, tvl: 470942717430 [4.709e11], wrapperCash: 2209259 [2.209e6], position: 0, redeemable: 0, rate: 365)",
+    "│   ├─ emit ActualPpsReference(market: 0x19b3cD7032B8C062E8d44EaCad661a0970DD8c55, firstBlock: 26299000 [2.629e7], secondBlock: 26300000 [2.63e7], firstTimestamp: 1793284163 [1.793e9], secondTimestamp: 1793296163 [1.793e9], firstPps: 2050751505719 [2.05e12], secondPps: 2050783373615 [2.05e12], independentlyCalculatedBps: 408)",
+    "├─ emit ActualFunding(token: 0x6c3ea9036406852006290770BEdFcAbA0e23A0e8, holder: 0xAFBb1a7E9ddEf38D9bC4A220E702B18DAcaa2a62, beforeBalance: 500861601438863 [5.008e14], amount: 1000000000 [1e9], afterBalance: 500860601438863 [5.008e14])",
+    "├─ emit ActualMorpho(token: 0x6c3ea9036406852006290770BEdFcAbA0e23A0e8, market: 0x19b3cD7032B8C062E8d44EaCad661a0970DD8c55, rpcBlock: 26300000 [2.63e7], decimals: 6, tvl: 3088926 [3.088e6], wrapperCash: 0, position: 0, redeemable: 0, rate: 408)",
+    "├─ emit ActualMorpho(token: 0x6c3ea9036406852006290770BEdFcAbA0e23A0e8, market: 0x19b3cD7032B8C062E8d44EaCad661a0970DD8c55, rpcBlock: 26300000 [2.63e7], decimals: 6, tvl: 1003088926 [1.003e9], wrapperCash: 0, position: 999999999 [9.999e8], redeemable: 999999999 [9.999e8], rate: 408)",
+    "├─ emit ActualMorpho(token: 0x6c3ea9036406852006290770BEdFcAbA0e23A0e8, market: 0x19b3cD7032B8C062E8d44EaCad661a0970DD8c55, rpcBlock: 26300000 [2.63e7], decimals: 6, tvl: 753088926 [7.53e8], wrapperCash: 0, position: 749999999 [7.499e8], redeemable: 749999999 [7.499e8], rate: 408)",
+    "├─ emit ActualMorpho(token: 0x6c3ea9036406852006290770BEdFcAbA0e23A0e8, market: 0x19b3cD7032B8C062E8d44EaCad661a0970DD8c55, rpcBlock: 26300000 [2.63e7], decimals: 6, tvl: 3088927 [3.088e6], wrapperCash: 0, position: 0, redeemable: 0, rate: 408)",
+    "│   ├─ emit ActualPpsReference(market: 0xbEef047a543E45807105E51A8BBEFCc5950fcfBa, firstBlock: 26299000 [2.629e7], secondBlock: 26300000 [2.63e7], firstTimestamp: 1793284163 [1.793e9], secondTimestamp: 1793296163 [1.793e9], firstPps: 1135642988457 [1.135e12], secondPps: 1135663643579 [1.135e12], independentlyCalculatedBps: 477)",
+    "├─ emit ActualFunding(token: 0xdAC17F958D2ee523a2206206994597C13D831ec7, holder: 0xF977814e90dA44bFA03b6295A0616a897441aceC, beforeBalance: 16000000001136208 [1.6e16], amount: 1000000000 [1e9], afterBalance: 15999999001136208 [1.599e16])",
+    "├─ emit ActualMorpho(token: 0xdAC17F958D2ee523a2206206994597C13D831ec7, market: 0xbEef047a543E45807105E51A8BBEFCc5950fcfBa, rpcBlock: 26300000 [2.63e7], decimals: 6, tvl: 82737498220957 [8.273e13], wrapperCash: 38405905 [3.84e7], position: 0, redeemable: 0, rate: 477)",
+    "├─ emit ActualMorpho(token: 0xdAC17F958D2ee523a2206206994597C13D831ec7, market: 0xbEef047a543E45807105E51A8BBEFCc5950fcfBa, rpcBlock: 26300000 [2.63e7], decimals: 6, tvl: 82738498220957 [8.273e13], wrapperCash: 38405905 [3.84e7], position: 999999999 [9.999e8], redeemable: 999999999 [9.999e8], rate: 477)",
+    "├─ emit ActualMorpho(token: 0xdAC17F958D2ee523a2206206994597C13D831ec7, market: 0xbEef047a543E45807105E51A8BBEFCc5950fcfBa, rpcBlock: 26300000 [2.63e7], decimals: 6, tvl: 82738248220957 [8.273e13], wrapperCash: 38405905 [3.84e7], position: 749999999 [7.499e8], redeemable: 749999999 [7.499e8], rate: 477)",
+    "├─ emit ActualMorpho(token: 0xdAC17F958D2ee523a2206206994597C13D831ec7, market: 0xbEef047a543E45807105E51A8BBEFCc5950fcfBa, rpcBlock: 26300000 [2.63e7], decimals: 6, tvl: 82737498220958 [8.273e13], wrapperCash: 38405905 [3.84e7], position: 0, redeemable: 0, rate: 477)",
+    "│   ├─ emit ActualPpsReference(market: 0xb576765fB15505433aF24FEe2c0325895C559FB2, firstBlock: 26299000 [2.629e7], secondBlock: 26300000 [2.63e7], firstTimestamp: 1793284163 [1.793e9], secondTimestamp: 1793296163 [1.793e9], firstPps: 2026279568690 [2.026e12], secondPps: 2026297122555 [2.026e12], independentlyCalculatedBps: 227)",
+    "├─ emit ActualFunding(token: 0x6c3ea9036406852006290770BEdFcAbA0e23A0e8, holder: 0xAFBb1a7E9ddEf38D9bC4A220E702B18DAcaa2a62, beforeBalance: 500861601438863 [5.008e14], amount: 1000000000 [1e9], afterBalance: 500860601438863 [5.008e14])",
+    "├─ emit ActualMorpho(token: 0x6c3ea9036406852006290770BEdFcAbA0e23A0e8, market: 0xb576765fB15505433aF24FEe2c0325895C559FB2, rpcBlock: 26300000 [2.63e7], decimals: 6, tvl: 359196885327996 [3.591e14], wrapperCash: 41160742685110 [4.116e13], position: 0, redeemable: 0, rate: 227)",
+    "├─ emit ActualMorpho(token: 0x6c3ea9036406852006290770BEdFcAbA0e23A0e8, market: 0xb576765fB15505433aF24FEe2c0325895C559FB2, rpcBlock: 26300000 [2.63e7], decimals: 6, tvl: 359197885327996 [3.591e14], wrapperCash: 41161742685110 [4.116e13], position: 999999999 [9.999e8], redeemable: 0, rate: 227)",
+    "├─ emit ActualMorpho(token: 0x6c3ea9036406852006290770BEdFcAbA0e23A0e8, market: 0xb576765fB15505433aF24FEe2c0325895C559FB2, rpcBlock: 26300000 [2.63e7], decimals: 6, tvl: 359197635327996 [3.591e14], wrapperCash: 41161492685110 [4.116e13], position: 749999999 [7.499e8], redeemable: 0, rate: 227)",
+    "├─ emit ActualMorpho(token: 0x6c3ea9036406852006290770BEdFcAbA0e23A0e8, market: 0xb576765fB15505433aF24FEe2c0325895C559FB2, rpcBlock: 26300000 [2.63e7], decimals: 6, tvl: 359196885327997 [3.591e14], wrapperCash: 41160742685111 [4.116e13], position: 0, redeemable: 0, rate: 227)",
+    "│   ├─ emit ActualPpsReference(market: 0xBEEf050ecd6a16c4e7bfFbB52Ebba7846C4b8cD4, firstBlock: 26299000 [2.629e7], secondBlock: 26300000 [2.63e7], firstTimestamp: 1793284163 [1.793e9], secondTimestamp: 1793296163 [1.793e9], firstPps: 1053099640498297518588012 [1.053e24], secondPps: 1053106670068726165313329 [1.053e24], independentlyCalculatedBps: 175)",
+    "├─ emit ActualFunding(token: 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2, holder: 0xF977814e90dA44bFA03b6295A0616a897441aceC, beforeBalance: 15520719728819056416 [1.552e19], amount: 1000000000000000000 [1e18], afterBalance: 14520719728819056416 [1.452e19])",
+    "├─ emit ActualMorpho(token: 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2, market: 0xBEEf050ecd6a16c4e7bfFbB52Ebba7846C4b8cD4, rpcBlock: 26300000 [2.63e7], decimals: 18, tvl: 3708183715328476796760 [3.708e21], wrapperCash: 0, position: 0, redeemable: 0, rate: 175)",
+    "├─ emit ActualMorpho(token: 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2, market: 0xBEEf050ecd6a16c4e7bfFbB52Ebba7846C4b8cD4, rpcBlock: 26300000 [2.63e7], decimals: 18, tvl: 3709183715328476796760 [3.709e21], wrapperCash: 0, position: 999999999999999999 [9.999e17], redeemable: 999999999999999999 [9.999e17], rate: 175)",
+    "├─ emit ActualMorpho(token: 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2, market: 0xBEEf050ecd6a16c4e7bfFbB52Ebba7846C4b8cD4, rpcBlock: 26300000 [2.63e7], decimals: 18, tvl: 3708933715328476796760 [3.708e21], wrapperCash: 0, position: 749999999999999999 [7.499e17], redeemable: 749999999999999999 [7.499e17], rate: 175)",
+    "├─ emit ActualMorpho(token: 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2, market: 0xBEEf050ecd6a16c4e7bfFbB52Ebba7846C4b8cD4, rpcBlock: 26300000 [2.63e7], decimals: 18, tvl: 3708183715328476796761 [3.708e21], wrapperCash: 0, position: 0, redeemable: 0, rate: 175)",
+    "├─ emit RealFunding(chainId: 42161 [4.216e4], token: 0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9, holder: 0xF977814e90dA44bFA03b6295A0616a897441aceC, holderBefore: 10000000012040 [1e13], transferred: 90000000000 [9e10], holderAfter: 9910000012040 [9.91e12])",
+    "├─ emit RealFundingConversion(chainId: 42161 [4.216e4], input: 0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9, output: 0xaf88d065e77c8cC2239327C5EDb3A432268e5831, amountIn: 88000000000 [8.8e10], oracleExpected: 87909038324 [8.79e10], amountReceived: 87892642735 [8.789e10])",
+    "│   │   ├─ emit RealizedForQueue(target: 74803364852 [7.48e10], got: 74844000942 [7.484e10])",
+    "├─ emit ActualNonemptyWarm(rpcBlock: 520094008 [5.2e8], warmBefore: 6800910233 [6.8e9], strategyBefore: 74809987098 [7.48e10], owed: 85010349752 [8.501e10], claimed: 85010349752 [8.501e10], warmAfter: 0, strategyAfter: 0)",
+    "│   ├─ emit NativeFeeOptimism(rpcBlock: 159020249 [1.59e8], nativePriceWad: 2266310000000000000000 [2.266e21], executionPriceWei: 1000000281 [1e9], quotedGas: 1796224 [1.796e6], expectedUsd6: 5088879 [5.088e6], quotedUsd6: 5088879 [5.088e6], invested: 0, recalled: 0)",
+    "├─ emit RealFunding(chainId: 10, token: 0x94b008aA00579c1307B0EF2c499aD98a8ce58e58, holder: 0xacD03D601e5bB1B275Bb94076fF46ED9D753435A, holderBefore: 15285976626224 [1.528e13], transferred: 201261168 [2.012e8], holderAfter: 15285775365056 [1.528e13])",
+    "├─ emit ActualOptimismRecall(asset: 0x94b008aA00579c1307B0EF2c499aD98a8ce58e58, rpcBlock: 159020249 [1.59e8], invested: 177109827 [1.771e8], recalled: 177109827 [1.771e8])",
+    "│   ├─ emit NativeFeePolygon(rpcBlock: 96622546 [9.662e7], nativePriceWad: 88312640000000000 [8.831e16], executionPriceWei: 359977417725 [3.599e11], quotedGas: 1796224 [1.796e6], expectedUsd6: 71379 [7.137e4], quotedUsd6: 71379 [7.137e4], invested: 0, recalled: 0)",
+    "├─ emit RealFunding(chainId: 137, token: 0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359, holder: 0xF977814e90dA44bFA03b6295A0616a897441aceC, holderBefore: 268209996 [2.682e8], transferred: 201045858 [2.01e8], holderAfter: 67164138 [6.716e7])",
+    "├─ emit ActualPolygonRecall(asset: 0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359, rpcBlock: 96622546 [9.662e7], invested: 176920354 [1.769e8], recalled: 176920354 [1.769e8])",
+    "├─ emit ActualFunding(token: 0xaf88d065e77c8cC2239327C5EDb3A432268e5831, holder: 0xB38e8c17e38363aF6EbdCb3dAE12e0243582891D, beforeBalance: 2534086971 [2.534e9], amount: 1000000000 [1e9], afterBalance: 1534086971 [1.534e9])",
+    "├─ emit ActualVenus(token: 0xaf88d065e77c8cC2239327C5EDb3A432268e5831, market: 0x7D8609f8da70fF9027E9bc5229Af4F6727662707, chainId: 42161 [4.216e4], rpcBlock: 520094008 [5.2e8], decimals: 6, annualSlots: 31536000 [3.153e7], ratePerSlot: 1577386672 [1.577e9], independentAprBps: 497, position: 0)",
+    "├─ emit ActualVenusBalanceSheet(market: 0x7D8609f8da70fF9027E9bc5229Af4F6727662707, cash: 62926410165 [6.292e10], borrows: 182387598633 [1.823e11], reserves: 451202 [4.512e5], badDebt: 39018983 [3.901e7], netSuppliedAssets: 245352576579 [2.453e11])",
+    "├─ emit ActualVenus(token: 0xaf88d065e77c8cC2239327C5EDb3A432268e5831, market: 0x7D8609f8da70fF9027E9bc5229Af4F6727662707, chainId: 42161 [4.216e4], rpcBlock: 520094008 [5.2e8], decimals: 6, annualSlots: 31536000 [3.153e7], ratePerSlot: 1564606736 [1.564e9], independentAprBps: 493, position: 999999999 [9.999e8])",
+    "├─ emit ActualVenusBalanceSheet(market: 0x7D8609f8da70fF9027E9bc5229Af4F6727662707, cash: 63926410165 [6.392e10], borrows: 182387598633 [1.823e11], reserves: 451202 [4.512e5], badDebt: 39018983 [3.901e7], netSuppliedAssets: 246352576579 [2.463e11])",
+    "├─ emit ActualVenus(token: 0xaf88d065e77c8cC2239327C5EDb3A432268e5831, market: 0x7D8609f8da70fF9027E9bc5229Af4F6727662707, chainId: 42161 [4.216e4], rpcBlock: 520094008 [5.2e8], decimals: 6, annualSlots: 31536000 [3.153e7], ratePerSlot: 1567787120 [1.567e9], independentAprBps: 494, position: 749999999 [7.499e8])",
+    "├─ emit ActualVenusBalanceSheet(market: 0x7D8609f8da70fF9027E9bc5229Af4F6727662707, cash: 63676410165 [6.367e10], borrows: 182387598633 [1.823e11], reserves: 451202 [4.512e5], badDebt: 39018983 [3.901e7], netSuppliedAssets: 246102576579 [2.461e11])",
+    "├─ emit ActualVenus(token: 0xaf88d065e77c8cC2239327C5EDb3A432268e5831, market: 0x7D8609f8da70fF9027E9bc5229Af4F6727662707, chainId: 42161 [4.216e4], rpcBlock: 520094008 [5.2e8], decimals: 6, annualSlots: 31536000 [3.153e7], ratePerSlot: 1577386672 [1.577e9], independentAprBps: 497, position: 0)",
+    "├─ emit ActualVenusBalanceSheet(market: 0x7D8609f8da70fF9027E9bc5229Af4F6727662707, cash: 62926410166 [6.292e10], borrows: 182387598633 [1.823e11], reserves: 451202 [4.512e5], badDebt: 39018983 [3.901e7], netSuppliedAssets: 245352576580 [2.453e11])",
+    "├─ emit ActualFunding(token: 0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d, holder: 0xF977814e90dA44bFA03b6295A0616a897441aceC, beforeBalance: 362839299581344430000000000 [3.628e26], amount: 1000000000000000000000 [1e21], afterBalance: 362838299581344430000000000 [3.628e26])",
+    "├─ emit ActualVenus(token: 0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d, market: 0xecA88125a5ADbe82614ffC12D0DB554E2e2867C8, chainId: 56, rpcBlock: 131080000 [1.31e8], decimals: 18, annualSlots: 70080000 [7.008e7], ratePerSlot: 724094196 [7.24e8], independentAprBps: 507, position: 0)",
+    "├─ emit ActualVenusBalanceSheet(market: 0xecA88125a5ADbe82614ffC12D0DB554E2e2867C8, cash: 4053311780792162876015675 [4.053e24], borrows: 28934016606665799318264948 [2.893e25], reserves: 7559068479218571869 [7.559e18], badDebt: 0, netSuppliedAssets: 32987320828389482975708754 [3.298e25])",
+    "├─ emit ActualVenus(token: 0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d, market: 0xecA88125a5ADbe82614ffC12D0DB554E2e2867C8, chainId: 56, rpcBlock: 131080000 [1.31e8], decimals: 18, annualSlots: 70080000 [7.008e7], ratePerSlot: 723997371 [7.239e8], independentAprBps: 507, position: 999999999999798927176 [9.999e20])",
+    "├─ emit ActualVenusBalanceSheet(market: 0xecA88125a5ADbe82614ffC12D0DB554E2e2867C8, cash: 4054311780792162876015675 [4.054e24], borrows: 28934016606665799318264948 [2.893e25], reserves: 7559068479218571869 [7.559e18], badDebt: 0, netSuppliedAssets: 32988320828389482975708754 [3.298e25])",
+    "├─ emit ActualVenus(token: 0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d, market: 0xecA88125a5ADbe82614ffC12D0DB554E2e2867C8, chainId: 56, rpcBlock: 131080000 [1.31e8], decimals: 18, annualSlots: 70080000 [7.008e7], ratePerSlot: 724021577 [7.24e8], independentAprBps: 507, position: 749999999999849194239 [7.499e20])",
+    "├─ emit ActualVenusBalanceSheet(market: 0xecA88125a5ADbe82614ffC12D0DB554E2e2867C8, cash: 4054061780792162876015675 [4.054e24], borrows: 28934016606665799318264948 [2.893e25], reserves: 7559068479218571869 [7.559e18], badDebt: 0, netSuppliedAssets: 32988070828389482975708754 [3.298e25])",
+    "├─ emit ActualVenus(token: 0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d, market: 0xecA88125a5ADbe82614ffC12D0DB554E2e2867C8, chainId: 56, rpcBlock: 131080000 [1.31e8], decimals: 18, annualSlots: 70080000 [7.008e7], ratePerSlot: 724094196 [7.24e8], independentAprBps: 507, position: 0)",
+    "├─ emit ActualVenusBalanceSheet(market: 0xecA88125a5ADbe82614ffC12D0DB554E2e2867C8, cash: 4053311780792163026821436 [4.053e24], borrows: 28934016606665799318264948 [2.893e25], reserves: 7559068479218571869 [7.559e18], badDebt: 0, netSuppliedAssets: 32987320828389483126514515 [3.298e25])",
+    "├─ emit ActualFunding(token: 0x55d398326f99059fF775485246999027B3197955, holder: 0xF977814e90dA44bFA03b6295A0616a897441aceC, beforeBalance: 600000000000000000000000000 [6e26], amount: 100000000000000000000 [1e20], afterBalance: 599999900000000000000000000 [5.999e26])",
+    "├─ emit ActualVenus(token: 0x55d398326f99059fF775485246999027B3197955, market: 0xfD5840Cd36d94D7229439859C0112a4185BC0255, chainId: 56, rpcBlock: 131080000 [1.31e8], decimals: 18, annualSlots: 70080000 [7.008e7], ratePerSlot: 582438240 [5.824e8], independentAprBps: 408, position: 0)",
+    "├─ emit ActualVenusBalanceSheet(market: 0xfD5840Cd36d94D7229439859C0112a4185BC0255, cash: 28464096355056936986440365 [2.846e25], borrows: 141226683972745942102693806 [1.412e26], reserves: 201611091425408792244 [2.016e20], badDebt: 0, netSuppliedAssets: 169690578716711453680341927 [1.696e26])",
+    "├─ emit ActualVenus(token: 0x55d398326f99059fF775485246999027B3197955, market: 0xfD5840Cd36d94D7229439859C0112a4185BC0255, chainId: 56, rpcBlock: 131080000 [1.31e8], decimals: 18, annualSlots: 70080000 [7.008e7], ratePerSlot: 582437553 [5.824e8], independentAprBps: 408, position: 99999999999888356375 [9.999e19])",
+    "├─ emit ActualVenusBalanceSheet(market: 0xfD5840Cd36d94D7229439859C0112a4185BC0255, cash: 28464196355056936986440365 [2.846e25], borrows: 141226683972745942102693806 [1.412e26], reserves: 201611091425408792244 [2.016e20], badDebt: 0, netSuppliedAssets: 169690678716711453680341927 [1.696e26])",
+    "├─ emit ActualVenus(token: 0x55d398326f99059fF775485246999027B3197955, market: 0xfD5840Cd36d94D7229439859C0112a4185BC0255, chainId: 56, rpcBlock: 131080000 [1.31e8], decimals: 18, annualSlots: 70080000 [7.008e7], ratePerSlot: 582437724 [5.824e8], independentAprBps: 408, position: 75000000000049304093 [7.5e19])",
+    "├─ emit ActualVenusBalanceSheet(market: 0xfD5840Cd36d94D7229439859C0112a4185BC0255, cash: 28464171355056936986440365 [2.846e25], borrows: 141226683972745942102693806 [1.412e26], reserves: 201611091425408792244 [2.016e20], badDebt: 0, netSuppliedAssets: 169690653716711453680341927 [1.696e26])",
+    "├─ emit ActualVenus(token: 0x55d398326f99059fF775485246999027B3197955, market: 0xfD5840Cd36d94D7229439859C0112a4185BC0255, chainId: 56, rpcBlock: 131080000 [1.31e8], decimals: 18, annualSlots: 70080000 [7.008e7], ratePerSlot: 582438240 [5.824e8], independentAprBps: 408, position: 0)",
+    "├─ emit ActualVenusBalanceSheet(market: 0xfD5840Cd36d94D7229439859C0112a4185BC0255, cash: 28464096355056936937136272 [2.846e25], borrows: 141226683972745942102693806 [1.412e26], reserves: 201611091425408792244 [2.016e20], badDebt: 0, netSuppliedAssets: 169690578716711453631037834 [1.696e26])",
+    "├─ emit ActualFunding(token: 0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d, holder: 0xF977814e90dA44bFA03b6295A0616a897441aceC, beforeBalance: 20006051167753970000000000 [2e25], amount: 1000000000000000000000 [1e21], afterBalance: 20005051167753970000000000 [2e25])",
+    "├─ emit ActualVenus(token: 0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d, market: 0xecA88125a5ADbe82614ffC12D0DB554E2e2867C8, chainId: 56, rpcBlock: 45000000 [4.5e7], decimals: 18, annualSlots: 10512000 [1.051e7], ratePerSlot: 16240365112 [1.624e10], independentAprBps: 1707, position: 0)",
+    "├─ emit ActualVenusBalanceSheet(market: 0xecA88125a5ADbe82614ffC12D0DB554E2e2867C8, cash: 16853673157623329966872081 [1.685e25], borrows: 100655329221476811967077002 [1.006e26], reserves: 494757319099294953868 [4.947e20], badDebt: 0, netSuppliedAssets: 117508507621781042638995215 [1.175e26])",
+    "├─ emit ActualVenus(token: 0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d, market: 0xecA88125a5ADbe82614ffC12D0DB554E2e2867C8, chainId: 56, rpcBlock: 45000000 [4.5e7], decimals: 18, annualSlots: 10512000 [1.051e7], ratePerSlot: 16238890450 [1.623e10], independentAprBps: 1707, position: 999999999999754680560 [9.999e20])",
+    "├─ emit ActualVenusBalanceSheet(market: 0xecA88125a5ADbe82614ffC12D0DB554E2e2867C8, cash: 16854673157623329966872081 [1.685e25], borrows: 100655329221476811967077002 [1.006e26], reserves: 494757319099294953868 [4.947e20], badDebt: 0, netSuppliedAssets: 117509507621781042638995215 [1.175e26])",
+    "├─ emit ActualVenus(token: 0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d, market: 0xecA88125a5ADbe82614ffC12D0DB554E2e2867C8, chainId: 56, rpcBlock: 45000000 [4.5e7], decimals: 18, annualSlots: 10512000 [1.051e7], ratePerSlot: 16239259111 [1.623e10], independentAprBps: 1707, position: 749999999999878424052 [7.499e20])",
+    "├─ emit ActualVenusBalanceSheet(market: 0xecA88125a5ADbe82614ffC12D0DB554E2e2867C8, cash: 16854423157623329966872081 [1.685e25], borrows: 100655329221476811967077002 [1.006e26], reserves: 494757319099294953868 [4.947e20], badDebt: 0, netSuppliedAssets: 117509257621781042638995215 [1.175e26])",
+    "├─ emit ActualVenus(token: 0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d, market: 0xecA88125a5ADbe82614ffC12D0DB554E2e2867C8, chainId: 56, rpcBlock: 45000000 [4.5e7], decimals: 18, annualSlots: 10512000 [1.051e7], ratePerSlot: 16240365112 [1.624e10], independentAprBps: 1707, position: 0)",
+    "├─ emit ActualVenusBalanceSheet(market: 0xecA88125a5ADbe82614ffC12D0DB554E2e2867C8, cash: 16853673157623330088448029 [1.685e25], borrows: 100655329221476811967077002 [1.006e26], reserves: 494757319099294953868 [4.947e20], badDebt: 0, netSuppliedAssets: 117508507621781042760571163 [1.175e26])",
+    "├─ emit ActualFunding(token: 0x55d398326f99059fF775485246999027B3197955, holder: 0xF977814e90dA44bFA03b6295A0616a897441aceC, beforeBalance: 167098765030000000000 [1.67e20], amount: 100000000000000000000 [1e20], afterBalance: 67098765030000000000 [6.709e19])",
+    "├─ emit ActualVenus(token: 0x55d398326f99059fF775485246999027B3197955, market: 0xfD5840Cd36d94D7229439859C0112a4185BC0255, chainId: 56, rpcBlock: 45000000 [4.5e7], decimals: 18, annualSlots: 10512000 [1.051e7], ratePerSlot: 8960292210 [8.96e9], independentAprBps: 941, position: 0)",
+    "├─ emit ActualVenusBalanceSheet(market: 0xfD5840Cd36d94D7229439859C0112a4185BC0255, cash: 60802218647823993837005454 [6.08e25], borrows: 275311877803501243390158619 [2.753e26], reserves: 2050552606816511241047 [2.05e21], badDebt: 0, netSuppliedAssets: 336112045898718420715923026 [3.361e26])",
+    "├─ emit ActualVenus(token: 0x55d398326f99059fF775485246999027B3197955, market: 0xfD5840Cd36d94D7229439859C0112a4185BC0255, chainId: 56, rpcBlock: 45000000 [4.5e7], decimals: 18, annualSlots: 10512000 [1.051e7], ratePerSlot: 8960246817 [8.96e9], independentAprBps: 941, position: 99999999999809140687 [9.999e19])",
+    "├─ emit ActualVenusBalanceSheet(market: 0xfD5840Cd36d94D7229439859C0112a4185BC0255, cash: 60802318647823993837005454 [6.08e25], borrows: 275311877803501243390158619 [2.753e26], reserves: 2050552606816511241047 [2.05e21], badDebt: 0, netSuppliedAssets: 336112145898718420715923026 [3.361e26])",
+    "├─ emit ActualVenus(token: 0x55d398326f99059fF775485246999027B3197955, market: 0xfD5840Cd36d94D7229439859C0112a4185BC0255, chainId: 56, rpcBlock: 45000000 [4.5e7], decimals: 18, annualSlots: 10512000 [1.051e7], ratePerSlot: 8960258165 [8.96e9], independentAprBps: 941, position: 74999999999856855505 [7.499e19])",
+    "├─ emit ActualVenusBalanceSheet(market: 0xfD5840Cd36d94D7229439859C0112a4185BC0255, cash: 60802293647823993837005454 [6.08e25], borrows: 275311877803501243390158619 [2.753e26], reserves: 2050552606816511241047 [2.05e21], badDebt: 0, netSuppliedAssets: 336112120898718420715923026 [3.361e26])",
+    "├─ emit ActualVenus(token: 0x55d398326f99059fF775485246999027B3197955, market: 0xfD5840Cd36d94D7229439859C0112a4185BC0255, chainId: 56, rpcBlock: 45000000 [4.5e7], decimals: 18, annualSlots: 10512000 [1.051e7], ratePerSlot: 8960292210 [8.96e9], independentAprBps: 941, position: 0)",
+    "├─ emit ActualVenusBalanceSheet(market: 0xfD5840Cd36d94D7229439859C0112a4185BC0255, cash: 60802218647823993980149949 [6.08e25], borrows: 275311877803501243390158619 [2.753e26], reserves: 2050552606816511241047 [2.05e21], badDebt: 0, netSuppliedAssets: 336112045898718420859067521 [3.361e26])"
+  ],
+  "limits": [
+    "Local fork simulation; no broadcast.",
+    "Historical integrated scenarios preserve affected real protocol state as a disclosed closed counterfactual; they do not replay all intervening transactions.",
+    "Native ETH is unsupported by the frozen ERC20 core; WETH is tested.",
+    "Only the named chain/token/market rows are accepted; market caps, liquidity and oracle validity can change."
+  ]
+}

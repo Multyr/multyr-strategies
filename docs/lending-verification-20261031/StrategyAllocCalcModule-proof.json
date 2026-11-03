@@ -1,0 +1,117 @@
+{
+  "contract": "StrategyAllocCalcModule",
+  "address": "0x08a1eb6FC01042447A35CA59c3c00c588C41A878",
+  "block": 520094008,
+  "blockHash": "0xd0e4d2d28e0d9a60d819743930f9f2843409bf37a895a411620a632da53fa600",
+  "compilerInputSha256": "9892d22a80d7f8305eb2b065c518ae226c0f8c7debd748591937bb1ee4186a6c",
+  "runtimeBytes": 21650,
+  "compiledRuntimeBytes": 21650,
+  "observedKeccak": "0xad89894649586fbfaeeb730b9f99995f79c641277471c9f7bb0b9a911538aa5a",
+  "compiledBoundKeccak": "0xad89894649586fbfaeeb730b9f99995f79c641277471c9f7bb0b9a911538aa5a",
+  "immutableBindings": [
+    {
+      "astId": "103131",
+      "name": "_self",
+      "value": "0x08a1eb6fc01042447a35ca59c3c00c588c41a878",
+      "ranges": [
+        {
+          "length": 32,
+          "start": 4335
+        },
+        {
+          "length": 32,
+          "start": 8199
+        },
+        {
+          "length": 32,
+          "start": 8429
+        },
+        {
+          "length": 32,
+          "start": 8705
+        },
+        {
+          "length": 32,
+          "start": 9007
+        },
+        {
+          "length": 32,
+          "start": 9354
+        },
+        {
+          "length": 32,
+          "start": 10010
+        }
+      ]
+    },
+    {
+      "astId": "117064",
+      "name": "ASSET",
+      "value": "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+      "ranges": [
+        {
+          "length": 32,
+          "start": 3811
+        },
+        {
+          "length": 32,
+          "start": 7148
+        },
+        {
+          "length": 32,
+          "start": 12991
+        },
+        {
+          "length": 32,
+          "start": 16475
+        }
+      ]
+    },
+    {
+      "astId": "117066",
+      "name": "core",
+      "value": "0x5e0cdb76487bd96ff069ef7f78eadf5b5909c8cb",
+      "ranges": [
+        {
+          "length": 32,
+          "start": 2317
+        }
+      ]
+    },
+    {
+      "astId": "117068",
+      "name": "paramsModule",
+      "value": "0x0000000000000000000000000000000000000000",
+      "ranges": [
+        {
+          "length": 32,
+          "start": 2115
+        }
+      ]
+    },
+    {
+      "astId": "117070",
+      "name": "scoringModule",
+      "value": "0x0000000000000000000000000000000000000000",
+      "ranges": [
+        {
+          "length": 32,
+          "start": 8296
+        }
+      ]
+    },
+    {
+      "astId": "117072",
+      "name": "adapterOpsModule",
+      "value": "0x0000000000000000000000000000000000000000",
+      "ranges": [
+        {
+          "length": 32,
+          "start": 8778
+        }
+      ]
+    }
+  ],
+  "immutableBindingErrors": [],
+  "exactRuntimeMatch": true
+}

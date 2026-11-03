@@ -7,7 +7,7 @@ import {
     GateNotMet
 } from "./StrategyStorageLayout.sol";
 import {ReadOnlyGasEstimator as GasEstimator} from "../gas/ReadOnlyGasEstimator.sol";
-import {ILendingAdapter} from "../interfaces/ILendingAdapter.sol";
+import {ILendingAdapter, IStrategyAssetValuation} from "../interfaces/ILendingAdapter.sol";
 import { StrategyConfigLib } from "../lib/StrategyConfigLib.sol";
 
 import { IERC20Metadata } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
@@ -279,7 +279,7 @@ contract StrategyRebalanceGateModule is StrategyStorageLayout {
         }
         // ─────────────────────────────────────────────────────────────────
 
-        uint256 cost = gasCostUSDC;
+        uint256 costUsd6 = gasCostUSDC;
         if (rebalanceGasEstimator != address(0)) {
             bool valid;
             (valid, targetAllocs, moved) = _actionTargets(enabledAdapters, actions, tvl);
@@ -287,8 +287,9 @@ contract StrategyRebalanceGateModule is StrategyStorageLayout {
             GasEstimator.Quote memory q = _quote(actions, true);
             if (emitOnMandate) emit RebalanceGasEvaluated(q.actionsHash, q.costUSDC, q.l2Gas, q.posterWei, q.reliable);
             if (!q.reliable) return (false, 0);
-            cost = q.costUSDC;
+            costUsd6 = q.costUSDC;
         }
+        uint256 cost = _usd6ToAssetUnits(costUsd6);
 
         // P0.3 (remediation sprint 2026-04-22): drift denominator must use the
         // re-allocatable TVL (idle + enabled positions), NOT the total TVL that
@@ -307,7 +308,7 @@ contract StrategyRebalanceGateModule is StrategyStorageLayout {
         }
 
         // P1: Absolute minimum move floor
-        if (minMoveUsd > 0 && moved < minMoveUsd) return (false, 0);
+        if (minMoveUsd > 0 && moved < _usd6ToAssetUnits(minMoveUsd)) return (false, 0);
 
         // Run benefit/cost analysis (note: the benefit/cost formula itself still
         // uses `tvl` only indirectly via weighted APY; we pass `tvlEnabled` so
@@ -347,8 +348,8 @@ contract StrategyRebalanceGateModule is StrategyStorageLayout {
     ) {
         // P0.7 (iter-3b 2026-06-11) — Fallback-aware mandate.
         //
-        // For safety-fallback adapters, the ceiling becomes the (governance-
-        // approved, elevated) fallback cap instead of the normal abs/rel cap.
+        // Safety adapters use their dedicated fallback caps instead of structural
+        // tier caps. The global governance ceiling still binds when nonzero.
         // Without this, the safety overflow path would push e.g. Aave above
         // 30% and the mandate would immediately yank it back — exactly the
         // doomed-rotation loop diagnosed in iter-3 of the backtest sweep.
@@ -356,7 +357,7 @@ contract StrategyRebalanceGateModule is StrategyStorageLayout {
         // Each adapter is now scored against its OWN ceiling tier:
         //   - non-safety: absHard  = (adapterMaxExposureBps * tvl) × (1+tol)
         //                 relHard  = (dynRel * extTVL)              × (1+tol)
-        //   - safety:     absHard  = (fbAbsCapBps     * tvl)        × (1+tol)
+        //   - safety:     absHard  = (min(fbAbsCapBps, nonzero governance ceiling) * tvl) × (1+tol)
         //                 relHard  = (fbRelCapBps     * extTVL)     × (1+tol)
         //                 (rel uses fallback ONLY when fbRelCapBps > 0;
         //                  otherwise falls back to the dynamic rel band.)
@@ -537,7 +538,9 @@ contract StrategyRebalanceGateModule is StrategyStorageLayout {
             }
         }
 
-        ok = netBenefitBps >= int256(uint256(gateMinNetBenefitBps));
+        // Signed division truncates toward zero: a loss smaller than one BPS
+        // must not pass a zero-BPS threshold in the fixed-cost path.
+        ok = netBenefit >= 0 && netBenefitBps >= int256(uint256(gateMinNetBenefitBps));
     }
 
     /// @dev Remediation sprint P0.1 — over-cap protection benefit.
@@ -600,7 +603,7 @@ contract StrategyRebalanceGateModule is StrategyStorageLayout {
     ///      an independent hand-copy of the same band table -- StrategyConfigLib
     ///      functions are `internal` (compiler-inlined, no deployed library
     ///      address), so there was never actually a delegatecall to avoid.
-    function _gateRelativeCapBps(uint256 extTVL) internal pure returns (uint16) {
-        return StrategyConfigLib.effectiveRelativeCapBps(extTVL);
+    function _gateRelativeCapBps(uint256 extTVL) internal view returns (uint16) {
+        return IStrategyAssetValuation(address(this)).tierRelativeCap(extTVL);
     }
 }

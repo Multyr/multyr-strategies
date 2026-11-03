@@ -1,0 +1,30 @@
+{
+  "review": "R24 independent Claude source review",
+  "reviewRaw": "deployments/lending-full-validation-20261101/production/coordinator/R24-final-patch-review.ndjson",
+  "findings": [
+    {
+      "id": "R24-F1",
+      "status": "CONFIRMED_AND_FIXED_R25",
+      "scope": "Readable unbooked PoolLike ownership before first successful validation, including ERC4626-first/addPool transition",
+      "note": "Proposed unconditional sticky flag would obstruct initial account configuration; verify a direct ownership probe while retaining the initial unreadable-account setup distinction."
+    },
+    {
+      "id": "R24-F2",
+      "status": "AGGREGATE_INVARIANT_CONFIRMED_AND_FIXED_R25",
+      "scope": "Aggregate principal must equal the sum of per-market basis after an optimize move capitalizes yield",
+      "note": "Reviewer wrongly described aggregate drift upward and a certain false-positive after full closure. The source actually leaves the aggregate unchanged while per-market basis increases; test the precise invariant."
+    },
+    {
+      "id": "R24-F3",
+      "status": "REJECTED_UNREACHABLE_TRACE",
+      "evidence": [
+        "StrategyRebalancePlanModule.sol:233-245 invokes checkRemainingPlan before any action.",
+        "StrategyRebalanceGateModule.sol:166 rejects any planned withdrawal greater than current cached target.",
+        "checkRemainingPlan returns false when _actionTargets rejects; the plan cancels before deposit regardless of one- or two-withdrawal shape.",
+        "Existing test_recalledEconomicSourceCancelsBeforeDonationMovement asserts unchanged cash and untouched donated assets."
+      ],
+      "note": "The claimed test name does not exist. Safety plans intentionally retain protective execution and separately validate every deposit."
+    }
+  ],
+  "readiness": "NOT_PRODUCTION_READY"
+}

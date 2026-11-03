@@ -1,0 +1,31 @@
+{
+  "status": "PASS_FOR_NAMED_REAL_DATA_SCENARIOS",
+  "productionReady": false,
+  "acceptance": "docs/lending-production-remediation-20261101/r6-actual-42-acceptance.json",
+  "raw": {
+    "path": "deployments/lending-full-validation-20261101/production/R5-actual/root-42-keeper.log",
+    "sha256": "085ced1bc13f79afba61e0787cbc8a0117a8ad185a1d13513f271681606ed6df"
+  },
+  "scenario": "Arbitrum native USDC; nonempty frozen-Core Aave warm plus cold Aave and Morpho Prime; all user shares redeemed through normal seven-day queue",
+  "observations": [
+    {
+      "rpcBlock": "520094008",
+      "warmBefore": "6800910233",
+      "strategyBefore": "74809987098",
+      "owed": "85010349752",
+      "claimed": "85010349752",
+      "warmAfter": "0",
+      "strategyAfter": "0"
+    }
+  ],
+  "source": {
+    "path": "test/strategies/usdc-lending/fork/actual/NonemptyWarmFullExit.t.sol",
+    "sha256": "7c91f070c88e8a37d4c8fbbbae6f61f1e09b655250dcefbc9b41fd81fb43badc"
+  },
+  "limits": [
+    "Counterfactual local fork preserves acquired positions while rolling to genuine later headers; no canonical transaction replay claim.",
+    "Owner deployment intent and current live shadow balances are separate from this rehearsal.",
+    "This USDC warm case does not establish optional-return USDT compatibility of frozen Core warm adapters.",
+    "Rewards enabled or earned on every family are not established."
+  ]
+}

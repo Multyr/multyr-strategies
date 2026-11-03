@@ -82,7 +82,7 @@ interface IAaveRewardsController {
 interface ISwapHelper {
     function canSwap(address token) external view returns (bool);
     function previewExpectedOut(address token, uint256 amountIn) external view returns (uint256);
-    function swapToUSDC(address token, uint256 amountIn, address receiver) external returns (uint256);
+    function swapToAsset(address token, uint256 amountIn, address receiver) external returns (uint256);
 }
 
 contract AaveV3USDCAdapter is ILendingAdapter, AccessControl, ReentrancyGuard, Initializable {
@@ -399,7 +399,7 @@ contract AaveV3USDCAdapter is ILendingAdapter, AccessControl, ReentrancyGuard, I
             // (3) M2 swap — approve, attempt, reset approval regardless of outcome
             IERC20(tok).safeApprove(sh, 0);
             IERC20(tok).safeApprove(sh, bal);
-            try ISwapHelper(sh).swapToUSDC(tok, bal, receiver) returns (uint256 out) {
+            try ISwapHelper(sh).swapToAsset(tok, bal, receiver) returns (uint256 out) {
                 total += out;
             } catch (bytes memory reason) { emit HarvestCallFailed(msg.sig, reason); }
             IERC20(tok).safeApprove(sh, 0);

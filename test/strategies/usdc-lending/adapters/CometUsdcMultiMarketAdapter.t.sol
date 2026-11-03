@@ -66,7 +66,7 @@ contract MockComet {
 
     // totalsBasic packed values
     uint64 public baseSupplyIndex = 1e15;       // initial 1.0 in 1e15 scale
-    uint64 public totalSupplyBaseStored;
+    uint104 public totalSupplyBaseStored;
     uint64 public baseIndexScale_ = 1e15;
 
     constructor(address _base) {
@@ -92,8 +92,8 @@ contract MockComet {
         return supplyRatePerSec;
     }
 
-    function totalsBasic() external view returns (uint64, uint64, uint104, uint104, uint64, uint64) {
-        return (baseSupplyIndex, 0, 0, 0, totalSupplyBaseStored, 0);
+    function totalsBasic() external view returns (uint64, uint64, uint64, uint64, uint104, uint104, uint40, uint8) {
+        return (baseSupplyIndex, 0, 0, 0, totalSupplyBaseStored, 0, 0, 0);
     }
 
     function baseIndexScale() external view returns (uint64) {
@@ -105,7 +105,7 @@ contract MockComet {
         require(asset == baseToken, "wrong-asset");
         MockUSDCComet(baseToken).transferFrom(msg.sender, address(this), amount);
         balanceOf[msg.sender] += amount;
-        totalSupplyBaseStored += uint64(amount);
+        totalSupplyBaseStored += uint104(amount);
     }
 
     function withdraw(address asset, uint256 amount) external {
@@ -113,7 +113,7 @@ contract MockComet {
         require(asset == baseToken, "wrong-asset");
         require(balanceOf[msg.sender] >= amount, "balance");
         balanceOf[msg.sender] -= amount;
-        totalSupplyBaseStored -= uint64(amount);
+        totalSupplyBaseStored -= uint104(amount);
         MockUSDCComet(baseToken).transfer(msg.sender, amount);
     }
 
@@ -178,7 +178,7 @@ contract MockSwapHelperComet {
     function setExpectedOut(uint256 e) external { expectedOut = e; }
     function canSwap(address) external view returns (bool) { return canSwapDefault; }
     function previewExpectedOut(address, uint256) external view returns (uint256) { return expectedOut; }
-    function swapToUSDC(address rewardToken, uint256 amountIn, address receiver) external returns (uint256) {
+    function swapToAsset(address rewardToken, uint256 amountIn, address receiver) external returns (uint256) {
         if (revertOnSwap) revert("swap-revert");
         MockCOMP(rewardToken).transferFrom(msg.sender, address(this), amountIn);
         (bool ok,) = usdc.call(abi.encodeWithSignature("mint(address,uint256)", receiver, outAmount));

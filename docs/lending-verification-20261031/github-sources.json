@@ -1,0 +1,56 @@
+[
+  {
+    "file": "src/strategies/usdc-lending/controller/StrategyParamsModule.sol",
+    "gitBlob": "abc55ffd76d775ae81520aecb94448672c611b33",
+    "inputContentMatchesGitAfterLineEndingNormalization": true,
+    "github": "https://github.com/Multyr/multyr-strategies/blob/407b3df677e97c8e523ae11948d534ec9fed11cc/src/strategies/usdc-lending/controller/StrategyParamsModule.sol"
+  },
+  {
+    "file": "src/strategies/usdc-lending/controller/StrategyScoringModule.sol",
+    "gitBlob": "c092227ec4d01c302a81b8b25f99cfd27f89bf03",
+    "inputContentMatchesGitAfterLineEndingNormalization": true,
+    "github": "https://github.com/Multyr/multyr-strategies/blob/407b3df677e97c8e523ae11948d534ec9fed11cc/src/strategies/usdc-lending/controller/StrategyScoringModule.sol"
+  },
+  {
+    "file": "src/strategies/usdc-lending/controller/StrategyAdapterOpsModule.sol",
+    "gitBlob": "798a33912f6dc73e75a4bf946f9b91b0368b6064",
+    "inputContentMatchesGitAfterLineEndingNormalization": true,
+    "github": "https://github.com/Multyr/multyr-strategies/blob/407b3df677e97c8e523ae11948d534ec9fed11cc/src/strategies/usdc-lending/controller/StrategyAdapterOpsModule.sol"
+  },
+  {
+    "file": "src/strategies/usdc-lending/controller/StrategyRebalanceGateModule.sol",
+    "gitBlob": "0d70ab4bfa761f589562fc18fc328fb5c1eb4c8e",
+    "inputContentMatchesGitAfterLineEndingNormalization": true,
+    "github": "https://github.com/Multyr/multyr-strategies/blob/407b3df677e97c8e523ae11948d534ec9fed11cc/src/strategies/usdc-lending/controller/StrategyRebalanceGateModule.sol"
+  },
+  {
+    "file": "src/strategies/usdc-lending/controller/StrategySettingsModule.sol",
+    "gitBlob": "13a3e560e0c8bf1bff3d03aee17d1dc07906957e",
+    "inputContentMatchesGitAfterLineEndingNormalization": true,
+    "github": "https://github.com/Multyr/multyr-strategies/blob/407b3df677e97c8e523ae11948d534ec9fed11cc/src/strategies/usdc-lending/controller/StrategySettingsModule.sol"
+  },
+  {
+    "file": "src/strategies/usdc-lending/controller/StrategyRebalancePlanModule.sol",
+    "gitBlob": "c5939d58b8d24a1214582c1cae0fb964dc6a2867",
+    "inputContentMatchesGitAfterLineEndingNormalization": true,
+    "github": "https://github.com/Multyr/multyr-strategies/blob/407b3df677e97c8e523ae11948d534ec9fed11cc/src/strategies/usdc-lending/controller/StrategyRebalancePlanModule.sol"
+  },
+  {
+    "file": "src/strategies/usdc-lending/controller/StrategySafetyOverflowModule.sol",
+    "gitBlob": "8b98a87e04938660f1d14d2c0ffc271757d85b8c",
+    "inputContentMatchesGitAfterLineEndingNormalization": true,
+    "github": "https://github.com/Multyr/multyr-strategies/blob/407b3df677e97c8e523ae11948d534ec9fed11cc/src/strategies/usdc-lending/controller/StrategySafetyOverflowModule.sol"
+  },
+  {
+    "file": "src/strategies/usdc-lending/controller/StrategyAllocCalcModule.sol",
+    "gitBlob": "cee6d1c5eebb3214f24fc7fbaccdeb55e5e7528e",
+    "inputContentMatchesGitAfterLineEndingNormalization": true,
+    "github": "https://github.com/Multyr/multyr-strategies/blob/407b3df677e97c8e523ae11948d534ec9fed11cc/src/strategies/usdc-lending/controller/StrategyAllocCalcModule.sol"
+  },
+  {
+    "file": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol",
+    "gitBlob": "2e1abdf23467c6aa2aec88b50fc15a2740aecafb",
+    "inputContentMatchesGitAfterLineEndingNormalization": true,
+    "github": "https://github.com/Multyr/multyr-strategies/blob/407b3df677e97c8e523ae11948d534ec9fed11cc/src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol"
+  }
+]

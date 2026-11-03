@@ -1,0 +1,47 @@
+{
+  "scope": "Dolomite actual Arbitrum dUSDT and dWETH ERC4626 path: canonical historical PPS priming/reference, deposit, NAV, partial withdrawal, full recall. Not PoolLike or complete strategy integration acceptance.",
+  "passed": 2,
+  "failed": 0,
+  "skipped": 0,
+  "chainId": 42161,
+  "initialRpcBlock": "519994008",
+  "lastRpcBlock": "520094008",
+  "rpc": "https://arbitrum-one.public.blastapi.io",
+  "testSource": "deployments/lending-full-validation-20261101/root-tests/DolomiteActualAssets.t.sol",
+  "testSourceSha256": "3f46fb554edd2a41c825507a172f02ee1b5fe049e3e1d2b6c56f24c0325d9332",
+  "log": "deployments/lending-full-validation-20261101/dolomite-actual-yield.log",
+  "logSha256": "3a98fc22b29f569d0309a046260aca818b3e2999a67b5082d64ce202c6aca6c3",
+  "observations": [
+    "token: 0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9, market: 0xF2d2d55Daf93b0660297eaA10969eBe90ead5CE8, rpcBlock: 520094008 [5.2e8], decimals: 6, tvl: 170008898954 [1.7e11], wrapperCash: 0, position: 0, redeemable: 0, rate: 504",
+    "token: 0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9, market: 0xF2d2d55Daf93b0660297eaA10969eBe90ead5CE8, rpcBlock: 520094008 [5.2e8], decimals: 6, tvl: 171008898954 [1.71e11], wrapperCash: 0, position: 1000000000 [1e9], redeemable: 1000000000 [1e9], rate: 504",
+    "token: 0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9, market: 0xF2d2d55Daf93b0660297eaA10969eBe90ead5CE8, rpcBlock: 520094008 [5.2e8], decimals: 6, tvl: 170758898955 [1.707e11], wrapperCash: 0, position: 750000000 [7.5e8], redeemable: 750000000 [7.5e8], rate: 504",
+    "token: 0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9, market: 0xF2d2d55Daf93b0660297eaA10969eBe90ead5CE8, rpcBlock: 520094008 [5.2e8], decimals: 6, tvl: 170008898954 [1.7e11], wrapperCash: 0, position: 0, redeemable: 0, rate: 504",
+    "token: 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1, market: 0xf7b5127B510E568fdC39e6Bb54e2081BFaD489AF, rpcBlock: 520094008 [5.2e8], decimals: 18, tvl: 2495250521829336468472 [2.495e21], wrapperCash: 0, position: 0, redeemable: 0, rate: 296",
+    "token: 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1, market: 0xf7b5127B510E568fdC39e6Bb54e2081BFaD489AF, rpcBlock: 520094008 [5.2e8], decimals: 18, tvl: 2496250521829336468471 [2.496e21], wrapperCash: 0, position: 1000000000000000000 [1e18], redeemable: 1000000000000000000 [1e18], rate: 296",
+    "token: 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1, market: 0xf7b5127B510E568fdC39e6Bb54e2081BFaD489AF, rpcBlock: 520094008 [5.2e8], decimals: 18, tvl: 2496000521829336468472 [2.496e21], wrapperCash: 0, position: 750000000000000000 [7.5e17], redeemable: 750000000000000000 [7.5e17], rate: 296",
+    "token: 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1, market: 0xf7b5127B510E568fdC39e6Bb54e2081BFaD489AF, rpcBlock: 520094008 [5.2e8], decimals: 18, tvl: 2495250521829336468472 [2.495e21], wrapperCash: 0, position: 0, redeemable: 0, rate: 296"
+  ],
+  "ppsReference": [
+    "market: 0xF2d2d55Daf93b0660297eaA10969eBe90ead5CE8, firstBlock: 519994008 [5.199e8], secondBlock: 520094008 [5.2e8], firstTimestamp: 1793451436 [1.793e9], secondTimestamp: 1793480259 [1.793e9], firstPps: 1364613084356369265000000 [1.364e24], secondPps: 1364676051574178658000000 [1.364e24], independentlyCalculatedBps: 504",
+    "market: 0xf7b5127B510E568fdC39e6Bb54e2081BFaD489AF, firstBlock: 519994008 [5.199e8], secondBlock: 520094008 [5.2e8], firstTimestamp: 1793451436 [1.793e9], secondTimestamp: 1793480259 [1.793e9], firstPps: 1109733764037159552000000 [1.109e24], secondPps: 1109763806128371139000000 [1.109e24], independentlyCalculatedBps: 296"
+  ],
+  "funding": [
+    "token: 0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9, holder: 0xF977814e90dA44bFA03b6295A0616a897441aceC, beforeBalance: 99414783701626 [9.941e13], amount: 1000000000 [1e9], afterBalance: 99413783701626 [9.941e13]",
+    "token: 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1, holder: 0xF977814e90dA44bFA03b6295A0616a897441aceC, beforeBalance: 42912299352477177800 [4.291e19], amount: 1000000000000000000 [1e18], afterBalance: 41912299352477177800 [4.191e19]"
+  ],
+  "persistence": "Only local adapter/registry persist before any token funding or position. Real market observations advance canonically. All lifecycle transactions run at the second real historical block. No fake time, market or synthetic funding.",
+  "canonicalHeaders": [
+    {
+      "rpcBlock": "519994008",
+      "hash": "0xc915e338fd2e380421ef20aa540939553977988be31b741cd85a97ae871faf2d",
+      "timestamp": "0x6ae5e5ac",
+      "number": "0x1efe7a98"
+    },
+    {
+      "rpcBlock": "520094008",
+      "hash": "0xd0e4d2d28e0d9a60d819743930f9f2843409bf37a895a411620a632da53fa600",
+      "timestamp": "0x6ae65643",
+      "number": "0x1f000138"
+    }
+  ]
+}

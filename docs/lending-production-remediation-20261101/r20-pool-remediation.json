@@ -1,0 +1,38 @@
+{
+  "status": "TARGETED_DOLOMITE_REMEDIATION_PASS",
+  "controlledBeforeFailed": 12,
+  "controlledAfterPassed": 13,
+  "relatedPassed": 155,
+  "relatedSuites": 9,
+  "realDisabledRecallPassed": 3,
+  "isolatedRuntimeBytes": 23338,
+  "rejectedInitialProposalBytes": 23631,
+  "limitBytes": 23552,
+  "rootCorrections": [
+    "Strict PoolLike ownership even when current config invalidated.",
+    "Preserve ever-configured provenance without changing existing storage fields.",
+    "Check all owned markets including disabled; preserve recorded principal on failed emergency.",
+    "Require actual configured account credit and reuse funding guards in optimize.",
+    "Reject foreign-token account and unvalidated funding."
+  ],
+  "noPublicPoolLikeMarketQualificationClaim": true,
+  "readiness": "NOT_PRODUCTION_READY",
+  "evidence": [
+    {
+      "path": "deployments/lending-full-validation-20261101/production/coordinator/R20-pool-twelve-before.log",
+      "sha256": "3fece71faad84b47fc01ff55de569d5de21f8c1dcd68bb3043c949b8c5196593"
+    },
+    {
+      "path": "deployments/lending-full-validation-20261101/production/coordinator/R20-pool-thirteen-canonical.log",
+      "sha256": "aab6c986b02c2080db58f45836ac2d9e1e2d0d717b13671559d4296c7342d09e"
+    },
+    {
+      "path": "deployments/lending-full-validation-20261101/production/coordinator/R20-dolomite-focused.log",
+      "sha256": "8481d962642437f898387c4ac8d115427b01edab27d00c593a9261f7374a4d23"
+    },
+    {
+      "path": "deployments/lending-full-validation-20261101/production/coordinator/R20-dolomite-real-disabled-2.log",
+      "sha256": "c7c53dbe029d577bcecaa3ade462e5ee5c61d78e4aa3a4f51688c669e3f19ae6"
+    }
+  ]
+}

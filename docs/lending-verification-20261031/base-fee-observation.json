@@ -1,0 +1,10 @@
+{
+  "chainId": 8453,
+  "block": 53345555,
+  "gasPriceOracle": "0x420000000000000000000000000000000000000F",
+  "unsignedTxBytes": 4352,
+  "l1FeeUpperBoundWei": "15016576815",
+  "operatorFeeAtZeroWei": "0",
+  "operatorFeeAtMillionGasWei": "0",
+  "blockHash": "0x23f23c9ec0173765a675cac9c54af14d03d61d1e4efd19e0cb22721a0426d45e"
+}

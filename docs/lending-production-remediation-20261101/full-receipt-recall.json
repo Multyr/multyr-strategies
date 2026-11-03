@@ -1,0 +1,58 @@
+{
+  "status": "FIXED_INTEGRATED_UNIT_AND_REAL_BSC_VALIDATION_PASS",
+  "readiness": "NOT_PRODUCTION_READY",
+  "finding": "Full recall used an asset quote before Venus accrued during redemption and left831262270348043raw BSC USDT (18decimals) after router withdrawAll.",
+  "fix": "Shared full-receipt emergency pull with normal partial-liquidity salvage; actual received token accounting and live/cache residual positions. Disabled/flagged and zero-cache adapters attempted; no ordinary withdrawal EMA seeded from manual/emergency phases. Failed empty pull preserves known cache; successful empty pull clears stale cache.",
+  "controllerRuntimeBytes": 22569,
+  "projectRuntimeLimit": 23552,
+  "controlledBefore": {
+    "passed": 4,
+    "failed": 3,
+    "tests": 7,
+    "evidence": {
+      "path": "C:\\Users\\Pierre\\Multyr\\pt-multiply\\pd\\deployments\\lending-full-validation-20261101\\production\\D-full-receipt\\root-before.log",
+      "sha256": "52bbbb1445febcec151051b7e398874b70ad23cbb298d947c99d934dfe20002a"
+    }
+  },
+  "hardeningBefore": {
+    "failed": 2,
+    "evidence": {
+      "path": "C:\\Users\\Pierre\\Multyr\\pt-multiply\\pd\\deployments\\lending-full-validation-20261101\\production\\D-full-receipt\\root-hardening-before.log",
+      "sha256": "5a4d78bf61afd2eceb9059cfd2e8b31c166536f7eab26f7b487322aea28b5ab2"
+    }
+  },
+  "staleCacheBefore": {
+    "failed": 1,
+    "evidence": {
+      "path": "C:\\Users\\Pierre\\Multyr\\pt-multiply\\pd\\deployments\\lending-full-validation-20261101\\production\\D-full-receipt\\root-phantom-cache-before.log",
+      "sha256": "2a9bad7290b44cf0d6c2547fec9382409967d21292d3bad2567372de1b0746c2"
+    }
+  },
+  "relatedAfter": {
+    "passed": 310,
+    "failed": 0,
+    "skipped": 0,
+    "suites": 46,
+    "includes10RecallRegressions": true,
+    "evidence": {
+      "path": "C:\\Users\\Pierre\\Multyr\\pt-multiply\\pd\\deployments\\lending-full-validation-20261101\\production\\D-full-receipt\\root-related-final.log",
+      "sha256": "1c9bc5197ce4095b5833c9590fa2a33078eacf65da74750e121b66bec67e164d"
+    }
+  },
+  "actualBscBefore": {
+    "path": "C:\\Users\\Pierre\\Multyr\\pt-multiply\\pa\\deployments\\lending-full-validation-20261101\\production\\A-L1\\root-bsc-native-recall-before.log",
+    "sha256": "8e497fca3796c9d8ea02064510b70168c2b95f6367936e83b3112497f8fb1c9d"
+  },
+  "actualBscAfter": {
+    "passed": 1,
+    "failed": 0,
+    "skipped": 0,
+    "evidence": {
+      "path": "C:\\Users\\Pierre\\Multyr\\pt-multiply\\pa\\deployments\\lending-full-validation-20261101\\production\\A-L1\\root-bsc-native-recall-final.log",
+      "sha256": "0002d8fc09ba2ccf1047638755f63fa5dc839e913e4f0774e7d28d97abba5f85"
+    },
+    "scope": "Real BSC USDT18, Venus, native BNB fee model and frozen-source Core; genuine funding, deploy and portfolio fullrecall. Not a twoepoch user-full-exit proof."
+  },
+  "unchanged": "No Core/main/role/layout/selector changes; normal partial withdrawal methods unchanged.",
+  "next": "Complete final-source39actual gate/full regression and calibration/operations/CI; no readiness claim."
+}

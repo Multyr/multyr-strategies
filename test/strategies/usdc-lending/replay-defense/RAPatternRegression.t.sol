@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.28;
+import {LendingOracleTestFixture} from "../helpers/LendingOracleTestFixture.sol";
 
 /// @title RA Pattern Regression Tests (S27)
 /// @notice Regression tests for 5 Risk Audit patterns not covered in LendingReplayDefense.t.sol:
@@ -136,7 +137,7 @@ contract MockAdapter_RA is ILendingAdapter {
 // SHARED BASE
 // ═══════════════════════════════════════════════════════════════════════════
 
-contract RATestBase is Test {
+contract RATestBase is LendingOracleTestFixture {
     address constant ARBITRUM_USDC = 0xaf88d065e77c8cC2239327C5EDb3A432268e5831;
 
     UsdcMultiLendingVault internal vault;
@@ -145,7 +146,7 @@ contract RATestBase is Test {
     MockAdapter_RA        internal adapter2;
 
     address internal admin      = address(0xA1);
-    address internal core       = address(0xC0);
+    address internal core = _newOracleCore(1e18);
     address internal router     = address(0xA2); // gets CORE_ROLE
     address internal keeper     = address(0xA3);
     address internal paramSetter = address(0xA4);

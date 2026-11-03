@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.28;
+import {LendingOracleTestFixture} from "./helpers/LendingOracleTestFixture.sol";
+import {StrategyConfigLib} from "../../../src/strategies/usdc-lending/lib/StrategyConfigLib.sol";
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // F_SCORING_INV2_CapFix.t.sol — F-SCORING-INV2 fix regression tests (Wave 2)
@@ -59,6 +61,11 @@ import {
 
 contract AllocCalcHarness is StrategyAllocCalcModule {
     constructor(address usdc_, address core_) StrategyAllocCalcModule(usdc_, core_) {}
+
+    // This harness tests pure $1 USDC cap policy, without a strategy dispatcher.
+    function tierMaxAdapters(uint256 assets, uint16 limit) external pure returns (uint16) {
+        return StrategyConfigLib.effectiveMaxAdapters(assets, limit, 1e6);
+    }
 
     function exposedEffectiveAbsCapBps(address adapter) external view returns (uint256) {
         return _effectiveAbsCapBps(adapter, _tvl());
@@ -168,7 +175,7 @@ contract F_SCORING_INV2_CapLogic is Test {
 // Post-fix: best adapter capped at 50% = 5K (passes).
 // ─────────────────────────────────────────────────────────────────────────────
 
-contract F_SCORING_INV2_Behavioral is Test {
+contract F_SCORING_INV2_Behavioral is LendingOracleTestFixture {
 
     address constant ARBITRUM_USDC = 0xaf88d065e77c8cC2239327C5EDb3A432268e5831;
 
@@ -178,7 +185,7 @@ contract F_SCORING_INV2_Behavioral is Test {
     MockLendingAdapter public adapterB;
 
     address public admin  = address(0xAD);
-    address public core   = address(0xC0);
+    address public core = _newOracleCore(1e18);
     address public router = address(0xB0);
     address public keeper = address(0xBE);
 

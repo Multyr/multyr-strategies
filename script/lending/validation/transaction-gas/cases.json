@@ -1,0 +1,1433 @@
+{
+  "requiredFamilies": [
+    "Aave",
+    "Comet",
+    "Morpho",
+    "Euler",
+    "Fluid",
+    "Dolomite-wrapper",
+    "Venus"
+  ],
+  "cases": [
+    {
+      "id": "aave-eth-usdt-v3",
+      "family": "Aave",
+      "chain_id": 1,
+      "fork_block": 26165000,
+      "fork_block_hash": "0x520c3607be6f0aba6a7722233a437bf88e6b778b304a7dbc1ae6316ac58185ac",
+      "_fork_block_hash_note": "Captured from public canonical Ethereum header before starting local fork; null is forbidden.",
+      "rpc_url_env": "ETH_RPC_URL",
+      "underlying": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+      "underlying_decimals": 6,
+      "holder": "0xF977814e90dA44bFA03b6295A0616a897441aceC",
+      "_holder_note": "Binance 8 hot wallet; genuine USDT and ETH balance on mainnet fork. Local impersonation only \u2014 no private key, never broadcast.",
+      "adapter_source": "src/strategies/usdc-lending/adapters/lending/AaveV3USDCmarket.sol",
+      "adapter_contract": "AaveV3USDCAdapter",
+      "init_sig": "initialize(address,address,address,address,address,uint256)",
+      "init_args": [
+        {
+          "type": "address",
+          "value": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+          "label": "asset (USDT)"
+        },
+        {
+          "type": "address",
+          "value": "0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2",
+          "label": "Aave V3 Pool"
+        },
+        {
+          "type": "address",
+          "value": "0x23878914EFE38d27C4D67Ab83ed1b93A74D4086a",
+          "label": "aUSDT v3"
+        },
+        {
+          "type": "address",
+          "value": "$HOLDER",
+          "label": "admin (DEFAULT_ADMIN_ROLE)"
+        },
+        {
+          "type": "address",
+          "value": "$HOLDER",
+          "label": "vault (VAULT_ROLE)"
+        },
+        {
+          "type": "uint256",
+          "value": "10000000000000",
+          "label": "maxCap 10M USDT (10^13 raw units)"
+        }
+      ],
+      "_pull_mode_note": "Aave adapter is PULL mode: deposit() calls transferFrom(holder, adapter, amount). Holder must approve adapter before deposit.",
+      "operations": [
+        {
+          "id": "approve",
+          "op": "erc20_approve",
+          "token": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+          "spender": "$ADAPTER",
+          "amount": "125000000",
+          "from": "$HOLDER",
+          "note": "Approve 125 USDT (6 dec) to adapter. Adapter is newly deployed so prior allowance is zero."
+        },
+        {
+          "id": "deposit_first",
+          "op": "adapter_call",
+          "sig": "deposit(uint256)",
+          "args": [
+            {
+              "type": "uint256",
+              "value": "100000000"
+            }
+          ],
+          "from": "$HOLDER",
+          "position": "first",
+          "note": "First real position in an isolated transaction; receipt gas includes intrinsic and all adapter/protocol execution."
+        },
+        {
+          "id": "deposit_continuation",
+          "op": "adapter_call",
+          "sig": "deposit(uint256)",
+          "args": [
+            {
+              "type": "uint256",
+              "value": "25000000"
+            }
+          ],
+          "from": "$HOLDER",
+          "position": "continuation",
+          "note": "Continuing real position in a separate transaction. EVM access-cache resets; not a warm-slot transaction claim."
+        },
+        {
+          "id": "withdraw_partial",
+          "op": "adapter_call",
+          "sig": "withdraw(uint256,address)",
+          "args": [
+            {
+              "type": "uint256",
+              "value": "25000000"
+            },
+            {
+              "type": "address",
+              "value": "$HOLDER"
+            }
+          ],
+          "from": "$HOLDER",
+          "note": "Partial withdrawal: 25 USDT from Aave back to holder. aToken burned by pool."
+        },
+        {
+          "id": "emergency_pull",
+          "op": "adapter_call",
+          "sig": "emergencyPullAllToVault()",
+          "args": [],
+          "from": "$HOLDER",
+          "note": "Full recall: all invested assets withdrawn to vault (holder). Adapter totalAssets should be 0 after."
+        }
+      ],
+      "receipt_reference": {
+        "kind": "underlying_balance",
+        "token": "0x23878914EFE38d27C4D67Ab83ed1b93A74D4086a"
+      }
+    },
+    {
+      "id": "comet-eth-usdt",
+      "family": "Comet",
+      "status": "CONFIGURED_PENDING_EXECUTION",
+      "chain_id": 1,
+      "fork_block": 26300000,
+      "fork_block_hash": "0xfeb02dce39436b4d1f400d128fa774891b94451859a56e6c9d548b8574629b56",
+      "rpc_url_env": "ETH_RPC_URL",
+      "underlying": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+      "underlying_decimals": 6,
+      "holder": "0xF977814e90dA44bFA03b6295A0616a897441aceC",
+      "adapter_source": "src/strategies/usdc-lending/adapters/lending/CometUsdcMultiMarket.sol",
+      "adapter_contract": "CometUsdcMultiMarketAdapter",
+      "init_sig": "initialize(address,address,address,uint256,address)",
+      "init_args": [
+        {
+          "type": "address",
+          "value": "0xdac17f958d2ee523a2206206994597c13d831ec7"
+        },
+        {
+          "type": "address",
+          "value": "$HOLDER"
+        },
+        {
+          "type": "address",
+          "value": "$HOLDER"
+        },
+        {
+          "type": "uint256",
+          "value": "0"
+        },
+        {
+          "type": "address",
+          "value": "$REGISTRY"
+        }
+      ],
+      "receipt_reference": {
+        "kind": "underlying_balance",
+        "token": "0x3Afdc9BCA9213A35503b077a6072F3D0d5AB0840"
+      },
+      "operations": [
+        {
+          "id": "approve",
+          "op": "erc20_approve",
+          "token": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+          "spender": "$ADAPTER",
+          "amount": "125000000"
+        },
+        {
+          "id": "deposit_first",
+          "op": "adapter_call",
+          "sig": "deposit(uint256)",
+          "args": [
+            {
+              "type": "uint256",
+              "value": "100000000"
+            }
+          ],
+          "position": "first real position; separate transaction"
+        },
+        {
+          "id": "deposit_continuation",
+          "op": "adapter_call",
+          "sig": "deposit(uint256)",
+          "args": [
+            {
+              "type": "uint256",
+              "value": "25000000"
+            }
+          ],
+          "position": "continuing real position; fresh transaction access cache"
+        },
+        {
+          "id": "withdraw_partial",
+          "op": "adapter_call",
+          "sig": "withdraw(uint256,address)",
+          "args": [
+            {
+              "type": "uint256",
+              "value": "25000000"
+            },
+            {
+              "type": "address",
+              "value": "$HOLDER"
+            }
+          ]
+        },
+        {
+          "id": "emergency_pull",
+          "op": "adapter_call",
+          "sig": "emergencyPullAllToVault()",
+          "args": []
+        }
+      ],
+      "scope": "Local fork transaction execution gas only; native L2 posting/operator fees require separate actual RPC proof.",
+      "registryProtocolType": 3
+    },
+    {
+      "id": "morpho-eth-usdt",
+      "family": "Morpho",
+      "status": "CONFIGURED_PENDING_EXECUTION",
+      "chain_id": 1,
+      "fork_block": 26300000,
+      "fork_block_hash": "0xfeb02dce39436b4d1f400d128fa774891b94451859a56e6c9d548b8574629b56",
+      "rpc_url_env": "ETH_RPC_URL",
+      "underlying": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+      "underlying_decimals": 6,
+      "holder": "0xF977814e90dA44bFA03b6295A0616a897441aceC",
+      "adapter_source": "src/strategies/usdc-lending/adapters/lending/MorphoUsdcMultiMarket.sol",
+      "adapter_contract": "MorphoUsdcMultiMarketAdapter",
+      "init_sig": "initialize(address,address,address,uint256,address)",
+      "init_args": [
+        {
+          "type": "address",
+          "value": "0xdac17f958d2ee523a2206206994597c13d831ec7"
+        },
+        {
+          "type": "address",
+          "value": "$HOLDER"
+        },
+        {
+          "type": "address",
+          "value": "$HOLDER"
+        },
+        {
+          "type": "uint256",
+          "value": "0"
+        },
+        {
+          "type": "address",
+          "value": "$REGISTRY"
+        }
+      ],
+      "receipt_reference": {
+        "kind": "erc4626",
+        "token": "0xbeef047a543e45807105e51a8bbefcc5950fcfba"
+      },
+      "operations": [
+        {
+          "id": "approve",
+          "op": "erc20_approve",
+          "token": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+          "spender": "$ADAPTER",
+          "amount": "125000000"
+        },
+        {
+          "id": "deposit_first",
+          "op": "adapter_call",
+          "sig": "deposit(uint256)",
+          "args": [
+            {
+              "type": "uint256",
+              "value": "100000000"
+            }
+          ],
+          "position": "first real position; separate transaction"
+        },
+        {
+          "id": "deposit_continuation",
+          "op": "adapter_call",
+          "sig": "deposit(uint256)",
+          "args": [
+            {
+              "type": "uint256",
+              "value": "25000000"
+            }
+          ],
+          "position": "continuing real position; fresh transaction access cache"
+        },
+        {
+          "id": "withdraw_partial",
+          "op": "adapter_call",
+          "sig": "withdraw(uint256,address)",
+          "args": [
+            {
+              "type": "uint256",
+              "value": "25000000"
+            },
+            {
+              "type": "address",
+              "value": "$HOLDER"
+            }
+          ]
+        },
+        {
+          "id": "emergency_pull",
+          "op": "adapter_call",
+          "sig": "emergencyPullAllToVault()",
+          "args": []
+        }
+      ],
+      "scope": "Local fork transaction execution gas only; native L2 posting/operator fees require separate actual RPC proof.",
+      "registryProtocolType": 2
+    },
+    {
+      "id": "euler-eth-usdt",
+      "family": "Euler",
+      "status": "CONFIGURED_PENDING_EXECUTION",
+      "chain_id": 1,
+      "fork_block": 26300000,
+      "fork_block_hash": "0xfeb02dce39436b4d1f400d128fa774891b94451859a56e6c9d548b8574629b56",
+      "rpc_url_env": "ETH_RPC_URL",
+      "underlying": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+      "underlying_decimals": 6,
+      "holder": "0xF977814e90dA44bFA03b6295A0616a897441aceC",
+      "adapter_source": "src/strategies/usdc-lending/adapters/lending/EulerUsdcMultiMarket.sol",
+      "adapter_contract": "EulerUsdcMultiMarketAdapter",
+      "init_sig": "initialize(address,address,address[],address,address)",
+      "init_args": [
+        {
+          "type": "address",
+          "value": "$HOLDER"
+        },
+        {
+          "type": "address",
+          "value": "0xdac17f958d2ee523a2206206994597c13d831ec7"
+        },
+        {
+          "type": "address[]",
+          "value": "[0x313603FA690301b0CaeEf8069c065862f9162162]"
+        },
+        {
+          "type": "address",
+          "value": "0x0000000000000000000000000000000000000000"
+        },
+        {
+          "type": "address",
+          "value": "$HOLDER"
+        }
+      ],
+      "receipt_reference": {
+        "kind": "erc4626",
+        "token": "0x313603FA690301b0CaeEf8069c065862f9162162"
+      },
+      "operations": [
+        {
+          "id": "push_funding_deposit_first",
+          "op": "erc20_transfer",
+          "token": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+          "recipient": "$ADAPTER",
+          "amount": "100000000"
+        },
+        {
+          "id": "deposit_first",
+          "op": "adapter_call",
+          "sig": "deposit(uint256)",
+          "args": [
+            {
+              "type": "uint256",
+              "value": "100000000"
+            }
+          ],
+          "position": "first real position; separate transaction"
+        },
+        {
+          "id": "push_funding_deposit_continuation",
+          "op": "erc20_transfer",
+          "token": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+          "recipient": "$ADAPTER",
+          "amount": "25000000"
+        },
+        {
+          "id": "deposit_continuation",
+          "op": "adapter_call",
+          "sig": "deposit(uint256)",
+          "args": [
+            {
+              "type": "uint256",
+              "value": "25000000"
+            }
+          ],
+          "position": "continuing real position; fresh transaction access cache"
+        },
+        {
+          "id": "withdraw_partial",
+          "op": "adapter_call",
+          "sig": "withdraw(uint256,address)",
+          "args": [
+            {
+              "type": "uint256",
+              "value": "25000000"
+            },
+            {
+              "type": "address",
+              "value": "$HOLDER"
+            }
+          ]
+        },
+        {
+          "id": "emergency_pull",
+          "op": "adapter_call",
+          "sig": "emergencyPullAllToVault()",
+          "args": []
+        }
+      ],
+      "scope": "Local fork transaction execution gas only; native L2 posting/operator fees require separate actual RPC proof.",
+      "post_initialize_calls": [
+        {
+          "sig": "initializeMarkets()",
+          "args": []
+        }
+      ],
+      "fundingMode": "push",
+      "fundingNote": "Actual Euler adapter requires vault-to-adapter transfer before deposit; funding and deposit are recorded as separate local transactions. This is not a measurement of a controller-bundled push wrapper."
+    },
+    {
+      "id": "fluid-eth-weth",
+      "family": "Fluid",
+      "status": "CONFIGURED_PENDING_EXECUTION",
+      "chain_id": 1,
+      "fork_block": 26300000,
+      "fork_block_hash": "0xfeb02dce39436b4d1f400d128fa774891b94451859a56e6c9d548b8574629b56",
+      "rpc_url_env": "ETH_RPC_URL",
+      "underlying": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+      "underlying_decimals": 18,
+      "holder": "0xF977814e90dA44bFA03b6295A0616a897441aceC",
+      "adapter_source": "src/strategies/usdc-lending/adapters/lending/FluidUsdcMultiMarket.sol",
+      "adapter_contract": "FluidUsdcMultiMarketAdapter",
+      "init_sig": "initialize(address,address,address,uint256,address)",
+      "init_args": [
+        {
+          "type": "address",
+          "value": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
+        },
+        {
+          "type": "address",
+          "value": "$HOLDER"
+        },
+        {
+          "type": "address",
+          "value": "$HOLDER"
+        },
+        {
+          "type": "uint256",
+          "value": "0"
+        },
+        {
+          "type": "address",
+          "value": "0x90551c1795392094FE6D29B758EcCD233cFAa260"
+        }
+      ],
+      "receipt_reference": {
+        "kind": "erc4626",
+        "token": "0x90551c1795392094FE6D29B758EcCD233cFAa260"
+      },
+      "operations": [
+        {
+          "id": "approve",
+          "op": "erc20_approve",
+          "token": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+          "spender": "$ADAPTER",
+          "amount": "125000000000000000"
+        },
+        {
+          "id": "deposit_first",
+          "op": "adapter_call",
+          "sig": "deposit(uint256)",
+          "args": [
+            {
+              "type": "uint256",
+              "value": "100000000000000000"
+            }
+          ],
+          "position": "first real position; separate transaction"
+        },
+        {
+          "id": "deposit_continuation",
+          "op": "adapter_call",
+          "sig": "deposit(uint256)",
+          "args": [
+            {
+              "type": "uint256",
+              "value": "25000000000000000"
+            }
+          ],
+          "position": "continuing real position; fresh transaction access cache"
+        },
+        {
+          "id": "withdraw_partial",
+          "op": "adapter_call",
+          "sig": "withdraw(uint256,address)",
+          "args": [
+            {
+              "type": "uint256",
+              "value": "25000000000000000"
+            },
+            {
+              "type": "address",
+              "value": "$HOLDER"
+            }
+          ]
+        },
+        {
+          "id": "emergency_pull",
+          "op": "adapter_call",
+          "sig": "emergencyPullAllToVault()",
+          "args": []
+        }
+      ],
+      "scope": "Local fork transaction execution gas only; native L2 posting/operator fees require separate actual RPC proof.",
+      "supplyConservation": "Canonical Ethereum WETH wraps/unwraps real ETH inside Fluid; supply changes must equal both actual ETH backing and exact Deposit/Withdrawal receipt event totals."
+    },
+    {
+      "id": "dolomite-arb-usdt",
+      "family": "Dolomite-wrapper",
+      "status": "CONFIGURED_PENDING_EXECUTION",
+      "chain_id": 42161,
+      "fork_block": 520094008,
+      "fork_block_hash": "0xd0e4d2d28e0d9a60d819743930f9f2843409bf37a895a411620a632da53fa600",
+      "rpc_url_env": "ARB_RPC_URL",
+      "underlying": "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9",
+      "underlying_decimals": 6,
+      "holder": "0xF977814e90dA44bFA03b6295A0616a897441aceC",
+      "adapter_source": "src/strategies/usdc-lending/adapters/lending/DolomiteUsdcMultiMarket.sol",
+      "adapter_contract": "DolomiteUsdcMultiMarketAdapter",
+      "init_sig": "initialize(address,address,address,uint256,address)",
+      "init_args": [
+        {
+          "type": "address",
+          "value": "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9"
+        },
+        {
+          "type": "address",
+          "value": "$HOLDER"
+        },
+        {
+          "type": "address",
+          "value": "$HOLDER"
+        },
+        {
+          "type": "uint256",
+          "value": "0"
+        },
+        {
+          "type": "address",
+          "value": "$REGISTRY"
+        }
+      ],
+      "receipt_reference": {
+        "kind": "erc4626",
+        "token": "0xF2d2d55Daf93b0660297eaA10969eBe90ead5CE8"
+      },
+      "operations": [
+        {
+          "id": "approve",
+          "op": "erc20_approve",
+          "token": "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9",
+          "spender": "$ADAPTER",
+          "amount": "125000000"
+        },
+        {
+          "id": "deposit_first",
+          "op": "adapter_call",
+          "sig": "deposit(uint256)",
+          "args": [
+            {
+              "type": "uint256",
+              "value": "100000000"
+            }
+          ],
+          "position": "first real position; separate transaction"
+        },
+        {
+          "id": "deposit_continuation",
+          "op": "adapter_call",
+          "sig": "deposit(uint256)",
+          "args": [
+            {
+              "type": "uint256",
+              "value": "25000000"
+            }
+          ],
+          "position": "continuing real position; fresh transaction access cache"
+        },
+        {
+          "id": "withdraw_partial",
+          "op": "adapter_call",
+          "sig": "withdraw(uint256,address)",
+          "args": [
+            {
+              "type": "uint256",
+              "value": "25000000"
+            },
+            {
+              "type": "address",
+              "value": "$HOLDER"
+            }
+          ]
+        },
+        {
+          "id": "emergency_pull",
+          "op": "adapter_call",
+          "sig": "emergencyPullAllToVault()",
+          "args": []
+        }
+      ],
+      "scope": "Local fork transaction execution gas only; native L2 posting/operator fees require separate actual RPC proof.",
+      "registryProtocolType": 4
+    },
+    {
+      "id": "venus-bsc-usdt",
+      "family": "Venus",
+      "status": "CONFIGURED_PENDING_EXECUTION",
+      "chain_id": 56,
+      "fork_block": 131080000,
+      "fork_block_hash": "0xd462066816f81c99870e6f58ae9bc1f0e7945611c3f7b9971ed02c4a622a0d19",
+      "rpc_url_env": "BSC_RPC_URL",
+      "underlying": "0x55d398326f99059ff775485246999027b3197955",
+      "underlying_decimals": 18,
+      "holder": "0xF977814e90dA44bFA03b6295A0616a897441aceC",
+      "adapter_source": "src/strategies/usdc-lending/adapters/lending/VenusUsdcMultiMarket.sol",
+      "adapter_contract": "VenusUsdcMultiMarketAdapter",
+      "init_sig": "initialize(address,address,address,uint256,address,uint256)",
+      "init_args": [
+        {
+          "type": "address",
+          "value": "0x55d398326f99059ff775485246999027b3197955"
+        },
+        {
+          "type": "address",
+          "value": "$HOLDER"
+        },
+        {
+          "type": "address",
+          "value": "$HOLDER"
+        },
+        {
+          "type": "uint256",
+          "value": "0"
+        },
+        {
+          "type": "address",
+          "value": "0xfD5840Cd36d94D7229439859C0112a4185BC0255"
+        },
+        {
+          "type": "uint256",
+          "value": "70080000"
+        }
+      ],
+      "receipt_reference": {
+        "kind": "vtoken",
+        "token": "0xfD5840Cd36d94D7229439859C0112a4185BC0255"
+      },
+      "operations": [
+        {
+          "id": "approve",
+          "op": "erc20_approve",
+          "token": "0x55d398326f99059ff775485246999027b3197955",
+          "spender": "$ADAPTER",
+          "amount": "125000000000000000000"
+        },
+        {
+          "id": "deposit_first",
+          "op": "adapter_call",
+          "sig": "deposit(uint256)",
+          "args": [
+            {
+              "type": "uint256",
+              "value": "100000000000000000000"
+            }
+          ],
+          "position": "first real position; separate transaction"
+        },
+        {
+          "id": "deposit_continuation",
+          "op": "adapter_call",
+          "sig": "deposit(uint256)",
+          "args": [
+            {
+              "type": "uint256",
+              "value": "25000000000000000000"
+            }
+          ],
+          "position": "continuing real position; fresh transaction access cache"
+        },
+        {
+          "id": "withdraw_partial",
+          "op": "adapter_call",
+          "sig": "withdraw(uint256,address)",
+          "args": [
+            {
+              "type": "uint256",
+              "value": "25000000000000000000"
+            },
+            {
+              "type": "address",
+              "value": "$HOLDER"
+            }
+          ]
+        },
+        {
+          "id": "emergency_pull",
+          "op": "adapter_call",
+          "sig": "emergencyPullAllToVault()",
+          "args": []
+        }
+      ],
+      "scope": "Local fork transaction execution gas only; native L2 posting/operator fees require separate actual RPC proof."
+    },
+    {
+      "id": "aave-arb-weth",
+      "family": "Aave",
+      "chain_id": 42161,
+      "fork_block": 520094008,
+      "fork_block_hash": "0xd0e4d2d28e0d9a60d819743930f9f2843409bf37a895a411620a632da53fa600",
+      "rpc_url_env": "ARB_RPC_URL",
+      "underlying": "0x82af49447d8a07e3bd95bd0d56f35241523fbab1",
+      "underlying_decimals": 18,
+      "holder": "0xF977814e90dA44bFA03b6295A0616a897441aceC",
+      "adapter_source": "src/strategies/usdc-lending/adapters/lending/AaveV3USDCmarket.sol",
+      "adapter_contract": "AaveV3USDCAdapter",
+      "init_sig": "initialize(address,address,address,address,address,uint256)",
+      "init_args": [
+        {
+          "type": "address",
+          "value": "0x82af49447d8a07e3bd95bd0d56f35241523fbab1"
+        },
+        {
+          "type": "address",
+          "value": "0x794a61358D6845594F94dc1DB02A252b5b4814aD"
+        },
+        {
+          "type": "address",
+          "value": "0xe50fA9b3c56FfB159cB0FCA61F5c9D750e8128c8"
+        },
+        {
+          "type": "address",
+          "value": "$HOLDER"
+        },
+        {
+          "type": "address",
+          "value": "$HOLDER"
+        },
+        {
+          "type": "uint256",
+          "value": "10000000000000000000000000"
+        }
+      ],
+      "operations": [
+        {
+          "id": "approve",
+          "op": "erc20_approve",
+          "token": "0x82af49447d8a07e3bd95bd0d56f35241523fbab1",
+          "spender": "$ADAPTER",
+          "amount": "125000000000000000",
+          "from": "$HOLDER"
+        },
+        {
+          "id": "deposit_first",
+          "op": "adapter_call",
+          "sig": "deposit(uint256)",
+          "args": [
+            {
+              "type": "uint256",
+              "value": "100000000000000000"
+            }
+          ],
+          "from": "$HOLDER",
+          "position": "first"
+        },
+        {
+          "id": "deposit_continuation",
+          "op": "adapter_call",
+          "sig": "deposit(uint256)",
+          "args": [
+            {
+              "type": "uint256",
+              "value": "25000000000000000"
+            }
+          ],
+          "from": "$HOLDER",
+          "position": "continuation"
+        },
+        {
+          "id": "withdraw_partial",
+          "op": "adapter_call",
+          "sig": "withdraw(uint256,address)",
+          "args": [
+            {
+              "type": "uint256",
+              "value": "25000000000000000"
+            },
+            {
+              "type": "address",
+              "value": "$HOLDER"
+            }
+          ],
+          "from": "$HOLDER"
+        },
+        {
+          "id": "emergency_pull",
+          "op": "adapter_call",
+          "sig": "emergencyPullAllToVault()",
+          "args": [],
+          "from": "$HOLDER"
+        }
+      ],
+      "receipt_reference": {
+        "kind": "underlying_balance",
+        "token": "0xe50fA9b3c56FfB159cB0FCA61F5c9D750e8128c8"
+      },
+      "status": "CONFIGURED_PENDING_EXECUTION",
+      "scope": "Local fork receipt execution gas with canonical market state and existing EOA funds; native L2 fee components separately validated."
+    },
+    {
+      "id": "comet-arb-weth",
+      "family": "Comet",
+      "status": "CONFIGURED_PENDING_EXECUTION",
+      "chain_id": 42161,
+      "fork_block": 520094008,
+      "fork_block_hash": "0xd0e4d2d28e0d9a60d819743930f9f2843409bf37a895a411620a632da53fa600",
+      "rpc_url_env": "ARB_RPC_URL",
+      "underlying": "0x82af49447d8a07e3bd95bd0d56f35241523fbab1",
+      "underlying_decimals": 18,
+      "holder": "0xF977814e90dA44bFA03b6295A0616a897441aceC",
+      "adapter_source": "src/strategies/usdc-lending/adapters/lending/CometUsdcMultiMarket.sol",
+      "adapter_contract": "CometUsdcMultiMarketAdapter",
+      "init_sig": "initialize(address,address,address,uint256,address)",
+      "init_args": [
+        {
+          "type": "address",
+          "value": "0x82af49447d8a07e3bd95bd0d56f35241523fbab1"
+        },
+        {
+          "type": "address",
+          "value": "$HOLDER"
+        },
+        {
+          "type": "address",
+          "value": "$HOLDER"
+        },
+        {
+          "type": "uint256",
+          "value": "0"
+        },
+        {
+          "type": "address",
+          "value": "$REGISTRY"
+        }
+      ],
+      "receipt_reference": {
+        "kind": "underlying_balance",
+        "token": "0x6f7D514bbD4aFf3BcD1140B7344b32f063dEe486"
+      },
+      "operations": [
+        {
+          "id": "approve",
+          "op": "erc20_approve",
+          "token": "0x82af49447d8a07e3bd95bd0d56f35241523fbab1",
+          "spender": "$ADAPTER",
+          "amount": "125000000000000000"
+        },
+        {
+          "id": "deposit_first",
+          "op": "adapter_call",
+          "sig": "deposit(uint256)",
+          "args": [
+            {
+              "type": "uint256",
+              "value": "100000000000000000"
+            }
+          ],
+          "position": "first real position; separate transaction"
+        },
+        {
+          "id": "deposit_continuation",
+          "op": "adapter_call",
+          "sig": "deposit(uint256)",
+          "args": [
+            {
+              "type": "uint256",
+              "value": "25000000000000000"
+            }
+          ],
+          "position": "continuing real position; fresh transaction access cache"
+        },
+        {
+          "id": "withdraw_partial",
+          "op": "adapter_call",
+          "sig": "withdraw(uint256,address)",
+          "args": [
+            {
+              "type": "uint256",
+              "value": "25000000000000000"
+            },
+            {
+              "type": "address",
+              "value": "$HOLDER"
+            }
+          ]
+        },
+        {
+          "id": "emergency_pull",
+          "op": "adapter_call",
+          "sig": "emergencyPullAllToVault()",
+          "args": []
+        }
+      ],
+      "scope": "Local fork receipt execution gas with canonical market state and existing EOA funds; native L2 fee components separately validated.",
+      "registryProtocolType": 3
+    },
+    {
+      "id": "morpho-arb-usdc",
+      "family": "Morpho",
+      "status": "CONFIGURED_PENDING_EXECUTION",
+      "chain_id": 42161,
+      "fork_block": 520094008,
+      "fork_block_hash": "0xd0e4d2d28e0d9a60d819743930f9f2843409bf37a895a411620a632da53fa600",
+      "rpc_url_env": "ARB_RPC_URL",
+      "underlying": "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+      "underlying_decimals": 6,
+      "holder": "0xB38e8c17e38363aF6EbdCb3dAE12e0243582891D",
+      "adapter_source": "src/strategies/usdc-lending/adapters/lending/MorphoUsdcMultiMarket.sol",
+      "adapter_contract": "MorphoUsdcMultiMarketAdapter",
+      "init_sig": "initialize(address,address,address,uint256,address)",
+      "init_args": [
+        {
+          "type": "address",
+          "value": "0xaf88d065e77c8cc2239327c5edb3a432268e5831"
+        },
+        {
+          "type": "address",
+          "value": "$HOLDER"
+        },
+        {
+          "type": "address",
+          "value": "$HOLDER"
+        },
+        {
+          "type": "uint256",
+          "value": "0"
+        },
+        {
+          "type": "address",
+          "value": "$REGISTRY"
+        }
+      ],
+      "receipt_reference": {
+        "kind": "erc4626",
+        "token": "0x7c574174DA4b2be3f705c6244B4BfA0815a8B3Ed"
+      },
+      "operations": [
+        {
+          "id": "approve",
+          "op": "erc20_approve",
+          "token": "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+          "spender": "$ADAPTER",
+          "amount": "125000000"
+        },
+        {
+          "id": "deposit_first",
+          "op": "adapter_call",
+          "sig": "deposit(uint256)",
+          "args": [
+            {
+              "type": "uint256",
+              "value": "100000000"
+            }
+          ],
+          "position": "first real position; separate transaction"
+        },
+        {
+          "id": "deposit_continuation",
+          "op": "adapter_call",
+          "sig": "deposit(uint256)",
+          "args": [
+            {
+              "type": "uint256",
+              "value": "25000000"
+            }
+          ],
+          "position": "continuing real position; fresh transaction access cache"
+        },
+        {
+          "id": "withdraw_partial",
+          "op": "adapter_call",
+          "sig": "withdraw(uint256,address)",
+          "args": [
+            {
+              "type": "uint256",
+              "value": "25000000"
+            },
+            {
+              "type": "address",
+              "value": "$HOLDER"
+            }
+          ]
+        },
+        {
+          "id": "emergency_pull",
+          "op": "adapter_call",
+          "sig": "emergencyPullAllToVault()",
+          "args": []
+        }
+      ],
+      "scope": "Local fork receipt execution gas with canonical market state and existing EOA funds; native L2 fee components separately validated.",
+      "registryProtocolType": 2
+    },
+    {
+      "id": "euler-arb-usdc",
+      "family": "Euler",
+      "status": "CONFIGURED_PENDING_EXECUTION",
+      "chain_id": 42161,
+      "fork_block": 520094008,
+      "fork_block_hash": "0xd0e4d2d28e0d9a60d819743930f9f2843409bf37a895a411620a632da53fa600",
+      "rpc_url_env": "ARB_RPC_URL",
+      "underlying": "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+      "underlying_decimals": 6,
+      "holder": "0xB38e8c17e38363aF6EbdCb3dAE12e0243582891D",
+      "adapter_source": "src/strategies/usdc-lending/adapters/lending/EulerUsdcMultiMarket.sol",
+      "adapter_contract": "EulerUsdcMultiMarketAdapter",
+      "init_sig": "initialize(address,address,address[],address,address)",
+      "init_args": [
+        {
+          "type": "address",
+          "value": "$HOLDER"
+        },
+        {
+          "type": "address",
+          "value": "0xaf88d065e77c8cc2239327c5edb3a432268e5831"
+        },
+        {
+          "type": "address[]",
+          "value": "[0x0a1eCC5Fe8C9be3C809844fcBe615B46A869b899]"
+        },
+        {
+          "type": "address",
+          "value": "0x0000000000000000000000000000000000000000"
+        },
+        {
+          "type": "address",
+          "value": "$HOLDER"
+        }
+      ],
+      "receipt_reference": {
+        "kind": "erc4626",
+        "token": "0x0a1eCC5Fe8C9be3C809844fcBe615B46A869b899"
+      },
+      "operations": [
+        {
+          "id": "push_funding_deposit_first",
+          "op": "erc20_transfer",
+          "token": "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+          "recipient": "$ADAPTER",
+          "amount": "100000000"
+        },
+        {
+          "id": "deposit_first",
+          "op": "adapter_call",
+          "sig": "deposit(uint256)",
+          "args": [
+            {
+              "type": "uint256",
+              "value": "100000000"
+            }
+          ],
+          "position": "first real position; separate transaction"
+        },
+        {
+          "id": "push_funding_deposit_continuation",
+          "op": "erc20_transfer",
+          "token": "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+          "recipient": "$ADAPTER",
+          "amount": "25000000"
+        },
+        {
+          "id": "deposit_continuation",
+          "op": "adapter_call",
+          "sig": "deposit(uint256)",
+          "args": [
+            {
+              "type": "uint256",
+              "value": "25000000"
+            }
+          ],
+          "position": "continuing real position; fresh transaction access cache"
+        },
+        {
+          "id": "withdraw_partial",
+          "op": "adapter_call",
+          "sig": "withdraw(uint256,address)",
+          "args": [
+            {
+              "type": "uint256",
+              "value": "25000000"
+            },
+            {
+              "type": "address",
+              "value": "$HOLDER"
+            }
+          ]
+        },
+        {
+          "id": "emergency_pull",
+          "op": "adapter_call",
+          "sig": "emergencyPullAllToVault()",
+          "args": []
+        }
+      ],
+      "scope": "Local fork receipt execution gas with canonical market state and existing EOA funds; native L2 fee components separately validated.",
+      "post_initialize_calls": [
+        {
+          "sig": "initializeMarkets()",
+          "args": []
+        }
+      ],
+      "fundingMode": "push",
+      "fundingNote": "Actual Euler adapter requires vault-to-adapter transfer before deposit; funding and deposit are recorded as separate local transactions. This is not a measurement of a controller-bundled push wrapper."
+    },
+    {
+      "id": "fluid-arb-usdc",
+      "family": "Fluid",
+      "status": "CONFIGURED_PENDING_EXECUTION",
+      "chain_id": 42161,
+      "fork_block": 520094008,
+      "fork_block_hash": "0xd0e4d2d28e0d9a60d819743930f9f2843409bf37a895a411620a632da53fa600",
+      "rpc_url_env": "ARB_RPC_URL",
+      "underlying": "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+      "underlying_decimals": 6,
+      "holder": "0xB38e8c17e38363aF6EbdCb3dAE12e0243582891D",
+      "adapter_source": "src/strategies/usdc-lending/adapters/lending/FluidUsdcMultiMarket.sol",
+      "adapter_contract": "FluidUsdcMultiMarketAdapter",
+      "init_sig": "initialize(address,address,address,uint256,address)",
+      "init_args": [
+        {
+          "type": "address",
+          "value": "0xaf88d065e77c8cc2239327c5edb3a432268e5831"
+        },
+        {
+          "type": "address",
+          "value": "$HOLDER"
+        },
+        {
+          "type": "address",
+          "value": "$HOLDER"
+        },
+        {
+          "type": "uint256",
+          "value": "0"
+        },
+        {
+          "type": "address",
+          "value": "0x1A996cb54bb95462040408C06122D45D6Cdb6096"
+        }
+      ],
+      "receipt_reference": {
+        "kind": "erc4626",
+        "token": "0x1A996cb54bb95462040408C06122D45D6Cdb6096"
+      },
+      "operations": [
+        {
+          "id": "approve",
+          "op": "erc20_approve",
+          "token": "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+          "spender": "$ADAPTER",
+          "amount": "125000000"
+        },
+        {
+          "id": "deposit_first",
+          "op": "adapter_call",
+          "sig": "deposit(uint256)",
+          "args": [
+            {
+              "type": "uint256",
+              "value": "100000000"
+            }
+          ],
+          "position": "first real position; separate transaction"
+        },
+        {
+          "id": "deposit_continuation",
+          "op": "adapter_call",
+          "sig": "deposit(uint256)",
+          "args": [
+            {
+              "type": "uint256",
+              "value": "25000000"
+            }
+          ],
+          "position": "continuing real position; fresh transaction access cache"
+        },
+        {
+          "id": "withdraw_partial",
+          "op": "adapter_call",
+          "sig": "withdraw(uint256,address)",
+          "args": [
+            {
+              "type": "uint256",
+              "value": "25000000"
+            },
+            {
+              "type": "address",
+              "value": "$HOLDER"
+            }
+          ]
+        },
+        {
+          "id": "emergency_pull",
+          "op": "adapter_call",
+          "sig": "emergencyPullAllToVault()",
+          "args": []
+        }
+      ],
+      "scope": "Local fork receipt execution gas with canonical market state and existing EOA funds; native L2 fee components separately validated.",
+      "supplyConservation": "Canonical Ethereum WETH wraps/unwraps real ETH inside Fluid; supply changes must equal both actual ETH backing and exact Deposit/Withdrawal receipt event totals."
+    },
+    {
+      "id": "dolomite-eth-usdc",
+      "family": "Dolomite-wrapper",
+      "status": "CONFIGURED_PENDING_EXECUTION",
+      "chain_id": 1,
+      "fork_block": 26300000,
+      "fork_block_hash": "0xfeb02dce39436b4d1f400d128fa774891b94451859a56e6c9d548b8574629b56",
+      "rpc_url_env": "ETH_RPC_URL",
+      "underlying": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+      "underlying_decimals": 6,
+      "holder": "0x55FE002aefF02F77364de339a1292923A15844B8",
+      "adapter_source": "src/strategies/usdc-lending/adapters/lending/DolomiteUsdcMultiMarket.sol",
+      "adapter_contract": "DolomiteUsdcMultiMarketAdapter",
+      "init_sig": "initialize(address,address,address,uint256,address)",
+      "init_args": [
+        {
+          "type": "address",
+          "value": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+        },
+        {
+          "type": "address",
+          "value": "$HOLDER"
+        },
+        {
+          "type": "address",
+          "value": "$HOLDER"
+        },
+        {
+          "type": "uint256",
+          "value": "0"
+        },
+        {
+          "type": "address",
+          "value": "$REGISTRY"
+        }
+      ],
+      "receipt_reference": {
+        "kind": "erc4626",
+        "token": "0x444868B6e8079ac2c55eea115250f92C2b2c4D14"
+      },
+      "operations": [
+        {
+          "id": "approve",
+          "op": "erc20_approve",
+          "token": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+          "spender": "$ADAPTER",
+          "amount": "125000000"
+        },
+        {
+          "id": "deposit_first",
+          "op": "adapter_call",
+          "sig": "deposit(uint256)",
+          "args": [
+            {
+              "type": "uint256",
+              "value": "100000000"
+            }
+          ],
+          "position": "first real position; separate transaction"
+        },
+        {
+          "id": "deposit_continuation",
+          "op": "adapter_call",
+          "sig": "deposit(uint256)",
+          "args": [
+            {
+              "type": "uint256",
+              "value": "25000000"
+            }
+          ],
+          "position": "continuing real position; fresh transaction access cache"
+        },
+        {
+          "id": "withdraw_partial",
+          "op": "adapter_call",
+          "sig": "withdraw(uint256,address)",
+          "args": [
+            {
+              "type": "uint256",
+              "value": "25000000"
+            },
+            {
+              "type": "address",
+              "value": "$HOLDER"
+            }
+          ]
+        },
+        {
+          "id": "emergency_pull",
+          "op": "adapter_call",
+          "sig": "emergencyPullAllToVault()",
+          "args": []
+        }
+      ],
+      "scope": "Local fork receipt execution gas with canonical market state and existing EOA funds; native L2 fee components separately validated.",
+      "registryProtocolType": 4
+    },
+    {
+      "id": "venus-arb-usdc",
+      "family": "Venus",
+      "status": "CONFIGURED_PENDING_EXECUTION",
+      "chain_id": 42161,
+      "fork_block": 520094008,
+      "fork_block_hash": "0xd0e4d2d28e0d9a60d819743930f9f2843409bf37a895a411620a632da53fa600",
+      "rpc_url_env": "ARB_RPC_URL",
+      "underlying": "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+      "underlying_decimals": 6,
+      "holder": "0xB38e8c17e38363aF6EbdCb3dAE12e0243582891D",
+      "adapter_source": "src/strategies/usdc-lending/adapters/lending/VenusUsdcMultiMarket.sol",
+      "adapter_contract": "VenusUsdcMultiMarketAdapter",
+      "init_sig": "initialize(address,address,address,uint256,address,uint256)",
+      "init_args": [
+        {
+          "type": "address",
+          "value": "0xaf88d065e77c8cc2239327c5edb3a432268e5831"
+        },
+        {
+          "type": "address",
+          "value": "$HOLDER"
+        },
+        {
+          "type": "address",
+          "value": "$HOLDER"
+        },
+        {
+          "type": "uint256",
+          "value": "0"
+        },
+        {
+          "type": "address",
+          "value": "0x7D8609f8da70fF9027E9bc5229Af4F6727662707"
+        },
+        {
+          "type": "uint256",
+          "value": "31536000"
+        }
+      ],
+      "receipt_reference": {
+        "kind": "vtoken",
+        "token": "0x7D8609f8da70fF9027E9bc5229Af4F6727662707"
+      },
+      "operations": [
+        {
+          "id": "approve",
+          "op": "erc20_approve",
+          "token": "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+          "spender": "$ADAPTER",
+          "amount": "125000000"
+        },
+        {
+          "id": "deposit_first",
+          "op": "adapter_call",
+          "sig": "deposit(uint256)",
+          "args": [
+            {
+              "type": "uint256",
+              "value": "100000000"
+            }
+          ],
+          "position": "first real position; separate transaction"
+        },
+        {
+          "id": "deposit_continuation",
+          "op": "adapter_call",
+          "sig": "deposit(uint256)",
+          "args": [
+            {
+              "type": "uint256",
+              "value": "25000000"
+            }
+          ],
+          "position": "continuing real position; fresh transaction access cache"
+        },
+        {
+          "id": "withdraw_partial",
+          "op": "adapter_call",
+          "sig": "withdraw(uint256,address)",
+          "args": [
+            {
+              "type": "uint256",
+              "value": "25000000"
+            },
+            {
+              "type": "address",
+              "value": "$HOLDER"
+            }
+          ]
+        },
+        {
+          "id": "emergency_pull",
+          "op": "adapter_call",
+          "sig": "emergencyPullAllToVault()",
+          "args": []
+        }
+      ],
+      "scope": "Local fork receipt execution gas with canonical market state and existing EOA funds; native L2 fee components separately validated."
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "status": "R3_ACTUAL_ARBITRUM_NATIVE_FEE_COMPONENT_PASS",
+  "readiness": "NOT_PRODUCTION_READY",
+  "candidateReferenceDigest": "b9933342f8b1dbf1186550a34da0768cfcf9f95cdd5e9fc97a584f872649cbd6",
+  "componentOnly": true,
+  "sourcePath": "src/strategies/usdc-lending/gas/ReadOnlyGasEstimator.sol",
+  "sourceUtf8LfSha256": "39fe733c3dc196d9989aecdce78a5d1f46a534fdc7d86039c0fdf7d63dc399d8",
+  "block": "0x1f046f38",
+  "rawProbe": "C:\\Users\\Pierre\\Multyr\\pt-multiply\\lr\\deployments\\lending-full-validation-20261101\\production\\B-native-r3\\root-probe-arb-1.json",
+  "rawProbeSha256": "40ed806ade90caa81177761fb8d7eb40bd8f4c6cf9ec81f152989a1779d99d2c",
+  "quote": {
+    "actionsHash": "0xbbd7e4657174982581f4a2916a89886764b5b7d5cb7dee38c4519f9276ca6101",
+    "values": [
+      "101518",
+      "1796224",
+      "0",
+      "35928072448000",
+      "2",
+      "1",
+      "1"
+    ]
+  },
+  "queryGas": 91974,
+  "queryEvidence": "C:\\Users\\Pierre\\Multyr\\pt-multiply\\lr\\deployments\\lending-full-validation-20261101\\production\\B-native-r3\\root-query-gas.json",
+  "limits": [
+    "Unused candidate estimator only code/storage overrides; actual native precompile, price/sequencer feeds and existing baseline measurement state unchanged",
+    "Readonly candidate RPC simulation, no transaction broadcast or full new strategy lifecycle",
+    "Coefficients illustrative; query gas does not close operation/wrapper calibration",
+    "Official RPC pruned historical state; failed attempt preserved and archive RPC used"
+  ]
+}

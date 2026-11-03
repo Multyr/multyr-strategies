@@ -1,0 +1,129 @@
+{
+  "contract": "StrategyAdapterOpsModule",
+  "address": "0xe55fB758f1B7e418670849AF812A1B9C80b40f59",
+  "block": 520094008,
+  "blockHash": "0xd0e4d2d28e0d9a60d819743930f9f2843409bf37a895a411620a632da53fa600",
+  "compilerInputSha256": "9892d22a80d7f8305eb2b065c518ae226c0f8c7debd748591937bb1ee4186a6c",
+  "runtimeBytes": 18240,
+  "compiledRuntimeBytes": 18240,
+  "observedKeccak": "0x66cf4f82ba31b8f42a98309c3cea5a7f21e908c5a96e2af29fa9cae67fa6b33d",
+  "compiledBoundKeccak": "0x66cf4f82ba31b8f42a98309c3cea5a7f21e908c5a96e2af29fa9cae67fa6b33d",
+  "immutableBindings": [
+    {
+      "astId": "101784",
+      "name": "_self",
+      "value": "0xe55fb758f1b7e418670849af812a1b9c80b40f59",
+      "ranges": [
+        {
+          "length": 32,
+          "start": 4521
+        },
+        {
+          "length": 32,
+          "start": 5192
+        },
+        {
+          "length": 32,
+          "start": 5305
+        },
+        {
+          "length": 32,
+          "start": 5545
+        },
+        {
+          "length": 32,
+          "start": 6215
+        },
+        {
+          "length": 32,
+          "start": 6984
+        },
+        {
+          "length": 32,
+          "start": 7170
+        },
+        {
+          "length": 32,
+          "start": 7743
+        },
+        {
+          "length": 32,
+          "start": 9116
+        },
+        {
+          "length": 32,
+          "start": 9364
+        }
+      ]
+    },
+    {
+      "astId": "117064",
+      "name": "ASSET",
+      "value": "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+      "ranges": [
+        {
+          "length": 32,
+          "start": 7460
+        },
+        {
+          "length": 32,
+          "start": 11066
+        },
+        {
+          "length": 32,
+          "start": 11808
+        },
+        {
+          "length": 32,
+          "start": 14378
+        }
+      ]
+    },
+    {
+      "astId": "117066",
+      "name": "core",
+      "value": "0x5e0cdb76487bd96ff069ef7f78eadf5b5909c8cb",
+      "ranges": [
+        {
+          "length": 32,
+          "start": 2328
+        }
+      ]
+    },
+    {
+      "astId": "117068",
+      "name": "paramsModule",
+      "value": "0x9ddbff7a2d6cbfda7fe5fe72a7e7a09eef8f2772",
+      "ranges": [
+        {
+          "length": 32,
+          "start": 2126
+        }
+      ]
+    },
+    {
+      "astId": "117070",
+      "name": "scoringModule",
+      "value": "0x0000000000000000000000000000000000000000",
+      "ranges": [
+        {
+          "length": 32,
+          "start": 8624
+        }
+      ]
+    },
+    {
+      "astId": "117072",
+      "name": "adapterOpsModule",
+      "value": "0x0000000000000000000000000000000000000000",
+      "ranges": [
+        {
+          "length": 32,
+          "start": 8869
+        }
+      ]
+    }
+  ],
+  "immutableBindingErrors": [],
+  "exactRuntimeMatch": true
+}

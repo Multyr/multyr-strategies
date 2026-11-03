@@ -1,0 +1,370 @@
+{
+  "date": "2026-11-01",
+  "baselineLog": "lending-lint-final.log before coordinator delta",
+  "warningSites": 40,
+  "scope": "All 40 emitted unsafe-typecast warning sites assessed, final exact locations retained. Explicit bounds/sign checks or subset ratios prevent truncation; not a formal proof that all arithmetic cannot revert. Morpho registry guard regression and final full suite pass.",
+  "sites": [
+    {
+      "baselinePath": "src/strategies/usdc-lending/adapters/lending/AaveV3USDCmarket.sol",
+      "baselineLine": 329,
+      "baselineColumn": 16,
+      "assessment": "bounded",
+      "proof": "Explicit uint16.max clamp immediately precedes narrowing.",
+      "finalLine": 329,
+      "finalColumn": 16
+    },
+    {
+      "baselinePath": "src/strategies/usdc-lending/controller/StrategyRebalanceGateModule.sol",
+      "baselineLine": 463,
+      "baselineColumn": 27,
+      "assessment": "bounded",
+      "proof": "Unsigned-to-signed casts have explicit int256.max guards; signed-to-unsigned conversions follow positive/negative sign branches. Checked negation/multiplication can revert, not silently truncate.",
+      "finalLine": 463,
+      "finalColumn": 27
+    },
+    {
+      "baselinePath": "src/strategies/usdc-lending/adapters/lending/CometUsdcMultiMarket.sol",
+      "baselineLine": 328,
+      "baselineColumn": 16,
+      "assessment": "bounded",
+      "proof": "Explicit uint16.max clamp immediately precedes narrowing.",
+      "finalLine": 328,
+      "finalColumn": 16
+    },
+    {
+      "baselinePath": "src/strategies/usdc-lending/controller/StrategyRebalanceGateModule.sol",
+      "baselineLine": 463,
+      "baselineColumn": 52,
+      "assessment": "bounded",
+      "proof": "Unsigned-to-signed casts have explicit int256.max guards; signed-to-unsigned conversions follow positive/negative sign branches. Checked negation/multiplication can revert, not silently truncate.",
+      "finalLine": 463,
+      "finalColumn": 52
+    },
+    {
+      "baselinePath": "src/strategies/usdc-lending/controller/StrategyRebalanceGateModule.sol",
+      "baselineLine": 471,
+      "baselineColumn": 32,
+      "assessment": "bounded",
+      "proof": "Unsigned-to-signed casts have explicit int256.max guards; signed-to-unsigned conversions follow positive/negative sign branches. Checked negation/multiplication can revert, not silently truncate.",
+      "finalLine": 471,
+      "finalColumn": 32
+    },
+    {
+      "baselinePath": "src/strategies/usdc-lending/controller/StrategyRebalanceGateModule.sol",
+      "baselineLine": 471,
+      "baselineColumn": 53,
+      "assessment": "bounded",
+      "proof": "Unsigned-to-signed casts have explicit int256.max guards; signed-to-unsigned conversions follow positive/negative sign branches. Checked negation/multiplication can revert, not silently truncate.",
+      "finalLine": 471,
+      "finalColumn": 53
+    },
+    {
+      "baselinePath": "src/strategies/usdc-lending/controller/StrategyRebalanceGateModule.sol",
+      "baselineLine": 481,
+      "baselineColumn": 49,
+      "assessment": "bounded",
+      "proof": "Unsigned-to-signed casts have explicit int256.max guards; signed-to-unsigned conversions follow positive/negative sign branches. Checked negation/multiplication can revert, not silently truncate.",
+      "finalLine": 481,
+      "finalColumn": 49
+    },
+    {
+      "baselinePath": "src/strategies/usdc-lending/controller/StrategyRebalanceGateModule.sol",
+      "baselineLine": 483,
+      "baselineColumn": 37,
+      "assessment": "bounded",
+      "proof": "Unsigned-to-signed casts have explicit int256.max guards; signed-to-unsigned conversions follow positive/negative sign branches. Checked negation/multiplication can revert, not silently truncate.",
+      "finalLine": 483,
+      "finalColumn": 37
+    },
+    {
+      "baselinePath": "src/strategies/usdc-lending/gas/ReadOnlyGasEstimator.sol",
+      "baselineLine": 28,
+      "baselineColumn": 71,
+      "assessment": "bounded",
+      "proof": "USD6 is a four-byte fixed literal padded into bytes32, not narrowed.",
+      "finalLine": 28,
+      "finalColumn": 71
+    },
+    {
+      "baselinePath": "src/strategies/usdc-lending/controller/StrategyRebalanceGateModule.sol",
+      "baselineLine": 505,
+      "baselineColumn": 33,
+      "assessment": "bounded",
+      "proof": "Unsigned-to-signed casts have explicit int256.max guards; signed-to-unsigned conversions follow positive/negative sign branches. Checked negation/multiplication can revert, not silently truncate.",
+      "finalLine": 505,
+      "finalColumn": 33
+    },
+    {
+      "baselinePath": "src/strategies/usdc-lending/controller/StrategyAdapterOpsModule.sol",
+      "baselineLine": 302,
+      "baselineColumn": 49,
+      "assessment": "bounded",
+      "proof": "Weighted liquidity is clamped at10000.",
+      "finalLine": 302,
+      "finalColumn": 49
+    },
+    {
+      "baselinePath": "src/strategies/usdc-lending/controller/StrategyAdapterOpsModule.sol",
+      "baselineLine": 313,
+      "baselineColumn": 16,
+      "assessment": "bounded",
+      "proof": "Elapsed<cooldown branch bounds cooldown ratio to0..2000.",
+      "finalLine": 313,
+      "finalColumn": 16
+    },
+    {
+      "baselinePath": "src/strategies/usdc-lending/adapters/lending/MorphoUsdcMultiMarket.sol",
+      "baselineLine": 374,
+      "baselineColumn": 16,
+      "assessment": "bounded",
+      "proof": "Explicit uint16.max clamp immediately precedes narrowing.",
+      "finalLine": 376,
+      "finalColumn": 16
+    },
+    {
+      "baselinePath": "src/strategies/usdc-lending/adapters/lending/MorphoUsdcMultiMarket.sol",
+      "baselineLine": 524,
+      "baselineColumn": 29,
+      "assessment": "bounded",
+      "proof": "Index is bounded by at most255 markets. Coordinator added the missing registry-load cardinality guard to match addMarket; malformed-registry regression and full final rerun pass.",
+      "finalLine": 526,
+      "finalColumn": 29
+    },
+    {
+      "baselinePath": "src/strategies/usdc-lending/controller/StrategyRebalanceGateModule.sol",
+      "baselineLine": 529,
+      "baselineColumn": 29,
+      "assessment": "bounded",
+      "proof": "Unsigned-to-signed casts have explicit int256.max guards; signed-to-unsigned conversions follow positive/negative sign branches. Checked negation/multiplication can revert, not silently truncate.",
+      "finalLine": 529,
+      "finalColumn": 29
+    },
+    {
+      "baselinePath": "src/strategies/usdc-lending/gas/ReadOnlyGasEstimator.sol",
+      "baselineLine": 175,
+      "baselineColumn": 21,
+      "assessment": "bounded",
+      "proof": "Oracle answer is rejected unless positive, then bounded before decimal normalization.",
+      "finalLine": 175,
+      "finalColumn": 21
+    },
+    {
+      "baselinePath": "src/strategies/usdc-lending/gas/ReadOnlyGasEstimator.sol",
+      "baselineLine": 176,
+      "baselineColumn": 38,
+      "assessment": "bounded",
+      "proof": "Oracle answer is rejected unless positive, then bounded before decimal normalization.",
+      "finalLine": 176,
+      "finalColumn": 38
+    },
+    {
+      "baselinePath": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol",
+      "baselineLine": 541,
+      "baselineColumn": 31,
+      "assessment": "bounded",
+      "proof": "Observed gas is nonzero and <=uint64.max; alpha<=10000; EMA is a convex combination of uint64 values.",
+      "finalLine": 541,
+      "finalColumn": 31
+    },
+    {
+      "baselinePath": "src/strategies/usdc-lending/controller/StrategyParamsModule.sol",
+      "baselineLine": 323,
+      "baselineColumn": 53,
+      "assessment": "bounded",
+      "proof": "Liquidity is clamped at10000 before narrowing.",
+      "finalLine": 323,
+      "finalColumn": 53
+    },
+    {
+      "baselinePath": "src/strategies/usdc-lending/controller/StrategyParamsModule.sol",
+      "baselineLine": 371,
+      "baselineColumn": 31,
+      "assessment": "bounded",
+      "proof": "deltaRatioBps is clamped at10000; subtraction lies in0..10000.",
+      "finalLine": 371,
+      "finalColumn": 31
+    },
+    {
+      "baselinePath": "src/strategies/usdc-lending/controller/StrategySafetyOverflowModule.sol",
+      "baselineLine": 154,
+      "baselineColumn": 22,
+      "assessment": "bounded",
+      "proof": "Fallback assets are a subset of healthy+fallback total; guarded nonzero denominator bounds ratio to10000.",
+      "finalLine": 154,
+      "finalColumn": 22
+    },
+    {
+      "baselinePath": "src/strategies/usdc-lending/lib/StrategyConfigLib.sol",
+      "baselineLine": 132,
+      "baselineColumn": 39,
+      "assessment": "bounded",
+      "proof": "Penalty>=10000 returns0; otherwise10000-penalty lies in1..10000.",
+      "finalLine": 132,
+      "finalColumn": 39
+    },
+    {
+      "baselinePath": "src/strategies/usdc-lending/lib/StrategyConfigLib.sol",
+      "baselineLine": 139,
+      "baselineColumn": 39,
+      "assessment": "bounded",
+      "proof": "Penalty>=10000 returns0; otherwise10000-penalty lies in1..10000.",
+      "finalLine": 139,
+      "finalColumn": 39
+    },
+    {
+      "baselinePath": "src/strategies/usdc-lending/adapters/lending/MorphoUsdcMultiMarket.sol",
+      "baselineLine": 775,
+      "baselineColumn": 16,
+      "assessment": "bounded",
+      "proof": "Explicit uint16.max clamp immediately precedes narrowing.",
+      "finalLine": 777,
+      "finalColumn": 16
+    },
+    {
+      "baselinePath": "src/strategies/usdc-lending/adapters/lending/PpsRateLib.sol",
+      "baselineLine": 16,
+      "baselineColumn": 64,
+      "assessment": "bounded",
+      "proof": "Explicit uint16.max clamp immediately precedes narrowing.",
+      "finalLine": 16,
+      "finalColumn": 64
+    },
+    {
+      "baselinePath": "src/strategies/usdc-lending/controller/StrategyRebalanceGateModule.sol",
+      "baselineLine": 529,
+      "baselineColumn": 52,
+      "assessment": "bounded",
+      "proof": "Unsigned-to-signed casts have explicit int256.max guards; signed-to-unsigned conversions follow positive/negative sign branches. Checked negation/multiplication can revert, not silently truncate.",
+      "finalLine": 529,
+      "finalColumn": 52
+    },
+    {
+      "baselinePath": "src/strategies/usdc-lending/adapters/lending/VenusUsdcMultiMarket.sol",
+      "baselineLine": 308,
+      "baselineColumn": 60,
+      "assessment": "bounded",
+      "proof": "Explicit uint16.max clamp immediately precedes narrowing.",
+      "finalLine": 308,
+      "finalColumn": 60
+    },
+    {
+      "baselinePath": "src/strategies/usdc-lending/controller/StrategyScoringModule.sol",
+      "baselineLine": 267,
+      "baselineColumn": 16,
+      "assessment": "bounded",
+      "proof": "Structural cap<=10000; overlays<=10000; override floor and global ceiling are uint16, so final cap fits uint16.",
+      "finalLine": 267,
+      "finalColumn": 16
+    },
+    {
+      "baselinePath": "src/strategies/usdc-lending/adapters/lending/MorphoUsdcMultiMarket.sol",
+      "baselineLine": 888,
+      "baselineColumn": 22,
+      "assessment": "bounded",
+      "proof": "Explicit uint16.max clamp immediately precedes narrowing.",
+      "finalLine": 890,
+      "finalColumn": 22
+    },
+    {
+      "baselinePath": "src/strategies/usdc-lending/controller/StrategyRebalanceGateModule.sol",
+      "baselineLine": 532,
+      "baselineColumn": 46,
+      "assessment": "bounded",
+      "proof": "Unsigned-to-signed casts have explicit int256.max guards; signed-to-unsigned conversions follow positive/negative sign branches. Checked negation/multiplication can revert, not silently truncate.",
+      "finalLine": 532,
+      "finalColumn": 46
+    },
+    {
+      "baselinePath": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol",
+      "baselineLine": 541,
+      "baselineColumn": 61,
+      "assessment": "bounded",
+      "proof": "Observed gas is nonzero and <=uint64.max; alpha<=10000; EMA is a convex combination of uint64 values.",
+      "finalLine": 541,
+      "finalColumn": 61
+    },
+    {
+      "baselinePath": "src/strategies/usdc-lending/swap/RewardSwapHelper.sol",
+      "baselineLine": 392,
+      "baselineColumn": 32,
+      "assessment": "bounded",
+      "proof": "Oracle answer is checked strictly positive before conversion to uint256; full precision Math.mulDiv is used.",
+      "finalLine": 392,
+      "finalColumn": 32
+    },
+    {
+      "baselinePath": "src/strategies/usdc-lending/swap/RewardSwapHelper.sol",
+      "baselineLine": 393,
+      "baselineColumn": 31,
+      "assessment": "bounded",
+      "proof": "Oracle answer is checked strictly positive before conversion to uint256; full precision Math.mulDiv is used.",
+      "finalLine": 393,
+      "finalColumn": 31
+    },
+    {
+      "baselinePath": "src/strategies/usdc-lending/controller/StrategyRebalancePlanModule.sol",
+      "baselineLine": 455,
+      "baselineColumn": 15,
+      "assessment": "bounded",
+      "proof": "Snapshot ratios are bounded by 10000 because numerators are subsets of denominators; predicted APY goes through _safeBps uint16 clamp. Arithmetic remains checked.",
+      "finalLine": 455,
+      "finalColumn": 15
+    },
+    {
+      "baselinePath": "src/strategies/usdc-lending/controller/StrategySettingsModule.sol",
+      "baselineLine": 50,
+      "baselineColumn": 64,
+      "assessment": "bounded",
+      "proof": "USD6 is a four-byte fixed literal padded into bytes32, not narrowed.",
+      "finalLine": 50,
+      "finalColumn": 64
+    },
+    {
+      "baselinePath": "src/strategies/usdc-lending/controller/StrategyRebalancePlanModule.sol",
+      "baselineLine": 463,
+      "baselineColumn": 15,
+      "assessment": "bounded",
+      "proof": "Snapshot ratios are bounded by 10000 because numerators are subsets of denominators; predicted APY goes through _safeBps uint16 clamp. Arithmetic remains checked.",
+      "finalLine": 463,
+      "finalColumn": 15
+    },
+    {
+      "baselinePath": "src/strategies/usdc-lending/controller/StrategyRebalancePlanModule.sol",
+      "baselineLine": 472,
+      "baselineColumn": 15,
+      "assessment": "bounded",
+      "proof": "Snapshot ratios are bounded by 10000 because numerators are subsets of denominators; predicted APY goes through _safeBps uint16 clamp. Arithmetic remains checked.",
+      "finalLine": 472,
+      "finalColumn": 15
+    },
+    {
+      "baselinePath": "src/strategies/usdc-lending/controller/StrategyRebalancePlanModule.sol",
+      "baselineLine": 492,
+      "baselineColumn": 15,
+      "assessment": "bounded",
+      "proof": "Snapshot ratios are bounded by 10000 because numerators are subsets of denominators; predicted APY goes through _safeBps uint16 clamp. Arithmetic remains checked.",
+      "finalLine": 492,
+      "finalColumn": 15
+    },
+    {
+      "baselinePath": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol",
+      "baselineLine": 640,
+      "baselineColumn": 39,
+      "assessment": "bounded",
+      "proof": "Harvest absolute NAV delta is explicitly <=int256.max before either signed conversion.",
+      "finalLine": 643,
+      "finalColumn": 39
+    },
+    {
+      "baselinePath": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol",
+      "baselineLine": 640,
+      "baselineColumn": 56,
+      "assessment": "bounded",
+      "proof": "Harvest absolute NAV delta is explicitly <=int256.max before either signed conversion.",
+      "finalLine": 643,
+      "finalColumn": 56
+    }
+  ],
+  "finalLogSha256": "0467568c0217ef8cfc8eab0102dddfcf68d18fc1443dea736d1586a63a63ab42",
+  "finalLintExitCode": 0
+}

@@ -1,0 +1,180 @@
+{
+  "date": "2026-11-01",
+  "scope": "Additional Aave adapter-only real-market lifecycles, not full Core/strategy integration or all-adapter closure",
+  "chainId": 1,
+  "rpc": "https://eth-mainnet.public.blastapi.io",
+  "result": {
+    "passed": 2,
+    "failed": 0,
+    "skipped": 0
+  },
+  "testSource": "deployments/lending-full-validation-20261101/root-tests/AaveAdditionalRealAssets.t.sol",
+  "testSourceSha256": "89247dad74c866b890defecd693ec26db42d8b211073042bd8805b68a84b1bbe",
+  "logSha256": "009ad1b2093032207d8b40c4d67e5594d706c6494c92ba8def3e2ffd484a33a3",
+  "officialMarketSource": "https://github.com/aave-dao/aave-address-book/blob/main/src/AaveV3Ethereum.sol",
+  "officialSourceBlob": "75c7b74ed79abb8c55feeaaa99d59248aae09053",
+  "priceFeedDirectory": "https://reference-data-directory.vercel.app/feeds-mainnet.json",
+  "noSyntheticFunding": true,
+  "independentSupplyAprReference": "Actual pool liquidityRateRay /1e23, clamped only at uint16 max",
+  "independentNavReference": "Actual aToken.scaledBalanceOf times actual pool.getReserveNormalizedIncome /1e27, RAY half-up rounding",
+  "statePersistence": "Closed counterfactual asset/pool/aToken/debt-token state; canonical historical feed observations advance, not replay of canonical transactions",
+  "headers": [
+    {
+      "rpcBlock": 26300000,
+      "hash": "0xfeb02dce39436b4d1f400d128fa774891b94451859a56e6c9d548b8574629b56",
+      "timestamp": "0x6ae38723"
+    },
+    {
+      "rpcBlock": 26310000,
+      "hash": "0x4fa42d6d17df9bf77b800025a07e3daf71bf04d9667ffc816a13d5312ca1314e",
+      "timestamp": "0x6ae55db7"
+    }
+  ],
+  "marketObservations": [
+    {
+      "asset": "0x6c3ea9036406852006290770BEdFcAbA0e23A0e8",
+      "rpcBlock": "26300000",
+      "timestamp": "1793296163",
+      "decimals": "6",
+      "protocolSupply": "7462052908126",
+      "protocolCash": "642120861966",
+      "liquidityRateRay": "98509266118218132353492729",
+      "adapterAprBps": "985",
+      "priceAnswer": "99991233",
+      "feedDecimals": "8",
+      "priceUpdatedAt": "1793217599",
+      "position": "0",
+      "positionUsd6": "0"
+    },
+    {
+      "asset": "0x6c3ea9036406852006290770BEdFcAbA0e23A0e8",
+      "rpcBlock": "26310000",
+      "timestamp": "1793416631",
+      "decimals": "6",
+      "protocolSupply": "7465253927569",
+      "protocolCash": "642520861966",
+      "liquidityRateRay": "98460211908257966360017703",
+      "adapterAprBps": "984",
+      "priceAnswer": "99994894",
+      "feedDecimals": "8",
+      "priceUpdatedAt": "1793390435",
+      "position": "400187670",
+      "positionUsd6": "400167236"
+    },
+    {
+      "asset": "0x6c3ea9036406852006290770BEdFcAbA0e23A0e8",
+      "rpcBlock": "26310000",
+      "timestamp": "1793416631",
+      "decimals": "6",
+      "protocolSupply": "7464853739898",
+      "protocolCash": "642120674296",
+      "liquidityRateRay": "98666994800858885091137516",
+      "adapterAprBps": "986",
+      "priceAnswer": "99994894",
+      "feedDecimals": "8",
+      "priceUpdatedAt": "1793390435",
+      "position": "0",
+      "positionUsd6": "0"
+    },
+    {
+      "asset": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+      "rpcBlock": "26300000",
+      "timestamp": "1793296163",
+      "decimals": "6",
+      "protocolSupply": "2700095199552044",
+      "protocolCash": "193863999398600",
+      "liquidityRateRay": "46156974741049836371223604",
+      "adapterAprBps": "461",
+      "priceAnswer": "99888865",
+      "feedDecimals": "8",
+      "priceUpdatedAt": "1793285171",
+      "position": "0",
+      "positionUsd6": "0"
+    },
+    {
+      "asset": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+      "rpcBlock": "26310000",
+      "timestamp": "1793416631",
+      "decimals": "6",
+      "protocolSupply": "2700571679452350",
+      "protocolCash": "193864399398600",
+      "liquidityRateRay": "42311453602705611037102384",
+      "adapterAprBps": "423",
+      "priceAnswer": "99832815",
+      "feedDecimals": "8",
+      "priceUpdatedAt": "1793371595",
+      "position": "400088158",
+      "positionUsd6": "399419270"
+    },
+    {
+      "asset": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+      "rpcBlock": "26310000",
+      "timestamp": "1793416631",
+      "decimals": "6",
+      "protocolSupply": "2700571279364192",
+      "protocolCash": "193863999310442",
+      "liquidityRateRay": "42311538848267292299049142",
+      "adapterAprBps": "423",
+      "priceAnswer": "99832815",
+      "feedDecimals": "8",
+      "priceUpdatedAt": "1793371595",
+      "position": "0",
+      "positionUsd6": "0"
+    }
+  ],
+  "actualFunding": [
+    {
+      "asset": "0x6c3ea9036406852006290770BEdFcAbA0e23A0e8",
+      "holder": "0xAFBb1a7E9ddEf38D9bC4A220E702B18DAcaa2a62",
+      "holderBefore": "500861601438863",
+      "transferred": "1000000000",
+      "holderAfter": "500860601438863"
+    },
+    {
+      "asset": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+      "holder": "0xF977814e90dA44bFA03b6295A0616a897441aceC",
+      "holderBefore": "16000000001136208",
+      "transferred": "1000000000",
+      "holderAfter": "15999999001136208"
+    }
+  ],
+  "independentIndexObservations": [
+    {
+      "asset": "0x6c3ea9036406852006290770BEdFcAbA0e23A0e8",
+      "scaledReceiptBalance": "0",
+      "normalizedIncome": "1096431055511509914890246396",
+      "independentlyCalculatedAssets": "0"
+    },
+    {
+      "asset": "0x6c3ea9036406852006290770BEdFcAbA0e23A0e8",
+      "scaledReceiptBalance": "364854240",
+      "normalizedIncome": "1096842593592679165810029743",
+      "independentlyCalculatedAssets": "400187671"
+    },
+    {
+      "asset": "0x6c3ea9036406852006290770BEdFcAbA0e23A0e8",
+      "scaledReceiptBalance": "0",
+      "normalizedIncome": "1096842593592679165810029743",
+      "independentlyCalculatedAssets": "0"
+    },
+    {
+      "asset": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+      "scaledReceiptBalance": "0",
+      "normalizedIncome": "1180687472424999832288518196",
+      "independentlyCalculatedAssets": "0"
+    },
+    {
+      "asset": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+      "scaledReceiptBalance": "338800603",
+      "normalizedIncome": "1180895650814477083962879228",
+      "independentlyCalculatedAssets": "400088159"
+    },
+    {
+      "asset": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+      "scaledReceiptBalance": "0",
+      "normalizedIncome": "1180895650814477083962879228",
+      "independentlyCalculatedAssets": "0"
+    }
+  ],
+  "log": "deployments/lending-full-validation-20261101/additional-actual-adapters.log"
+}

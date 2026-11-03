@@ -1,0 +1,15 @@
+{
+  "status": "REGRESSION_PASS",
+  "passed": 2940,
+  "suites": 200,
+  "failed": 0,
+  "skipped": 0,
+  "log": "deployments/lending-full-validation-20261101/production/coordinator/R17-regression.log",
+  "logSha256": "c044294165797c4184265a1ba2adc9f6aa3561adbeceb2c09e9d4902ff03f5c6",
+  "matchingActualSourceReceipt": "docs/lending-production-remediation-20261101/r17-actual-43-acceptance.json",
+  "actualSourceReceiptSha256": "795f8915f014a6b4bbd6a5c288e5675481796acad6d1b03ced9901b39b614889",
+  "sourcesMatch": true,
+  "limits": [
+    "R17 source acceptance only; additional independently reviewed remediation remains open."
+  ]
+}

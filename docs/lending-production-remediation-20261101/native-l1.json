@@ -1,0 +1,55 @@
+{
+  "status": "ETHEREUM_AND_BSC_REAL_NATIVE_INTEGRATION_PASS_FINAL_RELEASE_PENDING",
+  "readiness": "NOT_PRODUCTION_READY",
+  "finding": "Generic estimator required a sequencer contract on Ethereum/BSC, preventing a valid native L1 model without an artificial feed",
+  "fix": "Real native L1 fee source; zero sequencer supported only on Ethereum/BSC and exact deployment chain; L2 sequencer protections and all price/config bounds preserved",
+  "before": {
+    "passed": 0,
+    "failed": 2,
+    "reason": "dependency constructor revert on Ethereum/BSC"
+  },
+  "after": {
+    "passed": 44,
+    "suites": 2,
+    "failed": 0,
+    "skipped": 0
+  },
+  "changes": [
+    "src/strategies/usdc-lending/gas/NativeL1FeeInfo.sol",
+    "src/strategies/usdc-lending/gas/ReadOnlyGasEstimator.sol",
+    "test/strategies/usdc-lending/NativeL1FeeInfo.t.sol"
+  ],
+  "beforeLog": "C:/Users/Pierre/Multyr/pt-multiply/pa/deployments/lending-full-validation-20261101/production/A-L1/root-l1-before.log",
+  "afterLog": "C:/Users/Pierre/Multyr/pt-multiply/pa/deployments/lending-full-validation-20261101/production/A-L1/root-l1-after.log",
+  "scope": "44 component unit tests and 4 Ethereum real-fork scenarios passed. BSC real candidate integration, final integrated acceptance and production gas calibration remain open.",
+  "realFork": {
+    "chain": 1,
+    "assets": [
+      "USDT6",
+      "WETH18"
+    ],
+    "nativeFeeTestsPassed": 2,
+    "preservedFullExitTestsPassed": 2,
+    "failed": 0,
+    "skipped": 0,
+    "log": "C:\\Users\\Pierre\\Multyr\\pt-multiply\\pc\\deployments\\lending-full-validation-20261101\\production\\C\\root-native-eth-and-original-exit-r3-traces.log",
+    "logSha256": "e5c822c217be4428b36e45970df7fd8c7bcdfe239129d526d1917f270eb3adbc",
+    "helper": "Actual production NativeL1FeeInfo.sol artifact; local substitute rejected and removed",
+    "scope": "Real Core/Aave/two-user/two-epoch lifecycle, actual ETH/USD feed, exact native fee USD6 reference; no mock protocol success."
+  },
+  "additionalValidation": {
+    "dependencyGuardProof": "fee-source-dependency.json",
+    "componentTestsPassed": 49
+  },
+  "postDependencyGuardRealFork": {
+    "passed": 4,
+    "failed": 0,
+    "skipped": 0,
+    "suites": 2,
+    "log": "C:\\Users\\Pierre\\Multyr\\pt-multiply\\pc\\deployments\\lending-full-validation-20261101\\production\\C\\root-native-eth-after-dependency-guard.log",
+    "logSha256": "cb2e14fc456cc013d98416bb662739370fbd9f96d0dd3567f2cc5b98042f8a35",
+    "sourceReference": "R3-TECHNICAL b9933342f8b1dbf1186550a34da0768cfcf9f95cdd5e9fc97a584f872649cbd6",
+    "scope": "Four actual Ethereum USDT/WETH native fee and preserved full exit scenarios on accepted estimator guard"
+  },
+  "bscRealForkProof": "full-receipt-recall.json"
+}

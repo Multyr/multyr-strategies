@@ -1,0 +1,29 @@
+{
+  "scope": "Euler actual Ethereum USDC/USDT ERC4626 + Permit2 lifecycle, independent raw supplier APR, deposit/NAV/partial/full recall. Not multi-chain/full-strategy closure.",
+  "passed": 2,
+  "failed": 0,
+  "skipped": 0,
+  "chainId": 1,
+  "rpcBlock": "26300000",
+  "rpc": "https://eth-mainnet.public.blastapi.io",
+  "testSource": "deployments/lending-full-validation-20261101/root-tests/EulerActualAssets.t.sol",
+  "testSourceSha256": "07cdfe5c1ba2514cee9ab63b8ac1e7a0e6b371c5eabb73e7edf67922f30361a4",
+  "log": "deployments/lending-full-validation-20261101/euler-actual-assets.log",
+  "logSha256": "a030c96193e47cfc6ebc034f678e3ad882347d9898efd953d8aaf7742c6ca56f",
+  "observations": [
+    "asset: 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48, market: 0x797DD80692c3b2dAdabCe8e30C07fDE5307D48a9, rpcBlock: 26300000 [2.63e7], supply: 2018316678553 [2.018e12], borrows: 1860178224826 [1.86e12], feeBps: 1000, borrowRateRayPerSecond: 3871807584031523226 [3.871e18], independent365DayAprBps: 1012, independentJulianYearAprBps: 1013, adapterRateBps: 1012, position: 0",
+    "asset: 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48, market: 0x797DD80692c3b2dAdabCe8e30C07fDE5307D48a9, rpcBlock: 26300000 [2.63e7], supply: 2019316678553 [2.019e12], borrows: 1860178224826 [1.86e12], feeBps: 1000, borrowRateRayPerSecond: 3832251574664951960 [3.832e18], independent365DayAprBps: 1001, independentJulianYearAprBps: 1002, adapterRateBps: 1002, position: 999999998 [9.999e8]",
+    "asset: 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48, market: 0x797DD80692c3b2dAdabCe8e30C07fDE5307D48a9, rpcBlock: 26300000 [2.63e7], supply: 2019066678553 [2.019e12], borrows: 1860178224826 [1.86e12], feeBps: 1000, borrowRateRayPerSecond: 3842137055781557273 [3.842e18], independent365DayAprBps: 1004, independentJulianYearAprBps: 1005, adapterRateBps: 1004, position: 749999998 [7.499e8]",
+    "asset: 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48, market: 0x797DD80692c3b2dAdabCe8e30C07fDE5307D48a9, rpcBlock: 26300000 [2.63e7], supply: 2018316678555 [2.018e12], borrows: 1860178224826 [1.86e12], feeBps: 1000, borrowRateRayPerSecond: 3871808169220784473 [3.871e18], independent365DayAprBps: 1012, independentJulianYearAprBps: 1013, adapterRateBps: 1012, position: 0",
+    "asset: 0xdAC17F958D2ee523a2206206994597C13D831ec7, market: 0x313603FA690301b0CaeEf8069c065862f9162162, rpcBlock: 26300000 [2.63e7], supply: 310581805426 [3.105e11], borrows: 285069285018 [2.85e11], feeBps: 1000, borrowRateRayPerSecond: 3542881195618342629 [3.542e18], independent365DayAprBps: 922, independentJulianYearAprBps: 923, adapterRateBps: 923, position: 0",
+    "asset: 0xdAC17F958D2ee523a2206206994597C13D831ec7, market: 0x313603FA690301b0CaeEf8069c065862f9162162, rpcBlock: 26300000 [2.63e7], supply: 311581805426 [3.115e11], borrows: 285069285018 [2.85e11], feeBps: 1000, borrowRateRayPerSecond: 3287803270501728272 [3.287e18], independent365DayAprBps: 853, independentJulianYearAprBps: 854, adapterRateBps: 853, position: 999999999 [9.999e8]",
+    "asset: 0xdAC17F958D2ee523a2206206994597C13D831ec7, market: 0x313603FA690301b0CaeEf8069c065862f9162162, rpcBlock: 26300000 [2.63e7], supply: 311331805426 [3.113e11], borrows: 285069285018 [2.85e11], feeBps: 1000, borrowRateRayPerSecond: 3351475958450230601 [3.351e18], independent365DayAprBps: 870, independentJulianYearAprBps: 871, adapterRateBps: 871, position: 749999998 [7.499e8]",
+    "asset: 0xdAC17F958D2ee523a2206206994597C13D831ec7, market: 0x313603FA690301b0CaeEf8069c065862f9162162, rpcBlock: 26300000 [2.63e7], supply: 310581805428 [3.105e11], borrows: 285069285018 [2.85e11], feeBps: 1000, borrowRateRayPerSecond: 3543108995672488056 [3.543e18], independent365DayAprBps: 923, independentJulianYearAprBps: 923, adapterRateBps: 923, position: 0"
+  ],
+  "funding": [
+    "token: 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48, holder: 0x55FE002aefF02F77364de339a1292923A15844B8, beforeBalance: 57296016173638 [5.729e13], amount: 1000000000 [1e9], afterBalance: 57295016173638 [5.729e13]",
+    "token: 0xdAC17F958D2ee523a2206206994597C13D831ec7, holder: 0xF977814e90dA44bFA03b6295A0616a897441aceC, beforeBalance: 16000000001136208 [1.6e16], amount: 1000000000 [1e9], afterBalance: 15999999001136208 [1.599e16]"
+  ],
+  "rateConvention": "Independent one-rational actual borrow SPY * seconds/year * utilization * (1-fee). Record both365day/365.25day nominal supplier APR, not compound APY. Candidate legacy Julian-year denominator/early truncation has explicit <=1bps arithmetic bound. Cross-venue annualization remains subject to F5.",
+  "fundingMethod": "Actual EOA transfer, exact holder/receiver deltas and constant totalSupply; real push-mode transfer to adapter before deposit. No synthetic balances."
+}

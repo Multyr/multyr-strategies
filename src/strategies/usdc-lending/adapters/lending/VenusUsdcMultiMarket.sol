@@ -6,6 +6,7 @@ import { SafeERC20, IERC20 } from "@openzeppelin/contracts/token/ERC20/utils/Saf
 import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
 import { ReentrancyGuard } from "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import { Initializable } from "@openzeppelin/contracts/proxy/utils/Initializable.sol";
+import { Math } from "@openzeppelin/contracts/utils/math/Math.sol";
 
 // --- Venus vToken minimal interface ---
 interface IVToken {
@@ -33,7 +34,7 @@ interface IVenusComptroller {
 interface IRewardSwapHelper {
     function canSwap(address rewardToken) external view returns (bool);
     function previewExpectedOut(address rewardToken, uint256 amountIn) external view returns (uint256);
-    function swapToUSDC(address rewardToken, uint256 amountIn, address receiver) external returns (uint256);
+    function swapToAsset(address rewardToken, uint256 amountIn, address receiver) external returns (uint256);
 }
 
 // --- ILendingAdapter interface ---
@@ -352,7 +353,7 @@ contract VenusUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
         }
 
         IERC20(rewardToken).forceApprove(swapHelper, bal);
-        try IRewardSwapHelper(swapHelper).swapToUSDC(rewardToken, bal, receiver) returns (uint256 out) {
+        try IRewardSwapHelper(swapHelper).swapToAsset(rewardToken, bal, receiver) returns (uint256 out) {
             realized = out;
             emit HarvestExecuted(rewardToken, bal, out, receiver);
         } catch (bytes memory reason) {
@@ -417,22 +418,16 @@ contract VenusUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
     //  ILendingAdapter: EXTERNAL MARKET TVL
     // ═══════════════════════════════════════════════════════════
 
-    /// @notice Returns total USDC supplied to Venus = getCash + totalBorrows
-    /// @dev Conservative: returns getCash only if totalBorrows reverts
+    /// @notice Outstanding lender shares valued in underlying asset units.
+    /// @dev The protocol exchange rate handles reserves and isolated-market bad
+    ///      debt consistently with our position NAV. Gross cash+borrows does not.
     function externalMarketTVL() external view override returns (uint256) {
-        uint256 cash;
-        uint256 borrows;
-        try IVToken(vToken).getCash() returns (uint256 c) {
-            cash = c;
-        } catch {
-            return 0;
-        }
-        try IVToken(vToken).totalBorrows() returns (uint256 b) {
-            borrows = b;
-        } catch {
-            borrows = 0;
-        }
-        return cash + borrows;
+        try IVToken(vToken).totalSupply() returns (uint256 shares) {
+            if (shares == 0) return 0;
+            try IVToken(vToken).exchangeRateStored() returns (uint256 rate) {
+                return Math.mulDiv(shares, rate, 1e18);
+            } catch { return 0; }
+        } catch { return 0; }
     }
 
     // ═══════════════════════════════════════════════════════════
@@ -450,7 +445,7 @@ contract VenusUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentran
         uint256 vBal = IVToken(vToken).balanceOf(address(this));
         if (vBal > 0) {
             try IVToken(vToken).redeem(vBal) returns (uint256 err) {
-                require(err == 0, "Venus:emergency redeem failed");
+                if (err != 0) emit AdapterOperationFailed(msg.sig, abi.encode(err));
             } catch (bytes memory reason) {
                 emit AdapterOperationFailed(msg.sig, reason);
                 // Redeem failed - still sweep whatever idle exists

@@ -1,0 +1,31 @@
+{
+  "status": "CURRENT_SOURCE_DELTA_REVIEW_ADJUDICATED_NO_NEW_CONFIRMED_DEFECT",
+  "readiness": "NOT_PRODUCTION_READY",
+  "acceptedReview": {
+    "path": "C:\\Users\\Pierre\\Multyr\\pt-multiply\\multyr-strategies-multitoken\\deployments\\lending-full-validation-20261101\\production\\coordinator\\R4-polygon-independent-review.md",
+    "sha256": "044d1708c7dac0150ddb58633e0e19a5b9ad4d491f4dcd1210e19deea5e37b04",
+    "scope": [
+      "Current ReadOnlyGasEstimator chain137 additions",
+      "Current NativeL1FeeInfo137 constructor/replay/ABI"
+    ]
+  },
+  "rejectedStaleReview": {
+    "path": "C:\\Users\\Pierre\\Multyr\\pt-multiply\\p0\\deployments\\lending-full-validation-20261101\\production\\R-polygon-review\\report.md",
+    "reason": "Reviewer used old p0 files and incorrectly claimed canonical Polygon bounds/helper/test absent. Contradicted by exact canonical sources and executed69+actual41 proofs. None of its alleged current-source D1/D2 accepted."
+  },
+  "rootCorrections": [
+    "Numeric native-price bounds are sanity checks, not oracle identity checks. A wrong USDC/USD feed at1USD can fit the POL band. The review claim that a mismatched feed necessarily returns0 is false; manifest/feed identity needs independent preflight confirmation.",
+    "No current Polygon priority-fee recommendation is accepted from the source-only review. Bench30gwei is illustrative; actual measured calibration is still required.",
+    "No sequencer-feed liveness requirement exists for chain137 zero-sequencer path. Native replay and actual price feed validity still require verification."
+  ],
+  "evidence": [
+    "polygon-native-proposal.json",
+    "optimism-native-fees.json",
+    "r4-actual-41-acceptance.json",
+    "r4-regression-and-compatibility.json",
+    "r5-structure.json"
+  ],
+  "limits": [
+    "Delta review only, not final independent whole-candidate audit or production approval."
+  ]
+}

@@ -1,0 +1,71 @@
+{
+  "scope": "Actual Ethereum USDT/PYUSD production Core + nine Lending modules + Aave, two epoch exits and full recall. Not all-adapter/scoring-reference closure.",
+  "status": "PASS",
+  "tests": 2,
+  "failed": 0,
+  "skipped": 0,
+  "coreCommit": "9a9d120709de99a6216e9fe75d36e9ffdcb1a4d9",
+  "candidateBase": "211f1a0a4cb9c63232ae18dac24ccb921e5a4699",
+  "functionalSourceHash": "dbf0b89c7b87954030533fc2a514ccfc52f1fac4a5720114efc08f4885f10da9",
+  "testSource": "deployments/lending-full-validation-20261101/root-tests/LendingEthereumAdditionalUnmockedE2E.t.sol",
+  "testSourceSha256": "a542dfdd985b2f65fbdf94c3ff6db1f850d8d94e96681bcb76765952788cd9ce",
+  "log": "deployments/lending-full-validation-20261101/ethereum-usdt-pyusd-production-core.log",
+  "logSha256": "f29b5dc49001209f7722d018207d71c614dd6d8ca49f2eb188834231a94dccde",
+  "chainId": 1,
+  "rpc": "https://eth-mainnet.public.blastapi.io",
+  "initialBlock": "26150000",
+  "lastBlock": "26310000",
+  "counterfactual": "Scenario deployments and affected real Aave pool/underlying/aToken/debt contracts persisted between canonical historical block timestamps; actual Chainlink feeds advance. Not a replay of all intervening chain transactions or historical ROI.",
+  "observations": [
+    "chainId: 1, asset: 0x6c3ea9036406852006290770BEdFcAbA0e23A0e8, rpcForkBlock: 26165000 [2.616e7], evmBlockNumber: 26165000 [2.616e7], timestamp: 1791671003 [1.791e9], priceWad: 1000003050000000000 [1e18], oracleUpdatedAt: 1791662015 [1.791e9], coreNav: 0, invested: 0, idle: 0",
+    "chainId: 1, asset: 0x6c3ea9036406852006290770BEdFcAbA0e23A0e8, rpcForkBlock: 26165040 [2.616e7], evmBlockNumber: 26165040 [2.616e7], timestamp: 1791671483 [1.791e9], priceWad: 1000003050000000000 [1e18], oracleUpdatedAt: 1791662015 [1.791e9], coreNav: 200999473 [2.009e8], invested: 176879547 [1.768e8], idle: 0",
+    "chainId: 1, asset: 0x6c3ea9036406852006290770BEdFcAbA0e23A0e8, rpcForkBlock: 26310000 [2.631e7], evmBlockNumber: 26310000 [2.631e7], timestamp: 1793416631 [1.793e9], priceWad: 999948940000000000 [9.999e17], oracleUpdatedAt: 1793390435 [1.793e9], coreNav: 172302468 [1.723e8], invested: 177194139 [1.771e8], idle: 0",
+    "chainId: 1, asset: 0x6c3ea9036406852006290770BEdFcAbA0e23A0e8, rpcForkBlock: 26310000 [2.631e7], evmBlockNumber: 26310000 [2.631e7], timestamp: 1793416631 [1.793e9], priceWad: 999948940000000000 [9.999e17], oracleUpdatedAt: 1793390435 [1.793e9], coreNav: 172302468 [1.723e8], invested: 0, idle: 0",
+    "chainId: 1, asset: 0xdAC17F958D2ee523a2206206994597C13D831ec7, rpcForkBlock: 26165000 [2.616e7], evmBlockNumber: 26165000 [2.616e7], timestamp: 1791671003 [1.791e9], priceWad: 999025170000000000 [9.99e17], oracleUpdatedAt: 1791643163 [1.791e9], coreNav: 0, invested: 0, idle: 0",
+    "chainId: 1, asset: 0xdAC17F958D2ee523a2206206994597C13D831ec7, rpcForkBlock: 26165040 [2.616e7], evmBlockNumber: 26165040 [2.616e7], timestamp: 1791671483 [1.791e9], priceWad: 999025170000000000 [9.99e17], oracleUpdatedAt: 1791643163 [1.791e9], coreNav: 201196224 [2.011e8], invested: 177052689 [1.77e8], idle: 0",
+    "chainId: 1, asset: 0xdAC17F958D2ee523a2206206994597C13D831ec7, rpcForkBlock: 26310000 [2.631e7], evmBlockNumber: 26310000 [2.631e7], timestamp: 1793416631 [1.793e9], priceWad: 998328150000000000 [9.983e17], oracleUpdatedAt: 1793371595 [1.793e9], coreNav: 172489657 [1.724e8], invested: 177386830 [1.773e8], idle: 0",
+    "chainId: 1, asset: 0xdAC17F958D2ee523a2206206994597C13D831ec7, rpcForkBlock: 26310000 [2.631e7], evmBlockNumber: 26310000 [2.631e7], timestamp: 1793416631 [1.793e9], priceWad: 998328150000000000 [9.983e17], oracleUpdatedAt: 1793371595 [1.793e9], coreNav: 172489657 [1.724e8], invested: 0, idle: 0"
+  ],
+  "funding": [
+    "chainId: 1, token: 0x6c3ea9036406852006290770BEdFcAbA0e23A0e8, holder: 0xAFBb1a7E9ddEf38D9bC4A220E702B18DAcaa2a62, holderBefore: 500861601438863 [5.008e14], transferred: 1000000000 [1e9], holderAfter: 500860601438863 [5.008e14]",
+    "chainId: 1, token: 0xdAC17F958D2ee523a2206206994597C13D831ec7, holder: 0xF977814e90dA44bFA03b6295A0616a897441aceC, holderBefore: 16000000001124208 [1.6e16], transferred: 1000000000 [1e9], holderAfter: 15999999001124208 [1.599e16]"
+  ],
+  "canonicalHeaders": [
+    {
+      "rpcBlock": "26150000",
+      "hash": "0xe1953e2b1c1d5f256c92bbee3d0218f0baa26226d3946993d0e8380ee04e9ca8",
+      "timestamp": "0x6ac7f99f",
+      "number": "0x18f0470"
+    },
+    {
+      "rpcBlock": "26165000",
+      "hash": "0x520c3607be6f0aba6a7722233a437bf88e6b778b304a7dbc1ae6316ac58185ac",
+      "timestamp": "0x6acabadb",
+      "number": "0x18f3f08"
+    },
+    {
+      "rpcBlock": "26165040",
+      "hash": "0xa97acce2da58405596170240b7ca87233d01c0aa0259db50dbc3c4b6859ca785",
+      "timestamp": "0x6acabcbb",
+      "number": "0x18f3f30"
+    },
+    {
+      "rpcBlock": "26173000",
+      "hash": "0xc3b0b090b82452a6b2c3a58cc586b12e14053b192085ddb851ef2b532ccac93e",
+      "timestamp": "0x6acc331f",
+      "number": "0x18f5e48"
+    },
+    {
+      "rpcBlock": "26250000",
+      "hash": "0x7a6e98b007141d9e74b3fb5c5b5917054082f784781d7269217f96c8e2ae7c8c",
+      "timestamp": "0x6ada581f",
+      "number": "0x1908b10"
+    },
+    {
+      "rpcBlock": "26310000",
+      "hash": "0x4fa42d6d17df9bf77b800025a07e3daf71bf04d9667ffc816a13d5312ca1314e",
+      "timestamp": "0x6ae55db7",
+      "number": "0x1917570"
+    }
+  ]
+}

@@ -1,0 +1,169 @@
+{
+  "status": "PASS_FOR_NAMED_REAL_DATA_SCENARIOS",
+  "productionReady": false,
+  "acceptance": "docs/lending-production-remediation-20261101/r6-actual-42-acceptance.json",
+  "raw": {
+    "path": "deployments/lending-full-validation-20261101/production/R5-actual/root-42-keeper.log",
+    "sha256": "085ced1bc13f79afba61e0787cbc8a0117a8ad185a1d13513f271681606ed6df"
+  },
+  "observations": [
+    {
+      "asset": "0x6c3ea9036406852006290770BEdFcAbA0e23A0e8",
+      "rpcBlock": "26173000",
+      "moved": "38604778128",
+      "grossBenefit": "4942892",
+      "costUSD6": "23743530",
+      "costAsset": "23741394",
+      "netBenefitBps": "0",
+      "accepted": false,
+      "executedSteps": "0",
+      "quotedReliable": true,
+      "quotedCostUSD6": "23743530",
+      "quotedTxCount": "2",
+      "quotedUsedDefaults": true,
+      "surplusTransferred": "0",
+      "economicCancelled": false
+    },
+    {
+      "asset": "0x6c3ea9036406852006290770BEdFcAbA0e23A0e8",
+      "rpcBlock": "26173000",
+      "moved": "497327389424",
+      "grossBenefit": "162798082",
+      "costUSD6": "22058689",
+      "costAsset": "22056704",
+      "netBenefitBps": "2",
+      "accepted": true,
+      "executedSteps": "1",
+      "quotedReliable": true,
+      "quotedCostUSD6": "22058689",
+      "quotedTxCount": "2",
+      "quotedUsedDefaults": true,
+      "surplusTransferred": "799999610001",
+      "economicCancelled": false
+    },
+    {
+      "asset": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+      "rpcBlock": "26173000",
+      "moved": "77559979665",
+      "grossBenefit": "0",
+      "costUSD6": "33930454",
+      "costAsset": "33966799",
+      "netBenefitBps": "0",
+      "accepted": false,
+      "executedSteps": "0",
+      "quotedReliable": true,
+      "quotedCostUSD6": "33930454",
+      "quotedTxCount": "3",
+      "quotedUsedDefaults": true,
+      "surplusTransferred": "0",
+      "economicCancelled": false
+    },
+    {
+      "asset": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+      "rpcBlock": "26173000",
+      "moved": "476406134171",
+      "grossBenefit": "265454590",
+      "costUSD6": "30560773",
+      "costAsset": "30593509",
+      "netBenefitBps": "4",
+      "accepted": true,
+      "executedSteps": "2",
+      "quotedReliable": true,
+      "quotedCostUSD6": "30560773",
+      "quotedTxCount": "3",
+      "quotedUsedDefaults": true,
+      "surplusTransferred": "799903842779",
+      "economicCancelled": true
+    },
+    {
+      "asset": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+      "rpcBlock": "26173000",
+      "moved": "72645481838982301293",
+      "grossBenefit": "2372962025603386",
+      "costUSD6": "33930454",
+      "costAsset": "13318648628545341",
+      "netBenefitBps": "0",
+      "accepted": false,
+      "executedSteps": "0",
+      "quotedReliable": true,
+      "quotedCostUSD6": "33930454",
+      "quotedTxCount": "3",
+      "quotedUsedDefaults": true,
+      "surplusTransferred": "0",
+      "economicCancelled": false
+    },
+    {
+      "asset": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+      "rpcBlock": "26173000",
+      "moved": "39013500731956657606",
+      "grossBenefit": "13563059604016321",
+      "costUSD6": "30560773",
+      "costAsset": "11995954943713264",
+      "netBenefitBps": "0",
+      "accepted": true,
+      "executedSteps": "2",
+      "quotedReliable": true,
+      "quotedCostUSD6": "30560773",
+      "quotedTxCount": "3",
+      "quotedUsedDefaults": true,
+      "surplusTransferred": "39013500731956657607",
+      "economicCancelled": false
+    }
+  ],
+  "source": {
+    "path": "test/strategies/usdc-lending/fork/actual/ActualNativeGasGateReference.sol",
+    "sha256": "f439b43030963d2006aaac2c90c90b3f6f19e31100b1169060b91faf48a3cc96"
+  },
+  "limits": [
+    "Native Ethereum block basefee asserted against actual header and fee history. Run without --isolate; isolated experiments with zeroed basefee are not real native-fee proof.",
+    "Gas coefficients and 1 gwei priority floor are illustrative benchmark inputs, not production calibration.",
+    "Positive branches use disclosed genuine holder-funded surplus cash, not earned rewards.",
+    "USDT suffix cancellation is required when remaining gross benefit fails actual native cost; no movement and exact backoff asserted.",
+    "Dynamic candidate economics and quoting match independent calculations; keeper transaction receipt calibration remains open."
+  ],
+  "keeperWrapperObservations": [
+    {
+      "asset": "0x6c3ea9036406852006290770BEdFcAbA0e23A0e8",
+      "rpcBlock": "26173000",
+      "prepareGas": "0",
+      "maxStepGas": "0",
+      "calldataBytes": "132"
+    },
+    {
+      "asset": "0x6c3ea9036406852006290770BEdFcAbA0e23A0e8",
+      "rpcBlock": "26173000",
+      "prepareGas": "1153416",
+      "maxStepGas": "1497939",
+      "calldataBytes": "132"
+    },
+    {
+      "asset": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+      "rpcBlock": "26173000",
+      "prepareGas": "0",
+      "maxStepGas": "0",
+      "calldataBytes": "132"
+    },
+    {
+      "asset": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+      "rpcBlock": "26173000",
+      "prepareGas": "1715211",
+      "maxStepGas": "2254567",
+      "calldataBytes": "132"
+    },
+    {
+      "asset": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+      "rpcBlock": "26173000",
+      "prepareGas": "0",
+      "maxStepGas": "0",
+      "calldataBytes": "132"
+    },
+    {
+      "asset": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+      "rpcBlock": "26173000",
+      "prepareGas": "1655588",
+      "maxStepGas": "1837223",
+      "calldataBytes": "132"
+    }
+  ],
+  "keeperWrapperProof": "Accepted plans execute actual StrategyUpkeep.performUpkeep, keeper role, prepare and continuation; exact132-byte calldata. Assertions inspect actual phase, positions, cash and cancellation. gasleft observations are not receipts."
+}

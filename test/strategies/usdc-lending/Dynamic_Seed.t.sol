@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.28;
+import {LendingOracleTestFixture} from "./helpers/LendingOracleTestFixture.sol";
 
 import { Test, console2 } from "forge-std/Test.sol";
 import { StrategyExplainabilityLens } from "../../../src/strategies/usdc-lending/lens/StrategyExplainabilityLens.sol";
@@ -27,7 +28,7 @@ import { StrategySafetyOverflowModule } from "../../../src/strategies/usdc-lendi
 
 /// @title Dynamic Seed Tests — BLOCCO L
 /// @notice Tests effectiveMinNewAdapterSeed() at different TVL levels.
-contract Dynamic_Seed is Test {
+contract Dynamic_Seed is LendingOracleTestFixture {
     address constant ARBITRUM_USDC = 0xaf88d065e77c8cC2239327C5EDb3A432268e5831;
 
     UsdcMultiLendingVault public vault;
@@ -37,7 +38,7 @@ contract Dynamic_Seed is Test {
     ScoringMockAdapter public adapterNew; // new adapter to test seed behavior
 
     address public admin = address(0x1);
-    address public core = address(0x2);
+    address public core = _newOracleCore(1e18);
     address public router = address(0x6);
     address public keeper = address(0x3);
 

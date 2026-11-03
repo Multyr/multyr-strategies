@@ -107,6 +107,7 @@ contract MockCamelotV3Router {
 
     function exactInput(ExactInputParams calldata p) external returns (uint256) {
         if (revertOnSwap) revert("camelot-revert");
+        require(p.path.length >= 40 && p.path.length % 20 == 0, "algebra-v1-path");
         if (block.timestamp > p.deadline) revert("deadline");
         if (outAmount < p.amountOutMinimum) revert("amountOutMin");
         MockERC20(usdc).mint(p.recipient, outAmount);
@@ -123,6 +124,7 @@ contract RewardSwapHelperTest is Test {
     MockERC20 internal usdc;
     MockERC20 internal comp;
     MockChainlinkFeed internal feed;
+    MockChainlinkFeed internal outputAssetFeed;
     MockUniswapV3Router internal uniRouter;
     MockCamelotV3Router internal camelotRouter;
 
@@ -130,19 +132,24 @@ contract RewardSwapHelperTest is Test {
     address internal alice = address(0xA1);
     address internal core = address(0xC04E);
 
-    // dummy paths
-    bytes internal uniPath = abi.encodePacked(uint8(0xAB)); // non-empty bytes
-    bytes internal camelotPath = abi.encodePacked(uint8(0xCD));
+    bytes internal uniPath;
+    bytes internal camelotPath;
 
     function setUp() public {
         usdc = new MockERC20("USD Coin", "USDC", 6);
         comp = new MockERC20("Compound", "COMP", 18);
         feed = new MockChainlinkFeed(8);
+        outputAssetFeed = new MockChainlinkFeed(8);
         uniRouter = new MockUniswapV3Router(address(usdc));
         camelotRouter = new MockCamelotV3Router(address(usdc));
+        uniPath = abi.encodePacked(address(comp), uint24(3000), address(usdc));
+        camelotPath = abi.encodePacked(address(comp), address(usdc));
 
         helper = new RewardSwapHelper();
         helper.initialize(address(usdc), admin, address(uniRouter), address(camelotRouter));
+        outputAssetFeed.set(1e8, block.timestamp);
+        vm.prank(admin);
+        helper.setOutputAssetOracle(address(outputAssetFeed), 90_000);
 
         // Grant KEEPER_ROLE to alice — she acts as the adapter/keeper in swap tests
         // Note: store the hash before vm.prank to avoid consuming the prank on the view call
@@ -239,6 +246,19 @@ contract RewardSwapHelperTest is Test {
         vm.prank(admin);
         vm.expectRevert(RewardSwapHelper.InvalidConfig.selector);
         helper.setRewardConfig(address(comp), address(feed), 8, 18, 3600, emptyPath, camelotPath, 100);
+    }
+
+    function test_setRewardConfig_revertsWhenPathEndsInWrongAsset() public {
+        bytes memory wrongOutput = abi.encodePacked(address(comp), uint24(3000), address(comp));
+        vm.prank(admin);
+        vm.expectRevert(RewardSwapHelper.InvalidConfig.selector);
+        helper.setRewardConfig(address(comp), address(feed), 8, 18, 3600, wrongOutput, bytes(""), 100);
+    }
+
+    function test_setRewardConfig_revertsWhenRewardDecimalsMismatch() public {
+        vm.prank(admin);
+        vm.expectRevert(RewardSwapHelper.InvalidConfig.selector);
+        helper.setRewardConfig(address(comp), address(feed), 8, 6, 3600, uniPath, camelotPath, 100);
     }
 
     function test_setRewardConfig_revertsOnMaxAgeBelowFloor() public {
@@ -494,6 +514,64 @@ contract RewardSwapHelperTest is Test {
         assertEq(e, 1_200_000_000); // $1200 = 1.2 billion 6-dec
     }
 
+    function test_swapToAsset_pricesRewardAgainst18DecimalUnderlyingAtTwoPrices() public {
+        MockERC20 weth = new MockERC20("Wrapped Ether", "WETH", 18);
+        MockChainlinkFeed wethUsd = new MockChainlinkFeed(8);
+        MockUniswapV3Router wethRouter = new MockUniswapV3Router(address(weth));
+        RewardSwapHelper wethHelper = new RewardSwapHelper();
+        wethHelper.initializeAsset(address(weth), admin, address(wethRouter), address(0));
+        wethUsd.set(3_000e8, block.timestamp);
+        vm.prank(admin);
+        wethHelper.setOutputAssetOracle(address(wethUsd), 90_000);
+        bytes memory path = abi.encodePacked(address(comp), uint24(3000), address(weth));
+        vm.prank(admin);
+        wethHelper.setRewardConfig(address(comp), address(feed), 8, 18, 90_000, path, bytes(""), 100);
+        bytes32 keeperRole = wethHelper.KEEPER_ROLE();
+        vm.prank(admin);
+        wethHelper.grantRole(keeperRole, alice);
+        vm.prank(alice);
+        vm.expectRevert(RewardSwapHelper.LegacyUsdcSelectorDisabled.selector);
+        wethHelper.swapToUSDC(address(comp), 10e18, core);
+
+        assertEq(wethHelper.previewExpectedOut(address(comp), 10e18), 0.2e18);
+        wethUsd.set(1_500e8, block.timestamp);
+        assertEq(wethHelper.previewExpectedOut(address(comp), 10e18), 0.4e18);
+
+        wethRouter.setOutAmount(0.4e18);
+        comp.mint(alice, 10e18);
+        vm.prank(alice);
+        comp.approve(address(wethHelper), 10e18);
+        vm.prank(alice);
+        assertEq(wethHelper.swapToAsset(address(comp), 10e18, core), 0.4e18);
+        assertEq(weth.balanceOf(core), 0.4e18);
+    }
+
+    function test_previewExpectedOut_revertsWhenOutputAssetOracleIsStale() public {
+        vm.warp(100_000);
+        feed.set(60e8, block.timestamp);
+        outputAssetFeed.set(1e8, block.timestamp - 90_001);
+        vm.expectRevert(
+            abi.encodeWithSelector(RewardSwapHelper.StaleOracle.selector, block.timestamp - 90_001, uint32(90_000))
+        );
+        helper.previewExpectedOut(address(comp), 10e18);
+    }
+
+    function test_previewExpectedOut_revertsOnFutureOutputAssetOracle() public {
+        outputAssetFeed.set(1e8, block.timestamp + 1);
+        vm.expectRevert(
+            abi.encodeWithSelector(RewardSwapHelper.FutureOracleTimestamp.selector, block.timestamp + 1)
+        );
+        helper.previewExpectedOut(address(comp), 10e18);
+    }
+
+    function test_previewExpectedOut_revertsOnZeroOutputAssetPrice() public {
+        outputAssetFeed.set(0, block.timestamp);
+        vm.expectRevert(
+            abi.encodeWithSelector(RewardSwapHelper.InvalidOraclePrice.selector, int256(0))
+        );
+        helper.previewExpectedOut(address(comp), 10e18);
+    }
+
     // ═══════════════════════════════════════════════════════════════════════
     // SLIPPAGE BPS APPLIED
     // ═══════════════════════════════════════════════════════════════════════
@@ -617,6 +695,17 @@ contract RewardSwapHelperTest is Test {
         assertFalse(helper.canSwap(address(comp)));
     }
 
+    function test_canSwap_falseWhenOutputAssetOracleIsStale() public {
+        skip(26 hours);
+        feed.set(60e8, block.timestamp);
+        assertFalse(helper.canSwap(address(comp)));
+    }
+
+    function test_canSwap_falseWhenOutputAssetOracleIsFutureDated() public {
+        outputAssetFeed.set(1e8, block.timestamp + 1);
+        assertFalse(helper.canSwap(address(comp)));
+    }
+
     function test_canSwap_falseWhenNegativePrice() public {
         feed.set(-1, block.timestamp);
         assertFalse(helper.canSwap(address(comp)));
@@ -643,6 +732,7 @@ contract RewardSwapHelperTest is Test {
         assertFalse(helper.canSwap(address(comp)));
         // Refresh feed
         feed.set(60e8, block.timestamp);
+        outputAssetFeed.set(1e8, block.timestamp);
         assertTrue(helper.canSwap(address(comp)));
     }
 }

@@ -1,0 +1,122 @@
+{
+  "foundry": "forge Version: 1.4.2-stable",
+  "solc": "0.8.28",
+  "optimizerRuns": 200,
+  "viaIR": true,
+  "evmVersion": "cancun",
+  "runtimeLimitBytes": 23552,
+  "runtimeBytes": {
+    "UsdcMultiLendingVault": 22569,
+    "StrategyParamsModule": 18236,
+    "StrategyScoringModule": 22148,
+    "StrategyAdapterOpsModule": 18280,
+    "StrategyRebalanceGateModule": 22993,
+    "StrategyRebalancePlanModule": 23040,
+    "StrategyAllocCalcModule": 22765,
+    "StrategySafetyOverflowModule": 13505,
+    "StrategySettingsModule": 23415,
+    "AaveV3USDCAdapter": 13348,
+    "CometUsdcMultiMarketAdapter": 20515,
+    "DolomiteUsdcMultiMarketAdapter": 22333,
+    "EulerUsdcMultiMarketAdapter": 20998,
+    "FluidUsdcMultiMarketAdapter": 9720,
+    "MorphoUsdcMultiMarketAdapter": 23479,
+    "VenusUsdcMultiMarketAdapter": 11527,
+    "MorphoVaultV2LiquidityView": 1028,
+    "RewardSwapHelper": 11557,
+    "StrategyBootstrapper": 2276,
+    "ReadOnlyGasEstimator": 7492,
+    "OPStackFeeInfo": 1118,
+    "NativeL1FeeInfo": 459,
+    "AdapterFactory": 2817,
+    "ProtocolRegistry": 4224,
+    "StrategyUpkeep": 8933,
+    "StrategyExplainabilityLens": 9484,
+    "AdapterMigrationGuard": 851,
+    "AdapterSwapGuard": 545,
+    "AaveLiquidityRateProvider": 2218,
+    "DolomiteSupplyRateProvider": 732,
+    "GovernedReadOnlyGasEstimator": 7492,
+    "StrategyMigrationGuard": 916,
+    "StrategyStorageLayout": 9637
+  },
+  "runtimeTemplateKeccak256": {
+    "UsdcMultiLendingVault": "0xed6908cdb8d4e83a2c8c12598579e922c08e49d068c45fa66ae000e7f936881d",
+    "StrategyParamsModule": "0xf3a50cc4c0a11252d42e14d10287dd4031b50dac6b60a84c64aaedc1ed4055de",
+    "StrategyScoringModule": "0x836a0a2a3b3beef6cef20f0527877db071713bdd146e59253d36b983f8e6a18d",
+    "StrategyAdapterOpsModule": "0x3b4e5054a9095a6dbfdbeba6d7ca56db0ebcb4f75aef67e3c91ffa9026d21387",
+    "StrategyRebalanceGateModule": "0xd17423bfd9b5e4d0d574b45bbe2e35710aa88a8bbb843982029c17dda2ea5dce",
+    "StrategyRebalancePlanModule": "0xd5b211f2321fd5ad3c3b2a8d9f5ea330de2f91176c10cae65c074fd265ace927",
+    "StrategyAllocCalcModule": "0xd677f882722f7333221fa2a28ad03f541655c552bb14c111e210eb8328a8d64f",
+    "StrategySafetyOverflowModule": "0xb27e4457f4eaa626ab195640398f71d86e0d98caca8268cac8a33a19ce67c2f2",
+    "StrategySettingsModule": "0xd84920e148dc399707e95ed7bf851a9c5b7a8f6cb4e945689f643a74441869f6",
+    "AaveV3USDCAdapter": "0x3c4dff9e30ad9bb0de4834587d489048ac8e5fd93de22687872b6ad34bea1f55",
+    "CometUsdcMultiMarketAdapter": "0xde7873d238cbc3baa77b2e79d88fbbb0ef99b299f3e775d671ccd5438779b903",
+    "DolomiteUsdcMultiMarketAdapter": "0x0dac6d9aa33e738fa35e352c569142afea58a03b8c2bec327c8c7b8a6efd45db",
+    "EulerUsdcMultiMarketAdapter": "0x5a3810bd5d54d63f7d1f8524923ff6d8fb6d1dc723347196be6514462c53d325",
+    "FluidUsdcMultiMarketAdapter": "0x2d3a258a8d3418e4e04818ca9b6ffba0c541d5d9d294d39e0144af0ab8c70b5d",
+    "MorphoUsdcMultiMarketAdapter": "0x6c17ab24c9fd7879d95f8b8fcc0e16a464579efc3a646b5b1f0a084839d916b0",
+    "VenusUsdcMultiMarketAdapter": "0x7e3f37886940056cb59f4405a60eba8c543f9aa44d7d621a4d684ba864ee7157",
+    "MorphoVaultV2LiquidityView": "0x1a2feb7db361df10d0df084566d74f60a3182a8473b2c12bdb1dac68854e22e9",
+    "RewardSwapHelper": "0x52343a242f82cda5e481e56c1ad46a4fb06430f401a2c3ddc2215d81318a7f6a",
+    "StrategyBootstrapper": "0x43a088cc56f3a657c08ef57b0fd8240c24171a9ecdf5f6dd97ce58154ad75933",
+    "ReadOnlyGasEstimator": "0x519d1b0690e3e17ae2a5c2f983d8a8d1ab47dd074f898bc22875ddb6c834e59a",
+    "OPStackFeeInfo": "0x3f11362357ca1d57089fbf4a33df4a67d73b1a79b09f470ed9e69dd429aa96c6",
+    "NativeL1FeeInfo": "0x8b2d82afa8db15afdd48f42f53cb9446e34b77dc1a8db7919081da615646936d",
+    "AdapterFactory": "0xab4b798fadf9bdd205c256ea75f67cf00686aa9336fc48db8cc99ac9c5dfa61e",
+    "ProtocolRegistry": "0x3f9b1873772a5b0c6bcb0b98f6c066a15fd8b6541d7c17164afb6490334872d0",
+    "StrategyUpkeep": "0xcb2a80aa21a020a5c6d07d4005b6970a3ba6fd9c1fa8abb9d5a1ff97c2d3f9eb",
+    "StrategyExplainabilityLens": "0xbcec20248e69fd50e58024ea167ff5930d092370afa28a4706965262622bd648",
+    "AdapterMigrationGuard": "0xf1935c972e5f49bbe86ecec1921ebfa6a8298e1d02565740c43df6bad78be6fa",
+    "AdapterSwapGuard": "0x2603273daa114ef2d4991bfddf337b0ca8c18e0aa0e6f3f074e2b33d86d238ba",
+    "AaveLiquidityRateProvider": "0x8600054e983b3a89728db385f8b252058fa1ae1a60408b77ee48edad9e1ffccb",
+    "DolomiteSupplyRateProvider": "0x5c92d959ac2649decc1f76593b66171db40ee1990ab5181aa90d7752d7bf1911",
+    "GovernedReadOnlyGasEstimator": "0x519d1b0690e3e17ae2a5c2f983d8a8d1ab47dd074f898bc22875ddb6c834e59a",
+    "StrategyMigrationGuard": "0xb7d8640d49f7cf88dcea6e37ec12d9a70b4712222e2c6837f07b472c4ac445b5",
+    "StrategyStorageLayout": "0xd06a3d6ca2207ca4f7aada04f798bce1ccca09de4c1d82c0b0ad39d24da13176"
+  },
+  "runtimeHashPolicy": "Compiler runtime templates; constructor immutables require deployment-specific patching. Initializer-based adapter and stateless helper runtimes have no constructor address patching.",
+  "uniqueSelectors": 296,
+  "distinctSignatureCollisions": 0,
+  "identicalModuleLayouts": 9,
+  "appendOnly": {
+    "AaveV3USDCAdapter": {
+      "appendedFields": 0,
+      "preservedFields": 19
+    },
+    "CometUsdcMultiMarketAdapter": {
+      "appendedFields": 1,
+      "preservedFields": 25
+    },
+    "DolomiteUsdcMultiMarketAdapter": {
+      "appendedFields": 1,
+      "preservedFields": 32
+    },
+    "EulerUsdcMultiMarketAdapter": {
+      "appendedFields": 0,
+      "preservedFields": 19
+    },
+    "FluidUsdcMultiMarketAdapter": {
+      "appendedFields": 1,
+      "preservedFields": 12
+    },
+    "MorphoUsdcMultiMarketAdapter": {
+      "appendedFields": 2,
+      "preservedFields": 29
+    },
+    "VenusUsdcMultiMarketAdapter": {
+      "appendedFields": 1,
+      "preservedFields": 13
+    },
+    "RewardSwapHelper": {
+      "appendedFields": 5,
+      "preservedFields": 9
+    },
+    "StrategyBootstrapper": {
+      "appendedFields": 0,
+      "preservedFields": 5
+    }
+  },
+  "strategyReferenceUnitLast": true,
+  "strategyReferenceUnitSlot": "88"
+}

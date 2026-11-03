@@ -1,0 +1,16 @@
+{
+  "status": "REGRESSION_PASS",
+  "passed": 2949,
+  "suites": 201,
+  "failed": 0,
+  "skipped": 0,
+  "log": "deployments/lending-full-validation-20261101/production/coordinator/R18b-regression.log",
+  "logSha256": "bfbd2a57de18a880aaa25135709059ca8c148ac5ab208cc5ba154d8793baba97",
+  "matchingActualSourceReceipt": "docs/lending-production-remediation-20261101/r18b-actual-43-acceptance.json",
+  "actualSourceReceiptSha256": "b9aa18a50e40f60a9a1cd83e52c48630eb1d41c29545b37749cad444209d0f95",
+  "sourcesMatchAtFreeze": true,
+  "limits": [
+    "Historical R18b source; newly reproduced R20/R21 findings remain open."
+  ],
+  "readiness": "NOT_PRODUCTION_READY"
+}
