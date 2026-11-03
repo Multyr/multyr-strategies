@@ -138,9 +138,14 @@ jobs:
           if ($code -ne 0) { exit $code }
           ./script/AssertLendingTestSummary.ps1 -LogPath lending-comet.log -ExpectedPassed 2 -ExpectedSuites 1
       - name: All seven real adapter families, additional tokens and production scoring/rebalance
-        run: ./script/RunLendingActualMarkets.ps1
+        run: |
+          ./script/lending/validation/TestRpcTransportFailure.ps1
+          ./script/RunLendingActualMarkets.ps1
       - name: Linux Anvil endpoint ownership and process lifecycle
-        run: python script/lending/validation/transaction-gas/test_anvil_lifecycle.py -v
+        run: |
+          python script/lending/validation/transaction-gas/test_anvil_lifecycle.py -v
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python script/lending/validation/transaction-gas/test_rpc_transport_retry.py -v
       - name: Seven adapter families on two chains each with actual local-fork transaction receipts
         run: ./script/RunLendingTransactionGas.ps1
       - name: Morpho V2 deployment helper runtime and configuration authority

@@ -34,10 +34,25 @@ function Source-Snapshot {
 $sources = Source-Snapshot
 $before = ConvertTo-Json -InputObject $sources -Depth 4 -Compress
 New-Item -ItemType Directory -Path (Split-Path $LogPath -Parent) -Force | Out-Null
-& forge test --match-path "$tests/**" --threads 1 `
-    --fork-url https://eth-mainnet.public.blastapi.io --fork-block-number 26300000 `
-    --compute-units-per-second 20 --fork-retries 8 --fork-retry-backoff 2000 -vvvv --summary *> $LogPath
-$code = $LASTEXITCODE
+. "$PSScriptRoot/lending/validation/RpcTransportFailure.ps1"
+$infrastructureAttempts = @()
+for ($attempt = 1; $attempt -le 3; $attempt++) {
+    & forge test --match-path "$tests/**" --threads 1 `
+        --fork-url https://eth-mainnet.public.blastapi.io --fork-block-number 26300000 `
+        --compute-units-per-second 20 --fork-retries 8 --fork-retry-backoff 2000 -vvvv --summary *> $LogPath
+    $code = $LASTEXITCODE
+    if ($code -eq 0) { break }
+    $transportOnly = Test-LendingForkTransportFailure -Lines @(Get-Content -LiteralPath $LogPath)
+    if (-not $transportOnly -or $attempt -eq 3) { break }
+    $failedPath = "$LogPath.transport-attempt-$attempt.log"
+    if (Test-Path -LiteralPath $failedPath) { throw "Refusing to overwrite failed transport evidence: $failedPath" }
+    Copy-Item -LiteralPath $LogPath -Destination $failedPath
+    $infrastructureAttempts += [ordered]@{attempt=$attempt;log=$failedPath;exitCode=$code;
+        logSha256=(Get-FileHash -LiteralPath $failedPath -Algorithm SHA256).Hash.ToLowerInvariant()}
+    $infrastructureAttempts | ConvertTo-Json -Depth 4 | Set-Content -LiteralPath "$LogPath.transport-attempts.json" -Encoding utf8
+    Write-Warning "RPC transport failure; preserving attempt $attempt and restarting all 50 cases on the same pinned blocks"
+    Start-Sleep -Seconds 15
+}
 Get-Content -LiteralPath $LogPath -Tail 28
 if ($code -ne 0) { throw "Actual-market acceptance failed: exit $code" }
 & "$PSScriptRoot/AssertLendingTestSummary.ps1" -LogPath $LogPath -ExpectedPassed 50 -ExpectedSuites 21
@@ -55,6 +70,7 @@ $evidence = [ordered]@{
     positiveLifecycleAndIntegrationTests=48;negativeCappedMarketRejectionTests=1;negativeLegacyFeedRejectionTests=1
     log=$LogPath;logSha256=(Get-FileHash -LiteralPath $LogPath -Algorithm SHA256).Hash.ToLowerInvariant()
     runnerSha256=(Get-FileHash -LiteralPath $PSCommandPath -Algorithm SHA256).Hash.ToLowerInvariant()
+    infrastructureAttempts=$infrastructureAttempts
     canonicalHeaders=$headerPath;canonicalHeadersSha256=(Get-FileHash -LiteralPath $headerPath -Algorithm SHA256).Hash.ToLowerInvariant()
     sources=$sources
     quantityEncoding='Raw event text preserves every integer exactly, without JSON floating-point conversion.'

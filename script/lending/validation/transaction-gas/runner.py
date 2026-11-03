@@ -771,12 +771,40 @@ def run_case(case: dict, rpc_url: str) -> dict:
     except Exception as exc:
         result["status"] = "FAIL"
         result["error"] = str(exc)
+        result["errorType"] = type(exc).__name__
 
     finally:
         result["rpcTrace"] = RPC_TRACE[trace_start:]
         _kill_anvil()
 
     return result
+
+
+def run_case_with_transport_retry(case: dict, rpc_url: str, case_dir: pathlib.Path) -> dict:
+    """Restart a fresh local fork only for proven upstream connection resets."""
+    attempts = []
+    for attempt in range(1, 4):
+        result = run_case(case, rpc_url)
+        error = result.get("error", "")
+        transport = (result.get("status") == "FAIL"
+                     and result.get("errorType") == "RuntimeError"
+                     and error.startswith("RPC error ")
+                     and "error sending request for url" in error
+                     and "connection reset" in error
+                     and "execution reverted" not in error.lower())
+        if not transport or attempt == 3:
+            result["infrastructureAttempts"] = attempts
+            return result
+        case_dir.mkdir(parents=True, exist_ok=True)
+        failed_path = case_dir / f"transport-attempt-{attempt}.json"
+        # Exclusive creation preserves the original error and every partial receipt.
+        with failed_path.open("x", encoding="utf-8") as stream:
+            json.dump(result, stream, indent=2, default=str)
+        attempts.append({"attempt": attempt, "path": str(failed_path),
+                         "sha256": hashlib.sha256(failed_path.read_bytes()).hexdigest()})
+        print(f"  upstream RPC reset; preserving attempt {attempt} and restarting the same canonical fork", flush=True)
+        time.sleep(15)
+    raise AssertionError("Unreachable transport retry state")
 
 
 # ── Main ──────────────────────────────────────────────────────────────────────
@@ -871,7 +899,7 @@ def main() -> None:
                         "status": "FORK_HASH_EMITTED",
                     }
                 else:
-                    result = run_case(case, rpc_url)
+                    result = run_case_with_transport_retry(case, rpc_url, ARTIFACTS_DIR / case_id)
 
         # Write per-case artifact
         case_dir = ARTIFACTS_DIR / case_id
