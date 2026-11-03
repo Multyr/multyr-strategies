@@ -4,7 +4,7 @@
   "branch": "codex/lending-multitoken-multichain",
   "frozenCoreCommit": "9a9d120709de99a6216e9fe75d36e9ffdcb1a4d9",
   "functionalHashPolicy": "Changed/new Solidity, PowerShell, Python, script/test JSON, foundry.toml, .gitignore and both release workflows; UTF-8 LF, sorted path+hash lines with terminal LF",
-  "functionalSnapshotSha256": "72a29bb8f88b8c52712d7a9eadd92ed076082b987c7d01d7e99e6604fb8ffaa6",
+  "functionalSnapshotSha256": "5cc249719ed7cb15a2c1af45bc7907f6e77c7e1d896a2f84069e558389645b83",
   "functionalFileCount": 123,
   "functionalFiles": [
     {
@@ -13,7 +13,7 @@
     },
     {
       "path": ".github/workflows/lending-asset-matrix.yml",
-      "utf8LfSha256": "dbb67bb838e0b17ed4ed7453199a4ddd71a78b6a0f40673608a591ff21436f32"
+      "utf8LfSha256": "91c35081cd207383972c7f9c0d28fe5c171fa27b632e6f8771e5e9ec225b9e4d"
     },
     {
       "path": ".gitignore",
