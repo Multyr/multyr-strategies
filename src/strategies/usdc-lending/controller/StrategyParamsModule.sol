@@ -20,17 +20,16 @@ import { OracleValuationLib } from "@multyr-core/core/libraries/OracleValuationL
 import { Math } from "@openzeppelin/contracts/utils/math/Math.sol";
 import { StrategyConfigLib } from "../lib/StrategyConfigLib.sol";
 
-import { ILendingAdapter, IAdapterEmergency } from "../interfaces/ILendingAdapter.sol";
+import { ILendingAdapter } from "../interfaces/ILendingAdapter.sol";
 // FIX P0.L5: import full file → brings in StrategyStorageLayout (parent) +
 // all file-scope errors (Unauthorized, Frozen, ParamOutOfRange, ZeroAmount,
 // InsufficientBalance, ZeroAddress, etc.) used by setter logic.
 import {
     StrategyStorageLayout,
-    SkipReason,
-    Unauthorized, Frozen, InvalidAdapter, WeightsSumInvalid,
-    MinAdaptersTooLow, RiskScoreTooHigh, DurationTooLong, BackfillTooLarge,
-    BootstrapInactive, InvalidInput, ParamOutOfRange, ZeroAmount,
-    InsufficientBalance, ZeroAddress
+    Unauthorized,
+    InvalidAdapter,
+    InvalidInput,
+    ParamOutOfRange
 } from "./StrategyStorageLayout.sol";
 
 interface IStrategyCoreParamsReader {
@@ -407,12 +406,8 @@ contract StrategyParamsModule is StrategyStorageLayout {
     // .effectiveMinNewAdapterSeed()` -- the cast is only for ABI encoding;
     // dispatch still resolves to ScoringModule.
 
-    /// @dev Internal mirror of UsdcLendingStrategy.isBootstrapActive() — used inside delegatecall.
-    function _isBootstrapActive() internal view returns (bool) {
-        return bootstrapEndsAt > 0 && block.timestamp < bootstrapEndsAt;
-    }
 
-    // _tvl (ASSET.balanceOf variant), _enabledAdapters, _clampLiq, _tvlConfidence,
+    // _tvl (ASSET.balanceOf variant), _enabledAdapters, _tvlConfidence,
     // _effectiveRelativeCapBps, _safeTotalAssets, _safeWithdrawableAssets — inherited from StrategyStorageLayout.
 
 }

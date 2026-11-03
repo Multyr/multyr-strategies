@@ -203,7 +203,7 @@ contract DolomiteAdapter_Test is Test {
 
     function _addERC4626(MockDoloERC4626 m) internal {
         // Pre-seed USDC into the mock vault so _score's liqBps > 0
-        // (else _pickTargetIndex skips it with 'no enabled market')
+        // (otherwise the enabled-market selection rejects it with 'no enabled market')
         usdc.mint(address(m), 1e6);
         vm.prank(admin);
         adapter.addMarket(address(m), DolomiteUsdcMultiMarketAdapter.MarketType.ERC4626);

@@ -6,7 +6,7 @@ $head = (& git rev-parse HEAD).Trim()
 & git merge-base --is-ancestor $base $head
 if ($LASTEXITCODE -ne 0) { throw 'Candidate must descend from the reviewed base' }
 $branch = (& git branch --show-current).Trim()
-if ($branch -ne 'codex/lending-multitoken-multichain') { throw 'Unexpected candidate branch' }
+if ($branch -notin @('codex/lending-multitoken-multichain','codex/lending-final-cleanup-20261103')) { throw 'Unexpected candidate branch' }
 & git diff --quiet --ignore-submodules=none $base -- lib
 if ($LASTEXITCODE -ne 0) { throw 'Frozen dependency checkout is dirty or moved' }
 $frozenCore = '9a9d120709de99a6216e9fe75d36e9ffdcb1a4d9'

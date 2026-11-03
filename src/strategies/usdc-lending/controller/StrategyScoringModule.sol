@@ -15,22 +15,9 @@ import { StrategyConfigLib } from "../lib/StrategyConfigLib.sol";
 import {
     StrategyStorageLayout,
     AdapterScore,
-    RebalanceCooldown,
-    InsufficientAdapters,
-    MoveTooSmall,
-    GateNotMet,
-    AdapterFlaggedIncrement,
-    NoCashInvariant,
     DepositsDisabled,
     DeployIdleCooldown,
-    Overflow,
-    QueryFailed,
     DepositModeNotSet,
-    PlanAlreadyActive,
-    NoPlanActive,
-    PlanExpired,
-    PlanInvalidated,
-    TooManyAdapters,
     DegradedViews
 } from "./StrategyStorageLayout.sol";
 import { ILendingAdapter, IStrategyAssetValuation } from "../interfaces/ILendingAdapter.sol";

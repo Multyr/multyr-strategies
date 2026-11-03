@@ -14,7 +14,7 @@ import { IERC20Metadata } from "@openzeppelin/contracts/token/ERC20/extensions/I
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
 import { ILendingAdapter, IAdapterEmergency } from "../interfaces/ILendingAdapter.sol";
-import { StrategyStorageLayout, Unauthorized, Frozen, InvalidAdapter, ZeroAddress, InvalidAsset, AssetMismatch, AdapterFlaggedIncrement, InvalidInput, RebalanceCooldown, InsufficientAdapters, MoveTooSmall, GateNotMet, NoCashInvariant, Overflow, DepositsDisabled, DeployIdleCooldown, BootstrapIdleTooHigh, DurationTooLong, BackfillTooLarge, QueryFailed, DepositModeNotSet, WeightsSumInvalid, MinAdaptersTooLow, RiskScoreTooHigh, BootstrapInactive, ZeroAmount, InsufficientBalance, ScoringDelegateFailed, DegradedViews, InvalidModule, ParamOutOfRange } from "./StrategyStorageLayout.sol";
+import { StrategyStorageLayout, Unauthorized, InvalidAdapter, ZeroAddress, InvalidAsset, AssetMismatch, InvalidInput, NoCashInvariant, Overflow, DepositsDisabled, BootstrapIdleTooHigh, DurationTooLong, QueryFailed, InsufficientBalance, ScoringDelegateFailed, DegradedViews, InvalidModule, ParamOutOfRange } from "./StrategyStorageLayout.sol";
 
 // -----------------------------
 //         CONTRACT
@@ -93,11 +93,6 @@ contract UsdcMultiLendingVault is StrategyStorageLayout {
         _;
     }
 
-    modifier noCashInvariant() {
-        _;
-        uint256 idle = idleCash();
-        if (idle > dustTolerance) revert NoCashInvariant();
-    }
 
     // -----------------------------
     //         CONSTRUCTOR
@@ -105,7 +100,7 @@ contract UsdcMultiLendingVault is StrategyStorageLayout {
 
     /**
      * @notice Deploys the vault with NO privileged deployer.
-     * @param asset_ USDC token address (IERC20Metadata, Arbitrum One native)
+     * @param asset_ Underlying ERC20 token address (IERC20Metadata) for this instance.
      * @param _core CoreAggregatorVault address (granted CORE_ROLE)
      * @param _router StrategyRouter address (granted CORE_ROLE for deposit/withdraw)
      * @param _rootTimelock ROOT_TIMELOCK address (granted DEFAULT_ADMIN_ROLE + PARAM_ROLE)
@@ -825,15 +820,6 @@ contract UsdcMultiLendingVault is StrategyStorageLayout {
         }
     }
 
-    /// @dev Immediate quarantine for PUSH mode stranded funds.
-    ///      V9.1: NO automatic depositsDisabled.
-    // coverage-ignore: dead code — no in-tree caller; kept as defensive reserve
-    function _recordAdapterFailureImmediate(address adapter) internal {
-        if (quarantined[adapter]) return;
-        quarantined[adapter] = true;
-        emit AdapterAutoQuarantined(adapter, adapterConsecutiveFailures[adapter]);
-        // V9.1 CTO: NO depositsDisabled cascade — admin only
-    }
 
     /// @dev Reset failure counter on success.
     /// @dev Gradual success: decrement failure counter (not reset to 0).

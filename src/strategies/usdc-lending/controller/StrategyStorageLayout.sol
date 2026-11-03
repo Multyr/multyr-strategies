@@ -795,14 +795,6 @@ contract StrategyStorageLayout is AccessControl, Pausable, ReentrancyGuard {
         return positionAssets[adapter];
     }
 
-    function _clampLiq(address adapter) internal view returns (uint256) {
-        uint256 tot = _safeTotalAssets(adapter);
-        if (tot <= dustTolerance) return 10000;
-        uint256 wa = _safeWithdrawableAssets(adapter);
-        uint256 liq = (wa * 1e4) / tot;
-        if (liq > 10000) liq = 10000;
-        return liq;
-    }
 
     /// @dev TVL confidence -- delegates to StrategyConfigLib (single source of truth).
     ///      3-state: UNAVAILABLE (cacheTs==0), STALE (beyond window), FRESH.
@@ -819,9 +811,6 @@ contract StrategyStorageLayout is AccessControl, Pausable, ReentrancyGuard {
         return IStrategyAssetValuation(address(this)).tierRelativeCap(extTVL);
     }
 
-    function _usdUnitInAsset() internal view returns (uint256) {
-        return IStrategyAssetValuation(address(this)).usdUnitInAsset();
-    }
 
     function _usd6ToAssetUnits(uint256 usd6) internal view returns (uint256) {
         return IStrategyAssetValuation(address(this)).usd6ToAssetUnits(usd6);

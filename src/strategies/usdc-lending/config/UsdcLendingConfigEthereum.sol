@@ -5,9 +5,6 @@ import { UsdcLendingChainConfig } from "./UsdcLendingChainConfig.sol";
 
 /// @dev Chain config for Ethereum mainnet (chain id 1). Placeholder — fill before deploy.
 library UsdcLendingConfigEthereum {
-    // Ethereum L1: ~12 s blocks → 365.25d × 86400s / 12s = 2,628,000 blocks/year
-    uint256 internal constant BLOCKS_PER_YEAR = 2_628_000;
-
     function get() internal pure returns (UsdcLendingChainConfig memory cfg) {
         // USDC on Ethereum mainnet
         cfg.usdc          = 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48;

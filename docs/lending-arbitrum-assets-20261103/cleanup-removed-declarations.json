@@ -1,0 +1,72 @@
+[
+  {
+    "path": "src/strategies/usdc-lending/adapters/lending/DolomiteUsdcMultiMarket.sol",
+    "name": "_pickTargetIndex",
+    "nodeType": "FunctionDefinition"
+  },
+  {
+    "path": "src/strategies/usdc-lending/adapters/lending/MorphoUsdcMultiMarket.sol",
+    "name": "_safeDecodeApyBps",
+    "nodeType": "FunctionDefinition"
+  },
+  {
+    "path": "src/strategies/usdc-lending/adapters/lending/MorphoUsdcMultiMarket.sol",
+    "name": "getActiveOrBestMarket",
+    "nodeType": "FunctionDefinition"
+  },
+  {
+    "path": "src/strategies/usdc-lending/controller/StrategyAdapterOpsModule.sol",
+    "name": "_recordAdapterFailureImmediate",
+    "nodeType": "FunctionDefinition"
+  },
+  {
+    "path": "src/strategies/usdc-lending/controller/StrategyParamsModule.sol",
+    "name": "_isBootstrapActive",
+    "nodeType": "FunctionDefinition"
+  },
+  {
+    "path": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol",
+    "name": "_clampLiq",
+    "nodeType": "FunctionDefinition"
+  },
+  {
+    "path": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol",
+    "name": "_usdUnitInAsset",
+    "nodeType": "FunctionDefinition"
+  },
+  {
+    "path": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol",
+    "name": "noCashInvariant",
+    "nodeType": "ModifierDefinition"
+  },
+  {
+    "path": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol",
+    "name": "_recordAdapterFailureImmediate",
+    "nodeType": "FunctionDefinition"
+  },
+  {
+    "path": "src/strategies/usdc-lending/gas/CandidateActions.sol",
+    "name": "funded",
+    "nodeType": "FunctionDefinition"
+  },
+  {
+    "path": "src/strategies/usdc-lending/config/UsdcLendingConfigBase.sol",
+    "name": "BLOCKS_PER_YEAR",
+    "nodeType": "VariableDeclaration"
+  },
+  {
+    "path": "src/strategies/usdc-lending/config/UsdcLendingConfigEthereum.sol",
+    "name": "BLOCKS_PER_YEAR",
+    "nodeType": "VariableDeclaration"
+  },
+  {
+    "path": "src/strategies/usdc-lending/config/UsdcLendingConfigOptimism.sol",
+    "name": "BLOCKS_PER_YEAR",
+    "nodeType": "VariableDeclaration"
+  },
+  {
+    "path": "src/strategies/usdc-lending/config/UsdcLendingConfigPolygon.sol",
+    "name": "BLOCKS_PER_YEAR",
+    "nodeType": "VariableDeclaration"
+  }
+]

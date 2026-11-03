@@ -1,0 +1,320 @@
+{
+  "foundry": "forge Version: 1.4.2-stable",
+  "solc": "0.8.28",
+  "optimizerRuns": 200,
+  "viaIR": true,
+  "evmVersion": "cancun",
+  "runtimeLimitBytes": 23552,
+  "runtimeBytes": {
+    "UsdcMultiLendingVault": 22569,
+    "StrategyParamsModule": 18236,
+    "StrategyScoringModule": 22148,
+    "StrategyAdapterOpsModule": 18280,
+    "StrategyRebalanceGateModule": 22993,
+    "StrategyRebalancePlanModule": 23108,
+    "StrategyAllocCalcModule": 21390,
+    "StrategySafetyOverflowModule": 13505,
+    "StrategySettingsModule": 23415,
+    "AaveV3USDCAdapter": 13348,
+    "CometUsdcMultiMarketAdapter": 20515,
+    "DolomiteUsdcMultiMarketAdapter": 23372,
+    "EulerUsdcMultiMarketAdapter": 21971,
+    "FluidUsdcMultiMarketAdapter": 9720,
+    "MorphoUsdcMultiMarketAdapter": 23479,
+    "VenusUsdcMultiMarketAdapter": 11527,
+    "MorphoVaultV2LiquidityView": 1028,
+    "RewardSwapHelper": 11557,
+    "StrategyBootstrapper": 2276,
+    "ReadOnlyGasEstimator": 7492,
+    "OPStackFeeInfo": 1118,
+    "NativeL1FeeInfo": 459,
+    "AdapterFactory": 2817,
+    "ProtocolRegistry": 4224,
+    "StrategyUpkeep": 8933,
+    "StrategyExplainabilityLens": 9484,
+    "AdapterMigrationGuard": 851,
+    "AdapterSwapGuard": 545,
+    "AaveLiquidityRateProvider": 2218,
+    "DolomiteSupplyRateProvider": 732,
+    "GovernedReadOnlyGasEstimator": 7492,
+    "StrategyMigrationGuard": 916,
+    "StrategyStorageLayout": 9637,
+    "WstEthUsdPriceFeed": 1481
+  },
+  "runtimeTemplateKeccak256": {
+    "UsdcMultiLendingVault": "0xed6908cdb8d4e83a2c8c12598579e922c08e49d068c45fa66ae000e7f936881d",
+    "StrategyParamsModule": "0xf3a50cc4c0a11252d42e14d10287dd4031b50dac6b60a84c64aaedc1ed4055de",
+    "StrategyScoringModule": "0x836a0a2a3b3beef6cef20f0527877db071713bdd146e59253d36b983f8e6a18d",
+    "StrategyAdapterOpsModule": "0x3b4e5054a9095a6dbfdbeba6d7ca56db0ebcb4f75aef67e3c91ffa9026d21387",
+    "StrategyRebalanceGateModule": "0xd17423bfd9b5e4d0d574b45bbe2e35710aa88a8bbb843982029c17dda2ea5dce",
+    "StrategyRebalancePlanModule": "0x2019192bb7145640c394bc66a5550f6b831498fa51ed3fc70eb5dd2e2915a988",
+    "StrategyAllocCalcModule": "0x5e4aac76471ac63ac44b893ec4aa047139ea9340bf87a81f7049471680c0eef4",
+    "StrategySafetyOverflowModule": "0xb27e4457f4eaa626ab195640398f71d86e0d98caca8268cac8a33a19ce67c2f2",
+    "StrategySettingsModule": "0xd84920e148dc399707e95ed7bf851a9c5b7a8f6cb4e945689f643a74441869f6",
+    "AaveV3USDCAdapter": "0x3c4dff9e30ad9bb0de4834587d489048ac8e5fd93de22687872b6ad34bea1f55",
+    "CometUsdcMultiMarketAdapter": "0xde7873d238cbc3baa77b2e79d88fbbb0ef99b299f3e775d671ccd5438779b903",
+    "DolomiteUsdcMultiMarketAdapter": "0xf663a4dbbe52a9bfe67375034a3fa2ee3cd10083b86a952455ef1de1b3e3ef3f",
+    "EulerUsdcMultiMarketAdapter": "0x038452e5b3c045e50ccd519a754a87a9c54f7ebc8685e40477d3423fd19c976d",
+    "FluidUsdcMultiMarketAdapter": "0x2d3a258a8d3418e4e04818ca9b6ffba0c541d5d9d294d39e0144af0ab8c70b5d",
+    "MorphoUsdcMultiMarketAdapter": "0x6c17ab24c9fd7879d95f8b8fcc0e16a464579efc3a646b5b1f0a084839d916b0",
+    "VenusUsdcMultiMarketAdapter": "0x7e3f37886940056cb59f4405a60eba8c543f9aa44d7d621a4d684ba864ee7157",
+    "MorphoVaultV2LiquidityView": "0x1a2feb7db361df10d0df084566d74f60a3182a8473b2c12bdb1dac68854e22e9",
+    "RewardSwapHelper": "0x52343a242f82cda5e481e56c1ad46a4fb06430f401a2c3ddc2215d81318a7f6a",
+    "StrategyBootstrapper": "0x43a088cc56f3a657c08ef57b0fd8240c24171a9ecdf5f6dd97ce58154ad75933",
+    "ReadOnlyGasEstimator": "0x519d1b0690e3e17ae2a5c2f983d8a8d1ab47dd074f898bc22875ddb6c834e59a",
+    "OPStackFeeInfo": "0x3f11362357ca1d57089fbf4a33df4a67d73b1a79b09f470ed9e69dd429aa96c6",
+    "NativeL1FeeInfo": "0x8b2d82afa8db15afdd48f42f53cb9446e34b77dc1a8db7919081da615646936d",
+    "AdapterFactory": "0xab4b798fadf9bdd205c256ea75f67cf00686aa9336fc48db8cc99ac9c5dfa61e",
+    "ProtocolRegistry": "0x3f9b1873772a5b0c6bcb0b98f6c066a15fd8b6541d7c17164afb6490334872d0",
+    "StrategyUpkeep": "0xcb2a80aa21a020a5c6d07d4005b6970a3ba6fd9c1fa8abb9d5a1ff97c2d3f9eb",
+    "StrategyExplainabilityLens": "0xbcec20248e69fd50e58024ea167ff5930d092370afa28a4706965262622bd648",
+    "AdapterMigrationGuard": "0xf1935c972e5f49bbe86ecec1921ebfa6a8298e1d02565740c43df6bad78be6fa",
+    "AdapterSwapGuard": "0x2603273daa114ef2d4991bfddf337b0ca8c18e0aa0e6f3f074e2b33d86d238ba",
+    "AaveLiquidityRateProvider": "0x8600054e983b3a89728db385f8b252058fa1ae1a60408b77ee48edad9e1ffccb",
+    "DolomiteSupplyRateProvider": "0x5c92d959ac2649decc1f76593b66171db40ee1990ab5181aa90d7752d7bf1911",
+    "GovernedReadOnlyGasEstimator": "0x519d1b0690e3e17ae2a5c2f983d8a8d1ab47dd074f898bc22875ddb6c834e59a",
+    "StrategyMigrationGuard": "0xb7d8640d49f7cf88dcea6e37ec12d9a70b4712222e2c6837f07b472c4ac445b5",
+    "StrategyStorageLayout": "0xd06a3d6ca2207ca4f7aada04f798bce1ccca09de4c1d82c0b0ad39d24da13176",
+    "WstEthUsdPriceFeed": "0x2f26e1619a26a9929213915e59203f27396fbd30b5148625b7f5de936ffb9fdc"
+  },
+  "runtimeHashPolicy": "Compiler runtime templates; constructor immutables require deployment-specific patching. Only contracts without immutables can match the template directly; every immutable-bearing helper requires its own constructor-bound runtime verification.",
+  "uniqueSelectors": 296,
+  "distinctSignatureCollisions": 0,
+  "identicalModuleLayouts": 9,
+  "appendOnly": {
+    "AaveV3USDCAdapter": {
+      "preservedFields": 19,
+      "appendedFields": 0
+    },
+    "CometUsdcMultiMarketAdapter": {
+      "preservedFields": 25,
+      "appendedFields": 1
+    },
+    "DolomiteUsdcMultiMarketAdapter": {
+      "preservedFields": 32,
+      "appendedFields": 2
+    },
+    "EulerUsdcMultiMarketAdapter": {
+      "preservedFields": 19,
+      "appendedFields": 0
+    },
+    "FluidUsdcMultiMarketAdapter": {
+      "preservedFields": 12,
+      "appendedFields": 1
+    },
+    "MorphoUsdcMultiMarketAdapter": {
+      "preservedFields": 29,
+      "appendedFields": 2
+    },
+    "VenusUsdcMultiMarketAdapter": {
+      "preservedFields": 13,
+      "appendedFields": 1
+    },
+    "RewardSwapHelper": {
+      "preservedFields": 9,
+      "appendedFields": 5
+    },
+    "StrategyBootstrapper": {
+      "preservedFields": 5,
+      "appendedFields": 0
+    }
+  },
+  "strategyReferenceUnitLast": true,
+  "strategyReferenceUnitSlot": "88",
+  "sourceSnapshot": [
+    {
+      "path": "foundry.toml",
+      "utf8LfSha256": "5197056b8b152d42b7ba60e97bbd26d7a18b668b1411a5e8b0091da72f19677d"
+    },
+    {
+      "path": "src/strategies/usdc-lending/adapters/lending/AaveV3USDCmarket.sol",
+      "utf8LfSha256": "0d79431f4ae89657f5149fdd19f993b4b00760225b606698131c03bc81892087"
+    },
+    {
+      "path": "src/strategies/usdc-lending/adapters/lending/CometUsdcMultiMarket.sol",
+      "utf8LfSha256": "af76503e9b4299667e7659673f1db59f5dae68b8d4c8585441839fe4db6e2da4"
+    },
+    {
+      "path": "src/strategies/usdc-lending/adapters/lending/DolomiteUsdcMultiMarket.sol",
+      "utf8LfSha256": "7fa5aed061679ee2db1d56ac92a3d9048d7b9e5fafd5b7290ce052a070ec9e9e"
+    },
+    {
+      "path": "src/strategies/usdc-lending/adapters/lending/EulerUsdcMultiMarket.sol",
+      "utf8LfSha256": "6995c74dfb219bbbd050562edf2c84de38b02e1047333b12efb7dd6d24ac451f"
+    },
+    {
+      "path": "src/strategies/usdc-lending/adapters/lending/FluidUsdcMultiMarket.sol",
+      "utf8LfSha256": "4853bb85517fc9d2dc89d0a94590c3b115a60c24e73f1ead69dd619c516fa249"
+    },
+    {
+      "path": "src/strategies/usdc-lending/adapters/lending/MorphoUsdcMultiMarket.sol",
+      "utf8LfSha256": "90c3da4c19e38add2cb366ee2b3d396640071403aeb4fa16ed88b4c7f10ac2e7"
+    },
+    {
+      "path": "src/strategies/usdc-lending/adapters/lending/MorphoVaultV2LiquidityView.sol",
+      "utf8LfSha256": "ccbc60dbfae68aed4b7068fff1c7c9f19cb0827cad2e16409bef6e11f174faf1"
+    },
+    {
+      "path": "src/strategies/usdc-lending/adapters/lending/PpsRateLib.sol",
+      "utf8LfSha256": "a6c5ff0030647675f6f6d881ced4e338a7c341921004c25db41973de01d0eef9"
+    },
+    {
+      "path": "src/strategies/usdc-lending/adapters/lending/VenusUsdcMultiMarket.sol",
+      "utf8LfSha256": "c808739317ac18ed7dad5d0b2862e50489c709d5c746e1db7da08bde71db65b1"
+    },
+    {
+      "path": "src/strategies/usdc-lending/adapters/rates/AaveLiquidityRateProvider.sol",
+      "utf8LfSha256": "0d4f1ba6fb931bef53203f02e0d8fe72d7e2c3096ac0aea68fdf3e19b5e9a396"
+    },
+    {
+      "path": "src/strategies/usdc-lending/adapters/rates/DolomiteSupplyRateProvider.sol",
+      "utf8LfSha256": "c4bed028e5fdc14b4dec2e509821347376be76c253687855701322a89d5a38b1"
+    },
+    {
+      "path": "src/strategies/usdc-lending/automation/LendingStrategyUpkeep.sol",
+      "utf8LfSha256": "6538f9ac0e46e751b8c40bb163d75b4b75f791f8a929d22404a9b4a5eb103f1a"
+    },
+    {
+      "path": "src/strategies/usdc-lending/config/LendingAssetConfig.sol",
+      "utf8LfSha256": "258260ffa3081c8b6ecfa6d57be4d03123307a8797abde23690f42e85c5c5fe2"
+    },
+    {
+      "path": "src/strategies/usdc-lending/config/UsdcLendingChainConfig.sol",
+      "utf8LfSha256": "ad7f256e65fb9fdd1c85e7fb2a893269a9590f4b7d66019073254bcc61f35bf3"
+    },
+    {
+      "path": "src/strategies/usdc-lending/config/UsdcLendingConfigArbitrum.sol",
+      "utf8LfSha256": "1d1b8d206fcbde33c504b8d1b2874a34bfd249d428dca7e88f219d86ed256af8"
+    },
+    {
+      "path": "src/strategies/usdc-lending/config/UsdcLendingConfigBase.sol",
+      "utf8LfSha256": "687beefd05fe62a3354103f91466d9237ab59a054c40a1d89d406125c82ae823"
+    },
+    {
+      "path": "src/strategies/usdc-lending/config/UsdcLendingConfigEthereum.sol",
+      "utf8LfSha256": "367de29870b35f9e3c5558f68865e2993980a0c35f8ebf6a7cf8c8633954945e"
+    },
+    {
+      "path": "src/strategies/usdc-lending/config/UsdcLendingConfigOptimism.sol",
+      "utf8LfSha256": "440581bacf33323d685b8ecb0be6fba551b213ed34031a3cdbb9ed74504535be"
+    },
+    {
+      "path": "src/strategies/usdc-lending/config/UsdcLendingConfigPolygon.sol",
+      "utf8LfSha256": "95756c2fdd0037b241fd9eaa21ff620fc7343bdc63ccffff9753dfb7276508f7"
+    },
+    {
+      "path": "src/strategies/usdc-lending/controller/StrategyAdapterOpsModule.sol",
+      "utf8LfSha256": "b4bd6452dd748a59fbb459b3db9a7fd7ef3b003cd09cbce04a70c9d7977aafb7"
+    },
+    {
+      "path": "src/strategies/usdc-lending/controller/StrategyAllocCalcModule.sol",
+      "utf8LfSha256": "8371f7a246744e647cc8be545bc21c467b89a7fc084cb3e36e68a2a8e74d634c"
+    },
+    {
+      "path": "src/strategies/usdc-lending/controller/StrategyParamsModule.sol",
+      "utf8LfSha256": "7dd01d7127cba24705fa54c76e12cfff4485e8d94615c9feb2c23844ae4e7666"
+    },
+    {
+      "path": "src/strategies/usdc-lending/controller/StrategyRebalanceGateModule.sol",
+      "utf8LfSha256": "ddcd17ccc86267f8713475fb2d659ff7a4b8f2638463628745f8f4a597e1ee30"
+    },
+    {
+      "path": "src/strategies/usdc-lending/controller/StrategyRebalancePlanModule.sol",
+      "utf8LfSha256": "e16c7468f03aa86522eb37a315a8eeb3ddcfee79a87d0fd55b11507a933c9b71"
+    },
+    {
+      "path": "src/strategies/usdc-lending/controller/StrategySafetyOverflowModule.sol",
+      "utf8LfSha256": "9cd0e7d20b9a4980596d157437c349932ee9b81c9ea897a7f9882efa82e80410"
+    },
+    {
+      "path": "src/strategies/usdc-lending/controller/StrategyScoringModule.sol",
+      "utf8LfSha256": "34b0854dd3c8f2a4f8306e7589ed04a805ea1e0fb72519a9ea1bed7236b30d89"
+    },
+    {
+      "path": "src/strategies/usdc-lending/controller/StrategySettingsModule.sol",
+      "utf8LfSha256": "94ec8b4f0639572c3dedfb7fc217b8c848c19bfa53f9611b429331a2b7b83b2f"
+    },
+    {
+      "path": "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol",
+      "utf8LfSha256": "c6cb767d790261fe162ac4a14f520b35be33b94669614bd467497e94d538e6d0"
+    },
+    {
+      "path": "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol",
+      "utf8LfSha256": "8e59878abf355b6b598ad07daedebbed5c25d91db2d67620a518d26ef6d97e5d"
+    },
+    {
+      "path": "src/strategies/usdc-lending/factory/AdapterFactory.sol",
+      "utf8LfSha256": "16ed5c3567591fe5ebdb0a23211167f9f55f5425e5430a2710244f96594bb50b"
+    },
+    {
+      "path": "src/strategies/usdc-lending/gas/AdapterMigrationGuard.sol",
+      "utf8LfSha256": "33b527119e9ab7b29c23904779c9857d4c3156100446b5571ffc1cac23936ee1"
+    },
+    {
+      "path": "src/strategies/usdc-lending/gas/AdapterSwapGuard.sol",
+      "utf8LfSha256": "c5f35625e739ba6334427fd6698d03ce147e099763fec0da1e1934cbfa64d159"
+    },
+    {
+      "path": "src/strategies/usdc-lending/gas/CandidateActions.sol",
+      "utf8LfSha256": "9384bfe02963dece765d5da4e3793824ed390f8bb7aa3890f205eccb340bb2f7"
+    },
+    {
+      "path": "src/strategies/usdc-lending/gas/GovernedReadOnlyGasEstimator.sol",
+      "utf8LfSha256": "5e68ca03429c4c3aa0be8401fb0eea89996ceab3ccb3401f8bf9d756aacfed79"
+    },
+    {
+      "path": "src/strategies/usdc-lending/gas/NativeL1FeeInfo.sol",
+      "utf8LfSha256": "7efc0124d65d4fc8ddd0d7401882909d9ef6be67acd5fa8cc85ebc1cb57dffdb"
+    },
+    {
+      "path": "src/strategies/usdc-lending/gas/OPStackFeeInfo.sol",
+      "utf8LfSha256": "440fc0d7a06b949c947937472578d8e8c8bc4d4235855cc75084a6cd54537950"
+    },
+    {
+      "path": "src/strategies/usdc-lending/gas/ReadOnlyGasEstimator.sol",
+      "utf8LfSha256": "5163a652daad00b2d61cb2e84462ea4ff6770aefd0d0fd595af65c30c7453197"
+    },
+    {
+      "path": "src/strategies/usdc-lending/gas/StrategyMigrationGuard.sol",
+      "utf8LfSha256": "800b9f60a9cf4a63b18f1d9de8187404ff8a8fc30bf7d84b75a5fc6a3a9e935b"
+    },
+    {
+      "path": "src/strategies/usdc-lending/interfaces/ILendingAdapter.sol",
+      "utf8LfSha256": "2e05eec25f8d10346ee19fc695eface5bd554ed901d0ab20a074ebf4e2f3baec"
+    },
+    {
+      "path": "src/strategies/usdc-lending/lens/StrategyExplainabilityLens.sol",
+      "utf8LfSha256": "0c29f8a500c521100f511f8f4bebd3a3b83f64fc629f4be461dae5a2bf68d4cc"
+    },
+    {
+      "path": "src/strategies/usdc-lending/lib/StrategyConfigLib.sol",
+      "utf8LfSha256": "49fecc7eddb1467fa8d75fb48150ca1cfd3fbaed602bc34bf66649db9f72152a"
+    },
+    {
+      "path": "src/strategies/usdc-lending/oracles/WstEthUsdPriceFeed.sol",
+      "utf8LfSha256": "437a81007ca3ec5c4e136f5de12b00135d5529898d0627c239aaa0d3f609d79f"
+    },
+    {
+      "path": "src/strategies/usdc-lending/registry/ProtocolRegistry.sol",
+      "utf8LfSha256": "085de89f610200526d2d20b0bc6ff1644498940b8130d4bc890412417e56f806"
+    },
+    {
+      "path": "src/strategies/usdc-lending/StrategyBootstrapper.sol",
+      "utf8LfSha256": "c8d1db5216d199f35a86a91f489f9d1b99f78b803e00bb4247fda25ec09cb822"
+    },
+    {
+      "path": "src/strategies/usdc-lending/swap/RewardSwapHelper.sol",
+      "utf8LfSha256": "2f075cd06c713b68e57d47c64406a424c43901a6a1822ee1583cd1a141270468"
+    }
+  ],
+  "sourceSnapshotSha256": "c60296e273e10c16570a69e529200af7d33bd09777d1cfc207a25edd4e20183f",
+  "runnerSha256": "10d956cc60eaee3dc97bfda2a84371036c58854e768066ffc4032b2679296dc7",
+  "dependencies": [
+    " 5cb41fbc9b525338b6098da5ea7dd0b7e92f89e4 lib/chainlink-brownie-contracts (1.3.0)",
+    " 8e40513d678f392f398620b3ef2b418648b33e89 lib/forge-std (v1.11.0)",
+    " 9a9d120709de99a6216e9fe75d36e9ffdcb1a4d9 lib/multyr-core (v1.0.0-67-g9a9d120)",
+    " e2e9457d956b3127b126812588a7d67fdbfe8c72 lib/multyr-periphery (v1.0.0)",
+    " bd325d56b4c62c9c5c1aff048c37c6bb18ac0290 lib/openzeppelin-contracts (v4.9.5)",
+    " 3d4c0d5741b131c231e558d7a6213392ab3672a5 lib/openzeppelin-contracts-upgradeable (v4.9.3)"
+  ]
+}

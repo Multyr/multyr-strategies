@@ -5,9 +5,6 @@ import { UsdcLendingChainConfig } from "./UsdcLendingChainConfig.sol";
 
 /// @dev Chain config for Base (chain id 8453). Addresses TBD — fill before deploy.
 library UsdcLendingConfigBase {
-    // Base: ~2 s blocks → 365.25d × 86400s / 2s = 15,768,000 blocks/year
-    uint256 internal constant BLOCKS_PER_YEAR = 15_768_000;
-
     function get() internal pure returns (UsdcLendingChainConfig memory cfg) {
         // Native USDC (Circle CCTP) on Base
         cfg.usdc          = 0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913;

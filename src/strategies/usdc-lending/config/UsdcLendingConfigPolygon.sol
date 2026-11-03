@@ -5,9 +5,6 @@ import { UsdcLendingChainConfig } from "./UsdcLendingChainConfig.sol";
 
 /// @dev Chain config for Polygon PoS (chain id 137). Placeholder — fill before deploy.
 library UsdcLendingConfigPolygon {
-    // Polygon PoS: ~2.12 s avg blocks → 365.25d × 86400s / 2.12s ≈ 14,891,802 blocks/year
-    uint256 internal constant BLOCKS_PER_YEAR = 14_891_802;
-
     function get() internal pure returns (UsdcLendingChainConfig memory cfg) {
         // Native USDC (Circle CCTP) on Polygon
         cfg.usdc          = 0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359;

@@ -49,14 +49,6 @@ library CandidateActions {
         }
         assembly { mstore(actions, count) }
     }
-    /// @notice Keep the canonical priority order while making deposits fundable.
-    /// @dev Safety-tranche preservation can make raw target allocations exceed TVL.
-    ///      Dust-filtered withdrawals also cannot finance any deposit.
-    function funded(E.Action[] memory actions, uint256 cash, uint256 minDelta)
-        internal pure returns (E.Action[] memory)
-    {
-        return fundedWithReserve(actions, cash, minDelta, 0);
-    }
 
     function fundedWithReserve(E.Action[] memory actions, uint256 cash, uint256 minDelta, uint256 reserve)
         internal pure returns (E.Action[] memory)

@@ -86,6 +86,29 @@ Sources: pinned public Core `src/adapters/warm/AaveV3WarmAdapter_USDC.sol` and
 `9a9d120709de99a6216e9fe75d36e9ffdcb1a4d9`. Raw read-only evidence is retained in
 `production/coordinator/core-warm-usdt-approve.json`, `current-warm-identity.json`
 and `current-warm-protocol-details.json` in the canonical validation workspace.
+### Arbitrum four-token warm follow-up (2026-11-03)
+
+The new `ArbitrumAssetWarmTest` executes the unchanged frozen Aave warm adapter
+with actual Arbitrum USDC, WETH, USDT0 and WBTC. All four cases pass genuine
+holder funding, actual swaps where needed, nonempty Aave warm positions alongside
+Lending, the original seven-day queue and 10% epoch cap, complete small-user exit
+and a measured decrease in invested warm capital. Ordinary claim amounts match
+actual received tokens; final Lending recall matches the Core cash delta.
+See `lending-arbitrum-assets-20261103/warm-acceptance.json` for source/log hashes.
+Read-only approval results also return boolean true for all four Arbitrum tokens.
+
+This closes those named Aave-warm Arbitrum technical paths; it does not close the
+Ethereum USDT optional-return observation above or qualify every Morpho warm
+vault/profile. Public frozen source is used for dedicated per-asset Core instances;
+the existing USDC shadow Core is neither changed nor presented as a WBTC vault.
+
+The BufferManager's default `minRebalanceAmount = 5000e6` is another
+asset-denominated configuration default. The new cases use its existing
+`setRebalanceParams` API to express the same $5000 economic threshold in each
+underlying's units, alongside explicit per-asset vault deposit limits. Copying the
+raw USDC threshold to WETH or WBTC would change the economic policy. Core source
+remains frozen; this is a required deployment configuration, not a strategy fix.
+
 # wstETH price-feed interface constraint (2026-11-03)
 
 This is an integration constraint, not a proven Core code defect. At Ethereum

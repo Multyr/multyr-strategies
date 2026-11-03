@@ -1,0 +1,463 @@
+{
+  "chainId": 42161,
+  "pin": 520094008,
+  "canonicalHeaders": {
+    "513000000": {
+      "number": "0x1e93c240",
+      "hash": "0x146975b1ed7880b77e54739f9597d22a389075252aeb65707274e1b8c98f59e0",
+      "timestamp": "0x6ac80746"
+    },
+    "513800000": {
+      "number": "0x1e9ff740",
+      "hash": "0xb2b18c863c92610b900e4736fbe4d0f82949552076cdc2d707f08c910683852a",
+      "timestamp": "0x6acb6f45"
+    },
+    "514200000": {
+      "number": "0x1ea611c0",
+      "hash": "0x13c82a41a634f335f3641d58cd387bf3505a6dff1850fcf02699f3ffdcfc0d14",
+      "timestamp": "0x6acd2d71"
+    },
+    "519094008": {
+      "number": "0x1ef0bef8",
+      "hash": "0xe1b20baed976406cf8c18d23e09d5a676794d0173ca3788e338abb912ee30afa",
+      "timestamp": "0x6ae21d58"
+    },
+    "520000000": {
+      "number": "0x1efe9200",
+      "hash": "0x644c5b07524ff3d5fe7736b7a7f9dd05437721ad34453877feacb693de0e4e79",
+      "timestamp": "0x6ae5ec3f"
+    },
+    "520094008": {
+      "number": "0x1f000138",
+      "hash": "0xd0e4d2d28e0d9a60d819743930f9f2843409bf37a895a411620a632da53fa600",
+      "timestamp": "0x6ae65643"
+    }
+  },
+  "rows": [
+    {
+      "family": "aave",
+      "symbol": "USDC",
+      "asset": "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+      "decimals": 6,
+      "feed": "0x50834f3163758fcc1df9973b6e91f0f0f0434ad3",
+      "market": "0x794a61358d6845594f94dc1db02a252b5b4814ad",
+      "pin": 520094008,
+      "status": "PINNED_IDENTITY_MATCH",
+      "codeBytes": 2400,
+      "receipt": "0x724dc807b04555b71ed48a6896b6f41593b8c637",
+      "underlying": "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+      "totalAssets": "202141944253104",
+      "rateRay": "26907388422996093758740521"
+    },
+    {
+      "family": "aave",
+      "symbol": "WETH",
+      "asset": "0x82af49447d8a07e3bd95bd0d56f35241523fbab1",
+      "decimals": 18,
+      "feed": "0x639fe6ab55c921f74e7fac1ee960c0b6293ba612",
+      "market": "0x794a61358d6845594f94dc1db02a252b5b4814ad",
+      "pin": 520094008,
+      "status": "PINNED_IDENTITY_MATCH",
+      "codeBytes": 2400,
+      "receipt": "0xe50fa9b3c56ffb159cb0fca61f5c9d750e8128c8",
+      "underlying": "0x82af49447d8a07e3bd95bd0d56f35241523fbab1",
+      "totalAssets": "93443937407830530960091",
+      "rateRay": "10144793072471447468380102"
+    },
+    {
+      "family": "aave",
+      "symbol": "USDT0",
+      "asset": "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9",
+      "decimals": 6,
+      "feed": "0x3f3f5df88dc9f13eac63df89ec16ef6e7e25dde7",
+      "market": "0x794a61358d6845594f94dc1db02a252b5b4814ad",
+      "pin": 520094008,
+      "status": "PINNED_IDENTITY_MATCH",
+      "codeBytes": 2400,
+      "receipt": "0x6ab707aca953edaefbc4fd23ba73294241490620",
+      "underlying": "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9",
+      "totalAssets": "45128733414002",
+      "rateRay": "33102498800910467753035564"
+    },
+    {
+      "family": "aave",
+      "symbol": "WBTC",
+      "asset": "0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f",
+      "decimals": 8,
+      "feed": "0x6ce185860a4963106506c203335a2910413708e9",
+      "market": "0x794a61358d6845594f94dc1db02a252b5b4814ad",
+      "pin": 520094008,
+      "status": "PINNED_IDENTITY_MATCH",
+      "codeBytes": 2400,
+      "receipt": "0x078f358208685046a11c85e8ad32895ded33a249",
+      "underlying": "0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f",
+      "totalAssets": "304964327694",
+      "rateRay": "173191172491187340013042"
+    },
+    {
+      "family": "comet",
+      "symbol": "USDC",
+      "asset": "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+      "decimals": 6,
+      "feed": "0x50834f3163758fcc1df9973b6e91f0f0f0434ad3",
+      "market": "0x9c4ec768c28520B50860ea7a15bd7213a9fF58bf",
+      "pin": 520094008,
+      "status": "PINNED_IDENTITY_MATCH",
+      "codeBytes": 1878,
+      "underlying": "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+      "totalAssets": "14394206353200",
+      "utilization": "879613760049714497"
+    },
+    {
+      "family": "comet",
+      "symbol": "WETH",
+      "asset": "0x82af49447d8a07e3bd95bd0d56f35241523fbab1",
+      "decimals": 18,
+      "feed": "0x639fe6ab55c921f74e7fac1ee960c0b6293ba612",
+      "market": "0x6f7D514bbD4aFf3BcD1140B7344b32f063dEe486",
+      "pin": 520094008,
+      "status": "PINNED_IDENTITY_MATCH",
+      "codeBytes": 1878,
+      "underlying": "0x82af49447d8a07e3bd95bd0d56f35241523fbab1",
+      "totalAssets": "841312473676247466119",
+      "utilization": "712822778945916459"
+    },
+    {
+      "family": "comet",
+      "symbol": "USDT0",
+      "asset": "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9",
+      "decimals": 6,
+      "feed": "0x3f3f5df88dc9f13eac63df89ec16ef6e7e25dde7",
+      "market": "0xd98Be00b5D27fc98112BdE293e487f8D4cA57d07",
+      "pin": 520094008,
+      "status": "PINNED_IDENTITY_MATCH",
+      "codeBytes": 1878,
+      "underlying": "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9",
+      "totalAssets": "14761336837723",
+      "utilization": "656006646719754289"
+    },
+    {
+      "family": "comet",
+      "symbol": "WBTC",
+      "asset": "0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f",
+      "decimals": 8,
+      "feed": "0x6ce185860a4963106506c203335a2910413708e9",
+      "market": null,
+      "pin": 520094008,
+      "status": "NO_CANDIDATE_IN_QUERIED_INVENTORY"
+    },
+    {
+      "family": "morpho",
+      "symbol": "USDC",
+      "asset": "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+      "decimals": 6,
+      "feed": "0x50834f3163758fcc1df9973b6e91f0f0f0434ad3",
+      "market": "0x7c574174da4b2be3f705c6244b4bfa0815a8b3ed",
+      "pin": 520094008,
+      "status": "PINNED_IDENTITY_MATCH",
+      "codeBytes": 19689,
+      "underlying": "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+      "totalAssets": "470942717429",
+      "pps24": "1039775863271"
+    },
+    {
+      "family": "morpho",
+      "symbol": "WETH",
+      "asset": "0x82af49447d8a07e3bd95bd0d56f35241523fbab1",
+      "decimals": 18,
+      "feed": "0x639fe6ab55c921f74e7fac1ee960c0b6293ba612",
+      "market": null,
+      "pin": 520094008,
+      "status": "NO_CANDIDATE_IN_QUERIED_INVENTORY"
+    },
+    {
+      "family": "morpho",
+      "symbol": "USDT0",
+      "asset": "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9",
+      "decimals": 6,
+      "feed": "0x3f3f5df88dc9f13eac63df89ec16ef6e7e25dde7",
+      "market": "0xbeeff77ce5c059445714e6a3490e273fe7f2492f",
+      "pin": 520094008,
+      "status": "PINNED_IDENTITY_MATCH",
+      "codeBytes": 21808,
+      "underlying": "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9",
+      "totalAssets": "1846817363532",
+      "pps24": "1023531128430"
+    },
+    {
+      "family": "morpho",
+      "symbol": "WBTC",
+      "asset": "0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f",
+      "decimals": 8,
+      "feed": "0x6ce185860a4963106506c203335a2910413708e9",
+      "market": null,
+      "pin": 520094008,
+      "status": "NO_CANDIDATE_IN_QUERIED_INVENTORY"
+    },
+    {
+      "family": "euler",
+      "symbol": "USDC",
+      "asset": "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+      "decimals": 6,
+      "feed": "0x50834f3163758fcc1df9973b6e91f0f0f0434ad3",
+      "market": "0x6afb8d3f6d4a34e9cb2f217317f4dc8e05aa673b",
+      "pin": 520094008,
+      "status": "PINNED_IDENTITY_MATCH",
+      "codeBytes": 366,
+      "underlying": "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+      "totalAssets": "218037667172",
+      "pps24": "1062448812896000378756292"
+    },
+    {
+      "family": "euler",
+      "symbol": "WETH",
+      "asset": "0x82af49447d8a07e3bd95bd0d56f35241523fbab1",
+      "decimals": 18,
+      "feed": "0x639fe6ab55c921f74e7fac1ee960c0b6293ba612",
+      "market": "0x78e3e051d32157aacd550fbb78458762d8f7edff",
+      "pin": 520094008,
+      "status": "PINNED_IDENTITY_MATCH",
+      "codeBytes": 366,
+      "underlying": "0x82af49447d8a07e3bd95bd0d56f35241523fbab1",
+      "totalAssets": "96984080554200821584",
+      "pps24": "1057962700977310458107914"
+    },
+    {
+      "family": "euler",
+      "symbol": "USDT0",
+      "asset": "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9",
+      "decimals": 6,
+      "feed": "0x3f3f5df88dc9f13eac63df89ec16ef6e7e25dde7",
+      "market": "0x37512f45b4ba8808910632323b73783ca938cd51",
+      "pin": 520094008,
+      "status": "PINNED_IDENTITY_MATCH",
+      "codeBytes": 366,
+      "underlying": "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9",
+      "totalAssets": "14449098486",
+      "pps24": "1053504677129140302157275"
+    },
+    {
+      "family": "euler",
+      "symbol": "WBTC",
+      "asset": "0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f",
+      "decimals": 8,
+      "feed": "0x6ce185860a4963106506c203335a2910413708e9",
+      "market": "0x889e1c458b2469b70accdfb5b59726dc1668896c",
+      "pin": 520094008,
+      "status": "PINNED_IDENTITY_MATCH",
+      "codeBytes": 366,
+      "underlying": "0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f",
+      "totalAssets": "49599068",
+      "pps24": "1005420308799274748757527"
+    },
+    {
+      "family": "fluid",
+      "symbol": "USDC",
+      "asset": "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+      "decimals": 6,
+      "feed": "0x50834f3163758fcc1df9973b6e91f0f0f0434ad3",
+      "market": "0x1A996cb54bb95462040408C06122D45D6Cdb6096",
+      "pin": 520094008,
+      "status": "PINNED_IDENTITY_MATCH",
+      "codeBytes": 19617,
+      "underlying": "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+      "totalAssets": "57057185853274",
+      "pps24": "1136947720251000000000000"
+    },
+    {
+      "family": "fluid",
+      "symbol": "WETH",
+      "asset": "0x82af49447d8a07e3bd95bd0d56f35241523fbab1",
+      "decimals": 18,
+      "feed": "0x639fe6ab55c921f74e7fac1ee960c0b6293ba612",
+      "market": "0x45Df0656F8aDf017590009d2f1898eeca4F0a205",
+      "pin": 520094008,
+      "status": "PINNED_IDENTITY_MATCH",
+      "codeBytes": 21098,
+      "underlying": "0x82af49447d8a07e3bd95bd0d56f35241523fbab1",
+      "totalAssets": "233855859580032197990",
+      "pps24": "1034872418149000000000000"
+    },
+    {
+      "family": "fluid",
+      "symbol": "USDT0",
+      "asset": "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9",
+      "decimals": 6,
+      "feed": "0x3f3f5df88dc9f13eac63df89ec16ef6e7e25dde7",
+      "market": "0x4A03F37e7d3fC243e3f99341d36f4b829BEe5E03",
+      "pin": 520094008,
+      "status": "PINNED_IDENTITY_MATCH",
+      "codeBytes": 19617,
+      "underlying": "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9",
+      "totalAssets": "38919788936301",
+      "pps24": "1136042782730000000000000"
+    },
+    {
+      "family": "fluid",
+      "symbol": "WBTC",
+      "asset": "0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f",
+      "decimals": 8,
+      "feed": "0x6ce185860a4963106506c203335a2910413708e9",
+      "market": null,
+      "pin": 520094008,
+      "status": "NO_CANDIDATE_IN_QUERIED_INVENTORY"
+    },
+    {
+      "family": "dolomite",
+      "symbol": "USDC",
+      "asset": "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+      "decimals": 6,
+      "feed": "0x50834f3163758fcc1df9973b6e91f0f0f0434ad3",
+      "market": "0x444868b6e8079ac2c55eea115250f92c2b2c4d14",
+      "pin": 520094008,
+      "status": "PINNED_IDENTITY_MATCH",
+      "codeBytes": 2969,
+      "underlying": "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+      "totalAssets": "3957637773085",
+      "pps24": "1287016015185895996000000"
+    },
+    {
+      "family": "dolomite",
+      "symbol": "WETH",
+      "asset": "0x82af49447d8a07e3bd95bd0d56f35241523fbab1",
+      "decimals": 18,
+      "feed": "0x639fe6ab55c921f74e7fac1ee960c0b6293ba612",
+      "market": "0xf7b5127b510e568fdc39e6bb54e2081bfad489af",
+      "pin": 520094008,
+      "status": "PINNED_IDENTITY_MATCH",
+      "codeBytes": 2969,
+      "underlying": "0x82af49447d8a07e3bd95bd0d56f35241523fbab1",
+      "totalAssets": "2495250521829336468472",
+      "pps24": "1109763806128371139000000"
+    },
+    {
+      "family": "dolomite",
+      "symbol": "USDT0",
+      "asset": "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9",
+      "decimals": 6,
+      "feed": "0x3f3f5df88dc9f13eac63df89ec16ef6e7e25dde7",
+      "market": "0xf2d2d55daf93b0660297eaa10969ebe90ead5ce8",
+      "pin": 520094008,
+      "status": "PINNED_IDENTITY_MATCH",
+      "codeBytes": 2969,
+      "underlying": "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9",
+      "totalAssets": "170008898954",
+      "pps24": "1364676051574178658000000"
+    },
+    {
+      "family": "dolomite",
+      "symbol": "WBTC",
+      "asset": "0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f",
+      "decimals": 8,
+      "feed": "0x6ce185860a4963106506c203335a2910413708e9",
+      "market": "0x29cf6e8ecefb8d3c9dd2b727c1b7d1df1a754f6f",
+      "pin": 520094008,
+      "status": "PINNED_IDENTITY_MATCH",
+      "codeBytes": 2969,
+      "underlying": "0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f",
+      "totalAssets": "5667315442",
+      "pps24": "1067520088538236030000000"
+    },
+    {
+      "family": "venus",
+      "symbol": "USDC",
+      "asset": "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+      "decimals": 6,
+      "feed": "0x50834f3163758fcc1df9973b6e91f0f0f0434ad3",
+      "market": "0x7D8609f8da70fF9027E9bc5229Af4F6727662707",
+      "pin": 520094008,
+      "status": "PINNED_IDENTITY_MATCH",
+      "codeBytes": 332,
+      "underlying": "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+      "cash": "62926410165",
+      "borrows": "182383086607",
+      "supplyRatePerSlot": "1577360850"
+    },
+    {
+      "family": "venus",
+      "symbol": "WETH",
+      "asset": "0x82af49447d8a07e3bd95bd0d56f35241523fbab1",
+      "decimals": 18,
+      "feed": "0x639fe6ab55c921f74e7fac1ee960c0b6293ba612",
+      "market": "0x68a34332983f4Bf866768DD6D6E638b02eF5e1f0",
+      "pin": 520094008,
+      "status": "PINNED_IDENTITY_MATCH",
+      "codeBytes": 332,
+      "underlying": "0x82af49447d8a07e3bd95bd0d56f35241523fbab1",
+      "cash": "38475809421745798405",
+      "borrows": "37716024784619621226",
+      "supplyRatePerSlot": "186483883"
+    },
+    {
+      "family": "venus",
+      "symbol": "USDT0",
+      "asset": "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9",
+      "decimals": 6,
+      "feed": "0x3f3f5df88dc9f13eac63df89ec16ef6e7e25dde7",
+      "market": "0xB9F9117d4200dC296F9AcD1e8bE1937df834a2fD",
+      "pin": 520094008,
+      "status": "PINNED_IDENTITY_MATCH",
+      "codeBytes": 332,
+      "underlying": "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9",
+      "cash": "113173882764",
+      "borrows": "190056176721",
+      "supplyRatePerSlot": "1121054022"
+    },
+    {
+      "family": "venus",
+      "symbol": "WBTC",
+      "asset": "0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f",
+      "decimals": 8,
+      "feed": "0x6ce185860a4963106506c203335a2910413708e9",
+      "market": "0xaDa57840B372D4c28623E87FC175dE8490792811",
+      "pin": 520094008,
+      "status": "PINNED_IDENTITY_MATCH",
+      "codeBytes": 332,
+      "underlying": "0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f",
+      "cash": "579535856",
+      "borrows": "25317857",
+      "supplyRatePerSlot": "6666961"
+    }
+  ],
+  "funding": [
+    {
+      "symbol": "USDC",
+      "feed": "0x50834f3163758fcc1df9973b6e91f0f0f0434ad3",
+      "holders": {
+        "0xf977814e90da44bfa03b6295a0616a897441acec": "50059",
+        "0xb38e8c17e38363af6ebdcb3dae12e0243582891d": "2534086971"
+      },
+      "latestRoundData": "0x0000000000000000000000000000000000000000000000030000000000005a040000000000000000000000000000000000000000000000000000000005f59d4f000000000000000000000000000000000000000000000000000000006ae655dc000000000000000000000000000000000000000000000000000000006ae655e90000000000000000000000000000000000000000000000030000000000005a04"
+    },
+    {
+      "symbol": "WETH",
+      "feed": "0x639fe6ab55c921f74e7fac1ee960c0b6293ba612",
+      "holders": {
+        "0xf977814e90da44bfa03b6295a0616a897441acec": "42912299352477177800",
+        "0xb38e8c17e38363af6ebdcb3dae12e0243582891d": "9188120000000000"
+      },
+      "latestRoundData": "0x00000000000000000000000000000000000000000000000200000000000241c300000000000000000000000000000000000000000000000000000034654738b8000000000000000000000000000000000000000000000000000000006ae650aa000000000000000000000000000000000000000000000000000000006ae650b700000000000000000000000000000000000000000000000200000000000241c3"
+    },
+    {
+      "symbol": "USDT0",
+      "feed": "0x3f3f5df88dc9f13eac63df89ec16ef6e7e25dde7",
+      "holders": {
+        "0xf977814e90da44bfa03b6295a0616a897441acec": "99414783701626",
+        "0xb38e8c17e38363af6ebdcb3dae12e0243582891d": "3000101"
+      },
+      "latestRoundData": "0x0000000000000000000000000000000000000000000000030000000000005a020000000000000000000000000000000000000000000000000000000005f42f68000000000000000000000000000000000000000000000000000000006ae65546000000000000000000000000000000000000000000000000000000006ae655520000000000000000000000000000000000000000000000030000000000005a02"
+    },
+    {
+      "symbol": "WBTC",
+      "feed": "0x6ce185860a4963106506c203335a2910413708e9",
+      "holders": {
+        "0xf977814e90da44bfa03b6295a0616a897441acec": "94676533",
+        "0xb38e8c17e38363af6ebdcb3dae12e0243582891d": "287"
+      },
+      "latestRoundData": "0x000000000000000000000000000000000000000000000002000000000001710f0000000000000000000000000000000000000000000000000000070b0864f5d9000000000000000000000000000000000000000000000000000000006ae654fa000000000000000000000000000000000000000000000000000000006ae65507000000000000000000000000000000000000000000000002000000000001710f"
+    }
+  ],
+  "rpcReference": "ARBITRUM_RPC_URL",
+  "scope": "Read-only identities; NOT lifecycle acceptance",
+  "qualification": "IDENTITY_ONLY_NOT_LIFECYCLE_ACCEPTANCE"
+}

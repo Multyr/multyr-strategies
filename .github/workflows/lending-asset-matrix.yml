@@ -2,7 +2,7 @@ name: Lending asset matrix
 
 on:
   push:
-    branches: ['codex/lending-multitoken-multichain']
+    branches: ['codex/lending-multitoken-multichain', 'codex/lending-final-cleanup-20261103']
     paths:
       - 'src/strategies/usdc-lending/**'
       - 'script/**'
@@ -10,6 +10,7 @@ on:
       - 'lib/multyr-core'
       - '.gitmodules'
       - 'test/strategies/usdc-lending/**'
+      - 'docs/lending-arbitrum-assets-20261103/**'
       - '.github/workflows/lending-asset-matrix.yml'
   pull_request:
     paths:
@@ -19,6 +20,7 @@ on:
       - 'lib/multyr-core'
       - '.gitmodules'
       - 'test/strategies/usdc-lending/**'
+      - 'docs/lending-arbitrum-assets-20261103/**'
       - '.github/workflows/lending-asset-matrix.yml'
   workflow_dispatch:
 
@@ -26,6 +28,45 @@ permissions:
   contents: read
 
 jobs:
+  expanded-arbitrum-four-assets:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      ARBITRUM_RPC_URL: https://arbitrum-one.public.blastapi.io
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: v1.4.2
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Restore frozen real catalogues and canonical block identities
+        run: |
+          $target='deployments/lending-full-validation-20261101/production/arbitrum-assets'
+          New-Item -ItemType Directory -Force -Path $target | Out-Null
+          Copy-Item -Path 'docs/lending-arbitrum-assets-20261103/catalogues/*.json' -Destination $target
+          Copy-Item -LiteralPath 'docs/lending-arbitrum-assets-20261103/inventory.json' -Destination "$target/pinned-inventory.json"
+      - name: All 28 cells, real protocol investment, frozen Core exits and weighted portfolios
+        run: |
+          foreach($stage in @('direct','core','portfolio','warm')) {
+            $log="deployments/lending-full-validation-20261101/production/arbitrum-assets/ci-$stage.log"
+            python script/lending/validation/arbitrum-assets/run.py --stage $stage *> $log
+            $code=$LASTEXITCODE
+            Get-Content -LiteralPath $log -Tail 30
+            if($code -ne 0){exit $code}
+          }
+      - name: Preserve every classified cell and failed infrastructure attempt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lending-arbitrum-four-assets
+          path: deployments/lending-full-validation-20261101/production/arbitrum-assets/**
   pinned-market-roundtrips:
     runs-on: ubuntu-latest
     timeout-minutes: 90

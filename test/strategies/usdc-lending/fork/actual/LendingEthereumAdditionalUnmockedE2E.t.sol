@@ -54,7 +54,7 @@ abstract contract LendingEthereumAdditionalUnmockedE2EBase is Test {
     event RealFundingConversion(uint256 chainId, address input, address output,
         uint256 amountIn, uint256 oracleExpected, uint256 amountReceived);
 
-    function _new(string memory artifact, bytes memory args) internal returns (address a) {
+    function _new(string memory artifact, bytes memory args) internal virtual returns (address a) {
         a = deployCode(artifact, args);
         assertLe(a.code.length, 24576, "production component must satisfy EIP-170");
         keep.push(a);

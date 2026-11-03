@@ -9,7 +9,6 @@ pragma solidity 0.8.28;
 // Direct calls are forbidden via the onlyDelegateCall guard.
 // =============================================================================
 
-import { IERC20Metadata } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 import { ILendingAdapter } from "../interfaces/ILendingAdapter.sol";
 import {
     StrategyStorageLayout

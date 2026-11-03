@@ -5,9 +5,6 @@ import { UsdcLendingChainConfig } from "./UsdcLendingChainConfig.sol";
 
 /// @dev Chain config for Optimism (chain id 10). Addresses TBD — fill before deploy.
 library UsdcLendingConfigOptimism {
-    // Optimism: ~2 s blocks → 365.25d × 86400s / 2s = 15,768,000 blocks/year
-    uint256 internal constant BLOCKS_PER_YEAR = 15_768_000;
-
     function get() internal pure returns (UsdcLendingChainConfig memory cfg) {
         // Native USDC (Circle CCTP) on Optimism
         cfg.usdc          = 0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85;

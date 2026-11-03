@@ -1,0 +1,596 @@
+{
+  "status": "COMPLETE_WITH_MARKET_EXCLUSIONS",
+  "stage": "direct",
+  "fullySupportedCartesianProduct": false,
+  "productionApproval": false,
+  "sourceStable": true,
+  "sourceHashes": {
+    "foundry.toml": "c735f4db8cd22df0f444ed52091ec57b6de0d6a7cbab810b5b4417be83574361",
+    "script/AdapterSettingsCopy.sol": "a799a5bed8faf5c378e3a0e2a7b04e0ec69c0b99927b9bb28451aa2e19e0d2d9",
+    "script/AssertLendingTestSummary.ps1": "eaf73895b12bc7d53c526ea28515f7f1ade1a94d4ef6e790dd1230bc21f5f201",
+    "script/CheckLendingRelease.ps1": "10d956cc60eaee3dc97bfda2a84371036c58854e768066ffc4032b2679296dc7",
+    "script/DeployAdapterFactory.s.sol": "0d64abe5ba45aaeb4fa5e15d3fe7d304303cc27759b5dbc050885f583a64377d",
+    "script/DeployAdapterOnly.s.sol": "06ca996c4a85e70877e5bdabba452c653733fe3a34dedc561e56186c55e9798c",
+    "script/DeployLendingStrategy.s.sol": "2735e27bb5a989f7d1c46ce5d30beec9261059f51cab12b5c82ccb166b8afc12",
+    "script/DeployReadOnlyGasEstimator.s.sol": "508759f63e8c42528b58441b975a30443833ec05fbe3ba568f53816c342c8e2b",
+    "script/DeployStrategyMigrationGuard.s.sol": "062ae941f12b78bf5a5dedcc6e2abf5b064a9918e1d5b9a41fad485b70ec0f30",
+    "script/DeployStrategyUpkeep.s.sol": "034ae1ab307999b870714937050c9f36844c46354337ef2fcb293a6b7f009928",
+    "script/DeployUsdcLendingStrategy.s.sol": "0ba649296c4e5f0c299085e3cc5a5d2c3919e0411c1f2e9ec79e9ba7b7335c46",
+    "script/ExportLendingCandidate.ps1": "0654f8f8bc3c22ba5f0794827054d6ea591e69fc9b3a65956602694fe99c9435",
+    "script/GasEstimatorPreflight.sol": "826b0ff4005473473021494087412657f1f96c12574eca26f84537b6d958d5d1",
+    "script/PostflightUsdcLendingShadow.s.sol": "67c7be31e582cebf39ca49c268abc67181a253e89b3404c02fdf6fccf162b28a",
+    "script/PreflightUsdcLendingShadow.s.sol": "6bab6f847f813babd535558c7e4371c0e56354ee54ac00dddf7c64710ef27464",
+    "script/RecordLendingActualHeaders.ps1": "b4b2f1859de485b25310e1d925b51590acd56b0ded6fcc3259ce36ef100b8648",
+    "script/ReproduceLendingRuntime.ps1": "7d97ffd4731451913f0ecbfc0018d6f9cf71661bc00ce13c5e148568186f2acf",
+    "script/RunLendingActualMarkets.ps1": "1895fb854b817264feab7cbb972f3f924e21988a7287fc5aee372b068e029102",
+    "script/RunLendingTransactionGas.ps1": "cbe11154839afe0000c573daf83ba2a9977a3f63c1c5865f788e227ac485cd61",
+    "script/StrategySettingsCopy.sol": "468c7f725c3a418d1d4e949c6c49d5f256fed8a9f752175cfa11a9c9381122d5",
+    "script/VerifyPinnedRuntime.ps1": "e2f6251f99c2b3a03c9ad74fcd201e16ecd57d2f25952502c977560e3afef81d",
+    "script/keepers/safety_adapter_monitor.py": "1809014f3724de137d99d06eed5c554a86acefe5e97569d6dd986991cb1958d0",
+    "script/lending/validation/arbitrum-assets/discover.py": "dcc1814dc570179af5a6e4f9c3f1fd5b2dc5d12fa036c92346e3b478d9d95d70",
+    "script/lending/validation/arbitrum-assets/probe.py": "2e37fa0732e28a0276f8992d75cb5d62fdf1f71f62d744f13d215fa52c897b7d",
+    "script/lending/validation/arbitrum-assets/run.py": "1eeba1d91b22af09a8b0bc9384d1e1a60d2079b9cf789251249d0d75431b4611",
+    "script/lending/validation/keeper-gas/build_checkpoint.py": "fb227a4b89178673d581bd04cce0a26ca3b36435480f3c5ccac4ee8eeb399482",
+    "script/lending/validation/keeper-gas/native_simulation.py": "a966e1c93d893db7614e2f2652e9ac3b8a72192c567c05430b75766b5a061fe5",
+    "script/lending/validation/transaction-gas/runner.py": "eaac8d6e5b180e50967920512cc0005fe143a8261947c6b6743550485e57bb4b",
+    "script/lending/validation/transaction-gas/test_anvil_lifecycle.py": "36721ff22da9bf5642e5549b604e2168023d5d468c97c82980c291c9d7f62c3b",
+    "script/lib/UsdcLendingShadowPreflight.sol": "7e5f6e6fc66d9b2c73e2472c6fa0edc61a362d60ca885ec8a6c6eac0cd43ecf1",
+    "script/prepare-ema-downstream.py": "c6248ba1f06172eb2eb88b8933ff34359c5bb34f1dbe21348853ee7cd4a6d726",
+    "script/release-ema-first.py": "58d650d6626c5e82b7b7e4cd933be4453e0b88fa12c3f9b777ad0bdedbe72b44",
+    "script/run-estimator-tier-fork.py": "63b357d0073a05cfc30295d92bd88ecdf7cc6569aa7d01d5cb60741102586a63",
+    "script/snapshot-strategy-settings.py": "670157d9b0efcea8f7274c648e4e1d679dc4f213abded25bbe9afed16502ac65",
+    "src/strategies/usdc-lending/StrategyBootstrapper.sol": "e46b696bdda55f84cf92f59d151ac2fa8f5679647eacf6a5a475d5a7b41777f3",
+    "src/strategies/usdc-lending/adapters/lending/AaveV3USDCmarket.sol": "6c25d820f39182d6d808770283b8c2156c57989b4a7428ce19b20baf24faf43a",
+    "src/strategies/usdc-lending/adapters/lending/CometUsdcMultiMarket.sol": "4ce6cca641d067020649b94961546e6885d4efeb0f569736d392bcbb1f6a611d",
+    "src/strategies/usdc-lending/adapters/lending/DolomiteUsdcMultiMarket.sol": "93ea279623b5104a941fe57265a38ba9d9a8ebae5eb59c0cb0842215e93d11a8",
+    "src/strategies/usdc-lending/adapters/lending/EulerUsdcMultiMarket.sol": "59452094c484a5d976db1c416d1d347cce993cadda4834eeab52f96cbe89bf1f",
+    "src/strategies/usdc-lending/adapters/lending/FluidUsdcMultiMarket.sol": "c9f53a81bed1b1db9aa5a97e27f14d36d2636cb4961781857fc2b938bbe24c39",
+    "src/strategies/usdc-lending/adapters/lending/MorphoUsdcMultiMarket.sol": "df163ad64a76859516931d0b360b5c960b0d5500f730b1f1ef57120d4f8aff24",
+    "src/strategies/usdc-lending/adapters/lending/MorphoVaultV2LiquidityView.sol": "75b17290afc58a8a925a3cbfbdc77a76a531fd7d0d39fb782dbbaa26f8c4f8c0",
+    "src/strategies/usdc-lending/adapters/lending/PpsRateLib.sol": "968e87a0c489ec670b2b018d8069fd856eeed6f445bf078812a671b9ba627946",
+    "src/strategies/usdc-lending/adapters/lending/VenusUsdcMultiMarket.sol": "b152e077d891b04a89fd45461243741ee2c5a16a50a59b3314861d7aec6309c2",
+    "src/strategies/usdc-lending/adapters/rates/AaveLiquidityRateProvider.sol": "77cbbb9f8e6238f7427daf42b05a1b068cf4c41d7276c7ed5bf913177c2d929c",
+    "src/strategies/usdc-lending/adapters/rates/DolomiteSupplyRateProvider.sol": "3a10c6ade242c70357001fc0ec5c36f671a32846c0971a21c0a2023d1d3321c5",
+    "src/strategies/usdc-lending/automation/LendingStrategyUpkeep.sol": "08483dad319433a143bf5e207bd5a51703ba28e559ae1640e61c38c0ef2be98b",
+    "src/strategies/usdc-lending/config/LendingAssetConfig.sol": "8bad596a7cd93b13e857024cae89c9e3f1a0dc998a5765cf34a3d0af3a066d20",
+    "src/strategies/usdc-lending/config/UsdcLendingChainConfig.sol": "1c07c7a58ce7be0785c42bfbfd1c38baf940463378bb71e964be155efbea4f1f",
+    "src/strategies/usdc-lending/config/UsdcLendingConfigArbitrum.sol": "9666b5b4f141634524dc8d1b7173e40db8bf28e4fbd327dda0c951d7d0bcf230",
+    "src/strategies/usdc-lending/config/UsdcLendingConfigBase.sol": "f02bc66a75165a71821b5fca39c5b0c62330dce55caf55eeb4d3d45673ae92c0",
+    "src/strategies/usdc-lending/config/UsdcLendingConfigEthereum.sol": "e235cf64a07506e8ce07e441cb34729d339018ab2a9586b878507cd292d504ce",
+    "src/strategies/usdc-lending/config/UsdcLendingConfigOptimism.sol": "2253ed8b054b00fed3b176e974fa57431c24bd645a851ce8e1efdd295d29ecd9",
+    "src/strategies/usdc-lending/config/UsdcLendingConfigPolygon.sol": "3aa090d6f16fe89098eb93cc3c5d7ba979b89260824e4281a74fc82550216785",
+    "src/strategies/usdc-lending/controller/StrategyAdapterOpsModule.sol": "2dd3a1acb7899117589e442ca9d3e5f3e2efef5bc842e2154a8e8d4824e1bceb",
+    "src/strategies/usdc-lending/controller/StrategyAllocCalcModule.sol": "06c16e550c51105d3ae7b512ae40426105820db3c6f5ffee5a2c2d5c48738ec2",
+    "src/strategies/usdc-lending/controller/StrategyParamsModule.sol": "ed069a7fd5cc7d4aa4468cb7910d23799fedc9ac21fe659d34f2a91b05b151e7",
+    "src/strategies/usdc-lending/controller/StrategyRebalanceGateModule.sol": "8c6b12f64779bc21a10f609e7cf04f17f4481e8f29029c95e6a69163e0cee04a",
+    "src/strategies/usdc-lending/controller/StrategyRebalancePlanModule.sol": "cce46a50eaf2d6537e53517d924d770e0ae5476e1b401ce768d7a9f1c6104c1a",
+    "src/strategies/usdc-lending/controller/StrategySafetyOverflowModule.sol": "34804814848e44e048be916a2120c1cec4b8e3887543c7ea67ff54b4a8f3138b",
+    "src/strategies/usdc-lending/controller/StrategyScoringModule.sol": "45dee6d8361bfc79a946d23d46c7cce85e43ad20697c9d5169ca5bc608c52394",
+    "src/strategies/usdc-lending/controller/StrategySettingsModule.sol": "4be703e050929ef2c742e4994d30cc289dbaf12ee441540b83b99d2b1d296513",
+    "src/strategies/usdc-lending/controller/StrategyStorageLayout.sol": "763919685a86f4cbaa7c5c6d4b479ac49351552c900308fd633c8c491dbe39f4",
+    "src/strategies/usdc-lending/controller/UsdcLendingStrategy.sol": "d2b24db721667615d59f5531450d04719eb24b6aa1c975d0a672359f842ac480",
+    "src/strategies/usdc-lending/factory/AdapterFactory.sol": "84dcb321016aff1bb5c15aa33dd574f92dc2b3579582d8b0b8719a4064c2d925",
+    "src/strategies/usdc-lending/gas/AdapterMigrationGuard.sol": "43d552c968682568f6872fa89e100b34243d48c96c8df38f7b83844a3d8aaf15",
+    "src/strategies/usdc-lending/gas/AdapterSwapGuard.sol": "7d509129c2ed91c5fdd277bef7b6e1636562db9c90db6250d0c9d5f4db766e16",
+    "src/strategies/usdc-lending/gas/CandidateActions.sol": "e1c7b1d30b112c87a6bec667448a8ffc6d174b059e0c60b7ab0f9fdf2b2c5f26",
+    "src/strategies/usdc-lending/gas/GovernedReadOnlyGasEstimator.sol": "86e0f192200ced36d5970f462952b2854d5d814da21074e3077766a5200ad98d",
+    "src/strategies/usdc-lending/gas/NativeL1FeeInfo.sol": "408b1f6cbe0e0435bc4467294536775363166301bd661dfdf5730e353e4d8f85",
+    "src/strategies/usdc-lending/gas/OPStackFeeInfo.sol": "d378bde2e902046eacbae34611e6743a1a4c3365c41edb4ac746ee050dd0b37c",
+    "src/strategies/usdc-lending/gas/ReadOnlyGasEstimator.sol": "6244b424cc37e8724d859bc80573d0f11a2472622b0b01a7b17f92f05b19bed1",
+    "src/strategies/usdc-lending/gas/StrategyMigrationGuard.sol": "19946ede5b5538b083880ee36d739a70059360c7b2e82ad42bc83ecb8fdee515",
+    "src/strategies/usdc-lending/interfaces/ILendingAdapter.sol": "1277caeac78952d65808d3f39235ac05769e2555a5c77979953d32d0c9dc672b",
+    "src/strategies/usdc-lending/lens/StrategyExplainabilityLens.sol": "f9ce0847e23f3a39c719659c77cb137978287075661cab935db03482e8af7b6e",
+    "src/strategies/usdc-lending/lib/StrategyConfigLib.sol": "9e94ceab893ae7d8d799881d230fe195d895c9fd20e766aa56e274bd49a3341f",
+    "src/strategies/usdc-lending/oracles/WstEthUsdPriceFeed.sol": "f8b64a93880e3ce4eef036d6d6f4fa4a8bea327a18f307e472cb467068d73488",
+    "src/strategies/usdc-lending/registry/ProtocolRegistry.sol": "3e9be23b1aeed43b4b54d0f4f49f653aa3a231cc43d68852d3febd56599ada82",
+    "src/strategies/usdc-lending/swap/RewardSwapHelper.sol": "726f68dbb884e440578ce6a362de71753689616a167e095bb7dc840e950af226",
+    "test/strategies/usdc-lending/fork/arbitrum-assets/ArbitrumAssetDirect.t.sol": "a9aa9fe8840212189b99fc1c3fd4ff450655b9dcb88a1d45b03d20666ed32c27"
+  },
+  "baseCommit": "58e5139f187005d68241a74c1171a59030866b18",
+  "dependencies": [
+    " 5cb41fbc9b525338b6098da5ea7dd0b7e92f89e4 lib/chainlink-brownie-contracts (1.3.0)",
+    " 8e40513d678f392f398620b3ef2b418648b33e89 lib/forge-std (v1.11.0)",
+    " 9a9d120709de99a6216e9fe75d36e9ffdcb1a4d9 lib/multyr-core (v1.0.0-67-g9a9d120)",
+    " e2e9457d956b3127b126812588a7d67fdbfe8c72 lib/multyr-periphery (v1.0.0)",
+    " bd325d56b4c62c9c5c1aff048c37c6bb18ac0290 lib/openzeppelin-contracts (v4.9.5)",
+    " 3d4c0d5741b131c231e558d7a6213392ab3672a5 lib/openzeppelin-contracts-upgradeable (v4.9.3)"
+  ],
+  "sourceScope": "All production and script inputs, foundry.toml and the executed stage complete first-party Solidity import closure; vendor versions bound by frozen git submodule pins.",
+  "compiler": {
+    "version": "0.8.28",
+    "optimizerRuns": 200,
+    "viaIR": true,
+    "evmVersion": "cancun",
+    "metadata": "none"
+  },
+  "coreScope": "Frozen public source 9a9d120, fresh per-asset instances; not a claim that the deployed USDC Core changed underlying or that every deployed Core component has identical executable code.",
+  "inventorySha256": "e2a62439afda4c1d2c7fdf7dfb893995b434ed6a70773c3bc159facf94ac1882",
+  "inventoryStable": true,
+  "catalogueHashes": {
+    "comet-deployment-directories.json": "b11b68079589694df7c4c0ea413f0533533678b9c8ce07b0f9aa447ae9a7b62b",
+    "morpho-all-vaults-v1.json": "50a20be38226b7c98462ad6aacf44f77144ac055a87e5010e2f32b26a5e4345c",
+    "morpho-all-vaults-v2.json": "b71acc2110da505e3e69bd96d469321f56266c4b48e631ccc06fe8e1a30c79ae",
+    "morpho-blue-all.json": "4ab252e01e9d978b26dbb0128a08a3821bc1a9c8b161e5e4c80a01eeb912e2b5"
+  },
+  "cataloguesStable": true,
+  "rows": [
+    {
+      "case": "aave-USDC",
+      "market": "0x794a61358d6845594f94dc1db02a252b5b4814ad",
+      "asset": "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+      "status": "PASS_DIRECT_LIFECYCLE",
+      "exitCode": 0,
+      "infrastructureAttempts": [],
+      "elapsedSeconds": 5.3,
+      "log": "deployments\\lending-full-validation-20261101\\production\\arbitrum-assets\\runs-20261103T134730-direct-29148\\aave-USDC.log",
+      "logSha256": "c8a826cbe6f4cc02327ca1533a2ce5954f0ab571a4cc2c3185b8ae17a83d3d06",
+      "observations": [
+        "\u251c\u2500 emit ActualMatrixDirectFunding(asset: 0xaf88d065e77c8cC2239327C5EDb3A432268e5831, holder: 0xB38e8c17e38363aF6EbdCb3dAE12e0243582891D, beforeBalance: 2534086971 [2.534e9], amount: 1000173321 [1e9], afterBalance: 1533913650 [1.533e9])",
+        "\u251c\u2500 emit ActualMatrixDirectRate(family: 0, asset: 0xaf88d065e77c8cC2239327C5EDb3A432268e5831, independentAprBps: 269, observedAprBps: 269)",
+        "\u251c\u2500 emit ActualMatrixDirect(family: 0, asset: 0xaf88d065e77c8cC2239327C5EDb3A432268e5831, market: 0x794a61358D6845594F94dc1DB02A252b5b4814aD, pin: 520094008 [5.2e8], supplied: 1000173321 [1e9], externalAssets: 202141944253104 [2.021e14], aprBps: 269, position: 0)",
+        "\u251c\u2500 emit ActualMatrixDirectRate(family: 0, asset: 0xaf88d065e77c8cC2239327C5EDb3A432268e5831, independentAprBps: 269, observedAprBps: 269)",
+        "\u251c\u2500 emit ActualMatrixDirect(family: 0, asset: 0xaf88d065e77c8cC2239327C5EDb3A432268e5831, market: 0x794a61358D6845594F94dc1DB02A252b5b4814aD, pin: 520094008 [5.2e8], supplied: 1000173321 [1e9], externalAssets: 202142944426425 [2.021e14], aprBps: 269, position: 1000173320 [1e9])",
+        "\u251c\u2500 emit ActualMatrixDirectRecall(family: 0, asset: 0xaf88d065e77c8cC2239327C5EDb3A432268e5831, partialPaid: 250043330 [2.5e8], finalRecall: 750129989 [7.501e8], residual: 0)"
+      ]
+    },
+    {
+      "case": "aave-WETH",
+      "market": "0x794a61358d6845594f94dc1db02a252b5b4814ad",
+      "asset": "0x82af49447d8a07e3bd95bd0d56f35241523fbab1",
+      "status": "PASS_DIRECT_LIFECYCLE",
+      "exitCode": 0,
+      "infrastructureAttempts": [],
+      "elapsedSeconds": 5.22,
+      "log": "deployments\\lending-full-validation-20261101\\production\\arbitrum-assets\\runs-20261103T134730-direct-29148\\aave-WETH.log",
+      "logSha256": "16d51d4863df117d3a45ae72320334081186c434bab566fb8a67b2650d065d17",
+      "observations": [
+        "\u251c\u2500 emit ActualMatrixDirectFunding(asset: 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1, holder: 0xF977814e90dA44bFA03b6295A0616a897441aceC, beforeBalance: 42912299352477177800 [4.291e19], amount: 444370450278639457 [4.443e17], afterBalance: 42467928902198538343 [4.246e19])",
+        "\u251c\u2500 emit ActualMatrixDirectRate(family: 0, asset: 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1, independentAprBps: 101, observedAprBps: 101)",
+        "\u251c\u2500 emit ActualMatrixDirect(family: 0, asset: 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1, market: 0x794a61358D6845594F94dc1DB02A252b5b4814aD, pin: 520094008 [5.2e8], supplied: 444370450278639457 [4.443e17], externalAssets: 93443937407830530960091 [9.344e22], aprBps: 101, position: 0)",
+        "\u251c\u2500 emit ActualMatrixDirectRate(family: 0, asset: 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1, independentAprBps: 101, observedAprBps: 101)",
+        "\u251c\u2500 emit ActualMatrixDirect(family: 0, asset: 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1, market: 0x794a61358D6845594F94dc1DB02A252b5b4814aD, pin: 520094008 [5.2e8], supplied: 444370450278639457 [4.443e17], externalAssets: 93444381778280809599548 [9.344e22], aprBps: 101, position: 444370450278639456 [4.443e17])",
+        "\u251c\u2500 emit ActualMatrixDirectRecall(family: 0, asset: 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1, partialPaid: 111092612569659864 [1.11e17], finalRecall: 333277837708979592 [3.332e17], residual: 0)"
+      ]
+    },
+    {
+      "case": "aave-USDT0",
+      "market": "0x794a61358d6845594f94dc1db02a252b5b4814ad",
+      "asset": "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9",
+      "status": "PASS_DIRECT_LIFECYCLE",
+      "exitCode": 0,
+      "infrastructureAttempts": [],
+      "elapsedSeconds": 5.36,
+      "log": "deployments\\lending-full-validation-20261101\\production\\arbitrum-assets\\runs-20261103T134730-direct-29148\\aave-USDT0.log",
+      "logSha256": "78e6d4531c1d85d1268ca8c3f05aada1c2418006e7778905bec8feb9b2babb24",
+      "observations": [
+        "\u251c\u2500 emit ActualMatrixDirectFunding(asset: 0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9, holder: 0xF977814e90dA44bFA03b6295A0616a897441aceC, beforeBalance: 99414783701626 [9.941e13], amount: 1001111234 [1.001e9], afterBalance: 99413782590392 [9.941e13])",
+        "\u251c\u2500 emit ActualMatrixDirectRate(family: 0, asset: 0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9, independentAprBps: 331, observedAprBps: 331)",
+        "\u251c\u2500 emit ActualMatrixDirect(family: 0, asset: 0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9, market: 0x794a61358D6845594F94dc1DB02A252b5b4814aD, pin: 520094008 [5.2e8], supplied: 1001111234 [1.001e9], externalAssets: 45128733414002 [4.512e13], aprBps: 331, position: 0)",
+        "\u251c\u2500 emit ActualMatrixDirectRate(family: 0, asset: 0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9, independentAprBps: 331, observedAprBps: 331)",
+        "\u251c\u2500 emit ActualMatrixDirect(family: 0, asset: 0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9, market: 0x794a61358D6845594F94dc1DB02A252b5b4814aD, pin: 520094008 [5.2e8], supplied: 1001111234 [1.001e9], externalAssets: 45129734525236 [4.512e13], aprBps: 331, position: 1001111233 [1.001e9])",
+        "\u251c\u2500 emit ActualMatrixDirectRecall(family: 0, asset: 0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9, partialPaid: 250277808 [2.502e8], finalRecall: 750833425 [7.508e8], residual: 0)"
+      ]
+    },
+    {
+      "case": "aave-WBTC",
+      "market": "0x794a61358d6845594f94dc1db02a252b5b4814ad",
+      "asset": "0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f",
+      "status": "PASS_DIRECT_LIFECYCLE",
+      "exitCode": 0,
+      "infrastructureAttempts": [],
+      "elapsedSeconds": 5.3,
+      "log": "deployments\\lending-full-validation-20261101\\production\\arbitrum-assets\\runs-20261103T134730-direct-29148\\aave-WBTC.log",
+      "logSha256": "9e016e116088f3dfa1b11675493544e39114bd53f015154321519cd45e84212a",
+      "observations": [
+        "\u251c\u2500 emit ActualMatrixDirectFunding(asset: 0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f, holder: 0xF977814e90dA44bFA03b6295A0616a897441aceC, beforeBalance: 94676533 [9.467e7], amount: 1291328 [1.291e6], afterBalance: 93385205 [9.338e7])",
+        "\u251c\u2500 emit ActualMatrixDirectRate(family: 0, asset: 0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f, independentAprBps: 1, observedAprBps: 1)",
+        "\u251c\u2500 emit ActualMatrixDirect(family: 0, asset: 0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f, market: 0x794a61358D6845594F94dc1DB02A252b5b4814aD, pin: 520094008 [5.2e8], supplied: 1291328 [1.291e6], externalAssets: 304964327694 [3.049e11], aprBps: 1, position: 0)",
+        "\u251c\u2500 emit ActualMatrixDirectRate(family: 0, asset: 0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f, independentAprBps: 1, observedAprBps: 1)",
+        "\u251c\u2500 emit ActualMatrixDirect(family: 0, asset: 0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f, market: 0x794a61358D6845594F94dc1DB02A252b5b4814aD, pin: 520094008 [5.2e8], supplied: 1291328 [1.291e6], externalAssets: 304965619022 [3.049e11], aprBps: 1, position: 1291327 [1.291e6])",
+        "\u251c\u2500 emit ActualMatrixDirectRecall(family: 0, asset: 0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f, partialPaid: 322832 [3.228e5], finalRecall: 968494 [9.684e5], residual: 0)"
+      ]
+    },
+    {
+      "case": "comet-USDC",
+      "market": "0x9c4ec768c28520B50860ea7a15bd7213a9fF58bf",
+      "asset": "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+      "status": "PASS_DIRECT_LIFECYCLE",
+      "exitCode": 0,
+      "infrastructureAttempts": [],
+      "elapsedSeconds": 5.38,
+      "log": "deployments\\lending-full-validation-20261101\\production\\arbitrum-assets\\runs-20261103T134730-direct-29148\\comet-USDC.log",
+      "logSha256": "042324a4d7be1ebbc1a6fb01c54757e66c784c1c332bb74ecadcf3f244e521a0",
+      "observations": [
+        "\u251c\u2500 emit ActualMatrixDirectFunding(asset: 0xaf88d065e77c8cC2239327C5EDb3A432268e5831, holder: 0xB38e8c17e38363aF6EbdCb3dAE12e0243582891D, beforeBalance: 2534086971 [2.534e9], amount: 1000173321 [1e9], afterBalance: 1533913650 [1.533e9])",
+        "\u251c\u2500 emit ActualMatrixDirectRate(family: 1, asset: 0xaf88d065e77c8cC2239327C5EDb3A432268e5831, independentAprBps: 316, observedAprBps: 316)",
+        "\u251c\u2500 emit ActualMatrixDirect(family: 1, asset: 0xaf88d065e77c8cC2239327C5EDb3A432268e5831, market: 0x9c4ec768c28520B50860ea7a15bd7213a9fF58bf, pin: 520094008 [5.2e8], supplied: 1000173321 [1e9], externalAssets: 14394206353200 [1.439e13], aprBps: 316, position: 0)",
+        "\u251c\u2500 emit ActualMatrixDirectRate(family: 1, asset: 0xaf88d065e77c8cC2239327C5EDb3A432268e5831, independentAprBps: 316, observedAprBps: 316)",
+        "\u251c\u2500 emit ActualMatrixDirect(family: 1, asset: 0xaf88d065e77c8cC2239327C5EDb3A432268e5831, market: 0x9c4ec768c28520B50860ea7a15bd7213a9fF58bf, pin: 520094008 [5.2e8], supplied: 1000173321 [1e9], externalAssets: 14395206526520 [1.439e13], aprBps: 316, position: 1000173320 [1e9])",
+        "\u251c\u2500 emit ActualMatrixDirectRecall(family: 1, asset: 0xaf88d065e77c8cC2239327C5EDb3A432268e5831, partialPaid: 250043330 [2.5e8], finalRecall: 750129988 [7.501e8], residual: 0)"
+      ]
+    },
+    {
+      "case": "comet-WETH",
+      "market": "0x6f7D514bbD4aFf3BcD1140B7344b32f063dEe486",
+      "asset": "0x82af49447d8a07e3bd95bd0d56f35241523fbab1",
+      "status": "PASS_DIRECT_LIFECYCLE",
+      "exitCode": 0,
+      "infrastructureAttempts": [],
+      "elapsedSeconds": 5.3,
+      "log": "deployments\\lending-full-validation-20261101\\production\\arbitrum-assets\\runs-20261103T134730-direct-29148\\comet-WETH.log",
+      "logSha256": "af5607b21d0f296a3a7ba9d8bfe688fdc365c7970bb0c40420923bbbdbc98d8c",
+      "observations": [
+        "\u251c\u2500 emit ActualMatrixDirectFunding(asset: 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1, holder: 0xF977814e90dA44bFA03b6295A0616a897441aceC, beforeBalance: 42912299352477177800 [4.291e19], amount: 444370450278639457 [4.443e17], afterBalance: 42467928902198538343 [4.246e19])",
+        "\u251c\u2500 emit ActualMatrixDirectRate(family: 1, asset: 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1, independentAprBps: 106, observedAprBps: 106)",
+        "\u251c\u2500 emit ActualMatrixDirect(family: 1, asset: 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1, market: 0x6f7D514bbD4aFf3BcD1140B7344b32f063dEe486, pin: 520094008 [5.2e8], supplied: 444370450278639457 [4.443e17], externalAssets: 841312473676247466119 [8.413e20], aprBps: 106, position: 0)",
+        "\u251c\u2500 emit ActualMatrixDirectRate(family: 1, asset: 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1, independentAprBps: 106, observedAprBps: 106)",
+        "\u251c\u2500 emit ActualMatrixDirect(family: 1, asset: 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1, market: 0x6f7D514bbD4aFf3BcD1140B7344b32f063dEe486, pin: 520094008 [5.2e8], supplied: 444370450278639457 [4.443e17], externalAssets: 841756844126526105575 [8.417e20], aprBps: 106, position: 444370450278639456 [4.443e17])",
+        "\u251c\u2500 emit ActualMatrixDirectRecall(family: 1, asset: 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1, partialPaid: 111092612569659864 [1.11e17], finalRecall: 333277837708979590 [3.332e17], residual: 0)"
+      ]
+    },
+    {
+      "case": "comet-USDT0",
+      "market": "0xd98Be00b5D27fc98112BdE293e487f8D4cA57d07",
+      "asset": "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9",
+      "status": "PASS_DIRECT_LIFECYCLE",
+      "exitCode": 0,
+      "infrastructureAttempts": [],
+      "elapsedSeconds": 5.41,
+      "log": "deployments\\lending-full-validation-20261101\\production\\arbitrum-assets\\runs-20261103T134730-direct-29148\\comet-USDT0.log",
+      "logSha256": "c6b35b55fe4a03094ea3a8cb56c7a9df21ed13ffb95c4bd6568d5e56d2cfefb2",
+      "observations": [
+        "\u251c\u2500 emit ActualMatrixDirectFunding(asset: 0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9, holder: 0xF977814e90dA44bFA03b6295A0616a897441aceC, beforeBalance: 99414783701626 [9.941e13], amount: 1001111234 [1.001e9], afterBalance: 99413782590392 [9.941e13])",
+        "\u251c\u2500 emit ActualMatrixDirectRate(family: 1, asset: 0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9, independentAprBps: 236, observedAprBps: 236)",
+        "\u251c\u2500 emit ActualMatrixDirect(family: 1, asset: 0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9, market: 0xd98Be00b5D27fc98112BdE293e487f8D4cA57d07, pin: 520094008 [5.2e8], supplied: 1001111234 [1.001e9], externalAssets: 14761336837723 [1.476e13], aprBps: 236, position: 0)",
+        "\u251c\u2500 emit ActualMatrixDirectRate(family: 1, asset: 0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9, independentAprBps: 236, observedAprBps: 236)",
+        "\u251c\u2500 emit ActualMatrixDirect(family: 1, asset: 0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9, market: 0xd98Be00b5D27fc98112BdE293e487f8D4cA57d07, pin: 520094008 [5.2e8], supplied: 1001111234 [1.001e9], externalAssets: 14762337948956 [1.476e13], aprBps: 236, position: 1001111233 [1.001e9])",
+        "\u251c\u2500 emit ActualMatrixDirectRecall(family: 1, asset: 0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9, partialPaid: 250277808 [2.502e8], finalRecall: 750833424 [7.508e8], residual: 0)"
+      ]
+    },
+    {
+      "case": "comet-WBTC",
+      "market": null,
+      "asset": "0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f",
+      "status": "NO_OFFICIAL_WBTC_BASE_MARKET"
+    },
+    {
+      "case": "morpho-USDC",
+      "market": "0x7c574174da4b2be3f705c6244b4bfa0815a8b3ed",
+      "asset": "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+      "status": "PASS_DIRECT_LIFECYCLE",
+      "exitCode": 0,
+      "infrastructureAttempts": [],
+      "elapsedSeconds": 5.42,
+      "log": "deployments\\lending-full-validation-20261101\\production\\arbitrum-assets\\runs-20261103T134730-direct-29148\\morpho-USDC.log",
+      "logSha256": "1492959784aed1768df2a9870853bc3901113a4263ea7ebb21dd344f6b5d8ca8",
+      "observations": [
+        "\u251c\u2500 emit ActualMatrixDirectFunding(asset: 0xaf88d065e77c8cC2239327C5EDb3A432268e5831, holder: 0xB38e8c17e38363aF6EbdCb3dAE12e0243582891D, beforeBalance: 2534086971 [2.534e9], amount: 1000173321 [1e9], afterBalance: 1533913650 [1.533e9])",
+        "\u251c\u2500 emit ActualMatrixDirect(family: 2, asset: 0xaf88d065e77c8cC2239327C5EDb3A432268e5831, market: 0x7c574174DA4b2be3f705c6244B4BfA0815a8B3Ed, pin: 520094008 [5.2e8], supplied: 1000173321 [1e9], externalAssets: 470942717429 [4.709e11], aprBps: 365, position: 0)",
+        "\u251c\u2500 emit ActualMatrixDirect(family: 2, asset: 0xaf88d065e77c8cC2239327C5EDb3A432268e5831, market: 0x7c574174DA4b2be3f705c6244B4BfA0815a8B3Ed, pin: 520094008 [5.2e8], supplied: 1000173321 [1e9], externalAssets: 471942890750 [4.719e11], aprBps: 365, position: 1000173320 [1e9])",
+        "\u251c\u2500 emit ActualMatrixDirectRecall(family: 2, asset: 0xaf88d065e77c8cC2239327C5EDb3A432268e5831, partialPaid: 250043330 [2.5e8], finalRecall: 750129990 [7.501e8], residual: 0)"
+      ]
+    },
+    {
+      "case": "morpho-WETH",
+      "market": "0x0623a67d69bb2f59d266897a15dc1509d291d631",
+      "asset": "0x82af49447d8a07e3bd95bd0d56f35241523fbab1",
+      "status": "PASS_DIRECT_LIFECYCLE",
+      "exitCode": 0,
+      "infrastructureAttempts": [],
+      "elapsedSeconds": 5.34,
+      "log": "deployments\\lending-full-validation-20261101\\production\\arbitrum-assets\\runs-20261103T134730-direct-29148\\morpho-WETH.log",
+      "logSha256": "1d87280cf8916b8fd5813514211971b3cfc69665a95495251ab519e17d75d541",
+      "observations": [
+        "\u251c\u2500 emit ActualMatrixDirectFunding(asset: 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1, holder: 0xF977814e90dA44bFA03b6295A0616a897441aceC, beforeBalance: 42912299352477177800 [4.291e19], amount: 444370450278639457 [4.443e17], afterBalance: 42467928902198538343 [4.246e19])",
+        "\u251c\u2500 emit ActualMatrixDirect(family: 2, asset: 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1, market: 0x0623a67D69bB2F59D266897A15dC1509d291D631, pin: 520094008 [5.2e8], supplied: 444370450278639457 [4.443e17], externalAssets: 5475408843696456 [5.475e15], aprBps: 0, position: 0)",
+        "\u251c\u2500 emit ActualMatrixDirect(family: 2, asset: 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1, market: 0x0623a67D69bB2F59D266897A15dC1509d291D631, pin: 520094008 [5.2e8], supplied: 444370450278639457 [4.443e17], externalAssets: 449845859122335913 [4.498e17], aprBps: 0, position: 444370450278639456 [4.443e17])",
+        "\u251c\u2500 emit ActualMatrixDirectRecall(family: 2, asset: 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1, partialPaid: 111092612569659864 [1.11e17], finalRecall: 333277837708979592 [3.332e17], residual: 0)"
+      ]
+    },
+    {
+      "case": "morpho-USDT0",
+      "market": "0xbeeff77ce5c059445714e6a3490e273fe7f2492f",
+      "asset": "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9",
+      "status": "PASS_DIRECT_LIFECYCLE",
+      "exitCode": 0,
+      "infrastructureAttempts": [],
+      "elapsedSeconds": 5.69,
+      "log": "deployments\\lending-full-validation-20261101\\production\\arbitrum-assets\\runs-20261103T134730-direct-29148\\morpho-USDT0.log",
+      "logSha256": "380252e9ebf169464ba4dd1d908a6694c18055c1b3781f4de668b93febaae732",
+      "observations": [
+        "\u251c\u2500 emit ActualMatrixDirectFunding(asset: 0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9, holder: 0xF977814e90dA44bFA03b6295A0616a897441aceC, beforeBalance: 99414783701626 [9.941e13], amount: 1001111234 [1.001e9], afterBalance: 99413782590392 [9.941e13])",
+        "\u251c\u2500 emit ActualMatrixDirect(family: 2, asset: 0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9, market: 0xbeeff77CE5C059445714E6A3490E273fE7F2492F, pin: 520094008 [5.2e8], supplied: 1001111234 [1.001e9], externalAssets: 1846817363532 [1.846e12], aprBps: 180, position: 0)",
+        "\u251c\u2500 emit ActualMatrixDirect(family: 2, asset: 0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9, market: 0xbeeff77CE5C059445714E6A3490E273fE7F2492F, pin: 520094008 [5.2e8], supplied: 1001111234 [1.001e9], externalAssets: 1847818474766 [1.847e12], aprBps: 180, position: 1001111233 [1.001e9])",
+        "\u251c\u2500 emit ActualMatrixDirectRecall(family: 2, asset: 0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9, partialPaid: 250277808 [2.502e8], finalRecall: 750833425 [7.508e8], residual: 0)"
+      ]
+    },
+    {
+      "case": "morpho-WBTC",
+      "market": null,
+      "asset": "0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f",
+      "status": "NO_QUALIFIED_WBTC_PRODUCTION_MARKET"
+    },
+    {
+      "case": "euler-USDC",
+      "market": "0x6afb8d3f6d4a34e9cb2f217317f4dc8e05aa673b",
+      "asset": "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+      "status": "PASS_DIRECT_LIFECYCLE",
+      "exitCode": 0,
+      "infrastructureAttempts": [],
+      "elapsedSeconds": 5.48,
+      "log": "deployments\\lending-full-validation-20261101\\production\\arbitrum-assets\\runs-20261103T134730-direct-29148\\euler-USDC.log",
+      "logSha256": "a84da0a04c58168b00edbd0a99e03be344b90ae10a3b0df7d93fd200bee25dc6",
+      "observations": [
+        "\u251c\u2500 emit ActualMatrixDirectFunding(asset: 0xaf88d065e77c8cC2239327C5EDb3A432268e5831, holder: 0xB38e8c17e38363aF6EbdCb3dAE12e0243582891D, beforeBalance: 2534086971 [2.534e9], amount: 1000173321 [1e9], afterBalance: 1533913650 [1.533e9])",
+        "\u251c\u2500 emit ActualMatrixDirectRate(family: 3, asset: 0xaf88d065e77c8cC2239327C5EDb3A432268e5831, independentAprBps: 1585, observedAprBps: 1584)",
+        "\u251c\u2500 emit ActualMatrixDirect(family: 3, asset: 0xaf88d065e77c8cC2239327C5EDb3A432268e5831, market: 0x6aFB8d3F6D4A34e9cB2f217317f4dc8e05Aa673b, pin: 520094008 [5.2e8], supplied: 1000173321 [1e9], externalAssets: 218037667172 [2.18e11], aprBps: 1584, position: 0)",
+        "\u251c\u2500 emit ActualMatrixDirectRate(family: 3, asset: 0xaf88d065e77c8cC2239327C5EDb3A432268e5831, independentAprBps: 1424, observedAprBps: 1424)",
+        "\u251c\u2500 emit ActualMatrixDirect(family: 3, asset: 0xaf88d065e77c8cC2239327C5EDb3A432268e5831, market: 0x6aFB8d3F6D4A34e9cB2f217317f4dc8e05Aa673b, pin: 520094008 [5.2e8], supplied: 1000173321 [1e9], externalAssets: 219037840493 [2.19e11], aprBps: 1424, position: 1000173320 [1e9])",
+        "\u251c\u2500 emit ActualMatrixDirectRecall(family: 3, asset: 0xaf88d065e77c8cC2239327C5EDb3A432268e5831, partialPaid: 250043330 [2.5e8], finalRecall: 750129990 [7.501e8], residual: 0)"
+      ]
+    },
+    {
+      "case": "euler-WETH",
+      "market": "0x78e3e051d32157aacd550fbb78458762d8f7edff",
+      "asset": "0x82af49447d8a07e3bd95bd0d56f35241523fbab1",
+      "status": "PASS_DIRECT_LIFECYCLE",
+      "exitCode": 0,
+      "infrastructureAttempts": [],
+      "elapsedSeconds": 5.19,
+      "log": "deployments\\lending-full-validation-20261101\\production\\arbitrum-assets\\runs-20261103T134730-direct-29148\\euler-WETH.log",
+      "logSha256": "17acb6b8aab7144e352760b173f8c799f5c2ca120e33c263ad3dce62b5f4112d",
+      "observations": [
+        "\u251c\u2500 emit ActualMatrixDirectFunding(asset: 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1, holder: 0xF977814e90dA44bFA03b6295A0616a897441aceC, beforeBalance: 42912299352477177800 [4.291e19], amount: 444370450278639457 [4.443e17], afterBalance: 42467928902198538343 [4.246e19])",
+        "\u251c\u2500 emit ActualMatrixDirectRate(family: 3, asset: 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1, independentAprBps: 507, observedAprBps: 506)",
+        "\u251c\u2500 emit ActualMatrixDirect(family: 3, asset: 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1, market: 0x78E3E051D32157AACD550fBB78458762d8f7edFF, pin: 520094008 [5.2e8], supplied: 444370450278639457 [4.443e17], externalAssets: 96984080554200821584 [9.698e19], aprBps: 506, position: 0)",
+        "\u251c\u2500 emit ActualMatrixDirectRate(family: 3, asset: 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1, independentAprBps: 399, observedAprBps: 399)",
+        "\u251c\u2500 emit ActualMatrixDirect(family: 3, asset: 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1, market: 0x78E3E051D32157AACD550fBB78458762d8f7edFF, pin: 520094008 [5.2e8], supplied: 444370450278639457 [4.443e17], externalAssets: 97428451004479461041 [9.742e19], aprBps: 399, position: 444370450278639456 [4.443e17])",
+        "\u251c\u2500 emit ActualMatrixDirectRecall(family: 3, asset: 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1, partialPaid: 111092612569659864 [1.11e17], finalRecall: 333277837708979591 [3.332e17], residual: 0)"
+      ]
+    },
+    {
+      "case": "euler-USDT0",
+      "market": "0x37512f45b4ba8808910632323b73783ca938cd51",
+      "asset": "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9",
+      "status": "PASS_DIRECT_LIFECYCLE",
+      "exitCode": 0,
+      "infrastructureAttempts": [],
+      "elapsedSeconds": 4.81,
+      "log": "deployments\\lending-full-validation-20261101\\production\\arbitrum-assets\\runs-20261103T134730-direct-29148\\euler-USDT0.log",
+      "logSha256": "e34ffe808c5384ebe7aad93a2be9006f6f07394fa2c36fc3d8d1f34e61a80090",
+      "observations": [
+        "\u251c\u2500 emit ActualMatrixDirectFunding(asset: 0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9, holder: 0xF977814e90dA44bFA03b6295A0616a897441aceC, beforeBalance: 99414783701626 [9.941e13], amount: 1001111234 [1.001e9], afterBalance: 99413782590392 [9.941e13])",
+        "\u251c\u2500 emit ActualMatrixDirectRate(family: 3, asset: 0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9, independentAprBps: 294, observedAprBps: 294)",
+        "\u251c\u2500 emit ActualMatrixDirect(family: 3, asset: 0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9, market: 0x37512F45B4ba8808910632323b73783Ca938CD51, pin: 520094008 [5.2e8], supplied: 1001111234 [1.001e9], externalAssets: 14449098486 [1.444e10], aprBps: 294, position: 0)",
+        "\u251c\u2500 emit ActualMatrixDirectRate(family: 3, asset: 0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9, independentAprBps: 257, observedAprBps: 257)",
+        "\u251c\u2500 emit ActualMatrixDirect(family: 3, asset: 0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9, market: 0x37512F45B4ba8808910632323b73783Ca938CD51, pin: 520094008 [5.2e8], supplied: 1001111234 [1.001e9], externalAssets: 15450209720 [1.545e10], aprBps: 257, position: 1001111233 [1.001e9])",
+        "\u251c\u2500 emit ActualMatrixDirectRecall(family: 3, asset: 0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9, partialPaid: 250277808 [2.502e8], finalRecall: 750833425 [7.508e8], residual: 0)"
+      ]
+    },
+    {
+      "case": "euler-WBTC",
+      "market": "0x889e1c458b2469b70accdfb5b59726dc1668896c",
+      "asset": "0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f",
+      "status": "PASS_DIRECT_LIFECYCLE",
+      "exitCode": 0,
+      "infrastructureAttempts": [],
+      "elapsedSeconds": 5.11,
+      "log": "deployments\\lending-full-validation-20261101\\production\\arbitrum-assets\\runs-20261103T134730-direct-29148\\euler-WBTC.log",
+      "logSha256": "a9a6921ba7b55f575a3683bfd4f3925812d39b99e304d844fd87ef6be57a0af2",
+      "observations": [
+        "\u251c\u2500 emit ActualMatrixDirectFunding(asset: 0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f, holder: 0xF977814e90dA44bFA03b6295A0616a897441aceC, beforeBalance: 94676533 [9.467e7], amount: 1291328 [1.291e6], afterBalance: 93385205 [9.338e7])",
+        "\u251c\u2500 emit ActualMatrixDirectRate(family: 3, asset: 0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f, independentAprBps: 6, observedAprBps: 6)",
+        "\u251c\u2500 emit ActualMatrixDirect(family: 3, asset: 0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f, market: 0x889E1c458B2469b70aCcdfb5B59726dC1668896C, pin: 520094008 [5.2e8], supplied: 1291328 [1.291e6], externalAssets: 49599068 [4.959e7], aprBps: 6, position: 0)",
+        "\u251c\u2500 emit ActualMatrixDirectRate(family: 3, asset: 0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f, independentAprBps: 5, observedAprBps: 5)",
+        "\u251c\u2500 emit ActualMatrixDirect(family: 3, asset: 0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f, market: 0x889E1c458B2469b70aCcdfb5B59726dC1668896C, pin: 520094008 [5.2e8], supplied: 1291328 [1.291e6], externalAssets: 50890396 [5.089e7], aprBps: 5, position: 1291327 [1.291e6])",
+        "\u251c\u2500 emit ActualMatrixDirectRecall(family: 3, asset: 0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f, partialPaid: 322832 [3.228e5], finalRecall: 968495 [9.684e5], residual: 0)"
+      ]
+    },
+    {
+      "case": "fluid-USDC",
+      "market": "0x1a996cb54bb95462040408c06122d45d6cdb6096",
+      "asset": "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+      "status": "PASS_DIRECT_LIFECYCLE",
+      "exitCode": 0,
+      "infrastructureAttempts": [],
+      "elapsedSeconds": 4.83,
+      "log": "deployments\\lending-full-validation-20261101\\production\\arbitrum-assets\\runs-20261103T134730-direct-29148\\fluid-USDC.log",
+      "logSha256": "fc0f61dfff9a109cd0194c3624ab3fa4dff092c3c53a1a11b5f55a7df8cde3cb",
+      "observations": [
+        "\u251c\u2500 emit ActualMatrixDirectFunding(asset: 0xaf88d065e77c8cC2239327C5EDb3A432268e5831, holder: 0xB38e8c17e38363aF6EbdCb3dAE12e0243582891D, beforeBalance: 2534086971 [2.534e9], amount: 1000173321 [1e9], afterBalance: 1533913650 [1.533e9])",
+        "\u251c\u2500 emit ActualMatrixDirect(family: 4, asset: 0xaf88d065e77c8cC2239327C5EDb3A432268e5831, market: 0x1A996cb54bb95462040408C06122D45D6Cdb6096, pin: 520094008 [5.2e8], supplied: 1000173321 [1e9], externalAssets: 57057185853274 [5.705e13], aprBps: 432, position: 0)",
+        "\u251c\u2500 emit ActualMatrixDirect(family: 4, asset: 0xaf88d065e77c8cC2239327C5EDb3A432268e5831, market: 0x1A996cb54bb95462040408C06122D45D6Cdb6096, pin: 520094008 [5.2e8], supplied: 1000173321 [1e9], externalAssets: 57058186026594 [5.705e13], aprBps: 432, position: 1000173319 [1e9])",
+        "\u251c\u2500 emit ActualMatrixDirectRecall(family: 4, asset: 0xaf88d065e77c8cC2239327C5EDb3A432268e5831, partialPaid: 250043330 [2.5e8], finalRecall: 750129989 [7.501e8], residual: 0)"
+      ]
+    },
+    {
+      "case": "fluid-WETH",
+      "market": "0x45df0656f8adf017590009d2f1898eeca4f0a205",
+      "asset": "0x82af49447d8a07e3bd95bd0d56f35241523fbab1",
+      "status": "PASS_DIRECT_LIFECYCLE",
+      "exitCode": 0,
+      "infrastructureAttempts": [],
+      "elapsedSeconds": 4.72,
+      "log": "deployments\\lending-full-validation-20261101\\production\\arbitrum-assets\\runs-20261103T134730-direct-29148\\fluid-WETH.log",
+      "logSha256": "509a5da0262540059bf52dacc4fa277fa1ce8a67bf737926992529e371cb0310",
+      "observations": [
+        "\u251c\u2500 emit ActualMatrixDirectFunding(asset: 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1, holder: 0xF977814e90dA44bFA03b6295A0616a897441aceC, beforeBalance: 42912299352477177800 [4.291e19], amount: 444370450278639457 [4.443e17], afterBalance: 42467928902198538343 [4.246e19])",
+        "\u251c\u2500 emit ActualMatrixDirect(family: 4, asset: 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1, market: 0x45Df0656F8aDf017590009d2f1898eeca4F0a205, pin: 520094008 [5.2e8], supplied: 444370450278639457 [4.443e17], externalAssets: 233855859580032197990 [2.338e20], aprBps: 93, position: 0)",
+        "\u251c\u2500 emit ActualMatrixDirect(family: 4, asset: 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1, market: 0x45Df0656F8aDf017590009d2f1898eeca4F0a205, pin: 520094008 [5.2e8], supplied: 444370450278639457 [4.443e17], externalAssets: 234300230030310837447 [2.343e20], aprBps: 93, position: 444370450278639456 [4.443e17])",
+        "\u251c\u2500 emit ActualMatrixDirectRecall(family: 4, asset: 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1, partialPaid: 111092612569659864 [1.11e17], finalRecall: 333277837708979591 [3.332e17], residual: 0)"
+      ]
+    },
+    {
+      "case": "fluid-USDT0",
+      "market": "0x4a03f37e7d3fc243e3f99341d36f4b829bee5e03",
+      "asset": "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9",
+      "status": "PASS_DIRECT_LIFECYCLE",
+      "exitCode": 0,
+      "infrastructureAttempts": [],
+      "elapsedSeconds": 4.7,
+      "log": "deployments\\lending-full-validation-20261101\\production\\arbitrum-assets\\runs-20261103T134730-direct-29148\\fluid-USDT0.log",
+      "logSha256": "5cb5a9e1e00efae53183e0430b9fbe69777129eda488b7c2c0e5fd887736db56",
+      "observations": [
+        "\u251c\u2500 emit ActualMatrixDirectFunding(asset: 0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9, holder: 0xF977814e90dA44bFA03b6295A0616a897441aceC, beforeBalance: 99414783701626 [9.941e13], amount: 1001111234 [1.001e9], afterBalance: 99413782590392 [9.941e13])",
+        "\u251c\u2500 emit ActualMatrixDirect(family: 4, asset: 0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9, market: 0x4A03F37e7d3fC243e3f99341d36f4b829BEe5E03, pin: 520094008 [5.2e8], supplied: 1001111234 [1.001e9], externalAssets: 38919788936301 [3.891e13], aprBps: 562, position: 0)",
+        "\u251c\u2500 emit ActualMatrixDirect(family: 4, asset: 0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9, market: 0x4A03F37e7d3fC243e3f99341d36f4b829BEe5E03, pin: 520094008 [5.2e8], supplied: 1001111234 [1.001e9], externalAssets: 38920790047535 [3.892e13], aprBps: 562, position: 1001111233 [1.001e9])",
+        "\u251c\u2500 emit ActualMatrixDirectRecall(family: 4, asset: 0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9, partialPaid: 250277808 [2.502e8], finalRecall: 750833425 [7.508e8], residual: 0)"
+      ]
+    },
+    {
+      "case": "fluid-WBTC",
+      "market": null,
+      "asset": "0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f",
+      "status": "NO_WBTC_FTOKEN_AT_CANONICAL_PIN"
+    },
+    {
+      "case": "dolomite-USDC",
+      "market": "0x444868b6e8079ac2c55eea115250f92c2b2c4d14",
+      "asset": "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+      "status": "PASS_DIRECT_LIFECYCLE",
+      "exitCode": 0,
+      "infrastructureAttempts": [],
+      "elapsedSeconds": 4.75,
+      "log": "deployments\\lending-full-validation-20261101\\production\\arbitrum-assets\\runs-20261103T134730-direct-29148\\dolomite-USDC.log",
+      "logSha256": "f56b3b3cfe60549260f952eeb93291190694daa6a195fea9c89247c3e530936f",
+      "observations": [
+        "\u251c\u2500 emit ActualMatrixDirectFunding(asset: 0xaf88d065e77c8cC2239327C5EDb3A432268e5831, holder: 0xB38e8c17e38363aF6EbdCb3dAE12e0243582891D, beforeBalance: 2534086971 [2.534e9], amount: 1000173321 [1e9], afterBalance: 1533913650 [1.533e9])",
+        "\u251c\u2500 emit ActualMatrixDirect(family: 5, asset: 0xaf88d065e77c8cC2239327C5EDb3A432268e5831, market: 0x444868B6e8079ac2c55eea115250f92C2b2c4D14, pin: 520094008 [5.2e8], supplied: 1000173321 [1e9], externalAssets: 3957637773085 [3.957e12], aprBps: 478, position: 0)",
+        "\u251c\u2500 emit ActualMatrixDirect(family: 5, asset: 0xaf88d065e77c8cC2239327C5EDb3A432268e5831, market: 0x444868B6e8079ac2c55eea115250f92C2b2c4D14, pin: 520094008 [5.2e8], supplied: 1000173321 [1e9], externalAssets: 3958637946406 [3.958e12], aprBps: 478, position: 1000173321 [1e9])",
+        "\u251c\u2500 emit ActualMatrixDirectRecall(family: 5, asset: 0xaf88d065e77c8cC2239327C5EDb3A432268e5831, partialPaid: 250043330 [2.5e8], finalRecall: 750129991 [7.501e8], residual: 0)"
+      ]
+    },
+    {
+      "case": "dolomite-WETH",
+      "market": "0xf7b5127b510e568fdc39e6bb54e2081bfad489af",
+      "asset": "0x82af49447d8a07e3bd95bd0d56f35241523fbab1",
+      "status": "PASS_DIRECT_LIFECYCLE",
+      "exitCode": 0,
+      "infrastructureAttempts": [],
+      "elapsedSeconds": 4.89,
+      "log": "deployments\\lending-full-validation-20261101\\production\\arbitrum-assets\\runs-20261103T134730-direct-29148\\dolomite-WETH.log",
+      "logSha256": "61e3a490fb0bc502434926f6720aa0e0288e9fe0c97aa806def34c38cfabcfa7",
+      "observations": [
+        "\u251c\u2500 emit ActualMatrixDirectFunding(asset: 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1, holder: 0xF977814e90dA44bFA03b6295A0616a897441aceC, beforeBalance: 42912299352477177800 [4.291e19], amount: 444370450278639457 [4.443e17], afterBalance: 42467928902198538343 [4.246e19])",
+        "\u251c\u2500 emit ActualMatrixDirect(family: 5, asset: 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1, market: 0xf7b5127B510E568fdC39e6Bb54e2081BFaD489AF, pin: 520094008 [5.2e8], supplied: 444370450278639457 [4.443e17], externalAssets: 2495250521829336468472 [2.495e21], aprBps: 296, position: 0)",
+        "\u251c\u2500 emit ActualMatrixDirect(family: 5, asset: 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1, market: 0xf7b5127B510E568fdC39e6Bb54e2081BFaD489AF, pin: 520094008 [5.2e8], supplied: 444370450278639457 [4.443e17], externalAssets: 2495694892279615107928 [2.495e21], aprBps: 296, position: 444370450278639457 [4.443e17])",
+        "\u251c\u2500 emit ActualMatrixDirectRecall(family: 5, asset: 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1, partialPaid: 111092612569659864 [1.11e17], finalRecall: 333277837708979593 [3.332e17], residual: 0)"
+      ]
+    },
+    {
+      "case": "dolomite-USDT0",
+      "market": "0xf2d2d55daf93b0660297eaa10969ebe90ead5ce8",
+      "asset": "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9",
+      "status": "PASS_DIRECT_LIFECYCLE",
+      "exitCode": 0,
+      "infrastructureAttempts": [],
+      "elapsedSeconds": 4.8,
+      "log": "deployments\\lending-full-validation-20261101\\production\\arbitrum-assets\\runs-20261103T134730-direct-29148\\dolomite-USDT0.log",
+      "logSha256": "91d312ffd639717905bbf1f2d05c6808de8d69b54a05c48286e10548d2bb1014",
+      "observations": [
+        "\u251c\u2500 emit ActualMatrixDirectFunding(asset: 0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9, holder: 0xF977814e90dA44bFA03b6295A0616a897441aceC, beforeBalance: 99414783701626 [9.941e13], amount: 1001111234 [1.001e9], afterBalance: 99413782590392 [9.941e13])",
+        "\u251c\u2500 emit ActualMatrixDirect(family: 5, asset: 0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9, market: 0xF2d2d55Daf93b0660297eaA10969eBe90ead5CE8, pin: 520094008 [5.2e8], supplied: 1001111234 [1.001e9], externalAssets: 170008898954 [1.7e11], aprBps: 504, position: 0)",
+        "\u251c\u2500 emit ActualMatrixDirect(family: 5, asset: 0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9, market: 0xF2d2d55Daf93b0660297eaA10969eBe90ead5CE8, pin: 520094008 [5.2e8], supplied: 1001111234 [1.001e9], externalAssets: 171010010188 [1.71e11], aprBps: 504, position: 1001111234 [1.001e9])",
+        "\u251c\u2500 emit ActualMatrixDirectRecall(family: 5, asset: 0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9, partialPaid: 250277808 [2.502e8], finalRecall: 750833426 [7.508e8], residual: 0)"
+      ]
+    },
+    {
+      "case": "dolomite-WBTC",
+      "market": "0x29cf6e8ecefb8d3c9dd2b727c1b7d1df1a754f6f",
+      "asset": "0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f",
+      "status": "PASS_DIRECT_LIFECYCLE",
+      "exitCode": 0,
+      "infrastructureAttempts": [],
+      "elapsedSeconds": 4.75,
+      "log": "deployments\\lending-full-validation-20261101\\production\\arbitrum-assets\\runs-20261103T134730-direct-29148\\dolomite-WBTC.log",
+      "logSha256": "4cf4319e217a223d476ae8bf70945955a26f4ec4899d81afe22ad9918f92f33f",
+      "observations": [
+        "\u251c\u2500 emit ActualMatrixDirectFunding(asset: 0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f, holder: 0xF977814e90dA44bFA03b6295A0616a897441aceC, beforeBalance: 94676533 [9.467e7], amount: 1291328 [1.291e6], afterBalance: 93385205 [9.338e7])",
+        "\u251c\u2500 emit ActualMatrixDirect(family: 5, asset: 0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f, market: 0x29cF6e8eCeFb8d3c9dd2b727C1b7d1df1a754F6f, pin: 520094008 [5.2e8], supplied: 1291328 [1.291e6], externalAssets: 5667315442 [5.667e9], aprBps: 92, position: 0)",
+        "\u251c\u2500 emit ActualMatrixDirect(family: 5, asset: 0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f, market: 0x29cF6e8eCeFb8d3c9dd2b727C1b7d1df1a754F6f, pin: 520094008 [5.2e8], supplied: 1291328 [1.291e6], externalAssets: 5668606770 [5.668e9], aprBps: 92, position: 1291328 [1.291e6])",
+        "\u251c\u2500 emit ActualMatrixDirectRecall(family: 5, asset: 0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f, partialPaid: 322832 [3.228e5], finalRecall: 968496 [9.684e5], residual: 0)"
+      ]
+    },
+    {
+      "case": "venus-USDC",
+      "market": "0x7D8609f8da70fF9027E9bc5229Af4F6727662707",
+      "asset": "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+      "status": "PASS_DIRECT_LIFECYCLE",
+      "exitCode": 0,
+      "infrastructureAttempts": [],
+      "elapsedSeconds": 4.72,
+      "log": "deployments\\lending-full-validation-20261101\\production\\arbitrum-assets\\runs-20261103T134730-direct-29148\\venus-USDC.log",
+      "logSha256": "3271fda9cffe26e356fc91511cdb6bb1fcb618439f47570116d1f23cb637d07c",
+      "observations": [
+        "\u251c\u2500 emit ActualMatrixDirectFunding(asset: 0xaf88d065e77c8cC2239327C5EDb3A432268e5831, holder: 0xB38e8c17e38363aF6EbdCb3dAE12e0243582891D, beforeBalance: 2534086971 [2.534e9], amount: 1000173321 [1e9], afterBalance: 1533913650 [1.533e9])",
+        "\u251c\u2500 emit ActualMatrixDirectRate(family: 6, asset: 0xaf88d065e77c8cC2239327C5EDb3A432268e5831, independentAprBps: 497, observedAprBps: 497)",
+        "\u251c\u2500 emit ActualMatrixDirect(family: 6, asset: 0xaf88d065e77c8cC2239327C5EDb3A432268e5831, market: 0x7D8609f8da70fF9027E9bc5229Af4F6727662707, pin: 520094008 [5.2e8], supplied: 1000173321 [1e9], externalAssets: 245352576578 [2.453e11], aprBps: 497, position: 0)",
+        "\u251c\u2500 emit ActualMatrixReceiptQuantum(asset: 0xaf88d065e77c8cC2239327C5EDb3A432268e5831, market: 0x7D8609f8da70fF9027E9bc5229Af4F6727662707, assetUnitsPerReceiptQuantum: 1)",
+        "\u251c\u2500 emit ActualMatrixDirectRate(family: 6, asset: 0xaf88d065e77c8cC2239327C5EDb3A432268e5831, independentAprBps: 493, observedAprBps: 493)",
+        "\u251c\u2500 emit ActualMatrixDirect(family: 6, asset: 0xaf88d065e77c8cC2239327C5EDb3A432268e5831, market: 0x7D8609f8da70fF9027E9bc5229Af4F6727662707, pin: 520094008 [5.2e8], supplied: 1000173321 [1e9], externalAssets: 246352749899 [2.463e11], aprBps: 493, position: 1000173320 [1e9])",
+        "\u251c\u2500 emit ActualMatrixDirectRecall(family: 6, asset: 0xaf88d065e77c8cC2239327C5EDb3A432268e5831, partialPaid: 250043330 [2.5e8], finalRecall: 750129990 [7.501e8], residual: 0)"
+      ]
+    },
+    {
+      "case": "venus-WETH",
+      "market": "0x68a34332983f4Bf866768DD6D6E638b02eF5e1f0",
+      "asset": "0x82af49447d8a07e3bd95bd0d56f35241523fbab1",
+      "status": "PASS_DIRECT_LIFECYCLE",
+      "exitCode": 0,
+      "infrastructureAttempts": [],
+      "elapsedSeconds": 4.89,
+      "log": "deployments\\lending-full-validation-20261101\\production\\arbitrum-assets\\runs-20261103T134730-direct-29148\\venus-WETH.log",
+      "logSha256": "28b2eaad7152b751cb09d72dc28b36309fc27e0bd21c552d58cece0fdb23aa32",
+      "observations": [
+        "\u251c\u2500 emit ActualMatrixDirectFunding(asset: 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1, holder: 0xF977814e90dA44bFA03b6295A0616a897441aceC, beforeBalance: 42912299352477177800 [4.291e19], amount: 444370450278639457 [4.443e17], afterBalance: 42467928902198538343 [4.246e19])",
+        "\u251c\u2500 emit ActualMatrixDirectRate(family: 6, asset: 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1, independentAprBps: 58, observedAprBps: 58)",
+        "\u251c\u2500 emit ActualMatrixDirect(family: 6, asset: 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1, market: 0x68a34332983f4Bf866768DD6D6E638b02eF5e1f0, pin: 520094008 [5.2e8], supplied: 444370450278639457 [4.443e17], externalAssets: 76194273528536335996 [7.619e19], aprBps: 58, position: 0)",
+        "\u251c\u2500 emit ActualMatrixReceiptQuantum(asset: 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1, market: 0x68a34332983f4Bf866768DD6D6E638b02eF5e1f0, assetUnitsPerReceiptQuantum: 10257067203 [1.025e10])",
+        "\u251c\u2500 emit ActualMatrixDirectRate(family: 6, asset: 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1, independentAprBps: 58, observedAprBps: 58)",
+        "\u251c\u2500 emit ActualMatrixDirect(family: 6, asset: 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1, market: 0x68a34332983f4Bf866768DD6D6E638b02eF5e1f0, pin: 520094008 [5.2e8], supplied: 444370450278639457 [4.443e17], externalAssets: 76638643978814975453 [7.663e19], aprBps: 58, position: 444370440592191036 [4.443e17])",
+        "\u251c\u2500 emit ActualMatrixDirectRecall(family: 6, asset: 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1, partialPaid: 111092612569659864 [1.11e17], finalRecall: 333277828022531171 [3.332e17], residual: 0)"
+      ]
+    },
+    {
+      "case": "venus-USDT0",
+      "market": "0xB9F9117d4200dC296F9AcD1e8bE1937df834a2fD",
+      "asset": "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9",
+      "status": "PASS_DIRECT_LIFECYCLE",
+      "exitCode": 0,
+      "infrastructureAttempts": [],
+      "elapsedSeconds": 4.78,
+      "log": "deployments\\lending-full-validation-20261101\\production\\arbitrum-assets\\runs-20261103T134730-direct-29148\\venus-USDT0.log",
+      "logSha256": "8261443a35ba7d658288ef24365996f3847ee3f95a869e5f47709ef58d891b91",
+      "observations": [
+        "\u251c\u2500 emit ActualMatrixDirectFunding(asset: 0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9, holder: 0xF977814e90dA44bFA03b6295A0616a897441aceC, beforeBalance: 99414783701626 [9.941e13], amount: 1001111234 [1.001e9], afterBalance: 99413782590392 [9.941e13])",
+        "\u251c\u2500 emit ActualMatrixDirectRate(family: 6, asset: 0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9, independentAprBps: 353, observedAprBps: 353)",
+        "\u251c\u2500 emit ActualMatrixDirect(family: 6, asset: 0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9, market: 0xB9F9117d4200dC296F9AcD1e8bE1937df834a2fD, pin: 520094008 [5.2e8], supplied: 1001111234 [1.001e9], externalAssets: 303294485070 [3.032e11], aprBps: 353, position: 0)",
+        "\u251c\u2500 emit ActualMatrixReceiptQuantum(asset: 0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9, market: 0xB9F9117d4200dC296F9AcD1e8bE1937df834a2fD, assetUnitsPerReceiptQuantum: 1)",
+        "\u251c\u2500 emit ActualMatrixDirectRate(family: 6, asset: 0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9, independentAprBps: 351, observedAprBps: 351)",
+        "\u251c\u2500 emit ActualMatrixDirect(family: 6, asset: 0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9, market: 0xB9F9117d4200dC296F9AcD1e8bE1937df834a2fD, pin: 520094008 [5.2e8], supplied: 1001111234 [1.001e9], externalAssets: 304295596304 [3.042e11], aprBps: 351, position: 1001111233 [1.001e9])",
+        "\u251c\u2500 emit ActualMatrixDirectRecall(family: 6, asset: 0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9, partialPaid: 250277808 [2.502e8], finalRecall: 750833425 [7.508e8], residual: 0)"
+      ]
+    },
+    {
+      "case": "venus-WBTC",
+      "market": "0xaDa57840B372D4c28623E87FC175dE8490792811",
+      "asset": "0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f",
+      "status": "PASS_DIRECT_LIFECYCLE",
+      "exitCode": 0,
+      "infrastructureAttempts": [],
+      "elapsedSeconds": 4.73,
+      "log": "deployments\\lending-full-validation-20261101\\production\\arbitrum-assets\\runs-20261103T134730-direct-29148\\venus-WBTC.log",
+      "logSha256": "0a7a0c6593e1cd73ca7a9024f3fc000566eb68599968e5945806ce29a673d7d7",
+      "observations": [
+        "\u251c\u2500 emit ActualMatrixDirectFunding(asset: 0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f, holder: 0xF977814e90dA44bFA03b6295A0616a897441aceC, beforeBalance: 94676533 [9.467e7], amount: 1291328 [1.291e6], afterBalance: 93385205 [9.338e7])",
+        "\u251c\u2500 emit ActualMatrixDirectRate(family: 6, asset: 0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f, independentAprBps: 2, observedAprBps: 2)",
+        "\u251c\u2500 emit ActualMatrixDirect(family: 6, asset: 0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f, market: 0xaDa57840B372D4c28623E87FC175dE8490792811, pin: 520094008 [5.2e8], supplied: 1291328 [1.291e6], externalAssets: 604853960 [6.048e8], aprBps: 2, position: 0)",
+        "\u251c\u2500 emit ActualMatrixReceiptQuantum(asset: 0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f, market: 0xaDa57840B372D4c28623E87FC175dE8490792811, assetUnitsPerReceiptQuantum: 2)",
+        "\u251c\u2500 emit ActualMatrixDirectRate(family: 6, asset: 0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f, independentAprBps: 2, observedAprBps: 2)",
+        "\u251c\u2500 emit ActualMatrixDirect(family: 6, asset: 0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f, market: 0xaDa57840B372D4c28623E87FC175dE8490792811, pin: 520094008 [5.2e8], supplied: 1291328 [1.291e6], externalAssets: 606145288 [6.061e8], aprBps: 2, position: 1291327 [1.291e6])",
+        "\u251c\u2500 emit ActualMatrixDirectRecall(family: 6, asset: 0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f, partialPaid: 322832 [3.228e5], finalRecall: 968494 [9.684e5], residual: 0)"
+      ]
+    }
+  ],
+  "scope": "Local fork, frozen Core source, real markets and holder transfers. No mainnet broadcast. No native Nitro fee certification."
+}

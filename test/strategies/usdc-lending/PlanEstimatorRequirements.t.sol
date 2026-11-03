@@ -65,7 +65,7 @@ contract PlanEstimatorRequirementsTest is Test {
         for(uint256 i; i<5; ++i) { adapters[i]=address(uint160(i+1)); scores[i]=100; }
         current[0]=300000e6; current[1]=200000e6;
         targets[2]=200000e6; targets[3]=175000e6; targets[4]=125000e6;
-        E.Action[] memory actions = CandidateActions.funded(CandidateActions.build(adapters,current,targets,scores,1),0,1);
+        E.Action[] memory actions = CandidateActions.fundedWithReserve(CandidateActions.build(adapters,current,targets,scores,1),0,1,0);
         assertEq(actions.length,5);
         for(uint256 i; i<5; ++i) {
             assertEq(actions[i].adapter,adapters[i]);

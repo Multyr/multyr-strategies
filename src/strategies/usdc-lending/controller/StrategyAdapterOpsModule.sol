@@ -149,13 +149,6 @@ contract StrategyAdapterOpsModule is StrategyStorageLayout {
         }
     }
 
-    // coverage-ignore: dead code — no in-tree caller; kept as defensive reserve
-    function _recordAdapterFailureImmediate(address adapter) internal {
-        if (quarantined[adapter]) return;
-        quarantined[adapter] = true;
-        emit AdapterAutoQuarantined(adapter, adapterConsecutiveFailures[adapter]);
-    }
-
     function _recordAdapterSuccess(address adapter) internal {
         if (adapterConsecutiveFailures[adapter] > 0) {
             adapterConsecutiveFailures[adapter]--;

@@ -1,0 +1,7 @@
+{
+  "baselineCommit": "58e5139f187005d68241a74c1171a59030866b18",
+  "sourceFiles": 44,
+  "contractABIsCompared": 106,
+  "unchanged": true,
+  "scope": "All ABI entries, including functions/errors/events/constructors; not merely selector presence."
+}

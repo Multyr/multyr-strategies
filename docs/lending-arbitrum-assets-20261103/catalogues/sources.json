@@ -1,0 +1,92 @@
+[
+  {
+    "name": "comet-usdc",
+    "source": "https://raw.githubusercontent.com/compound-finance/comet/main/deployments/arbitrum/usdc/roots.json",
+    "sha256": "4e2ab5d14c7b649ed12cbb5d816dbf76737cbc7efaa882a072a14f0904259656",
+    "status": "FETCHED"
+  },
+  {
+    "name": "comet-usdt",
+    "source": "https://raw.githubusercontent.com/compound-finance/comet/main/deployments/arbitrum/usdt/roots.json",
+    "sha256": "157c8ce98076968dd352e98d6ad6cc921d1c7938cf269bbe928bc8a5ae95cac5",
+    "status": "FETCHED"
+  },
+  {
+    "name": "comet-weth",
+    "source": "https://raw.githubusercontent.com/compound-finance/comet/main/deployments/arbitrum/weth/roots.json",
+    "sha256": "796ce8d5395e7898d18db2d758d27d0df0d94043cbd90676ba2433cf4a1a7351",
+    "status": "FETCHED"
+  },
+  {
+    "name": "comet-deployment-directories",
+    "source": "https://api.github.com/repos/compound-finance/comet/contents/deployments/arbitrum",
+    "sha256": "b11b68079589694df7c4c0ea413f0533533678b9c8ce07b0f9aa447ae9a7b62b",
+    "status": "FETCHED"
+  },
+  {
+    "name": "euler",
+    "source": "https://app.euler.finance/api/public/metadata?chainId=42161",
+    "sha256": "0d563b6f62d84a41198dbc66a0f8a5990a333b85762af1a7420ac3f0dd99414e",
+    "status": "FETCHED"
+  },
+  {
+    "name": "venus",
+    "source": "https://raw.githubusercontent.com/VenusProtocol/isolated-pools/develop/deployments/arbitrumone_addresses.json",
+    "sha256": "e0b1fa1cd3ba5c84c15bbe7e77b4b4221e26626a3a7a904a77d911c17d853d10",
+    "status": "FETCHED"
+  },
+  {
+    "name": "fluid-factory",
+    "source": "https://raw.githubusercontent.com/Instadapp/fluid-contracts-public/main/deployments/arbitrum/LendingFactory.json",
+    "sha256": "94b1e5fcc5aed9a46ef12e844fa01503215e85cb7db794d7dee8ece7dd23057f",
+    "status": "FETCHED"
+  },
+  {
+    "name": "fToken_fUSDC",
+    "source": "https://raw.githubusercontent.com/Instadapp/fluid-contracts-public/main/deployments/arbitrum/fToken_fUSDC.json",
+    "sha256": "3f383d5382b27c89f6d23979bcb52eae2abb4edaefb98d0c3c4d2e08f993b4b0",
+    "status": "FETCHED"
+  },
+  {
+    "name": "fToken_fUSDT",
+    "source": "https://raw.githubusercontent.com/Instadapp/fluid-contracts-public/main/deployments/arbitrum/fToken_fUSDT.json",
+    "sha256": "c8f1e571f933482d39e7bbbc91406089abd55666b01eae74300216aa74b79456",
+    "status": "FETCHED"
+  },
+  {
+    "name": "fToken_fWETH",
+    "source": "https://raw.githubusercontent.com/Instadapp/fluid-contracts-public/main/deployments/arbitrum/fToken_fWETH.json",
+    "sha256": "3c15a6a5b3709c31b492c51a6a84accb583e7effb5ae053daa74fd103284e23e",
+    "status": "FETCHED"
+  },
+  {
+    "name": "morpho-v1",
+    "source": "https://api.morpho.org/v0/vaults-v1?chain_ids=42161&limit=1000",
+    "sha256": "9e5c0fd1b873b6ecdb01792fe78d5c64ac041a34b708807e5bfec971062edfce",
+    "status": "FETCHED"
+  },
+  {
+    "name": "morpho-v2",
+    "source": "https://api.morpho.org/v0/vaults-v2?chain_ids=42161&limit=1000",
+    "sha256": "b7732f154670c01ec785f3a973b16ef46736a39865277bbbbd2287bf00a56d96",
+    "status": "FETCHED"
+  },
+  {
+    "name": "morpho-all-vaults-v1",
+    "source": "https://api.morpho.org/graphql",
+    "sha256": "50a20be38226b7c98462ad6aacf44f77144ac055a87e5010e2f32b26a5e4345c",
+    "status": "FETCHED"
+  },
+  {
+    "name": "morpho-all-vaults-v2",
+    "source": "https://api.morpho.org/graphql",
+    "sha256": "b71acc2110da505e3e69bd96d469321f56266c4b48e631ccc06fe8e1a30c79ae",
+    "status": "FETCHED"
+  },
+  {
+    "name": "morpho-blue-all",
+    "source": "https://api.morpho.org/graphql",
+    "sha256": "4ab252e01e9d978b26dbb0128a08a3821bc1a9c8b161e5e4c80a01eeb912e2b5",
+    "status": "FETCHED"
+  }
+]

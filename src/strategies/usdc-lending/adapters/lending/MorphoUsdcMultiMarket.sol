@@ -406,13 +406,6 @@ contract MorphoUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentra
         return (false, 0);
     }
 
-    /// @dev Decode uint256 APY to uint16, clamp if > type(uint16).max. Returns 0 on bad data.
-    function _safeDecodeApyBps(bytes memory data) internal pure returns (uint16) {
-        if (data.length < 32) return 0;
-        uint256 x = abi.decode(data, (uint256));
-        if (x > type(uint16).max) return type(uint16).max;
-        return uint16(x);
-    }
 
     /// @dev View-safe APY getter. Never reverts. Falls back to cached lastGoodApyBps.
     /// Audit #2 P1.9: if cache is stale (beyond apyStalenessSeconds), returns 0 so
@@ -860,12 +853,6 @@ contract MorphoUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reentra
         return (bestIdx, best);
     }
 
-    function getActiveOrBestMarket() internal view returns (uint8) {
-        Market storage m = mkts[activeIdx];
-        if (m.enabled && !m.flagged && m.addr != address(0)) return activeIdx;
-        (uint8 bestIdx,) = getBestMarket();
-        return bestIdx;
-    }
 
     // Returns (fromIdx, toIdx, moveAmount, netBenefitBps)
     function getRebalancePlan() internal view returns (uint8, uint8, uint256, int256) {

@@ -885,26 +885,6 @@ contract DolomiteUsdcMultiMarketAdapter is ILendingAdapter, AccessControl, Reent
 
     // ===== Scoring and Rebalance Helpers =====
 
-    // Picks the target market for new deposits. Prefer activeIdx if valid, else best by score.
-    function _pickTargetIndex() internal view returns (uint256 idx) {
-        uint256 n = mkts.length;
-        if (n == 0) revert("no markets");
-        if (activeIdx < n && mkts[activeIdx].enabled && !mkts[activeIdx].flagged) return activeIdx;
-
-        uint256 bestScore = 0;
-        uint256 bestIdx = type(uint256).max;
-        for (uint256 i = 0; i < n; ++i) {
-            if (!mkts[i].enabled || mkts[i].flagged) continue;
-            uint256 s = _score(i);
-            if (s > bestScore) {
-                bestScore = s;
-                bestIdx = i;
-            }
-        }
-        require(bestIdx != type(uint256).max, "no enabled market");
-        return bestIdx;
-    }
-
     // Compute the composite score (0..1e8) for a market
     function _score(uint256 idx) internal view returns (uint256) {
         Market storage m = mkts[idx];

@@ -224,7 +224,7 @@ contract ActualMultiAdapterScoringTest is ActualNativeGasGateReferenceBase {
             vm.makePersistent(account);emit ActualPreservedNavDependency(account);
         }
     }
-    function _fresh() internal {
+    function _fresh() internal virtual {
         morpho.pokeAPYSnapshots();if(address(fluid)!=address(0))fluid.pokeAPYSnapshots();Params(address(strategy)).syncPositionAssets();Params(address(strategy)).pokeExternalTVL();
         for(uint256 i;i<venues.length;++i)_observeReferenceStability(venues[i]);
         Params(address(strategy)).pokeLiquidityBatch(0,venues.length);

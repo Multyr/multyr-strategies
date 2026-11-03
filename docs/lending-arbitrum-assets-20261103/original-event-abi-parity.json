@@ -1,0 +1,19 @@
+{
+  "originalSource": "407b3df677e97c8e523ae11948d534ec9fed11cc",
+  "originalEvents": 113,
+  "candidateEvents": 114,
+  "removed": [],
+  "changedIncludingIndexedNamesAndAnonymous": [],
+  "added": [
+    "WithdrawalRedeployDeferred(uint256,bytes)"
+  ],
+  "scope": "Compiler ABI equivalence; runtime emission coverage also relies on regression/integration suites.",
+  "consumerExtraEventsAbsentFromBothOriginalAndCandidate": [
+    "EmergencyTransferToCore(address,address,uint256,address)",
+    "ExternalTVLRejected(address,uint256,uint256)",
+    "GasEmaParamsUpdated(uint16)",
+    "ScoringComputed(address,uint256,uint256,uint256,uint256,uint16,uint256,uint256,uint256,uint16)"
+  ],
+  "consumerAbiSha256": "c5fb8860f0bf036513835ef6f85f36fe645af1ec5fae4370dd9a1208c48b2083",
+  "subgraphSourcePin": "d5751e4dfe13495c7c87f491d74758fe47f72548"
+}

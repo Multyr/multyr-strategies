@@ -15,16 +15,26 @@ pragma solidity 0.8.28;
 import { IERC20Metadata } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
-import { ILendingAdapter, IAdapterEmergency, ILendingGasQuoteUnit, ILendingSettingsExecutor } from "../interfaces/ILendingAdapter.sol";
+import { IAdapterEmergency, ILendingGasQuoteUnit, ILendingSettingsExecutor } from "../interfaces/ILendingAdapter.sol";
 import {
     StrategyStorageLayout,
-    SkipReason,
-    Unauthorized, Frozen, InvalidAdapter, WeightsSumInvalid,
-    MinAdaptersTooLow, RiskScoreTooHigh, DurationTooLong, BackfillTooLarge,
-    BootstrapInactive, InvalidInput, ParamOutOfRange, ZeroAmount,
-    InsufficientBalance, ZeroAddress,
-    // P0.7 — Safety Adapter Cap Tier setter errors.
-    AlreadySafetyFallback, NotSafetyFallback, InvalidFallbackCap, AdapterNotEnabled
+    Unauthorized,
+    InvalidAdapter,
+    WeightsSumInvalid,
+    MinAdaptersTooLow,
+    RiskScoreTooHigh,
+    DurationTooLong,
+    BackfillTooLarge,
+    BootstrapInactive,
+    InvalidInput,
+    ParamOutOfRange,
+    ZeroAmount,
+    InsufficientBalance,
+    ZeroAddress,
+    AlreadySafetyFallback,
+    NotSafetyFallback,
+    InvalidFallbackCap,
+    AdapterNotEnabled
 } from "./StrategyStorageLayout.sol";
 
 error InvalidQuarantineThreshold();

@@ -3,14 +3,12 @@ pragma solidity 0.8.28;
 
 import {
     StrategyStorageLayout,
-    Overflow,
-    GateNotMet
+    Overflow
 } from "./StrategyStorageLayout.sol";
 import {ReadOnlyGasEstimator as GasEstimator} from "../gas/ReadOnlyGasEstimator.sol";
 import {ILendingAdapter, IStrategyAssetValuation} from "../interfaces/ILendingAdapter.sol";
 import { StrategyConfigLib } from "../lib/StrategyConfigLib.sol";
 
-import { IERC20Metadata } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 
 /// @title StrategyRebalanceGateModule — Rebalance policy/gating logic
 /// @notice Delegatecall module. Decides IF a rebalance should proceed based on:
