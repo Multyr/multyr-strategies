@@ -195,14 +195,17 @@ def decode(name, method, data):
     return json.loads(b.cli(['cast', 'abi-decode', signature, data, '--json']))
 
 
-def run(checkpoint, output, attempt, venue, block, expected_hash):
+def run(checkpoint, output, attempt, venue, block, expected_hash, expected_economic_rejection=False):
     c = json.loads(checkpoint.read_text(encoding='utf-8-sig'))
     asset_profile = c.get('assetProfile', 'usdc')
     profile = b.configure_profile(asset_profile)
     direct_holder_deposit = asset_profile != 'usdc'
     atoken = profile['aToken']
-    if direct_holder_deposit and venue != 'aave':
-        raise RuntimeError('Dedicated asset qualification is Aave-only, never seven-family coverage')
+    dedicated_venue = 'dolomite' if asset_profile == 'wbtc-dolomite' else 'aave'
+    if direct_holder_deposit and venue != dedicated_venue:
+        raise RuntimeError('Dedicated asset qualification venue mismatch')
+    if expected_economic_rejection and (asset_profile != 'wbtc-aave' or venue != 'aave'):
+        raise RuntimeError('Expected economic rejection is restricted to the named WBTC/Aave case')
     if c['chainId'] != 42161 or c['asset'].lower() != b.ASSET.lower() or c['deployer'].lower() != b.OWNER.lower():
         raise RuntimeError('Checkpoint identity mismatch')
     if c['builderSha256'] != hashlib.sha256(pathlib.Path(b.__file__).read_bytes()).hexdigest():
@@ -274,8 +277,8 @@ def run(checkpoint, output, attempt, venue, block, expected_hash):
         raise RuntimeError('Canonical asset decimals/unit mismatch')
     # The genuine calibration holder has less than $80k of WBTC at this pin.
     # Use a declared $50k benchmark, without injecting balances or changing risk policy.
-    deposit_usd = 50000 if asset_profile == 'wbtc-aave' else 80000
-    deposit = deposit_usd * 10**18 * unit // asset_price if asset_profile in {'weth-aave','wbtc-aave'} else DEPOSIT
+    deposit_usd = 50000 if asset_profile.startswith('wbtc-') else 80000
+    deposit = deposit_usd * 10**18 * unit // asset_price if unit != 10**6 else DEPOSIT
     native_words = words(direct(NATIVE, b.encode('getPricesInWei()', [])))
     if len(native_words) != 6 or native_words[-1] == 0:
         raise RuntimeError('Invalid actual Nitro native prices')
@@ -405,6 +408,10 @@ def run(checkpoint, output, attempt, venue, block, expected_hash):
     add('can', 'StrategyRebalanceGateModule', a['strategy'], 'canRebalance')
     add('preview', 'StrategyRebalanceGateModule', a['strategy'], 'previewRebalanceGas')
     add('idle-before-plan', 'UsdcMultiLendingVault', a['strategy'], 'idleCash')
+    if expected_economic_rejection:
+        add('negative-inputs', 'StrategyScoringModule', a['strategy'], 'computeRebalanceInputs')
+        for key, name in adapter_names.items():
+            add('negative-position-' + key, name, a[key], 'totalAssets')
     first = simulate('setup')
     result_at = lambda results, label: results[indices[label]]['returnData']
     if words(result_at(first, 'default-poke-interval'))[0] != 86400:
@@ -433,7 +440,44 @@ def run(checkpoint, output, attempt, venue, block, expected_hash):
         swap_credit = words(result_at(first, 'asset-after'))[0] - words(result_at(first, 'asset-before'))[0]
         if swap_credit < minimum or swap_credit != words(result_at(first, 'swap'))[0]:
             raise RuntimeError('Swap credit mismatch')
-    if not decode('StrategyRebalanceGateModule', 'canRebalance', result_at(first, 'can'))[0]:
+    can_rebalance = decode('StrategyRebalanceGateModule', 'canRebalance', result_at(first, 'can'))[0]
+    if expected_economic_rejection:
+        if can_rebalance:
+            raise RuntimeError('Named negative economic case unexpectedly became profitable')
+        actions, quote = decode('StrategyRebalanceGateModule', 'previewRebalanceGas', result_at(first, 'preview'))
+        apys, venues, _, _, _, _ = decode('StrategyScoringModule', 'computeRebalanceInputs', result_at(first, 'negative-inputs'))
+        rates = {venue.lower(): number(rate) for venue, rate in zip(venues, apys)}
+        if not actions or not quote[6] or any(not action[2] for action in actions):
+            raise RuntimeError('Expected economic rejection requires a reliable positive deposit proposal')
+        annual_raw = sum(number(action[1]) * rates[action[0].lower()] for action in actions)
+        gross_raw = annual_raw * c['policy']['strategyInitParams']['gateHorizonDays'] // (10000 * 365)
+        gross_usd6 = gross_raw * asset_price // (unit * 10**12)
+        if annual_raw <= 0 or gross_usd6 >= number(quote[1]):
+            raise RuntimeError('Rejection is not explained by independently valued yield below actual gas cost')
+        if any(words(result_at(first, 'negative-position-' + key))[0] for key in adapter_names):
+            raise RuntimeError('Rejected proposal already invested capital')
+        token('negative-core-before', b.ASSET, 'balanceOf', [a['core']])
+        add('negative-recall', 'StrategyRouter', a['router'], 'withdrawAllToCore', [a['strategy']], 15000000)
+        token('negative-core-after', b.ASSET, 'balanceOf', [a['core']])
+        add('negative-nav-after', 'UsdcMultiLendingVault', a['strategy'], 'totalAssets')
+        token('negative-supply-after', b.ASSET, 'totalSupply')
+        final = simulate('expected-economic-rejection-recall')
+        recalled = words(result_at(final, 'negative-recall'))[0]
+        core_after = words(result_at(final, 'negative-core-after'))[0]
+        if recalled != words(result_at(first, 'idle-before-plan'))[0] or core_after - words(result_at(final, 'negative-core-before'))[0] != recalled or core_after != deposit + seed or words(result_at(final, 'negative-nav-after'))[0] != 0:
+            raise RuntimeError('Rejected economic proposal failed full idle-capital Core conservation')
+        if result_at(final, 'negative-supply-after') != result_at(first, 'supply-before'):
+            raise RuntimeError('Underlying supply changed during rejected proposal recall')
+        report = {'status': 'EXPECTED_NATIVE_ECONOMIC_REJECTION_AND_CORE_RECALL_PASS', 'chainId': 42161,
+            'header': header, 'assetProfile': asset_profile, 'profile': venue, 'asset': b.ASSET,
+            'simulatorSha256': SIMULATOR_SHA256, 'checkpointSha256': hashlib.sha256(checkpoint.read_bytes()).hexdigest(),
+            'ratesBps': rates, 'grossBenefitUSD6': str(gross_usd6), 'gasCostUSD6': str(number(quote[1])),
+            'depositBudgetUSD': str(deposit_usd), 'recalledRaw': str(recalled), 'coreAfterRaw': str(core_after),
+            'keeperInvestmentExecuted': False, 'readiness': 'NOT_PRODUCTION_READY'}
+        output.write_text(json.dumps(report, indent=2) + '\n', encoding='utf-8')
+        print(report['status'])
+        return
+    if not can_rebalance:
         raise RuntimeError('Natural native economic gate rejected plan')
     actions, quote = decode('StrategyRebalanceGateModule', 'previewRebalanceGas', result_at(first, 'preview'))
     n = len(actions)
@@ -610,6 +654,7 @@ if __name__ == '__main__':
     parser.add_argument('--venue', choices=['all', 'aave', 'comet', 'morpho', 'euler', 'fluid', 'dolomite', 'venus'], default='all')
     parser.add_argument('--block', type=int, help='Explicit canonical RPC block; otherwise resolve latest once.')
     parser.add_argument('--all-profiles', action='store_true', help='Run natural seven-enabled case and all seven dedicated observation profiles at one actual pin.')
+    parser.add_argument('--expect-economic-rejection', action='store_true', help='Require the named WBTC/Aave low-yield rejection and full idle-capital recall; never counts as an investment pass.')
     args = parser.parse_args()
     RPC = os.environ.get(args.rpc_env) if args.rpc_env else args.rpc_url
     if not RPC:
@@ -640,9 +685,12 @@ if __name__ == '__main__':
             raise RuntimeError('Checkpoint requires isolated production compilation')
         b.configure_compiler(args.checkpoint.parent)
         if checkpoint_data.get('assetProfile', 'usdc') != 'usdc':
-            if args.all_profiles or args.venue not in {'all', 'aave'}:
-                raise RuntimeError('Dedicated asset profile supports Aave qualification only')
-            profiles = ['aave']
+            dedicated = 'dolomite' if checkpoint_data['assetProfile'] == 'wbtc-dolomite' else 'aave'
+            if args.all_profiles or args.venue not in {'all', dedicated}:
+                raise RuntimeError('Dedicated asset profile venue mismatch')
+            profiles = [dedicated]
+        if args.expect_economic_rejection and (checkpoint_data['assetProfile'] != 'wbtc-aave' or args.all_profiles):
+            raise RuntimeError('Named WBTC/Aave negative case required')
         for proof in checkpoint_data['constructorProofs'].values():
             b.abi(proof['contract'])
         for address in checkpoint_data['addresses'].values():
@@ -654,7 +702,7 @@ if __name__ == '__main__':
                 try:
                     initial_header = g.rpc(RPC, 'eth_getBlockByNumber', [hex(args.block) if args.block is not None else 'latest', False])
                     pinned_block = number(initial_header['number'])
-                    run(args.checkpoint, result_path, attempt, profile, pinned_block, initial_header['hash'])
+                    run(args.checkpoint, result_path, attempt, profile, pinned_block, initial_header['hash'], args.expect_economic_rejection)
                     completed.append({'profile': profile, 'block': str(pinned_block), 'blockHash': initial_header['hash'], 'report': str(result_path), 'sha256': hashlib.sha256(result_path.read_bytes()).hexdigest()})
                     break
                 except Exception as error:

@@ -156,7 +156,7 @@ jobs:
           $code=$LASTEXITCODE
           Get-Content lending-regression.log -Tail 40
           if ($code -ne 0) { exit $code }
-          ./script/AssertLendingTestSummary.ps1 -LogPath lending-regression.log -ExpectedPassed 2995 -ExpectedSuites 203
+          ./script/AssertLendingTestSummary.ps1 -LogPath lending-regression.log -ExpectedPassed 2998 -ExpectedSuites 204
       - name: Production size, frozen layout and selector checks
         shell: pwsh
         run: ./script/CheckLendingRelease.ps1

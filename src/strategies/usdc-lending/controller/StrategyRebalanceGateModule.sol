@@ -205,8 +205,9 @@ contract StrategyRebalanceGateModule is StrategyStorageLayout {
         GasEstimator.Quote memory q = _quote(actions, false);
         emit RebalanceGasEvaluated(q.actionsHash, q.costUSDC, q.l2Gas, q.posterWei, q.reliable);
         if (!q.reliable) return false;
-        (bool pass, uint256 gross, int256 net) = _gateBenefitCost(apys, list, targets, tvl, moved, q.costUSDC);
-        emit RebalanceEconomicsEvaluated(moved, gross, q.costUSDC, net, pass);
+        uint256 cost = _usd6ToAssetUnits(q.costUSDC);
+        (bool pass, uint256 gross, int256 net) = _gateBenefitCost(apys, list, targets, tvl, moved, cost);
+        emit RebalanceEconomicsEvaluated(moved, gross, cost, net, pass);
         return pass;
     }
 

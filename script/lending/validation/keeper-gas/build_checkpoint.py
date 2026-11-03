@@ -53,6 +53,10 @@ ASSET_PROFILES = {
                   'feed': '0x6ce185860a4963106506c203335a2910413708e9', 'decimals': 8,
                   'markets': {'aave': MARKETS['aave']},
                   'aToken': '0x078f358208685046a11c85e8ad32895ded33a249'},
+    'wbtc-dolomite': {'asset': '0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f',
+                  'feed': '0x6ce185860a4963106506c203335a2910413708e9', 'decimals': 8,
+                  'markets': {'aave': MARKETS['aave'], 'dolomite': '0x29cf6e8ecefb8d3c9dd2b727c1b7d1df1a754f6f'},
+                  'aToken': '0x078f358208685046a11c85e8ad32895ded33a249'},
 }
 
 
@@ -282,7 +286,7 @@ def build(output, old_block=518500000, sample_block=None, acceptance_path=None, 
     if len(round_words) != 5 or feed_decimals > 18 or not 0 < round_words[1] < 2**255 or not 0 < round_words[3] <= int(old_header['timestamp'],16) or int(old_header['timestamp'],16)-round_words[3] > 86400 or round_words[4] < round_words[0]:
         raise RuntimeError('Invalid canonical calibration asset price')
     asset_price = round_words[1] * 10**(18-feed_decimals)
-    capacity = 10000000 * unit * 10**18 // asset_price if asset_profile in {'weth-aave','wbtc-aave'} else 10000000 * 10**6
+    capacity = 10000000 * unit * 10**18 // asset_price if unit != 10**6 else 10000000 * 10**6
     g.rpc(LOCAL, 'anvil_impersonateAccount', [OWNER])
     config = deploy('globalConfig', 'GlobalConfig', [OWNER, 0, 0, 0, 86400, 10, 100, 300, 86400])
     oracle = deploy('oracle', 'PriceOracleMiddleware', [OWNER])
@@ -309,7 +313,7 @@ def build(output, old_block=518500000, sample_block=None, acceptance_path=None, 
             send('CoreVault', core, 'setModule', [selector, modules[key], role])
     send('CoreVault', core, 'authorizeModule', [modules['erc'], True])
     buffer = deploy('buffer', 'BufferManager', [OWNER, core, (400, 200, 600, 800, 400, 50, ASSET, ZERO, 0, False)])
-    if asset_profile in {'weth-aave','wbtc-aave'}:
+    if unit != 10**6:
         send('BufferManager', buffer, 'setRebalanceParams', [int(read('BufferManager', buffer, 'rebalanceCooldown'),16),
              (5000 * unit * 10**18 + asset_price - 1)//asset_price, int(read('BufferManager', buffer, 'navRefreshInterval'),16)])
     router = deploy('router', 'StrategyRouter', [OWNER, core, config])
