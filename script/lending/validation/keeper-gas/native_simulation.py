@@ -207,6 +207,9 @@ def run(checkpoint, output, attempt, venue, block, expected_hash):
         raise RuntimeError('Checkpoint identity mismatch')
     if c['builderSha256'] != hashlib.sha256(pathlib.Path(b.__file__).read_bytes()).hexdigest():
         raise RuntimeError('Checkpoint builder changed; rebuild before simulation')
+    if c.get('compilerGraph') != b.COMPILER_GRAPH:
+        raise RuntimeError('Checkpoint requires isolated production compilation')
+    b.configure_compiler(checkpoint.parent)
     a, overrides = c['addresses'], c['stateOverrides']
     expected_names = set('globalConfig oracle core selectorRegistry admin erc queue liq buffer router params ops scoring gate strategy settings alloc plan safety estimator upkeep protocolRegistry'.split()) | set(profile['markets'])
     if c.get('activeVenues', list(profile['markets'])) != list(profile['markets']) or c['markets'] != profile['markets']:
@@ -221,6 +224,13 @@ def run(checkpoint, output, attempt, venue, block, expected_hash):
             raise RuntimeError('Only own code/nonce/full-storage projection is permitted')
         if hashlib.sha256(bytes.fromhex(value['code'][2:])).hexdigest() != c['constructorProofs'][key]['runtimeSha256']:
             raise RuntimeError('Constructor/runtime provenance mismatch')
+        proof = c['constructorProofs'][key]
+        encoded = proof.get('encodedConstructorArguments', '')
+        if not encoded.startswith('0x'):
+            raise RuntimeError('Missing encoded constructor provenance')
+        creation = b.creation_bytecode(proof['contract'])
+        if hashlib.sha256(bytes.fromhex(creation[2:] + encoded[2:])).hexdigest() != proof['creationSha256']:
+            raise RuntimeError('Fresh production creation bytecode mismatch')
     header = g.rpc(RPC, 'eth_getBlockByNumber', [hex(block), False])
     if header['hash'] != expected_hash:
         raise RuntimeError('Pinned canonical header changed')
@@ -620,6 +630,9 @@ if __name__ == '__main__':
             print('AUTHORIZED_NATIVE_ARCHIVE_PARITY_PASS')
             raise SystemExit(0)
         checkpoint_data = json.loads(args.checkpoint.read_text(encoding='utf-8-sig'))
+        if checkpoint_data.get('compilerGraph') != b.COMPILER_GRAPH:
+            raise RuntimeError('Checkpoint requires isolated production compilation')
+        b.configure_compiler(args.checkpoint.parent)
         if checkpoint_data.get('assetProfile', 'usdc') == 'usdt0-aave':
             if args.all_profiles or args.venue not in {'all', 'aave'}:
                 raise RuntimeError('USDT0 profile supports dedicated Aave qualification only')

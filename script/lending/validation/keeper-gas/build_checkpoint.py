@@ -60,13 +60,39 @@ configure_profile('usdc')
 
 
 ABI = {}
+CREATION = {}
+FORGE_FLAGS = []
+COMPILER_GRAPH = 'full_project_graph_storage_layout'
 ADDRESSES = {}
 PROOFS = {}
 TRANSACTIONS = []
 
 
 def cli(args):
+    if args[:2] == ['forge', 'inspect']:
+        args = [*args, *FORGE_FLAGS]
     return subprocess.run(args, cwd=ROOT, text=True, capture_output=True, check=True).stdout.strip()
+
+
+def configure_compiler(directory):
+    global FORGE_FLAGS
+    directory.mkdir(parents=True, exist_ok=True)
+    flags = ['--extra-output', 'storageLayout',
+             '--out', str(directory / 'production-out'),
+             '--cache-path', str(directory / 'production-cache.json')]
+    if flags != FORGE_FLAGS:
+        ABI.clear()
+        CREATION.clear()
+        FORGE_FLAGS = flags
+
+
+def creation_bytecode(name):
+    if name not in CREATION:
+        code = cli(['forge', 'inspect', name, 'bytecode', '--json']).strip()
+        if not code.startswith('0x') or '__' in code:
+            raise RuntimeError('Invalid/unlinked creation code: ' + name)
+        CREATION[name] = code
+    return CREATION[name]
 
 
 def abi(name):
@@ -122,14 +148,13 @@ def deploy(key, name, values=()):
     inputs = ctors[0]['inputs'] if ctors else []
     if len(inputs) != len(values):
         raise RuntimeError(f'Constructor argument mismatch: {name}')
-    creation = cli(['forge', 'inspect', name, 'bytecode', '--json']).strip()
-    if not creation.startswith('0x') or '__' in creation:
-        raise RuntimeError(f'Invalid/unlinked creation code: {name}')
+    creation = creation_bytecode(name)
     args = encode('constructor(' + ','.join(canonical(x) for x in inputs) + ')', values, False) if inputs else '0x'
     receipt, address = g.deploy_adapter(OWNER, creation + args[2:])
     ADDRESSES[key] = address
     code = g.rpc(LOCAL, 'eth_getCode', [address, 'latest'])
     PROOFS[key] = {'contract': name, 'constructorArguments': values, 'constructorAbi': inputs,
+                   'encodedConstructorArguments': args,
                    'creationSha256': hashlib.sha256(bytes.fromhex((creation + args[2:])[2:])).hexdigest(),
                    'runtimeSha256': hashlib.sha256(bytes.fromhex(code[2:])).hexdigest(), 'receipt': receipt}
     return address
@@ -228,6 +253,11 @@ def build(output, old_block=518500000, sample_block=None, acceptance_path=None, 
         sample_block = int(latest['number'], 16) - 300000
     if sample_block <= old_block:
         raise RuntimeError('Need genuinely later canonical PPS sample')
+    configure_compiler(output.parent)
+    # Pin the full graph used by the integration tests and deploy tooling.
+    # Never attest bytecode from a shared or partial inspect cache.
+    compile_log = cli(['forge', 'build', '--force', *FORGE_FLAGS])
+    (output.parent / 'production-compile.log').write_text(compile_log + '\n', encoding='utf-8')
     g.ARTIFACTS_DIR = output.parent / 'checkpoint-raw'
     g.ARTIFACTS_DIR.mkdir(parents=True, exist_ok=True)
     g.ANVIL_METHODS = g.ANVIL_METHODS | {'anvil_dumpState', 'anvil_loadState'}
@@ -327,6 +357,7 @@ def build(output, old_block=518500000, sample_block=None, acceptance_path=None, 
                      'state': {pad(k): pad(value) for k, value in v['storage'].items()}}
                  for a, v in final_accounts.items()}
     result = {'schemaVersion': 1, 'chainId': 42161, 'deployer': OWNER, 'asset': ASSET,
+              'compilerGraph': COMPILER_GRAPH,
               'assetProfile': asset_profile, 'activeVenues': list(adapter_names),
               'oldBlock': old_block, 'sampleBlock': sample_block, 'oldHeader': old_header, 'sampleHeader': sample_header,
               'addresses': ADDRESSES, 'stateOverrides': overrides, 'ownedAccounts': final_accounts,
