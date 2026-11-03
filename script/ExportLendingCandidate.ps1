@@ -40,6 +40,7 @@ $manifest = [ordered]@{baseCommit=$base; candidateCommit=$head; branch=$branch;
     hashPolicy='Verify utf8LfSha256 after decoding UTF-8 and normalizing CRLF to LF; rawSha256 is same-host diagnostic only'; files=$entries}
 $functional = @($entries | Where-Object { $_.path -match '^(src|test|script)/.*\.(sol|ps1|py)$' -or $_.path -match '^(script|test)/.*\.json$' -or $_.path -in @('foundry.toml','.gitignore','.github/workflows/lending-asset-matrix.yml','.github/workflows/forge-test.yml') } |
     Sort-Object { $_['path'] } | ForEach-Object { $_['path'] + ' ' + $_['utf8LfSha256'] })
+[Array]::Sort($functional, [StringComparer]::Ordinal)
 $functionalHash = [Convert]::ToHexString([Security.Cryptography.SHA256]::HashData([Text.Encoding]::UTF8.GetBytes(($functional -join "`n") + "`n"))).ToLowerInvariant()
 if ($functionalHash -ne $validation.functionalSnapshotSha256) { throw 'Functional source changed since recorded validation; rerun tests and refresh the ledger' }
 $manifestPath = Join-Path $Destination 'candidate-files.json'
