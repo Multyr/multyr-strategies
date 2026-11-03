@@ -47,6 +47,14 @@ Reports: `direct-acceptance.json`, `core-acceptance.json`,
 `validated-matrix.csv`, `cleanup-structure.json`, `original-event-abi-parity.json`.
 They bind source hashes, canonical headers, catalogues and per-case log hashes.
 
+All four gates were repeated successfully against commit
+`89a5b7c12e32c915249ad29ef98c946e8549a304` after correcting the RPC HTTP
+client identification. The earlier CI attempt failed with `RPC_READ_FAILED`
+before test execution because the public endpoint rejected Python's default
+HTTP client. The identified client independently verifies chain ID and all
+28 canonical headers on that public endpoint. The replacement CI run remains
+a separate pending gate; local acceptance is not represented as CI success.
+
 ## Method and Core integration
 
 Arbitrum chain ID 42161; canonical historical headers through block 520094008.
