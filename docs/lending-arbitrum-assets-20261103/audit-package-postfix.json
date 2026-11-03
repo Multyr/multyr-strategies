@@ -1,0 +1,16 @@
+{
+  "archiveSha256": "a0f3b2d5b1ee3051565968ce12526dec72199cd1e71e6c0fd20455a0351fb610",
+  "patchSha256": "0f2e955e9bfa406315e68cea34f2bc064ceaec627eb1ed755a4469f45fd9d7c7",
+  "changedFilesVerified": 342,
+  "evidenceFiles": 470,
+  "archiveBytes": 56155471,
+  "status": "AUDIT_REVIEW_ONLY_NOT_PRODUCTION_APPROVED",
+  "baseCommit": "211f1a0a4cb9c63232ae18dac24ccb921e5a4699",
+  "candidateCommit": "ba2f35bd6c37cf86b05ed3c10d7af8938960567b",
+  "functionalCommit": "3fcc4d405153a3b534daed98f92f836e6d61957c",
+  "archive": "deployments/lending-full-validation-20261101/production/final-cleanup/audit-postfix-ba2f35b/audit-candidate-with-evidence.zip",
+  "manifest": "deployments/lending-full-validation-20261101/production/final-cleanup/audit-postfix-ba2f35b/audit-manifest.json",
+  "zipCrcAndAllEvidenceHashes": "PASS",
+  "productionExporterUsed": false,
+  "productionApproval": false
+}
