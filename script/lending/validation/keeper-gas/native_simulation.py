@@ -197,12 +197,20 @@ def decode(name, method, data):
 
 def run(checkpoint, output, attempt, venue, block, expected_hash):
     c = json.loads(checkpoint.read_text(encoding='utf-8-sig'))
+    asset_profile = c.get('assetProfile', 'usdc')
+    profile = b.configure_profile(asset_profile)
+    direct_holder_deposit = asset_profile == 'usdt0-aave'
+    atoken = profile['aToken']
+    if direct_holder_deposit and venue != 'aave':
+        raise RuntimeError('USDT0 qualification is Aave-only, never seven-family coverage')
     if c['chainId'] != 42161 or c['asset'].lower() != b.ASSET.lower() or c['deployer'].lower() != b.OWNER.lower():
         raise RuntimeError('Checkpoint identity mismatch')
     if c['builderSha256'] != hashlib.sha256(pathlib.Path(b.__file__).read_bytes()).hexdigest():
         raise RuntimeError('Checkpoint builder changed; rebuild before simulation')
     a, overrides = c['addresses'], c['stateOverrides']
-    expected_names = set('globalConfig oracle core selectorRegistry admin erc queue liq buffer router params ops scoring gate strategy settings alloc plan safety estimator upkeep protocolRegistry aave comet morpho euler fluid dolomite venus'.split())
+    expected_names = set('globalConfig oracle core selectorRegistry admin erc queue liq buffer router params ops scoring gate strategy settings alloc plan safety estimator upkeep protocolRegistry'.split()) | set(profile['markets'])
+    if c.get('activeVenues', list(profile['markets'])) != list(profile['markets']) or c['markets'] != profile['markets']:
+        raise RuntimeError('Checkpoint active venue/market policy mismatch')
     if set(a) != expected_names or set(x.lower() for x in a.values()) != set(overrides) or len(set(a.values())) != len(a):
         raise RuntimeError('Unexpected checkpoint account set')
     for key, address in a.items():
@@ -237,7 +245,7 @@ def run(checkpoint, output, attempt, venue, block, expected_hash):
             raise RuntimeError('Projected address is occupied/funded: ' + address)
     if g.rpc(RPC, 'eth_getCode', [b.OWNER, pin]) != '0x' or number(g.rpc(RPC, 'eth_getBalance', [b.OWNER, pin])) < 10**18:
         raise RuntimeError('Need genuinely funded canonical EOA')
-    receipt_tokens = [ATOKEN] + [v for k, v in b.MARKETS.items() if k != 'aave']
+    receipt_tokens = [atoken] + [v for k, v in b.MARKETS.items() if k != 'aave']
     holdings = [(token, address) for token in [b.ASSET] + receipt_tokens for address in a.values()]
     balances = [number(value) for value in canonical_batch([('eth_call', [{'from': b.OWNER, 'to': token, 'data': b.encode('balanceOf(address)', [address]), 'gasPrice': hex(basefee)}, pin]) for token, address in holdings])]
     if any(balances):
@@ -313,28 +321,32 @@ def run(checkpoint, output, attempt, venue, block, expected_hash):
     token('asset-before', b.ASSET, 'balanceOf', [b.OWNER])
     token('supply-before', b.ASSET, 'totalSupply')
     token('usdt-supply-before', USDT, 'totalSupply')
-    token('swap-clear', USDT, 'approve', [SWAP, 0])
-    token('swap-approve', USDT, 'approve', [SWAP, AMOUNT])
-    minimum = (AMOUNT * usdt_price // asset_price) * 99 // 100
-    path = USDT + '000064' + b.ASSET[2:]
-    raw('swap', SWAP, 'exactInput((bytes,address,uint256,uint256))', [(path, b.OWNER, AMOUNT, minimum)])
-    token('swap-revoke', USDT, 'approve', [SWAP, 0])
-    token('usdt-after', USDT, 'balanceOf', [b.OWNER])
-    token('asset-after', b.ASSET, 'balanceOf', [b.OWNER])
+    if not direct_holder_deposit:
+        token('swap-clear', USDT, 'approve', [SWAP, 0])
+        token('swap-approve', USDT, 'approve', [SWAP, AMOUNT])
+        minimum = (AMOUNT * usdt_price // asset_price) * 99 // 100
+        path = USDT + '000064' + b.ASSET[2:]
+        raw('swap', SWAP, 'exactInput((bytes,address,uint256,uint256))', [(path, b.OWNER, AMOUNT, minimum)])
+        token('swap-revoke', USDT, 'approve', [SWAP, 0])
+        token('usdt-after', USDT, 'balanceOf', [b.OWNER])
+        token('asset-after', b.ASSET, 'balanceOf', [b.OWNER])
     cap = number(c['policy']['adapterCapacityRaw'])
     registry = a['protocolRegistry']
     adapter_names = {'aave': 'AaveV3USDCAdapter', 'comet': 'CometUsdcMultiMarketAdapter', 'morpho': 'MorphoUsdcMultiMarketAdapter',
                      'euler': 'EulerUsdcMultiMarketAdapter', 'fluid': 'FluidUsdcMultiMarketAdapter',
                      'dolomite': 'DolomiteUsdcMultiMarketAdapter', 'venus': 'VenusUsdcMultiMarketAdapter'}
-    initializers = {'aave': [b.ASSET, b.MARKETS['aave'], ATOKEN, b.OWNER, a['strategy'], cap],
+    adapter_names = {key: name for key, name in adapter_names.items() if key in profile['markets']}
+    initializers = {'aave': [b.ASSET, b.MARKETS['aave'], atoken, b.OWNER, a['strategy'], cap],
                     'comet': [b.ASSET, b.OWNER, a['strategy'], cap, registry],
-                    'euler': [a['strategy'], b.ASSET, [b.MARKETS['euler']], b.ZERO, b.OWNER],
-                    'fluid': [b.ASSET, b.OWNER, a['strategy'], cap, b.MARKETS['fluid']],
-                    'venus': [b.ASSET, b.OWNER, a['strategy'], cap, b.MARKETS['venus'], 31536000]}
+                    'euler': [a['strategy'], b.ASSET, [b.MARKETS.get('euler')], b.ZERO, b.OWNER],
+                    'fluid': [b.ASSET, b.OWNER, a['strategy'], cap, b.MARKETS.get('fluid')],
+                    'venus': [b.ASSET, b.OWNER, a['strategy'], cap, b.MARKETS.get('venus'), 31536000]}
     for key in c['initialization']['deferred']:
         add('init-' + key, adapter_names[key], a[key], 'initialize', initializers[key])
-    add('euler-markets', adapter_names['euler'], a['euler'], 'initializeMarkets')
-    for key in ['morpho', 'dolomite', 'fluid']:
+    if 'euler' in adapter_names:
+        add('euler-markets', adapter_names['euler'], a['euler'], 'initializeMarkets')
+    pps_keys = [key for key in ['morpho', 'dolomite', 'fluid'] if key in adapter_names]
+    for key in pps_keys:
         add('pps-' + key, adapter_names[key], a[key], 'pokeAPYSnapshots')
         param_role = '0x' + g.keccak256(b'PARAM_ROLE').hex()
         add('poke-role-' + key, adapter_names[key], a[key], 'grantRole', [param_role, a['upkeep']])
@@ -342,7 +354,8 @@ def run(checkpoint, output, attempt, venue, block, expected_hash):
     add('default-poke-interval', 'StrategyUpkeep', a['upkeep'], 'pokeInterval')
     add('first-poke-check', 'StrategyUpkeep', a['upkeep'], 'checkUpkeep', ['0x'])
     poke_payload = b.encode('f(uint8,uint256)', [3, 0], False)
-    add('actual-poke', 'StrategyUpkeep', a['upkeep'], 'performUpkeep', [poke_payload])
+    if pps_keys:
+        add('actual-poke', 'StrategyUpkeep', a['upkeep'], 'performUpkeep', [poke_payload])
     add('after-poke-check', 'StrategyUpkeep', a['upkeep'], 'checkUpkeep', ['0x'])
     for key in adapter_names:
         add('whitelist-' + key, 'StrategySettingsModule', a['strategy'], 'whitelistAdapter', [a[key], True])
@@ -350,7 +363,7 @@ def run(checkpoint, output, attempt, venue, block, expected_hash):
         add('enable-' + key, 'UsdcMultiLendingVault', a['strategy'], 'toggleAdapter', [a[key], venue == 'all' or venue == key])
         add('enabled-' + key, 'UsdcMultiLendingVault', a['strategy'], 'enabled', [a[key]])
     add('tvl', 'StrategyParamsModule', a['strategy'], 'pokeExternalTVL')
-    add('liquidity', 'StrategyParamsModule', a['strategy'], 'pokeLiquidityBatch', [0, 7])
+    add('liquidity', 'StrategyParamsModule', a['strategy'], 'pokeLiquidityBatch', [0, len(adapter_names)])
     add('allowlist', 'StrategyRouter', a['router'], 'executeStrategyAllowlist', [a['strategy']])
     add('register-strategy', 'StrategyRouter', a['router'], 'register', [a['strategy'], 0, 10000])
     add('strategy-cap', 'StrategyRouter', a['router'], 'setMaxStrategyBps', [a['strategy'], 10000])
@@ -359,12 +372,17 @@ def run(checkpoint, output, attempt, venue, block, expected_hash):
     seed = ceil_div(10**18 * unit, asset_price)
     add('limits', 'GlobalConfig', a['globalConfig'], 'setVaultDepositLimits', [a['core'], 10000000 * 10**18 * unit // asset_price,
         500000 * 10**18 * unit // asset_price, ceil_div(100 * 10**18 * unit, asset_price)])
+    if direct_holder_deposit:
+        token('core-approve-clear', b.ASSET, 'approve', [a['core'], 0])
     token('core-approve', b.ASSET, 'approve', [a['core'], DEPOSIT + seed])
     add('seed', 'AdminModule', a['core'], 'seedDeadDeposit', [seed])
     add('unpause', 'CoreVault', a['core'], 'unpauseAll')
     add('freeze-routing', 'CoreVault', a['core'], 'freezeRouting')
     add('freeze-params', 'AdminModule', a['core'], 'freezeParams')
     raw('deposit', a['core'], 'deposit(uint256,address)', [DEPOSIT, '0x0000000000000000000000000000000000000b0b'])
+    if direct_holder_deposit:
+        token('holder-after-deposit', b.ASSET, 'balanceOf', [b.OWNER])
+        add('core-nav-after-deposit', 'CoreVault', a['core'], 'totalAssets')
     token('core-before-route', b.ASSET, 'balanceOf', [a['core']])
     add('route', 'LiquidityOpsModule', a['core'], 'deployToStrategies', [2**256 - 1])
     token('core-after-route', b.ASSET, 'balanceOf', [a['core']])
@@ -376,18 +394,29 @@ def run(checkpoint, output, attempt, venue, block, expected_hash):
     if words(result_at(first, 'default-poke-interval'))[0] != 86400:
         raise RuntimeError('Production keeper default interval not applied')
     needed, data = decode('StrategyUpkeep', 'checkUpkeep', result_at(first, 'first-poke-check'))
-    if not needed or words(data)[0] != 3:
+    if pps_keys and (not needed or words(data)[0] != 3):
         raise RuntimeError('Actual APY refresh not selected')
+    if not pps_keys and needed and words(data)[0] == 3:
+        raise RuntimeError('APY refresh selected with no PPS targets')
     needed_after, data_after = decode('StrategyUpkeep', 'checkUpkeep', result_at(first, 'after-poke-check'))
     if needed_after and words(data_after)[0] == 3:
         raise RuntimeError('APY refresh starves subsequent automation')
     if any(bool(words(result_at(first, 'enabled-' + key))[0]) != (venue == 'all' or venue == key) for key in adapter_names):
         raise RuntimeError('Declared enabled-venue policy mismatch')
-    if words(result_at(first, 'usdt-before'))[0] - words(result_at(first, 'usdt-after'))[0] != AMOUNT:
-        raise RuntimeError('Noncanonical swap funding debit')
-    swap_credit = words(result_at(first, 'asset-after'))[0] - words(result_at(first, 'asset-before'))[0]
-    if swap_credit < minimum or swap_credit != words(result_at(first, 'swap'))[0]:
-        raise RuntimeError('Swap credit mismatch')
+    swap_credit = None
+    if direct_holder_deposit:
+        funding = DEPOSIT + seed
+        before_holder = words(result_at(first, 'asset-before'))[0]
+        if before_holder < funding or before_holder - words(result_at(first, 'holder-after-deposit'))[0] != funding:
+            raise RuntimeError('Canonical USDT0 holder deposit debit mismatch')
+        if words(result_at(first, 'core-nav-after-deposit'))[0] != funding:
+            raise RuntimeError('Canonical USDT0 Core deposit credit mismatch')
+    else:
+        if words(result_at(first, 'usdt-before'))[0] - words(result_at(first, 'usdt-after'))[0] != AMOUNT:
+            raise RuntimeError('Noncanonical swap funding debit')
+        swap_credit = words(result_at(first, 'asset-after'))[0] - words(result_at(first, 'asset-before'))[0]
+        if swap_credit < minimum or swap_credit != words(result_at(first, 'swap'))[0]:
+            raise RuntimeError('Swap credit mismatch')
     if not decode('StrategyRebalanceGateModule', 'canRebalance', result_at(first, 'can'))[0]:
         raise RuntimeError('Natural native economic gate rejected plan')
     actions, quote = decode('StrategyRebalanceGateModule', 'previewRebalanceGas', result_at(first, 'preview'))
@@ -425,7 +454,7 @@ def run(checkpoint, output, attempt, venue, block, expected_hash):
     add('idle-after-plan', 'UsdcMultiLendingVault', a['strategy'], 'idleCash')
     for key, name in adapter_names.items():
         add('position-' + key, name, a[key], 'totalAssets')
-        token('receipt-' + key, ATOKEN if key == 'aave' else b.MARKETS[key], 'balanceOf', [a[key]])
+        token('receipt-' + key, atoken if key == 'aave' else b.MARKETS[key], 'balanceOf', [a[key]])
     partial_requests = []
     if venue != 'all':
         planned = sum(number(action[1]) for action in actions)
@@ -531,21 +560,25 @@ def run(checkpoint, output, attempt, venue, block, expected_hash):
         raise RuntimeError('Quote fails to cover measured native wrapper gas')
     status = 'COLD_NATIVE_SEVEN_ENABLED_KEEPER_RECALL_PASS' if venue == 'all' else 'DEDICATED_NATIVE_KEEPER_ORDINARY_EMA_RECALL_PASS'
     report = {'status': status, 'chainId': 42161, 'header': header, 'profile': venue,
+              'assetProfile': asset_profile, 'asset': b.ASSET,
               'nativeRpc': rpc_label(RPC), 'simulatorSha256': SIMULATOR_SHA256,
               'checkpointSha256': hashlib.sha256(checkpoint.read_bytes()).hexdigest(), 'actions': actions,
               'nativePriceWords': [str(x) for x in native_words], 'independentQuote': {'l2Gas': str(l2gas), 'posterWei': str(poster), 'executionWei': str(execution), 'costUSD6': str(cost)},
-              'simulatedNativeWrapperGasUsed': measured, 'swapInputRaw': str(AMOUNT), 'swapCreditRaw': str(swap_credit),
+              'simulatedNativeWrapperGasUsed': measured,
+              'fundingMethod': 'CANONICAL_USDT0_HOLDER_CORE_DEPOSIT' if direct_holder_deposit else 'CANONICAL_USDT0_USDC_SWAP',
+              'holderDepositRaw': str(DEPOSIT + seed),
+              'swapInputRaw': None if direct_holder_deposit else str(AMOUNT), 'swapCreditRaw': None if direct_holder_deposit else str(swap_credit),
               'investedNavRaw': str(nav), 'recalledRaw': str(got), 'indices': indices,
               'protocolPositionRaw': {key: str(value) for key, value in positions.items()},
               'protocolReceiptRaw': {key: str(value) for key, value in receipts.items()},
               'idleBeforeRaw': str(idle_before), 'idleAfterRaw': str(idle_after),
               'coreBeforeRouteRaw': str(core_before_route), 'coreAfterRouteRaw': str(core_after_route),
-              'actualPokeDefaultInterval': '86400', 'simulatedNativeRefreshGasUsed': str(number(final[indices['actual-poke']]['gasUsed'])),
+              'actualPokeDefaultInterval': '86400', 'simulatedNativeRefreshGasUsed': str(number(final[indices['actual-poke']]['gasUsed'])) if pps_keys else None,
               'ordinaryWithdrawalObservation': observed,
               'canonicalReadCache': {'entries': len(CANONICAL_CACHE), 'hits': CACHE_HITS, 'policy': 'Only immutable explicitly pinned canonical reads; every simulation executed on real node.'},
               'limits': ['Native per-call simulated gas, not mined transaction receipts.', 'Only unused unfunded constructor-produced fixture accounts projected.',
-                         'Cold initial allocation only; warm EMA, other profiles and production coefficient approval remain separate gates.',
-                         'Seven enabled/scanned venues do not imply seven investment actions; only the actual risk-engine-selected actions execute.'],
+                         'Calibration is specific to this asset, chain, market universe and policy; live deployment authorization is separate.',
+                         'Enabled/scanned venues do not imply equal investment actions; only actual risk-engine-selected actions execute.'],
               'readiness': 'NOT_PRODUCTION_READY'}
     output.write_text(json.dumps(report, indent=2) + '\n', encoding='utf-8')
     print(json.dumps({'status': report['status'], 'actions': n, 'wrapperGas': measured}))
@@ -587,6 +620,10 @@ if __name__ == '__main__':
             print('AUTHORIZED_NATIVE_ARCHIVE_PARITY_PASS')
             raise SystemExit(0)
         checkpoint_data = json.loads(args.checkpoint.read_text(encoding='utf-8-sig'))
+        if checkpoint_data.get('assetProfile', 'usdc') == 'usdt0-aave':
+            if args.all_profiles or args.venue not in {'all', 'aave'}:
+                raise RuntimeError('USDT0 profile supports dedicated Aave qualification only')
+            profiles = ['aave']
         for proof in checkpoint_data['constructorProofs'].values():
             b.abi(proof['contract'])
         for address in checkpoint_data['addresses'].values():

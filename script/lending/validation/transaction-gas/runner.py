@@ -200,11 +200,15 @@ def _kill_anvil() -> None:
     global _anvil_log
     global _anvil_proc
     if _anvil_proc is not None:
-        _anvil_proc.terminate()
+        if _anvil_proc.poll() is None:
+            _anvil_proc.terminate()
         try:
             _anvil_proc.wait(timeout=8)
         except subprocess.TimeoutExpired:
             _anvil_proc.kill()
+            # Do not forget an owned child while it may still hold the endpoint.
+            # A second timeout propagates, retaining the handle and log for cleanup.
+            _anvil_proc.wait(timeout=8)
         _anvil_proc = None
     if _anvil_log is not None:
         _anvil_log.close()
@@ -214,13 +218,22 @@ def _kill_anvil() -> None:
 atexit.register(_kill_anvil)
 
 
+def _require_port_available(port: int) -> None:
+    # POSIX TIME_WAIT is not a live listener. SO_REUSEADDR permits its reuse but
+    # still rejects LISTEN sockets; SO_REUSEPORT is deliberately never enabled.
+    # Windows has different ownership semantics and retains the exclusive probe.
+    with socket.socket() as reservation:
+        if sys.platform != "win32":
+            reservation.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        reservation.bind(("127.0.0.1", port))
+
+
 def start_anvil(fork_url: str, fork_block: int) -> None:
     global _anvil_proc
     global _anvil_log, _anvil_log_path
     _kill_anvil()
     # Never reuse a service already listening on the designated write endpoint.
-    with socket.socket() as reservation:
-        reservation.bind(("127.0.0.1", DEDICATED_PORT))
+    _require_port_available(DEDICATED_PORT)
 
     cmd = [
         "anvil",

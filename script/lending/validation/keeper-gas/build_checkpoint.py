@@ -38,6 +38,27 @@ MARKETS = {
     'dolomite': '0x444868B6e8079ac2c55eea115250f92C2b2c4D14',
     'venus': '0x7D8609f8da70fF9027E9bc5229Af4F6727662707',
 }
+ASSET_PROFILES = {
+    'usdc': {'asset': ASSET, 'feed': ASSET_FEED, 'markets': dict(MARKETS),
+             'aToken': '0x724dc807b04555b71ed48a6896b6F41593b8C637'},
+    'usdt0-aave': {'asset': '0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9',
+                   'feed': '0x3f3f5dF88dC9F13eac63DF89EC16ef6e7E25DdE7',
+                   'markets': {'aave': MARKETS['aave']},
+                   'aToken': '0x6ab707Aca953eDAeFBc4fD23bA73294241490620'},
+}
+
+
+def configure_profile(name):
+    global ASSET, ASSET_FEED, MARKETS, AAVE_RECEIPT
+    profile = ASSET_PROFILES[name]
+    ASSET, ASSET_FEED, MARKETS = profile['asset'], profile['feed'], dict(profile['markets'])
+    AAVE_RECEIPT = profile['aToken']
+    return profile
+
+
+configure_profile('usdc')
+
+
 ABI = {}
 ADDRESSES = {}
 PROOFS = {}
@@ -140,7 +161,7 @@ def owned_accounts():
         if balance(ASSET, address) != 0:
             raise RuntimeError('Owned contract has financial position')
         # This is deliberately stricter than checking adapter.totalAssets alone.
-        for token in [v for k, v in MARKETS.items() if k != 'aave'] + ['0x724dc807b04555b71ed48a6896b6F41593b8C637']:
+        for token in [v for k, v in MARKETS.items() if k != 'aave'] + [AAVE_RECEIPT]:
             if balance(token, address) != 0:
                 raise RuntimeError('Owned contract has receipt-token balance')
         selected[address.lower()] = account
@@ -177,7 +198,8 @@ def restore(accounts, target):
     return header
 
 
-def build(output, old_block=518500000, sample_block=None, acceptance_path=None):
+def build(output, old_block=518500000, sample_block=None, acceptance_path=None, asset_profile='usdc'):
+    configure_profile(asset_profile)
     acceptance_path = acceptance_path or ROOT / 'docs/lending-production-remediation-20261101/r25-actual-50-acceptance.json'
     acceptance = json.loads(acceptance_path.read_text(encoding='utf-8-sig'))
     if (acceptance['passed'], acceptance['failed'], acceptance['skipped'], acceptance['suites']) != (50, 0, 0, 21):
@@ -278,36 +300,44 @@ def build(output, old_block=518500000, sample_block=None, acceptance_path=None):
     send('UsdcMultiLendingVault', strategy, 'grantRole', [keeper_role, upkeep])
     protocol_registry = deploy('protocolRegistry', 'ProtocolRegistry', [OWNER])
     for key, enum in [('morpho', 2), ('comet', 3), ('dolomite', 4)]:
-        send('ProtocolRegistry', protocol_registry, 'addVault', [enum, MARKETS[key], key, 5000, 10000000 * 10**6])
+        if key in MARKETS:
+            send('ProtocolRegistry', protocol_registry, 'addVault', [enum, MARKETS[key], key, 5000, 10000000 * 10**6])
     adapter_names = {'aave': 'AaveV3USDCAdapter', 'comet': 'CometUsdcMultiMarketAdapter', 'morpho': 'MorphoUsdcMultiMarketAdapter',
                      'euler': 'EulerUsdcMultiMarketAdapter', 'fluid': 'FluidUsdcMultiMarketAdapter',
                      'dolomite': 'DolomiteUsdcMultiMarketAdapter', 'venus': 'VenusUsdcMultiMarketAdapter'}
+    adapter_names = {key: name for key, name in adapter_names.items() if key in MARKETS}
     for key, name in adapter_names.items():
         deploy(key, name)
     for key in ['morpho', 'dolomite']:
+        if key not in adapter_names:
+            continue
         send(adapter_names[key], ADDRESSES[key], 'initialize', [ASSET, OWNER, strategy, 10000000 * 10**6, protocol_registry])
         send(adapter_names[key], ADDRESSES[key], 'pokeAPYSnapshots')
-    send(adapter_names['fluid'], ADDRESSES['fluid'], 'initialize', [ASSET, OWNER, strategy, 10000000 * 10**6, MARKETS['fluid']])
+    if 'fluid' in adapter_names:
+        send(adapter_names['fluid'], ADDRESSES['fluid'], 'initialize', [ASSET, OWNER, strategy, 10000000 * 10**6, MARKETS['fluid']])
     send('StrategyRouter', router, 'proposeStrategyAllowlist', [strategy])
     allowlist_eta = int(read('StrategyRouter', router, 'strategyAllowlistEta', [strategy]), 16)
     old_accounts = owned_accounts()
     sample_header = restore(old_accounts, sample_block)
     for key in ['morpho', 'dolomite', 'fluid']:
-        send(adapter_names[key], ADDRESSES[key], 'pokeAPYSnapshots')
+        if key in adapter_names:
+            send(adapter_names[key], ADDRESSES[key], 'pokeAPYSnapshots')
     final_accounts = owned_accounts()
     overrides = {a: {'code': v['code'], 'nonce': hex(int(str(v['nonce']), 0)),
                      'state': {pad(k): pad(value) for k, value in v['storage'].items()}}
                  for a, v in final_accounts.items()}
     result = {'schemaVersion': 1, 'chainId': 42161, 'deployer': OWNER, 'asset': ASSET,
+              'assetProfile': asset_profile, 'activeVenues': list(adapter_names),
               'oldBlock': old_block, 'sampleBlock': sample_block, 'oldHeader': old_header, 'sampleHeader': sample_header,
               'addresses': ADDRESSES, 'stateOverrides': overrides, 'ownedAccounts': final_accounts,
               'constructorProofs': PROOFS, 'transactions': TRANSACTIONS, 'markets': MARKETS,
               'eulerMarketSelection': {'source': 'https://github.com/euler-xyz/euler-labels/blob/master/42161/products.json',
-                                       'positiveMarket': MARKETS['euler'],
+                                       'positiveMarket': MARKETS.get('euler'),
                                        'negativeUnderMinimumMarket': '0x0a1eCC5Fe8C9be3C809844fcBe615B46A869b899',
                                        'reason': 'Use an actual market above the unchanged $100k eligibility floor for positive gas calibration; retain the original negative case.',
                                        'productionApproval': False},
-              'initialization': {'initialized': ['morpho', 'dolomite', 'fluid'], 'deferred': ['aave', 'comet', 'euler', 'venus'], 'allowlistEta': str(allowlist_eta)},
+              'initialization': {'initialized': [key for key in ['morpho', 'dolomite', 'fluid'] if key in adapter_names],
+                                 'deferred': [key for key in ['aave', 'comet', 'euler', 'venus'] if key in adapter_names], 'allowlistEta': str(allowlist_eta)},
               'sourceAcceptanceSha256': hashlib.sha256(acceptance_path.read_bytes()).hexdigest(),
               'builderSha256': hashlib.sha256(pathlib.Path(__file__).read_bytes()).hexdigest(),
               'compiler': cli(['forge', '--version']),
@@ -349,10 +379,11 @@ if __name__ == '__main__':
     parser.add_argument('--old-block', type=int, default=518500000)
     parser.add_argument('--sample-block', type=int, help='Explicit canonical later PPS sampling block.')
     parser.add_argument('--acceptance', type=pathlib.Path, help='Matching source-bound actual-market acceptance receipt.')
+    parser.add_argument('--asset-profile', choices=list(ASSET_PROFILES), default='usdc')
     options = parser.parse_args()
     try:
         build(options.output.resolve(), options.old_block, options.sample_block,
-              options.acceptance.resolve() if options.acceptance else None)
+              options.acceptance.resolve() if options.acceptance else None, options.asset_profile)
     finally:
         g._kill_anvil()
         trace_path = options.output.resolve().parent / 'checkpoint-rpc-trace.json'
