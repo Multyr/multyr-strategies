@@ -1,0 +1,10 @@
+{
+  "status": "CURRENT_FEATURE_SOURCE_BOUND",
+  "sourceCommit": "03596ac4e5c0d0c37b33c90573456656bda22343",
+  "functionalFileCount": 124,
+  "functionalSnapshotSha256": "9064df701ddee3ee6f3fa441405181b91ff1f345fbe6d91bbae548e6db5474c1",
+  "unchangedAcceptedSolidityAndFoundryInputs": 223,
+  "actualAcceptance": "docs/lending-production-remediation-20261101/r25-actual-50-acceptance.json",
+  "actualAcceptanceSha256": "271895edab84f79bc9400b3088652368723e983cf419f184c445602cca703e42",
+  "explanation": "R36 changes validation infrastructure only. All accepted Solidity and Foundry inputs are unchanged; all current functional inputs match this feature commit. Later documentation-only commits may reference this qualified source identity without implying new code execution."
+}

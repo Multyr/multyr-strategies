@@ -1,0 +1,14 @@
+{
+  "status": "COLD_RPC_UNMOCKED_INTEGRATION_PASS",
+  "passed": 4,
+  "failed": 0,
+  "skipped": 0,
+  "suites": 1,
+  "storageCaching": false,
+  "rpcComputeUnitsPerSecond": 20,
+  "endpointRetries": 8,
+  "endpointRetryBackoffMilliseconds": 2000,
+  "log": "deployments/lending-full-validation-20261101/production/coordinator/R38-cold-unmocked.log",
+  "logSha256": "0de003a02e59520d81622b117be5d238a07f3bf83250a5ad687a222b0cdbe44b",
+  "scope": "Same full production Core/Aave real USDC and WETH scenarios on Arbitrum/Base, explicitly disabling storage caching; endpoint-bound retry config, unchanged Solidity/assertions."
+}

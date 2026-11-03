@@ -1,0 +1,29 @@
+{
+  "status": "COMPILATION_GRAPH_PROVENANCE_REMEDIATED_AND_REQUALIFIED",
+  "finding": "A self-reported source hash and shared/partial inspect cache do not establish that a fixture uses the qualified compilation graph. AllocCalc was21390bytes in prior/test-subset outputs versus22765 in fresh canonical full-project/production-only outputs.",
+  "fixes": [
+    "Force a fresh isolated full-project build before constructing each checkpoint.",
+    "Use the same output/cache graph for every ABI and creation-code inspection.",
+    "Record actual encoded constructor arguments and verify fresh creation+arguments hashes before any simulated state overlay.",
+    "Require the approved compilerGraph marker."
+  ],
+  "validation": {
+    "freshFullProjectTemplates": 34,
+    "all34MatchIndependentWindowsAndLinuxProductionGraph": true,
+    "nativeUsdcProfiles": 8,
+    "nativeUsdt0AaveProfiles": 1,
+    "creationBindingsPerUsdcProfile": 29,
+    "creationBindingsUsdt0": 23,
+    "wrongGraphRejected": true,
+    "tamperedCreationShaRejectedBeforeRpc": true
+  },
+  "evidence": [
+    "r44-canonical-runtime-templates.json",
+    "r42-production-structure.json",
+    "r44-native-eight-profiles.json",
+    "r44-usdt0-native.json",
+    "r44-native-provenance-negatives.json",
+    "r46-ci.json"
+  ],
+  "scope": "Graph variation is not a demonstrated Solidity source defect. Deployment qualification binds the approved full-project build and actual constructor arguments; older graph-specific measurements remain historical."
+}

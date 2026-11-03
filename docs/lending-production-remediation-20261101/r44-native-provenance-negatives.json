@@ -1,0 +1,10 @@
+{
+  "status": "NATIVE_COMPILER_PROVENANCE_NEGATIVES_PASS",
+  "differentGraphRejected": true,
+  "differentGraphLog": "deployments/lending-full-validation-20261101/production/coordinator/R44-negative-graph.log",
+  "tamperedFreshCreationShaRejected": true,
+  "rejectedContract": "globalConfig",
+  "rpcCallsBeforeCreationRejection": 0,
+  "financialStateMocks": false,
+  "method": "Actual driver run() on a copied genuine unfunded checkpoint; only creation provenance SHA corrupted. Both cases reject before any state overlay."
+}

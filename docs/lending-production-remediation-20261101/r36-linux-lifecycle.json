@@ -1,0 +1,32 @@
+{
+  "status": "LINUX_REAL_SOCKET_AND_OWNED_CHILD_LIFECYCLE_PASS",
+  "tests": 3,
+  "failed": 0,
+  "foreignListenerPreserved": true,
+  "realTimeWaitReproduced": true,
+  "forceKilledChildReaped": true,
+  "actualNativeLinuxAnvilRestarts": 3,
+  "financialStateMutations": 0,
+  "evidence": [
+    {
+      "path": "script/lending/validation/transaction-gas/runner.py",
+      "sha256": "eaac8d6e5b180e50967920512cc0005fe143a8261947c6b6743550485e57bb4b"
+    },
+    {
+      "path": "script/lending/validation/transaction-gas/test_anvil_lifecycle.py",
+      "sha256": "a71ab08d6ca6e837ae932f1d90ccc29e7f5ac1c77d702aa76d8e1c4ba20ecc5d"
+    },
+    {
+      "path": "deployments/lending-full-validation-20261101/production/coordinator/R31-linux-timewait.log",
+      "sha256": "65dae7faf51e53c90731a990820e79d6e27db9dc3f208bc017f13f23802ff35d"
+    },
+    {
+      "path": "deployments/lending-full-validation-20261101/production/coordinator/R31-linux-lifecycle-after.log",
+      "sha256": "3d372f2c8c0856f4baa63e410d4000988f2e6f45b31a8ab31a7d747f56941069"
+    },
+    {
+      "path": "deployments/lending-full-validation-20261101/production/coordinator/R31-linux-anvil-smoke.log",
+      "sha256": "232c3ebcae83a5509735c0ca6505a7191e510ce79478b0d0a0baa0591c4484e4"
+    }
+  ]
+}

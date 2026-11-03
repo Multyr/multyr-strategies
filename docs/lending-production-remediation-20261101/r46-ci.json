@@ -1,0 +1,64 @@
+{
+  "status": "ALL_REMOTE_FEATURE_SOURCE_GATES_PASS",
+  "sourceCommit": "03596ac4e5c0d0c37b33c90573456656bda22343",
+  "runs": [
+    {
+      "id": 41566438866,
+      "url": "https://github.com/Multyr/multyr-strategies/actions/runs/41566438866",
+      "workflow": "Lending asset matrix",
+      "headSha": "03596ac4e5c0d0c37b33c90573456656bda22343",
+      "conclusion": "success",
+      "runAttempt": 1,
+      "runMetadata": "deployments/lending-full-validation-20261101/production/coordinator/R46-matrix-run.json",
+      "runMetadataSha256": "ef0afaa7a0f1d15e95b14e90ad23f4b7a86b72639c24fe8b4cf2de3c6b6080bf",
+      "jobs": "deployments/lending-full-validation-20261101/production/coordinator/R46-matrix-jobs.json",
+      "jobsSha256": "6f0bd7780686594af92ef4a5bc87d09fd44b00ac4e11a038ac4e056d1f85ea16",
+      "log": "deployments/lending-full-validation-20261101/production/coordinator/R46-matrix-ci.log",
+      "logSha256": "3e0d6fb114cbed3d5ab385ad61e2e6734d9235dd3f16e719c18878d5f6cb7da6"
+    },
+    {
+      "id": 41566438905,
+      "url": "https://github.com/Multyr/multyr-strategies/actions/runs/41566438905",
+      "workflow": "forge-test",
+      "headSha": "03596ac4e5c0d0c37b33c90573456656bda22343",
+      "conclusion": "success",
+      "runAttempt": 1,
+      "runMetadata": "deployments/lending-full-validation-20261101/production/coordinator/R46-forge-run.json",
+      "runMetadataSha256": "702768a4be594e721322ad2c28f7fc6d12e412cc74742da1ca8f2031f1131d16",
+      "jobs": "deployments/lending-full-validation-20261101/production/coordinator/R46-forge-jobs.json",
+      "jobsSha256": "ac1c0ec0bb3d0ae4dc01fcab3e508f30e29d19ee82af0d6aa1a8f47503ad06a8",
+      "log": "deployments/lending-full-validation-20261101/production/coordinator/R46-forge-ci.log",
+      "logSha256": "9c9dcccfe5d89f84e864c82212398e0c307627f4400d70817c1454c748deb51f"
+    }
+  ],
+  "actual": {
+    "passed": 50,
+    "failed": 0,
+    "skipped": 0,
+    "suites": 21,
+    "matchedSourceInputs": 223
+  },
+  "regression": {
+    "passed": 2995,
+    "failed": 0,
+    "skipped": 0,
+    "suites": 203,
+    "verifiedBy": "AssertLendingTestSummary.ps1 on downloaded raw CI log"
+  },
+  "runtimes": 34,
+  "runtimeByteAndTemplateMapsMatchFreshIndependentWindowsBuild": true,
+  "runtimeLimitBytes": 23552,
+  "selectors": 296,
+  "selectorCollisions": 0,
+  "sharedLayouts": 9,
+  "preservedPrefixes": 9,
+  "linuxLifecycleTests": 3,
+  "linuxRealReceiptProfiles": 14,
+  "linuxOperationReceipts": 72,
+  "linuxAdapterSourcesAndRuntimesMatchLocal": true,
+  "downloadedEvidence": "deployments/lending-full-validation-20261101/production/github-035",
+  "artifactMetadata": "deployments/lending-full-validation-20261101/production/coordinator/R46-matrix-artifacts.json",
+  "artifactMetadataSha256": "3e8e8319bb5d0a9f294f3776638c5d9c535f1482aada2f6119ab7af3856edb1e",
+  "coverage": "General-workflow coverage is informational; no coverage threshold or percentage is claimed.",
+  "deploymentAuthorization": false
+}

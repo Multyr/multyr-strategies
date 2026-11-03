@@ -1,6 +1,55 @@
-# Full Lending validation — reopened 2026-11-01
+# Full Lending validation — qualified release 2026-11-03
 
-**Current candidate: NOT_PRODUCTION_READY; remediation continues (2026-11-03).**
+**PRODUCTION_READY for the named validated matrix and approved build/configuration.**
+
+Qualified functional source: `03596ac4e5c0d0c37b33c90573456656bda22343` on `codex/lending-multitoken-multichain`.
+All124 functional inputs match that commit. Subsequent documentation-only changes
+carry the same qualified code. Core/main/shadow remain frozen; no merge or live
+activation is authorized by this qualification.
+
+- Regression:2995 tests/203 suites; actual no-mock markets:50/21, with48 positive
+  cases and2 required rejections. Zero failures or skips in the required gates.
+- All7adapter families have2named chain rows each:14profiles/72real local-fork
+  transaction receipts, independently matched in Linux CI.
+- Genuine Nitro:8USDC profiles plusUSDT0/Aave, using fresh isolated full-project
+  compilation and verified creation bytecode plus encoded constructor arguments.
+  Ordinary withdrawal EMA, economic quotes and full recall pass.
+- All34 canonical runtime templates match fresh independent Windows and Linux
+  production builds; all fit23552bytes.296selectors,9shared layouts and9preserved
+  prefixes pass. Compiler-context variance and its remediation are documented in
+  `lending-production-remediation-20261101/r44-compiler-provenance-remediation.json`.
+- Both current-source GitHub workflows pass:
+  [matrix](https://github.com/Multyr/multyr-strategies/actions/runs/41566438866) and
+  [build/test](https://github.com/Multyr/multyr-strategies/actions/runs/41566438905).
+
+Scope is the named token/chain/market rows below, one underlying per instance.
+wstETH/RLUSD Ethereum Aave and USDT0 Arbitrum Aave are qualified named rows;
+other combinations require their own market/feed/configuration qualification.
+USDT/USDT0 cold-buffer qualification does not qualify frozen warm adapters:
+see CORE-WARM-002 in `LENDING_CORE_OBSERVATIONS.md`. External rewards remain
+disabled; activation requires separate qualification. Reference gas calibration
+binds its measured topology/policies. Guardian/keeper selection, approved market
+caps, live manifest and Safe signing remain per-deployment inputs.
+
+Machine evidence: `lending-full-validation-20261101/final-validation.json`.
+Reproduction: clean-base patch application and all124 functional hashes pass.
+The complete exported patch, file manifest, checksums and independent full-file
+integrity record are placed in `deployments/lending-full-validation-20261101/final`.
+
+## Historical remediation record
+
+The chronological states below are superseded by this release record; earlier
+pending/NOT_PRODUCTION_READY labels describe their own historical source cycles.
+
+**Historical reopened state: NOT_PRODUCTION_READY (superseded below).**
+R42-R44: both source53 CI workflows pass, including2995/203,50/21 andLinux14/72.
+Final comparison exposed compilation-context-dependent AllocCalc templates:
+21390bytes in the full integration graph,22765 in the production-only graph.
+Fresh Windows/Linux production-only builds agree for all34templates; both
+variants fit the unchanged23552buffer. The Native driver now forces an isolated
+full-project compile and verifies fresh creation+encoded-constructor hashes.
+R44Native requalification and current03596ac CI remain pending; oldNative
+records are historical until the new constructor-bound driver passes.
 2026-11-03 — R25: three further controlled counterexamples are fixed: readable
 PoolLike ownership before first validation and aggregate principal after optimizing
 accrued yield. All16 PoolGuard cases pass. New actual wstETH/RLUSD Ethereum
@@ -11,8 +60,25 @@ all14 local-fork receipt profiles/72receipts,2995regression tests/203suites
 and8genuine Native profiles, all with zero failures/skips. Cold quotes cover
 observed wrapper gas in all8profiles; ordinary EMA quotes cover actual wrapper
 withdrawals in every dedicated family. Functional hashes are refreshed for R25.
-Exact feature-commit CI, reproducible release and owner-specific operational
-manifest/review remain open; no production approval or merge.
+R36 fixes Linux receipt-runner endpoint/process lifecycle and the Native
+checkpoint receipt-token guard. Three Linux regression cases pass; the real
+USDT0/Aave funded-receipt counterexample now rejects projection correctly.
+USDT0/Aave genuine Native keeper, ordinary withdrawal EMA and full recall pass
+on the corrected driver. The final default USDC eight-profile rerun also passes. The source patch
+applies to a clean base worktree and all124functional hashes match. Exact
+feature-source CI and final release export remain open; no merge.
+R38 corrects Foundry 1.4.2 endpoint retry binding: vm.createSelectFork
+overrides CLI retry/backoff settings with endpoint configuration. All seven
+public CI URL keys now carry retries8/backoff2000ms. A cold-RPC rerun with
+storage caching disabled passes all4 original real Core/Aave scenarios.
+Guardian/keeper selection, market caps, deployment manifest and Safe signing
+belong to deployment authorization; they are not extra source-code release gates.
+The frozen Core/main/shadow will not be activated or changed by this work.
+Qualification is restricted to the tested Core/buffer configurations.
+`LENDING_CORE_OBSERVATIONS.md` separately records CORE-WARM-002: the Lending
+USDT/USDT0 cold-buffer results do not qualify frozen warm adapters for tokens
+with nonstandard ERC20 return data. External reward activation and unmeasured
+chain/market/gas configurations require their own qualification.
 2026-11-03 — R20/R21: strict Dolomite account/token validation, actual supply
 credit, tuple/market ownership guards, retained failed-emergency principal and
 disabled-market exits pass 13 controlled cases and 155 related tests. Three
@@ -126,7 +192,8 @@ preserved. All seven current Router-enabled shadow adapters were queried; Aave,
 Comet and Venus reward-controller/helper pipelines are zero. Unavailable getters
 remain unavailable; this does not validate future external reward activation.
 
-Remaining release gates: keeper-wrapper transaction gas validation and
+Historical R0/R1 gate record (superseded by the current gates at the top):
+keeper-wrapper transaction gas validation and
 production calibration; external reward paths if enabled;
 owner-specific operational migration/recovery manifest and review; whole-candidate independent
 review, reproducible evidence, and CI on the exact feature commit. The current
@@ -156,13 +223,13 @@ belong on codex/lending-multitoken-multichain. The prior tested candidate is bas
 | Gate | Required proof | State |
 |---|---|---|
 | F1 | Official market inventory and deployed API compatibility for Aave, Comet, Morpho, Euler, Fluid, Dolomite and Venus | PASS for the named validated matrix; capped/unsupported cases explicitly excluded |
-| F2 | Actual deposit, yield/NAV observation, partial withdrawal and full recall for each adapter on compatible real markets | PASS for all seven; expanded tracked gate 32/0/0 (31 positive tests, one capped-market rejection) |
-| F3 | Additional underlying tokens, including USDT and PYUSD where markets exist; 6/18 and other available decimals; approval behavior | PASS for named USDC/USDT/PYUSD/WETH rows, including non-standard USDT approval and BSC 18-decimal bridged stables |
+| F2 | Actual deposit, yield/NAV observation, partial withdrawal and full recall for each adapter on compatible real markets | PASS: R25 acceptance50/21 (48 positive integration/lifecycle cases,2 negative rejections), plus14 market profiles/72 mined local-fork operation receipts |
+| F3 | Additional underlying tokens, including USDT and PYUSD where markets exist; 6/18 and other available decimals; approval behavior | PASS for named USDC/USDT/PYUSD/WETH rows, BSC18-decimal stables, EthereumAave wstETH/RLUSD and ArbitrumAave USDT0. USDT0/Aave genuine Native keeper, ordinary EMA and full recall also pass (R36) |
 | F4 | Multiple supported chains across the full adapter set; unsupported combinations proven, not quietly substituted | PASS: every family has at least two named chains; original Aave Arbitrum/Base final-candidate unmocked rerun 4/0/0 |
 | F5 | Strategy scoring, USD tiers, caps, confidence, liquidity, APY and benefit gate checked against independent calculations using pinned real market/oracle observations | PASS: independent APR, USD/confidence/caps/seed, EMA, normalized scores and fixed-cost gate; dynamic gas quoting retains separate model/ArbOS limits |
 | F6 | Real production core/strategy integrated multi-adapter allocation and rebalance with delivered amounts, accounting and recall assertions | PASS for all seven families; USDT/PYUSD/WETH execute both yield-driven and protection plans, epochs and recall |
-| F7 | Fix confirmed compatibility/math/security defects without weakening policy; full regression, live acceptance, size/layout/selector and CI guards refreshed | PASS: 2871 regression tests / 194 suites, 36 no-mock fork tests, 21 separate compatibility tests; zero failures/skips; 32 runtime and nine layout gates |
-| F8 | Independent Claude sessions, critical reconciliation, final source-bound evidence and complete reproducible patch | PASS: D2/D3/D4 reconciled; clean-clone 32 runtime hashes and 32 actual tests reproduced; normalized 201 source inputs and all 91 changed functional files match |
+| F7 | Compatibility/math/security fixes and complete regression, actual markets, size/layout/selectors and CI | PASS:2995/203,50/21,34runtimes,296selectors,9layouts+9prefixes; both source03596ac workflows green; Linux14profiles/72receipts |
+| F8 | Independent Claude review, critical reconciliation and reproducible source-bound release | PASS: reviews reconciled;124functional inputs and clean-base source reproduction match; canonical constructor-bound Native9profiles pass; final artifact integrity accompanies the exported patch |
 
 ## Non-negotiable real-data acceptance
 

@@ -1,0 +1,64 @@
+{
+  "status": "USDT0_AAVE_GENUINE_NATIVE_KEEPER_EMA_RECALL_PASS",
+  "chainId": 42161,
+  "asset": "0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9",
+  "profile": "usdt0-aave",
+  "canonicalBlock": 520681066,
+  "blockHash": "0x785f99208dd3c993ed717cd213350d1ba62bb383e978c7c781ef7a1eebac6cce",
+  "fundingMethod": "CANONICAL_USDT0_HOLDER_CORE_DEPOSIT",
+  "holderDepositRaw": "80001001586",
+  "noSwapOrSyntheticCredit": true,
+  "coldQuote": {
+    "l2Gas": "8146224",
+    "posterWei": "0",
+    "executionWei": "162973357344000",
+    "costUSD6": "476093"
+  },
+  "nativeWrapperGas": {
+    "keeper-0": "886121",
+    "keeper-1": "1107637"
+  },
+  "ordinaryWithdrawalObservation": {
+    "count": "3",
+    "updatedAt": "1793654529",
+    "emaWithdrawGas": "150097",
+    "actualNativeCoreWithdrawalGasUsed": [
+      "544603",
+      "468552",
+      "466369",
+      "466369"
+    ],
+    "usedDefaults": false,
+    "l2Gas": "2773209",
+    "costUSD6": "162077",
+    "requestsRaw": [
+      "31780396629",
+      "100000000",
+      "100000000",
+      "100000000"
+    ],
+    "nativePriceWords": [
+      "0",
+      "0",
+      "400120000000",
+      "20000000",
+      "6000",
+      "20006000"
+    ],
+    "configuredCooldownSeconds": "300",
+    "generatedBlocks": 76,
+    "generatedEndTimestamp": "1793654529",
+    "counterfactualAccrualRaw": "37779"
+  },
+  "recalledRaw": "38320522547",
+  "checkpointSha256": "500334051955efa0edd19c4d60e4bb72816228ebb3b958997f4ffd0bfd08f1eb",
+  "simulatorSha256": "db807620bf68818e778776fa587acd65bf32d5866d4f4220c0bce30eb995729a",
+  "raw": "deployments/lending-full-validation-20261101/production/keeper-gas/R36-usdt0/native-result.json",
+  "rawSha256": "414c67458e646b5b0f9473c983bfad4d502facb0f2456613bc296d66a06d4269",
+  "limits": [
+    "Aave USDT0 only; does not qualify other6families for USDT0.",
+    "Frozen Core cold-buffer profile; known USDT warm-Core incompatibility is outside strategy source and is not masked.",
+    "Genuine Nitro validation=true; only constructor-proven own unfunded fixture accounts projected, no token/protocol/precompile financial overrides."
+  ],
+  "readiness": "NOT_PRODUCTION_READY"
+}

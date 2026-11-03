@@ -1,0 +1,8 @@
+{
+  "status": "HOST_COLLATION_COUNTEREXAMPLE_FIXED",
+  "hostCulture": "it-CH",
+  "beforeCultureDigest": "63ad2c9b74e650efc95886737441b11b93b15b149adf1debae664a323f6343f2",
+  "afterOrdinalDigest": "87ecd579b72c352c4899f9eb8f69a7999de19c7f475770557e3053078faddd0d",
+  "independentPythonDigest": "87ecd579b72c352c4899f9eb8f69a7999de19c7f475770557e3053078faddd0d",
+  "functionalFileCount": 124
+}

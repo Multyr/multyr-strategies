@@ -1,0 +1,13 @@
+{
+  "status": "ALL_SEVEN_CI_RPC_ENDPOINT_POLICIES_RESOLVE",
+  "endpoints": 7,
+  "retries": 8,
+  "retryBackoffMilliseconds": 2000,
+  "computeUnitsPerSecond": 20,
+  "foundryVersion": "1.4.2",
+  "primarySources": [
+    "https://github.com/foundry-rs/foundry/blob/v1.4.2/crates/cheatcodes/src/evm/fork.rs",
+    "https://github.com/foundry-rs/foundry/blob/v1.4.2/crates/cheatcodes/src/config.rs"
+  ],
+  "finding": "create_fork_request clones evm_opts then overwrites fork_retries/fork_retry_backoff from endpoint config. rpc_endpoint checks configured keys before treating a string as raw URL. Binding literal URL keys preserves intended retry policy without changing Solidity tests or assertions."
+}

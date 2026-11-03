@@ -1,11 +1,11 @@
 {
-  "status": "LOCAL_ACCEPTANCE_PASS_PENDING_CI_AND_OPERATIONAL_REVIEW",
+  "status": "COMPLETE_FOR_VALIDATED_MATRIX",
   "baseCommit": "211f1a0a4cb9c63232ae18dac24ccb921e5a4699",
   "branch": "codex/lending-multitoken-multichain",
   "frozenCoreCommit": "9a9d120709de99a6216e9fe75d36e9ffdcb1a4d9",
-  "functionalHashPolicy": "Changed/new Solidity, PowerShell, Python, script/test JSON, foundry.toml, .gitignore and both release workflows; UTF-8 LF, sorted path+hash lines with terminal LF",
-  "functionalSnapshotSha256": "46df03ae2373ec69d42d07d0d6a1f576805b2ba0468725ef3087d16a15f6c817",
-  "functionalFileCount": 123,
+  "functionalHashPolicy": "Changed/new Solidity, PowerShell, Python, script/test JSON, foundry.toml, .gitignore and both release workflows; UTF-8 LF, ordinal-sorted path+hash lines with terminal LF",
+  "functionalSnapshotSha256": "9064df701ddee3ee6f3fa441405181b91ff1f345fbe6d91bbae548e6db5474c1",
+  "functionalFileCount": 124,
   "functionalFiles": [
     {
       "path": ".github/workflows/forge-test.yml",
@@ -13,7 +13,7 @@
     },
     {
       "path": ".github/workflows/lending-asset-matrix.yml",
-      "utf8LfSha256": "6a84ca05ceb36524b92a7934f7ab21c655382a0fa4c640c503046f2022eb51ad"
+      "utf8LfSha256": "3671433108eca06de865962cbb57734dd93878fc1e4f3a3cb02fcb9015baab2b"
     },
     {
       "path": ".gitignore",
@@ -37,27 +37,11 @@
     },
     {
       "path": "script/ExportLendingCandidate.ps1",
-      "utf8LfSha256": "cfaee9d99fd21975bfa9067052d6b03c0113de72c4ede8206b5fede76ff29aa9"
+      "utf8LfSha256": "a4da0cd8d447e16fe3d4734e6eace815af50af094a30d94f92d622b4b78f8425"
     },
     {
       "path": "script/GasEstimatorPreflight.sol",
       "utf8LfSha256": "60ce28fd24f6b26349dbbd3d16682ecb94495b383148e67918193865a472bf56"
-    },
-    {
-      "path": "script/lending/validation/keeper-gas/build_checkpoint.py",
-      "utf8LfSha256": "eb8245dca74b3cf18e6b07babce7a0788e55a25d45de9d8b4a22cb90d0af791e"
-    },
-    {
-      "path": "script/lending/validation/keeper-gas/native_simulation.py",
-      "utf8LfSha256": "25543633754a8fb9b4f53206145a0d7bb5725837f11a4d3ffba6f5222824633f"
-    },
-    {
-      "path": "script/lending/validation/transaction-gas/cases.json",
-      "utf8LfSha256": "4d2f2223130d0e05235dda4a24dd2dbcf4db1169ac8573132d9f3b7034b5e1ef"
-    },
-    {
-      "path": "script/lending/validation/transaction-gas/runner.py",
-      "utf8LfSha256": "9644d7d222528b1444f059235079675bd8d844e2044597f8e98f93a7bd66eafd"
     },
     {
       "path": "script/RecordLendingActualHeaders.ps1",
@@ -78,6 +62,26 @@
     {
       "path": "script/VerifyPinnedRuntime.ps1",
       "utf8LfSha256": "b4e16b2dbe5a48f80c292ec40e88027dad30adef2b4e0c80258cbd9048c8b793"
+    },
+    {
+      "path": "script/lending/validation/keeper-gas/build_checkpoint.py",
+      "utf8LfSha256": "b7c72d69bb34a1dce92bde7198450997fbebe518045a2efd33994594b9fb661d"
+    },
+    {
+      "path": "script/lending/validation/keeper-gas/native_simulation.py",
+      "utf8LfSha256": "639e350c2ef635e80d7eeefc493712da87bebd7339640e0ca374a596da9e5f53"
+    },
+    {
+      "path": "script/lending/validation/transaction-gas/cases.json",
+      "utf8LfSha256": "4d2f2223130d0e05235dda4a24dd2dbcf4db1169ac8573132d9f3b7034b5e1ef"
+    },
+    {
+      "path": "script/lending/validation/transaction-gas/runner.py",
+      "utf8LfSha256": "d99170f9da54bb6aa4ac34c0bc42443ed3ebafc0b872e6602e3fecaa90bb46da"
+    },
+    {
+      "path": "script/lending/validation/transaction-gas/test_anvil_lifecycle.py",
+      "utf8LfSha256": "a71ab08d6ca6e837ae932f1d90ccc29e7f5ac1c77d702aa76d8e1c4ba20ecc5d"
     },
     {
       "path": "src/strategies/usdc-lending/adapters/lending/AaveV3USDCmarket.sol",
@@ -188,6 +192,142 @@
       "utf8LfSha256": "77422bc7e6f17567070e05ae9eb17304c1cd21b5400b33559418361ec43d5d1f"
     },
     {
+      "path": "test/strategies/usdc-lending/Allocation_Consistency.t.sol",
+      "utf8LfSha256": "65462dc693262564c8e4e0c5a4b9cd08055adf0b6ba675374853356e2d28f7f2"
+    },
+    {
+      "path": "test/strategies/usdc-lending/CapDriftMandate.t.sol",
+      "utf8LfSha256": "718fc861904c720197ddee56df1b26aa6a7eb554b2371fdb69d050f87493183f"
+    },
+    {
+      "path": "test/strategies/usdc-lending/DelegatecallEquivalence.t.sol",
+      "utf8LfSha256": "ab1dc34cea53a7392d951e427bf1fa5d5e26f9b840f4dfa599abe55dbb30ee43"
+    },
+    {
+      "path": "test/strategies/usdc-lending/DepositIdleDenominator.t.sol",
+      "utf8LfSha256": "7ce4038037f25ebb3460ab5da2013545309379bde280b45b8a63d4243112dcc1"
+    },
+    {
+      "path": "test/strategies/usdc-lending/DolomiteConfigCorrectness.t.sol",
+      "utf8LfSha256": "5fc3b54ffbb3ddfd7f25261caebe023b5825afbecd94e293b90a2b5ed5739357"
+    },
+    {
+      "path": "test/strategies/usdc-lending/Dynamic_Seed.t.sol",
+      "utf8LfSha256": "d4682e8ec74527688ab5edf51a413272b349bae4a84db2da3b695345c2ed50dc"
+    },
+    {
+      "path": "test/strategies/usdc-lending/F_SCORING_INV2_CapFix.t.sol",
+      "utf8LfSha256": "7d1e614fbde92e9fd2f30fc4a4fe6c20a57c64e7e979f999b2f8cc444fdef676"
+    },
+    {
+      "path": "test/strategies/usdc-lending/LendingDeploymentManifest.t.sol",
+      "utf8LfSha256": "a7124d80edf6ed23ab4311d955afad7ce538253397d9090173f6258c2b39ccb7"
+    },
+    {
+      "path": "test/strategies/usdc-lending/LendingLensCapParity.t.sol",
+      "utf8LfSha256": "6e6bffefd4fe51aa8467ec23734014026f20fe59db691cced47d473d55d79faf"
+    },
+    {
+      "path": "test/strategies/usdc-lending/LendingStrategyUpkeep.t.sol",
+      "utf8LfSha256": "f74c2cd2e594338a7bcdaf4c850a24f7ae6791b5db735ba86c1b46ba8f9071c1"
+    },
+    {
+      "path": "test/strategies/usdc-lending/MorphoDeploymentWiring.t.sol",
+      "utf8LfSha256": "790f625547dae1dccf6e07e22d43ea7bb11d7aa77e9e2fa867064d4bfa05e71f"
+    },
+    {
+      "path": "test/strategies/usdc-lending/MorphoRegistryBound.t.sol",
+      "utf8LfSha256": "4803da278621eac0495ebedf925b83ddf3499464d6d5307a31e8cd9fb005a801"
+    },
+    {
+      "path": "test/strategies/usdc-lending/NativeL1FeeInfo.t.sol",
+      "utf8LfSha256": "2c9c8d9a1f0809e4e7c582012d1dc88a6a67e91e3cfd34b9bc648d6e3ebc3dce"
+    },
+    {
+      "path": "test/strategies/usdc-lending/OPStackFeeInfo.t.sol",
+      "utf8LfSha256": "15174e67074150f95b247efc3ea7819b966d973e9dd16fd83d50a3feee00fd08"
+    },
+    {
+      "path": "test/strategies/usdc-lending/OracleAssetValuation.t.sol",
+      "utf8LfSha256": "fe53f1daae5ea6c984fc54022446e7a1e690761c839a6cffb5dd1a553e9be7c1"
+    },
+    {
+      "path": "test/strategies/usdc-lending/PlanEstimatorRequirements.t.sol",
+      "utf8LfSha256": "1085baea283b43cb665d122b143e237190102ac585a484e4c62e9e26131a715d"
+    },
+    {
+      "path": "test/strategies/usdc-lending/PolygonNativeGas.t.sol",
+      "utf8LfSha256": "954b8f19abe2c0ac61c426165151c5377719260f630c93c1ee4c811b5ffc8136"
+    },
+    {
+      "path": "test/strategies/usdc-lending/ReadOnlyGasEstimator.t.sol",
+      "utf8LfSha256": "dd27a1b25fd7d6586e31200da730d9a94733f4f142573b044e3b2825a2c9d364"
+    },
+    {
+      "path": "test/strategies/usdc-lending/ReadOnlyGasIntegration.t.sol",
+      "utf8LfSha256": "3b801eca35d690b1c8934ba300018dc51e12ec4298f93d79df8974a1f98ea901"
+    },
+    {
+      "path": "test/strategies/usdc-lending/RebalanceEngineV10.t.sol",
+      "utf8LfSha256": "99ab4c8f83ee3369260e5afba9efef99a1f73b3cc454ab49a5401560b313874e"
+    },
+    {
+      "path": "test/strategies/usdc-lending/RelCapStability.t.sol",
+      "utf8LfSha256": "0dd48437dc3abef71a364c6675c29edc0dc01cc49d52328b228b74af9e965547"
+    },
+    {
+      "path": "test/strategies/usdc-lending/RemediationSprint.t.sol",
+      "utf8LfSha256": "916ab5ee842a1d48b403ff45cfd5eaa197eda874e1bdfd9e69c0c3a1787d95d8"
+    },
+    {
+      "path": "test/strategies/usdc-lending/ReviewAvailabilityRemediation.t.sol",
+      "utf8LfSha256": "b5e88b682fe30b615fe2e703d02dd3246a52695aede3a3506b55f82b9fb63eff"
+    },
+    {
+      "path": "test/strategies/usdc-lending/RouterHarvestFork.t.sol",
+      "utf8LfSha256": "ad1fd014b9dcd600d6b5b3d8e8127dce7e4cbc860d195327f41be3d728453a8a"
+    },
+    {
+      "path": "test/strategies/usdc-lending/Scoring_Model.t.sol",
+      "utf8LfSha256": "c5bdfcaf3fd9c9801d074d66c3cec45f8d1a23fa90d9b268795a5e930778dac7"
+    },
+    {
+      "path": "test/strategies/usdc-lending/StabilityEMA.t.sol",
+      "utf8LfSha256": "a96251981fcf0ee545d710f0c671aaf3415b0d5e77c82a12a4d566488b268ed2"
+    },
+    {
+      "path": "test/strategies/usdc-lending/StrategyBootstrapper.t.sol",
+      "utf8LfSha256": "7ebb3ddb14d271d3db6e562daf4d727fc7db674b9b114faa23a53ea403bdfb83"
+    },
+    {
+      "path": "test/strategies/usdc-lending/StrategySettingsCopy.t.sol",
+      "utf8LfSha256": "e6bf65528f6f28ff72cfdd8bb385b1d09f682798c895bf94d0d5596afb0c1c50"
+    },
+    {
+      "path": "test/strategies/usdc-lending/TVL_Confidence.t.sol",
+      "utf8LfSha256": "78e5350a515a4e4bee2766f7a3705de47ee47c06e0c442bd40a11d44dc14fb5b"
+    },
+    {
+      "path": "test/strategies/usdc-lending/UsdcMultiLendingVault.fuzz.t.sol",
+      "utf8LfSha256": "46497c7a354f5363a90102961b487980a315af911f0c1036bd47da664257176c"
+    },
+    {
+      "path": "test/strategies/usdc-lending/UsdcMultiLendingVault.invariant.t.sol",
+      "utf8LfSha256": "ac29c279910964cee0768f8210dff5c0edf02e2198ca15567cae03b65e820754"
+    },
+    {
+      "path": "test/strategies/usdc-lending/UsdcMultiLendingVault.t.sol",
+      "utf8LfSha256": "d2a483ef28ace7f6a3c75c95f3f366229fd4892c203bf68fc985256f1de174ae"
+    },
+    {
+      "path": "test/strategies/usdc-lending/VenusAccrualRecall.t.sol",
+      "utf8LfSha256": "8ab2554bb324f76cee72ab86ae08589b1898b2b2ccc4b9facccb3120c1a39736"
+    },
+    {
+      "path": "test/strategies/usdc-lending/WstEthUsdPriceFeed.t.sol",
+      "utf8LfSha256": "865442c1dde32c6f7ed76e531fa2752e2b9ebf97bf1e6ae6a62a728520a910b6"
+    },
+    {
       "path": "test/strategies/usdc-lending/adapters/AaveV3USDCAdapter.t.sol",
       "utf8LfSha256": "baae1250dedb038564fd5c06cd04e32672dd78af71d9c88070856d73d5271f61"
     },
@@ -232,32 +372,28 @@
       "utf8LfSha256": "f397e6112ddcba82c0aa29d4f919b70ea064bd03b0b377c27fe40fbb495ce346"
     },
     {
-      "path": "test/strategies/usdc-lending/Allocation_Consistency.t.sol",
-      "utf8LfSha256": "65462dc693262564c8e4e0c5a4b9cd08055adf0b6ba675374853356e2d28f7f2"
+      "path": "test/strategies/usdc-lending/fork/CometPublishedTotals.fork.t.sol",
+      "utf8LfSha256": "0ec0ab0352bd44ccaabe38ae3ef5dbf00c5506702059cd8b59e96338b0a35bae"
     },
     {
-      "path": "test/strategies/usdc-lending/CapDriftMandate.t.sol",
-      "utf8LfSha256": "718fc861904c720197ddee56df1b26aa6a7eb554b2371fdb69d050f87493183f"
+      "path": "test/strategies/usdc-lending/fork/LendingAssetMatrix.fork.t.sol",
+      "utf8LfSha256": "fafeb01d2f0c483bc09a5d65181fd9c74273c8a7ab5e97acc3188b9a109e51e3"
     },
     {
-      "path": "test/strategies/usdc-lending/DelegatecallEquivalence.t.sol",
-      "utf8LfSha256": "ab1dc34cea53a7392d951e427bf1fa5d5e26f9b840f4dfa599abe55dbb30ee43"
+      "path": "test/strategies/usdc-lending/fork/LendingCoreMatrix.fork.t.sol",
+      "utf8LfSha256": "86c8a6b020551bc4b023eff440a360d7648e5a1e2c3fe5d67da37cef931042b7"
     },
     {
-      "path": "test/strategies/usdc-lending/DepositIdleDenominator.t.sol",
-      "utf8LfSha256": "7ce4038037f25ebb3460ab5da2013545309379bde280b45b8a63d4243112dcc1"
+      "path": "test/strategies/usdc-lending/fork/LendingRewardRoutes.fork.t.sol",
+      "utf8LfSha256": "34152d86f18a5f5e3268bee7eb419df26199824830abbd4b3407d49e97a89958"
     },
     {
-      "path": "test/strategies/usdc-lending/DolomiteConfigCorrectness.t.sol",
-      "utf8LfSha256": "5fc3b54ffbb3ddfd7f25261caebe023b5825afbecd94e293b90a2b5ed5739357"
+      "path": "test/strategies/usdc-lending/fork/LendingStrategyMatrix.fork.t.sol",
+      "utf8LfSha256": "2cadfaeba28cbac358c2ab5837f3497109f81cb4449c60a257b2b2411e58a0ae"
     },
     {
-      "path": "test/strategies/usdc-lending/Dynamic_Seed.t.sol",
-      "utf8LfSha256": "d4682e8ec74527688ab5edf51a413272b349bae4a84db2da3b695345c2ed50dc"
-    },
-    {
-      "path": "test/strategies/usdc-lending/F_SCORING_INV2_CapFix.t.sol",
-      "utf8LfSha256": "7d1e614fbde92e9fd2f30fc4a4fe6c20a57c64e7e979f999b2f8cc444fdef676"
+      "path": "test/strategies/usdc-lending/fork/LendingUnmockedE2E.fork.t.sol",
+      "utf8LfSha256": "1d466d1f135c8a590ed49a3746b8db04baf6134e99250b48d8487c04ba25a9e6"
     },
     {
       "path": "test/strategies/usdc-lending/fork/actual/AaveAdditionalRealAssets.t.sol",
@@ -348,96 +484,12 @@
       "utf8LfSha256": "0e5a90460d25bd6282e8c90feb780bb3d0090588c4d5b065647e221f14f8dc44"
     },
     {
-      "path": "test/strategies/usdc-lending/fork/CometPublishedTotals.fork.t.sol",
-      "utf8LfSha256": "0ec0ab0352bd44ccaabe38ae3ef5dbf00c5506702059cd8b59e96338b0a35bae"
-    },
-    {
-      "path": "test/strategies/usdc-lending/fork/LendingAssetMatrix.fork.t.sol",
-      "utf8LfSha256": "fafeb01d2f0c483bc09a5d65181fd9c74273c8a7ab5e97acc3188b9a109e51e3"
-    },
-    {
-      "path": "test/strategies/usdc-lending/fork/LendingCoreMatrix.fork.t.sol",
-      "utf8LfSha256": "86c8a6b020551bc4b023eff440a360d7648e5a1e2c3fe5d67da37cef931042b7"
-    },
-    {
-      "path": "test/strategies/usdc-lending/fork/LendingRewardRoutes.fork.t.sol",
-      "utf8LfSha256": "34152d86f18a5f5e3268bee7eb419df26199824830abbd4b3407d49e97a89958"
-    },
-    {
-      "path": "test/strategies/usdc-lending/fork/LendingStrategyMatrix.fork.t.sol",
-      "utf8LfSha256": "2cadfaeba28cbac358c2ab5837f3497109f81cb4449c60a257b2b2411e58a0ae"
-    },
-    {
-      "path": "test/strategies/usdc-lending/fork/LendingUnmockedE2E.fork.t.sol",
-      "utf8LfSha256": "1d466d1f135c8a590ed49a3746b8db04baf6134e99250b48d8487c04ba25a9e6"
-    },
-    {
       "path": "test/strategies/usdc-lending/helpers/LendingOracleTestFixture.sol",
       "utf8LfSha256": "bde59740a10ce2dd6e6f91b958200527110583559f2f16261233251f8dbda8a4"
     },
     {
-      "path": "test/strategies/usdc-lending/LendingDeploymentManifest.t.sol",
-      "utf8LfSha256": "a7124d80edf6ed23ab4311d955afad7ce538253397d9090173f6258c2b39ccb7"
-    },
-    {
-      "path": "test/strategies/usdc-lending/LendingLensCapParity.t.sol",
-      "utf8LfSha256": "6e6bffefd4fe51aa8467ec23734014026f20fe59db691cced47d473d55d79faf"
-    },
-    {
-      "path": "test/strategies/usdc-lending/LendingStrategyUpkeep.t.sol",
-      "utf8LfSha256": "f74c2cd2e594338a7bcdaf4c850a24f7ae6791b5db735ba86c1b46ba8f9071c1"
-    },
-    {
       "path": "test/strategies/usdc-lending/lens/Lens_Core_Parity.t.sol",
       "utf8LfSha256": "a899fd1b35b7ffcc523eda9c6eada7940c3d505ba833a5501df3ea49a34eb3ec"
-    },
-    {
-      "path": "test/strategies/usdc-lending/MorphoDeploymentWiring.t.sol",
-      "utf8LfSha256": "790f625547dae1dccf6e07e22d43ea7bb11d7aa77e9e2fa867064d4bfa05e71f"
-    },
-    {
-      "path": "test/strategies/usdc-lending/MorphoRegistryBound.t.sol",
-      "utf8LfSha256": "4803da278621eac0495ebedf925b83ddf3499464d6d5307a31e8cd9fb005a801"
-    },
-    {
-      "path": "test/strategies/usdc-lending/NativeL1FeeInfo.t.sol",
-      "utf8LfSha256": "2c9c8d9a1f0809e4e7c582012d1dc88a6a67e91e3cfd34b9bc648d6e3ebc3dce"
-    },
-    {
-      "path": "test/strategies/usdc-lending/OPStackFeeInfo.t.sol",
-      "utf8LfSha256": "15174e67074150f95b247efc3ea7819b966d973e9dd16fd83d50a3feee00fd08"
-    },
-    {
-      "path": "test/strategies/usdc-lending/OracleAssetValuation.t.sol",
-      "utf8LfSha256": "fe53f1daae5ea6c984fc54022446e7a1e690761c839a6cffb5dd1a553e9be7c1"
-    },
-    {
-      "path": "test/strategies/usdc-lending/PlanEstimatorRequirements.t.sol",
-      "utf8LfSha256": "1085baea283b43cb665d122b143e237190102ac585a484e4c62e9e26131a715d"
-    },
-    {
-      "path": "test/strategies/usdc-lending/PolygonNativeGas.t.sol",
-      "utf8LfSha256": "954b8f19abe2c0ac61c426165151c5377719260f630c93c1ee4c811b5ffc8136"
-    },
-    {
-      "path": "test/strategies/usdc-lending/ReadOnlyGasEstimator.t.sol",
-      "utf8LfSha256": "dd27a1b25fd7d6586e31200da730d9a94733f4f142573b044e3b2825a2c9d364"
-    },
-    {
-      "path": "test/strategies/usdc-lending/ReadOnlyGasIntegration.t.sol",
-      "utf8LfSha256": "3b801eca35d690b1c8934ba300018dc51e12ec4298f93d79df8974a1f98ea901"
-    },
-    {
-      "path": "test/strategies/usdc-lending/RebalanceEngineV10.t.sol",
-      "utf8LfSha256": "99ab4c8f83ee3369260e5afba9efef99a1f73b3cc454ab49a5401560b313874e"
-    },
-    {
-      "path": "test/strategies/usdc-lending/RelCapStability.t.sol",
-      "utf8LfSha256": "0dd48437dc3abef71a364c6675c29edc0dc01cc49d52328b228b74af9e965547"
-    },
-    {
-      "path": "test/strategies/usdc-lending/RemediationSprint.t.sol",
-      "utf8LfSha256": "916ab5ee842a1d48b403ff45cfd5eaa197eda874e1bdfd9e69c0c3a1787d95d8"
     },
     {
       "path": "test/strategies/usdc-lending/replay-defense/LendingReplayDefense.t.sol",
@@ -448,167 +500,57 @@
       "utf8LfSha256": "a2e5fe296907b89692351865144f0888659e44abef01bbf0dcb2cf28b443c95c"
     },
     {
-      "path": "test/strategies/usdc-lending/ReviewAvailabilityRemediation.t.sol",
-      "utf8LfSha256": "b5e88b682fe30b615fe2e703d02dd3246a52695aede3a3506b55f82b9fb63eff"
-    },
-    {
-      "path": "test/strategies/usdc-lending/RouterHarvestFork.t.sol",
-      "utf8LfSha256": "ad1fd014b9dcd600d6b5b3d8e8127dce7e4cbc860d195327f41be3d728453a8a"
-    },
-    {
-      "path": "test/strategies/usdc-lending/Scoring_Model.t.sol",
-      "utf8LfSha256": "c5bdfcaf3fd9c9801d074d66c3cec45f8d1a23fa90d9b268795a5e930778dac7"
-    },
-    {
-      "path": "test/strategies/usdc-lending/StabilityEMA.t.sol",
-      "utf8LfSha256": "a96251981fcf0ee545d710f0c671aaf3415b0d5e77c82a12a4d566488b268ed2"
-    },
-    {
-      "path": "test/strategies/usdc-lending/StrategyBootstrapper.t.sol",
-      "utf8LfSha256": "7ebb3ddb14d271d3db6e562daf4d727fc7db674b9b114faa23a53ea403bdfb83"
-    },
-    {
-      "path": "test/strategies/usdc-lending/StrategySettingsCopy.t.sol",
-      "utf8LfSha256": "e6bf65528f6f28ff72cfdd8bb385b1d09f682798c895bf94d0d5596afb0c1c50"
-    },
-    {
       "path": "test/strategies/usdc-lending/swap/RewardSwapHelper.t.sol",
       "utf8LfSha256": "9a3e4c021cada15b5e8dab9149745d68d630a8ae9ca6fc6f807e64d766fbe8b1"
-    },
-    {
-      "path": "test/strategies/usdc-lending/TVL_Confidence.t.sol",
-      "utf8LfSha256": "78e5350a515a4e4bee2766f7a3705de47ee47c06e0c442bd40a11d44dc14fb5b"
-    },
-    {
-      "path": "test/strategies/usdc-lending/UsdcMultiLendingVault.fuzz.t.sol",
-      "utf8LfSha256": "46497c7a354f5363a90102961b487980a315af911f0c1036bd47da664257176c"
-    },
-    {
-      "path": "test/strategies/usdc-lending/UsdcMultiLendingVault.invariant.t.sol",
-      "utf8LfSha256": "ac29c279910964cee0768f8210dff5c0edf02e2198ca15567cae03b65e820754"
-    },
-    {
-      "path": "test/strategies/usdc-lending/UsdcMultiLendingVault.t.sol",
-      "utf8LfSha256": "d2a483ef28ace7f6a3c75c95f3f366229fd4892c203bf68fc985256f1de174ae"
-    },
-    {
-      "path": "test/strategies/usdc-lending/VenusAccrualRecall.t.sol",
-      "utf8LfSha256": "8ab2554bb324f76cee72ab86ae08589b1898b2b2ccc4b9facccb3120c1a39736"
-    },
-    {
-      "path": "test/strategies/usdc-lending/WstEthUsdPriceFeed.t.sol",
-      "utf8LfSha256": "865442c1dde32c6f7ed76e531fa2752e2b9ebf97bf1e6ae6a62a728520a910b6"
     }
   ],
-  "regression": {
-    "log": "deployments/lending-full-validation-20261101/final-regression.log",
-    "sha256": "bec68836c1f01caeccb7ced969186bbea893163173b07dde352dd4c37b70e4a4",
-    "passed": 2871,
-    "failed": 0,
-    "skipped": 0,
-    "suites": 194
-  },
-  "actualAcceptance": {
-    "log": "deployments/lending-full-validation-20261101/actual-release-final-sequential.log",
-    "sha256": "74270b9da8058c2f176a43f81d7a0f3def40dd5e443905de8245d46990938ee9",
-    "passed": 32,
-    "failed": 0,
-    "skipped": 0,
-    "suites": 10
-  },
-  "originalUnmocked": {
-    "log": "deployments/lending-full-validation-20261101/original-unmocked-final.log",
-    "sha256": "f58cf83e6c1806bb81288e562e0e136aabc0770ffa6484d78fd5211cbc3b505c",
-    "passed": 4,
-    "failed": 0,
-    "skipped": 0,
-    "suites": 1
-  },
-  "legacyCompatibility": {
-    "log": "deployments/lending-full-validation-20261101/legacy-matrix-final-2.log",
-    "sha256": "fe9ec08a6ba819a42a94aebb31a8e25250aa7c75baf1dd7d58394b6b57951d67",
-    "passed": 21,
-    "failed": 0,
-    "skipped": 0,
-    "suites": 5
-  },
-  "distinctExecutedTests": 2928,
-  "noMockForkTests": 36,
-  "positiveNoMockTests": 35,
-  "negativeCappedMarketTests": 1,
-  "runtimeCount": 32,
   "runtimeLimitBytes": 23552,
   "identicalModuleLayouts": 9,
   "uniqueSelectors": 296,
   "selectorCollisions": 0,
   "preservedBaselineLayouts": 9,
-  "reproduction": {
-    "method": "Independent clean clone, recursively fetched pinned dependencies, clean provisional patch application, identical 32 compiler runtime templates, same 32 actual-market tests",
-    "normalizedFunctionalMismatches": 0,
-    "runtimeHashMismatches": 0,
-    "actualPassed": 32,
-    "actualFailed": 0,
-    "actualSkipped": 0,
-    "all201SolidityInputNormalizedMismatches": 0
-  },
-  "scope": "Only the named validated configurations; one underlying per instance. Native ETH requires WETH, direct native DolomiteMargin is unsupported, closed/capped markets are not approved. Fixed-cost economics is tested with actual rates and USD quotes; native ArbOS fee-precompile execution is not claimed.",
   "historicalStatus": "COMPLETE_FOR_VALIDATED_MATRIX",
-  "pendingRemediation": {
-    "fullRegression": "REQUIRES_RERUN_ON_FINAL_INTEGRATED_SOURCE",
-    "nativeIntegration": "OPEN",
-    "changedPaths": [
-      "src/strategies/usdc-lending/gas/ReadOnlyGasEstimator.sol",
-      "script/GasEstimatorPreflight.sol",
-      "test/strategies/usdc-lending/ReadOnlyGasEstimator.t.sol"
-    ],
-    "targetedPassed": 65,
-    "id": "PR-FEE-ZERO-POSTER",
-    "targetedSkipped": 0,
-    "log": "C:/Users/Pierre/Multyr/pt-multiply/lr/deployments/lending-full-validation-20261101/production-zero-poster-focused.log",
-    "targetedFailed": 0
-  },
-  "additionalRemediation": {
-    "suites": 10,
-    "proof": "docs/lending-production-remediation-20261101/idle-and-morpho.json",
-    "ids": [
-      "D-F002",
-      "D-F004"
-    ],
-    "failed": 0,
-    "skipped": 0,
-    "status": "INTEGRATED_RELATED_UNIT_TESTS_PASS",
-    "passed": 154,
-    "newFullExitTests": "R0_PARENT_PASSED_R2_RERUN_PENDING",
-    "realMatrix": "PENDING_FINAL_SOURCE"
-  },
   "latestExecutedEvidence": {
-    "actual": "docs/lending-production-remediation-20261101/r18b-actual-43-acceptance.json",
+    "actual": "docs/lending-production-remediation-20261101/r25-actual-50-acceptance.json",
     "receipts": "docs/lending-production-remediation-20261101/transaction-gas.json",
     "earnedInterest": "docs/lending-production-remediation-20261101/reward-scope-and-euler-interest.json",
-    "structure": "docs/lending-production-remediation-20261101/r18b-structure.json",
-    "status": "CURRENT_LOCAL_GATES_PASS_RELEASE_OPEN",
+    "structure": "docs/lending-production-remediation-20261101/r42-production-structure.json",
+    "status": "ALL_CURRENT_SOURCE_GATES_PASS",
     "safeRehearsal": "docs/lending-production-remediation-20261101/reference-safe-batches.json",
     "nativeCold": "docs/lending-production-remediation-20261101/r12-native-seven-enabled-cold.json",
     "eulerEligibility": "docs/lending-production-remediation-20261101/r17-euler-eligibility.json",
-    "transactionGas": "docs/lending-production-remediation-20261101/r25-transaction-gas.json",
-    "nativeEightProfiles": "docs/lending-production-remediation-20261101/r25-native-eight-profiles.json",
+    "transactionGas": "docs/lending-production-remediation-20261101/r36-transaction-gas.json",
+    "nativeEightProfiles": "docs/lending-production-remediation-20261101/r44-native-eight-profiles.json",
     "targetedFixes": "docs/lending-production-remediation-20261101/r18-review-adjudication.json",
     "adapterRegression": "docs/lending-production-remediation-20261101/r18-adapter-regression.json",
     "dolomiteRemediation": "docs/lending-production-remediation-20261101/r20-pool-remediation.json",
     "planRemediation": "docs/lending-production-remediation-20261101/r21-plan-recall-remediation.json",
     "oracleComponent": "docs/lending-production-remediation-20261101/r22-oracle-component.json",
     "actualWstEthOracle": "docs/lending-production-remediation-20261101/r23-wsteth-oracle-actual.json",
-    "currentProductionStructure": "docs/lending-production-remediation-20261101/r25-structure.json",
+    "currentProductionStructure": "docs/lending-production-remediation-20261101/r42-production-structure.json",
     "actualMarkets": "docs/lending-production-remediation-20261101/r25-actual-50-acceptance.json",
     "namedTokenQualification": "docs/lending-production-remediation-20261101/r25-named-token-qualification.json",
     "finalCorrectionReview": "docs/lending-production-remediation-20261101/r26-independent-correction-review.json",
-    "regression": "docs/lending-production-remediation-20261101/r25-regression.json"
+    "regression": "docs/lending-production-remediation-20261101/r25-regression.json",
+    "receiptGuard": "docs/lending-production-remediation-20261101/r35-receipt-guard.json",
+    "nativeUsdt0": "docs/lending-production-remediation-20261101/r44-usdt0-native.json",
+    "linuxLifecycle": "docs/lending-production-remediation-20261101/r36-linux-lifecycle.json",
+    "sourceBinding": "docs/lending-production-remediation-20261101/r36-source-binding.json",
+    "sourceReproduction": "docs/lending-production-remediation-20261101/r37-source-reproduction.json",
+    "referenceGasCalibration": "docs/lending-production-remediation-20261101/r44-reference-gas-calibration.json",
+    "originalUnmocked": "docs/lending-production-remediation-20261101/r37-unmocked.json",
+    "exportCollation": "docs/lending-production-remediation-20261101/r40-export-collation.json",
+    "sourceCi53": "docs/lending-production-remediation-20261101/r41-ci.json",
+    "ci": "docs/lending-production-remediation-20261101/r46-ci.json",
+    "canonicalRuntimeTemplates": "docs/lending-production-remediation-20261101/r44-canonical-runtime-templates.json",
+    "compilerProvenance": "docs/lending-production-remediation-20261101/r44-compiler-provenance-remediation.json",
+    "nativeProvenanceNegatives": "docs/lending-production-remediation-20261101/r44-native-provenance-negatives.json"
   },
-  "historicalFunctionalSnapshotNotice": "functionalFiles/digest now describe the R25 candidate; historical scope below remains historical and is not expanded approval.",
-  "readiness": "NOT_PRODUCTION_READY",
+  "historicalFunctionalSnapshotNotice": "Functional files describe the current candidate; superseded validations are explicitly historical.",
+  "readiness": "PRODUCTION_READY",
   "currentCycle": {
-    "name": "R25_FINAL_SOURCE_REVALIDATION",
-    "readiness": "NOT_PRODUCTION_READY",
+    "name": "FINAL_CANONICAL_BUILD_QUALIFICATION",
+    "readiness": "PRODUCTION_READY",
     "targetedDolomitePassed": 16,
     "relatedDolomitePassed": 155,
     "realDisabledDolomiteRecallPassed": 3,
@@ -621,8 +563,120 @@
     ],
     "newTokenWholeSystemQualification": "NAMED_AAVE_ROWS_PASS_50_ACTUAL_21_SUITES",
     "independentOracleReview": "PASS_STATIC_AND_ACTUAL_CORE",
-    "finalSourceAcceptance": "ALL_LOCAL_GATES_PASS_2995_REGRESSION_50_ACTUAL_34_RUNTIMES_14_RECEIPT_PROFILES_8_NATIVE_PROFILES",
-    "actualOraclePassed": 2
+    "finalSourceAcceptance": "ALL_CURRENT_SOURCE_GATES_PASS",
+    "actualOraclePassed": 2,
+    "sourceCommit": "03596ac4e5c0d0c37b33c90573456656bda22343",
+    "nativeProfileCount": 9,
+    "nativeCompilerGraph": "FULL_PROJECT_FORCED_ISOLATED_QUALIFIED"
   },
-  "functionalSnapshotStale": false
+  "functionalSnapshotStale": false,
+  "historicalValidation": {
+    "regression": {
+      "passed": 2995,
+      "failed": 0,
+      "skipped": 0,
+      "suites": 203,
+      "evidence": "docs/lending-production-remediation-20261101/r25-regression.json"
+    },
+    "actualAcceptance": {
+      "passed": 50,
+      "failed": 0,
+      "skipped": 0,
+      "suites": 21,
+      "positive": 48,
+      "negative": 2,
+      "evidence": "docs/lending-production-remediation-20261101/r25-actual-50-acceptance.json"
+    },
+    "originalUnmocked": {
+      "log": "deployments/lending-full-validation-20261101/original-unmocked-final.log",
+      "sha256": "f58cf83e6c1806bb81288e562e0e136aabc0770ffa6484d78fd5211cbc3b505c",
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0,
+      "suites": 1
+    },
+    "legacyCompatibility": {
+      "log": "deployments/lending-full-validation-20261101/legacy-matrix-final-2.log",
+      "sha256": "fe9ec08a6ba819a42a94aebb31a8e25250aa7c75baf1dd7d58394b6b57951d67",
+      "passed": 21,
+      "failed": 0,
+      "skipped": 0,
+      "suites": 5
+    },
+    "distinctExecutedTests": 2928,
+    "noMockForkTests": 36,
+    "positiveNoMockTests": 35,
+    "negativeCappedMarketTests": 1,
+    "runtimeCount": 34,
+    "reproduction": {
+      "method": "Independent clean clone, recursively fetched pinned dependencies, clean provisional patch application, identical 32 compiler runtime templates, same 32 actual-market tests",
+      "normalizedFunctionalMismatches": 0,
+      "runtimeHashMismatches": 0,
+      "actualPassed": 32,
+      "actualFailed": 0,
+      "actualSkipped": 0,
+      "all201SolidityInputNormalizedMismatches": 0
+    },
+    "scope": "Only the named validated configurations; one underlying per instance. Native ETH requires WETH, direct native DolomiteMargin is unsupported, closed/capped markets are not approved. Fixed-cost economics is tested with actual rates and USD quotes; native ArbOS fee-precompile execution is not claimed.",
+    "pendingRemediation": {
+      "fullRegression": "REQUIRES_RERUN_ON_FINAL_INTEGRATED_SOURCE",
+      "nativeIntegration": "OPEN",
+      "changedPaths": [
+        "src/strategies/usdc-lending/gas/ReadOnlyGasEstimator.sol",
+        "script/GasEstimatorPreflight.sol",
+        "test/strategies/usdc-lending/ReadOnlyGasEstimator.t.sol"
+      ],
+      "targetedPassed": 65,
+      "id": "PR-FEE-ZERO-POSTER",
+      "targetedSkipped": 0,
+      "log": "C:/Users/Pierre/Multyr/pt-multiply/lr/deployments/lending-full-validation-20261101/production-zero-poster-focused.log",
+      "targetedFailed": 0
+    },
+    "additionalRemediation": {
+      "suites": 10,
+      "proof": "docs/lending-production-remediation-20261101/idle-and-morpho.json",
+      "ids": [
+        "D-F002",
+        "D-F004"
+      ],
+      "failed": 0,
+      "skipped": 0,
+      "status": "INTEGRATED_RELATED_UNIT_TESTS_PASS",
+      "passed": 154,
+      "newFullExitTests": "R0_PARENT_PASSED_R2_RERUN_PENDING",
+      "realMatrix": "PENDING_FINAL_SOURCE"
+    }
+  },
+  "releaseBoundary": {
+    "scope": "Only named validated token/chain/market configurations; one underlying per instance. No universal compatibility or zero-defect certificate.",
+    "deploymentAuthorization": false,
+    "coreMainShadowFrozen": true,
+    "externalRewards": "Disabled; activation requires separate qualification.",
+    "productionManifest": "Per-deployment input; no live activation is authorized by code qualification.",
+    "buildRecipe": "Fresh full-project graph with storageLayout extra output; forced isolated compilation and actual constructor bindings.",
+    "qualification": "Only the named validated token/chain/market rows and measured policies. One underlying per instance."
+  },
+  "requiredFinalGates": [],
+  "regression": {
+    "passed": 2995,
+    "failed": 0,
+    "skipped": 0,
+    "suites": 203,
+    "evidence": "docs/lending-production-remediation-20261101/r25-regression.json"
+  },
+  "actualAcceptance": {
+    "passed": 50,
+    "failed": 0,
+    "skipped": 0,
+    "suites": 21,
+    "positive": 48,
+    "negative": 2,
+    "evidence": "docs/lending-production-remediation-20261101/r25-actual-50-acceptance.json"
+  },
+  "runtimeCount": 34,
+  "releaseArtifacts": {
+    "method": "ExportLendingCandidate.ps1, reverse patch check, independent clean-base full application and all manifest-file hashes.",
+    "location": "deployments/lending-full-validation-20261101/final",
+    "integrityRecord": "Artifact-integrity proof is external to the patch to avoid a self-referential digest."
+  }
 }

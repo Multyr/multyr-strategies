@@ -1,0 +1,11 @@
+{
+  "status": "ORIGINAL_UNMOCKED_INTEGRATION_PASS",
+  "passed": 4,
+  "failed": 0,
+  "skipped": 0,
+  "suites": 1,
+  "rpcComputeUnitsPerSecond": 20,
+  "log": "deployments/lending-full-validation-20261101/production/coordinator/R37-unmocked.log",
+  "logSha256": "82b4be06c7ffc7effa29d0879d95fb1a6652f3819e251bbbaf5ef5123c1a5381",
+  "scope": "Frozen production Core and actual Aave USDC/WETH on Arbitrum/Base; unchanged assertions and no financial-state mocks."
+}

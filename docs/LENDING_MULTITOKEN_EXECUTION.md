@@ -1,5 +1,8 @@
 # Lending multi-token / multi-chain execution master
 
+> Historical execution/review record. Current qualification, evidence and release
+> boundaries are in [LENDING_FULL_VALIDATION_MASTER.md](LENDING_FULL_VALIDATION_MASTER.md).
+
 > Reopened 2026-11-01: the user requires all seven adapters, additional underlying
 > tokens and independent scoring verification with real values. Previous closure
 > below is historical evidence for Aave USDC/WETH × Arbitrum/Base only.

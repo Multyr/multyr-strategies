@@ -1,5 +1,8 @@
 # Lending remediation finding register
 
+> Historical execution/review record. Current qualification, evidence and release
+> boundaries are in [LENDING_FULL_VALIDATION_MASTER.md](LENDING_FULL_VALIDATION_MASTER.md).
+
 Candidate base `211f1a0a4cb9c63232ae18dac24ccb921e5a4699`, branch
 `codex/lending-multitoken-multichain`. This register concerns the candidate, not a
 retroactive modification of the frozen shadow deployment. Final test counts and

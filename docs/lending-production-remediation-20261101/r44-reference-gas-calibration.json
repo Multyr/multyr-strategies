@@ -1,0 +1,40 @@
+{
+  "status": "MEASURED_REFERENCE_CONFIGURATION",
+  "configAbiReturndataKeccak256": "0xd1a1d0ecfb91ea6f4a3e4515e74f3b1670c2c1ce4dce6bdf903bf69502a695a3",
+  "configAbiEncoding": "12 static uint fields in ReadOnlyGasEstimator.Config declaration order; hash equals GasEstimatorPreflight keccak256(config() returndata).",
+  "config": {
+    "prepareGas": 4000000,
+    "stepGas": 2000000,
+    "finalizeGas": 600000,
+    "defaultDepositGas": 1500000,
+    "defaultWithdrawGas": 2000000,
+    "intrinsicGas": 23112,
+    "calldataBytes": 132,
+    "marginBps": 3000,
+    "maxPriceAge": 3600,
+    "usdcMaxPriceAge": 3600,
+    "sequencerGrace": 3600,
+    "fallbackUSDC": 100000000
+  },
+  "observedScope": [
+    "Fresh canonical full-project graph USDC: all7-enabled plus7dedicated genuine Native profiles PASS.",
+    "Fresh canonical full-project graph USDT0/Aave: genuine Native keeper, ordinary withdrawal EMA and fullrecall PASS."
+  ],
+  "maxActionsPerTx": 2,
+  "strategyRebalanceCooldownSeconds": 86400,
+  "coreLiquidityWithdrawalCooldownSeconds": 300,
+  "legacyStrategyGasCostUSDC": "Separate legacy static parameter; not the dynamic estimator calibration.",
+  "prototype400000": "Illustrative arithmetic fixture only; not this measured4000000prepare configuration.",
+  "deploymentAuthorization": false,
+  "limits": [
+    "Only measured topology,markets,asset andchain; no universal gas bound.",
+    "Live estimator must bind this reviewed config hash,fee source,price feeds andgovernance; changedpolicy/topology requires requalification."
+  ],
+  "evidence": [
+    "r44-native-eight-profiles.json",
+    "r44-usdt0-native.json",
+    "r44-canonical-runtime-templates.json"
+  ],
+  "readiness": "NOT_PRODUCTION_READY",
+  "compilerGraph": "full_project_graph_storage_layout"
+}

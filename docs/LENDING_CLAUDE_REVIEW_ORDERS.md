@@ -1,5 +1,8 @@
 # Independent Claude Code review orders
 
+> Historical execution/review record. Current qualification, evidence and release
+> boundaries are in [LENDING_FULL_VALIDATION_MASTER.md](LENDING_FULL_VALIDATION_MASTER.md).
+
 These are three separate, parallel sessions with no communication or shared writes.
 The coordinator reconciles their reports and integrates accepted fixes serially.
 Do not claim these sessions ran merely because this document exists.

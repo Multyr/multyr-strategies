@@ -1,0 +1,10 @@
+{
+  "status": "CLEAN_BASE_PATCH_AND_FUNCTIONAL_REPRODUCTION_PASS",
+  "sourceCommit": "03596ac4e5c0d0c37b33c90573456656bda22343",
+  "patchBase": "211f1a0a4cb9c63232ae18dac24ccb921e5a4699",
+  "functionalInputsMatched": 124,
+  "functionalSnapshotSha256": "9064df701ddee3ee6f3fa441405181b91ff1f345fbe6d91bbae548e6db5474c1",
+  "patchSha256": "2974c33ade93afbdd70e069f67b6f1c57bb0e9a025390aa21ad83969f1692aa4",
+  "patch": "deployments/lending-full-validation-20261101/production/coordinator/R37-source-reproduction.patch",
+  "method": "New isolated detached base worktree, git apply --check, actual patch application, independent normalized SHA256 comparison of every functional input. Dependencies are unchanged and not initialized; this is source reproduction, not a fresh compilation claim."
+}
