@@ -45,6 +45,14 @@ ASSET_PROFILES = {
                    'feed': '0x3f3f5dF88dC9F13eac63DF89EC16ef6e7E25DdE7',
                    'markets': {'aave': MARKETS['aave']},
                    'aToken': '0x6ab707Aca953eDAeFBc4fD23bA73294241490620'},
+    'weth-aave': {'asset': '0x82af49447d8a07e3bd95bd0d56f35241523fbab1',
+                  'feed': ETH_FEED, 'decimals': 18,
+                  'markets': {'aave': MARKETS['aave']},
+                  'aToken': '0xe50fa9b3c56ffb159cb0fca61f5c9d750e8128c8'},
+    'wbtc-aave': {'asset': '0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f',
+                  'feed': '0x6ce185860a4963106506c203335a2910413708e9', 'decimals': 8,
+                  'markets': {'aave': MARKETS['aave']},
+                  'aToken': '0x078f358208685046a11c85e8ad32895ded33a249'},
 }
 
 
@@ -229,7 +237,7 @@ def build(output, old_block=518500000, sample_block=None, acceptance_path=None, 
     acceptance = json.loads(acceptance_path.read_text(encoding='utf-8-sig'))
     if (acceptance['passed'], acceptance['failed'], acceptance['skipped'], acceptance['suites']) != (50, 0, 0, 21):
         raise RuntimeError('Complete actual-market acceptance required')
-    if cli(['git', 'branch', '--show-current']) != 'codex/lending-multitoken-multichain':
+    if cli(['git', 'branch', '--show-current']) not in {'codex/lending-multitoken-multichain', 'codex/lending-final-cleanup-20261103'}:
         raise RuntimeError('Candidate branch required')
     core_pin = '9a9d120709de99a6216e9fe75d36e9ffdcb1a4d9'
     if cli(['git', '-C', 'lib/multyr-core', 'rev-parse', 'HEAD']) != core_pin:
@@ -265,6 +273,16 @@ def build(output, old_block=518500000, sample_block=None, acceptance_path=None, 
     if int(g.rpc(LOCAL, 'eth_chainId', []), 16) != 42161:
         raise RuntimeError('Wrong chain')
     old_header = g.rpc(LOCAL, 'eth_getBlockByNumber', ['latest', False])
+    unit = 10**int(g.rpc(LOCAL, 'eth_call', [{'to': ASSET, 'data': encode('decimals()', [])}, 'latest']), 16)
+    if unit != 10**ASSET_PROFILES[asset_profile].get('decimals', 6):
+        raise RuntimeError('Unexpected asset decimals')
+    round_data = g.rpc(LOCAL, 'eth_call', [{'to': ASSET_FEED, 'data': encode('latestRoundData()', [])}, 'latest'])
+    feed_decimals = int(g.rpc(LOCAL, 'eth_call', [{'to': ASSET_FEED, 'data': encode('decimals()', [])}, 'latest']), 16)
+    round_words = [int(round_data[i:i+64],16) for i in range(2,len(round_data),64)]
+    if len(round_words) != 5 or feed_decimals > 18 or not 0 < round_words[1] < 2**255 or not 0 < round_words[3] <= int(old_header['timestamp'],16) or int(old_header['timestamp'],16)-round_words[3] > 86400 or round_words[4] < round_words[0]:
+        raise RuntimeError('Invalid canonical calibration asset price')
+    asset_price = round_words[1] * 10**(18-feed_decimals)
+    capacity = 10000000 * unit * 10**18 // asset_price if asset_profile in {'weth-aave','wbtc-aave'} else 10000000 * 10**6
     g.rpc(LOCAL, 'anvil_impersonateAccount', [OWNER])
     config = deploy('globalConfig', 'GlobalConfig', [OWNER, 0, 0, 0, 86400, 10, 100, 300, 86400])
     oracle = deploy('oracle', 'PriceOracleMiddleware', [OWNER])
@@ -291,6 +309,9 @@ def build(output, old_block=518500000, sample_block=None, acceptance_path=None, 
             send('CoreVault', core, 'setModule', [selector, modules[key], role])
     send('CoreVault', core, 'authorizeModule', [modules['erc'], True])
     buffer = deploy('buffer', 'BufferManager', [OWNER, core, (400, 200, 600, 800, 400, 50, ASSET, ZERO, 0, False)])
+    if asset_profile in {'weth-aave','wbtc-aave'}:
+        send('BufferManager', buffer, 'setRebalanceParams', [int(read('BufferManager', buffer, 'rebalanceCooldown'),16),
+             (5000 * unit * 10**18 + asset_price - 1)//asset_price, int(read('BufferManager', buffer, 'navRefreshInterval'),16)])
     router = deploy('router', 'StrategyRouter', [OWNER, core, config])
     send('AdminModule', core, 'setBufferManager', [buffer])
     send('AdminModule', core, 'setRouter', [router])
@@ -331,7 +352,7 @@ def build(output, old_block=518500000, sample_block=None, acceptance_path=None, 
     protocol_registry = deploy('protocolRegistry', 'ProtocolRegistry', [OWNER])
     for key, enum in [('morpho', 2), ('comet', 3), ('dolomite', 4)]:
         if key in MARKETS:
-            send('ProtocolRegistry', protocol_registry, 'addVault', [enum, MARKETS[key], key, 5000, 10000000 * 10**6])
+            send('ProtocolRegistry', protocol_registry, 'addVault', [enum, MARKETS[key], key, 5000, capacity])
     adapter_names = {'aave': 'AaveV3USDCAdapter', 'comet': 'CometUsdcMultiMarketAdapter', 'morpho': 'MorphoUsdcMultiMarketAdapter',
                      'euler': 'EulerUsdcMultiMarketAdapter', 'fluid': 'FluidUsdcMultiMarketAdapter',
                      'dolomite': 'DolomiteUsdcMultiMarketAdapter', 'venus': 'VenusUsdcMultiMarketAdapter'}
@@ -341,10 +362,10 @@ def build(output, old_block=518500000, sample_block=None, acceptance_path=None, 
     for key in ['morpho', 'dolomite']:
         if key not in adapter_names:
             continue
-        send(adapter_names[key], ADDRESSES[key], 'initialize', [ASSET, OWNER, strategy, 10000000 * 10**6, protocol_registry])
+        send(adapter_names[key], ADDRESSES[key], 'initialize', [ASSET, OWNER, strategy, capacity, protocol_registry])
         send(adapter_names[key], ADDRESSES[key], 'pokeAPYSnapshots')
     if 'fluid' in adapter_names:
-        send(adapter_names['fluid'], ADDRESSES['fluid'], 'initialize', [ASSET, OWNER, strategy, 10000000 * 10**6, MARKETS['fluid']])
+        send(adapter_names['fluid'], ADDRESSES['fluid'], 'initialize', [ASSET, OWNER, strategy, capacity, MARKETS['fluid']])
     send('StrategyRouter', router, 'proposeStrategyAllowlist', [strategy])
     allowlist_eta = int(read('StrategyRouter', router, 'strategyAllowlistEta', [strategy]), 16)
     old_accounts = owned_accounts()
@@ -374,7 +395,7 @@ def build(output, old_block=518500000, sample_block=None, acceptance_path=None, 
               'compiler': cli(['forge', '--version']),
               'compilerConfiguration': required, 'frozenCoreCommit': core_pin,
               'policy': {'strategyInitParams': x, 'estimatorConfig': cfg_values, 'maxActionsPerTx': 2,
-                         'adapterCapacityRaw': str(10000000 * 10**6),
+                         'adapterCapacityRaw': str(capacity), 'assetUnit': str(unit), 'calibrationAssetPrice18': str(asset_price),
                          'benchmarkOnly': True}, 'readiness': 'NOT_PRODUCTION_READY'}
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(result, indent=2) + '\n', encoding='utf-8')

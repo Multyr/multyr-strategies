@@ -20,9 +20,21 @@ $headers = foreach ($network in $networks) {
     $responses = @()
     for ($offset=0; $offset -lt $requests.Count; $offset+=5) {
         $batch = @($requests | Select-Object -Skip $offset -First 5)
-        $batchResult = Invoke-RestMethod -Method Post -Uri $network.rpc -ContentType 'application/json' `
-            -Body (ConvertTo-Json -InputObject $batch -Depth 5 -Compress)
+        for ($attempt=0; ; $attempt++) {
+            try {
+                $batchResult = Invoke-RestMethod -Method Post -Uri $network.rpc -ContentType 'application/json' `
+                    -UserAgent 'Mozilla/5.0 LendingCompatibilityAudit/1.0' -TimeoutSec 45 `
+                    -Body (ConvertTo-Json -InputObject $batch -Depth 5 -Compress)
+                break
+            } catch {
+                $status = if ($null -ne $_.Exception.Response) { [int]$_.Exception.Response.StatusCode } else { 0 }
+                if ($attempt -ge 5 -or $status -notin @(429,502,503,504)) { throw }
+                Write-Warning "Canonical header transport retry: chain $($network.chain), offset $offset, HTTP $status, attempt $($attempt+1)"
+                Start-Sleep -Seconds ([Math]::Min(30, 2 * [Math]::Pow(2,$attempt)))
+            }
+        }
         foreach ($item in $batchResult) { $responses += $item }
+        Start-Sleep -Milliseconds 500
     }
     if ($responses.Count -ne $requests.Count) { throw 'Missing canonical header responses' }
     foreach ($response in $responses) {

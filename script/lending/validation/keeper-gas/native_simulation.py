@@ -199,10 +199,10 @@ def run(checkpoint, output, attempt, venue, block, expected_hash):
     c = json.loads(checkpoint.read_text(encoding='utf-8-sig'))
     asset_profile = c.get('assetProfile', 'usdc')
     profile = b.configure_profile(asset_profile)
-    direct_holder_deposit = asset_profile == 'usdt0-aave'
+    direct_holder_deposit = asset_profile != 'usdc'
     atoken = profile['aToken']
     if direct_holder_deposit and venue != 'aave':
-        raise RuntimeError('USDT0 qualification is Aave-only, never seven-family coverage')
+        raise RuntimeError('Dedicated asset qualification is Aave-only, never seven-family coverage')
     if c['chainId'] != 42161 or c['asset'].lower() != b.ASSET.lower() or c['deployer'].lower() != b.OWNER.lower():
         raise RuntimeError('Checkpoint identity mismatch')
     if c['builderSha256'] != hashlib.sha256(pathlib.Path(b.__file__).read_bytes()).hexdigest():
@@ -269,6 +269,10 @@ def run(checkpoint, output, attempt, venue, block, expected_hash):
         return v[1] * 10**(18 - decimals)
 
     usdt_price, asset_price, eth_price = price(USDT_FEED), price(b.ASSET_FEED), price(b.ETH_FEED)
+    unit = 10**words(direct(b.ASSET, b.encode('decimals()', [])))[0]
+    if unit != 10**profile.get('decimals',6) or number(c['policy'].get('assetUnit',10**6)) != unit:
+        raise RuntimeError('Canonical asset decimals/unit mismatch')
+    deposit = 80000 * 10**18 * unit // asset_price if asset_profile in {'weth-aave','wbtc-aave'} else DEPOSIT
     native_words = words(direct(NATIVE, b.encode('getPricesInWei()', [])))
     if len(native_words) != 6 or native_words[-1] == 0:
         raise RuntimeError('Invalid actual Nitro native prices')
@@ -378,18 +382,17 @@ def run(checkpoint, output, attempt, venue, block, expected_hash):
     add('register-strategy', 'StrategyRouter', a['router'], 'register', [a['strategy'], 0, 10000])
     add('strategy-cap', 'StrategyRouter', a['router'], 'setMaxStrategyBps', [a['strategy'], 10000])
     add('loss-cap', 'StrategyRouter', a['router'], 'setLossCapPerStrategy', [a['strategy'], 50])
-    unit = 10**6
     seed = ceil_div(10**18 * unit, asset_price)
     add('limits', 'GlobalConfig', a['globalConfig'], 'setVaultDepositLimits', [a['core'], 10000000 * 10**18 * unit // asset_price,
         500000 * 10**18 * unit // asset_price, ceil_div(100 * 10**18 * unit, asset_price)])
     if direct_holder_deposit:
         token('core-approve-clear', b.ASSET, 'approve', [a['core'], 0])
-    token('core-approve', b.ASSET, 'approve', [a['core'], DEPOSIT + seed])
+    token('core-approve', b.ASSET, 'approve', [a['core'], deposit + seed])
     add('seed', 'AdminModule', a['core'], 'seedDeadDeposit', [seed])
     add('unpause', 'CoreVault', a['core'], 'unpauseAll')
     add('freeze-routing', 'CoreVault', a['core'], 'freezeRouting')
     add('freeze-params', 'AdminModule', a['core'], 'freezeParams')
-    raw('deposit', a['core'], 'deposit(uint256,address)', [DEPOSIT, '0x0000000000000000000000000000000000000b0b'])
+    raw('deposit', a['core'], 'deposit(uint256,address)', [deposit, '0x0000000000000000000000000000000000000b0b'])
     if direct_holder_deposit:
         token('holder-after-deposit', b.ASSET, 'balanceOf', [b.OWNER])
         add('core-nav-after-deposit', 'CoreVault', a['core'], 'totalAssets')
@@ -415,12 +418,12 @@ def run(checkpoint, output, attempt, venue, block, expected_hash):
         raise RuntimeError('Declared enabled-venue policy mismatch')
     swap_credit = None
     if direct_holder_deposit:
-        funding = DEPOSIT + seed
+        funding = deposit + seed
         before_holder = words(result_at(first, 'asset-before'))[0]
         if before_holder < funding or before_holder - words(result_at(first, 'holder-after-deposit'))[0] != funding:
-            raise RuntimeError('Canonical USDT0 holder deposit debit mismatch')
+            raise RuntimeError('Canonical asset holder deposit debit mismatch')
         if words(result_at(first, 'core-nav-after-deposit'))[0] != funding:
-            raise RuntimeError('Canonical USDT0 Core deposit credit mismatch')
+            raise RuntimeError('Canonical asset Core deposit credit mismatch')
     else:
         if words(result_at(first, 'usdt-before'))[0] - words(result_at(first, 'usdt-after'))[0] != AMOUNT:
             raise RuntimeError('Noncanonical swap funding debit')
@@ -468,7 +471,7 @@ def run(checkpoint, output, attempt, venue, block, expected_hash):
     partial_requests = []
     if venue != 'all':
         planned = sum(number(action[1]) for action in actions)
-        probe = min(100 * 10**6, planned // 10)
+        probe = min(100 * 10**18 * unit // asset_price, planned // 10)
         if probe <= 0:
             raise RuntimeError('Insufficient actual allocation for ordinary withdrawal observations')
         # Cold/non-accruing and later accruing calls can be different regimes.
@@ -521,7 +524,7 @@ def run(checkpoint, output, attempt, venue, block, expected_hash):
     idle_after = words(result_at(final, 'idle-after-plan'))[0]
     core_before_route = words(result_at(first, 'core-before-route'))[0]
     core_after_route = words(result_at(first, 'core-after-route'))[0]
-    if core_before_route != DEPOSIT + seed or idle_before <= 0 or core_before_route - core_after_route != idle_before:
+    if core_before_route != deposit + seed or idle_before <= 0 or core_before_route - core_after_route != idle_before:
         raise RuntimeError('Actual Core buffer/routing cash ledger mismatch')
     if idle_before - idle_after != sum(expected.values()) or abs(sum(positions.values()) + idle_after - nav) > 2 * n:
         raise RuntimeError('Plan cash/inventory conservation failed')
@@ -575,8 +578,8 @@ def run(checkpoint, output, attempt, venue, block, expected_hash):
               'checkpointSha256': hashlib.sha256(checkpoint.read_bytes()).hexdigest(), 'actions': actions,
               'nativePriceWords': [str(x) for x in native_words], 'independentQuote': {'l2Gas': str(l2gas), 'posterWei': str(poster), 'executionWei': str(execution), 'costUSD6': str(cost)},
               'simulatedNativeWrapperGasUsed': measured,
-              'fundingMethod': 'CANONICAL_USDT0_HOLDER_CORE_DEPOSIT' if direct_holder_deposit else 'CANONICAL_USDT0_USDC_SWAP',
-              'holderDepositRaw': str(DEPOSIT + seed),
+              'fundingMethod': 'CANONICAL_ASSET_HOLDER_CORE_DEPOSIT' if direct_holder_deposit else 'CANONICAL_USDT0_USDC_SWAP',
+              'holderDepositRaw': str(deposit + seed), 'assetUnit': str(unit),
               'swapInputRaw': None if direct_holder_deposit else str(AMOUNT), 'swapCreditRaw': None if direct_holder_deposit else str(swap_credit),
               'investedNavRaw': str(nav), 'recalledRaw': str(got), 'indices': indices,
               'protocolPositionRaw': {key: str(value) for key, value in positions.items()},
@@ -633,9 +636,9 @@ if __name__ == '__main__':
         if checkpoint_data.get('compilerGraph') != b.COMPILER_GRAPH:
             raise RuntimeError('Checkpoint requires isolated production compilation')
         b.configure_compiler(args.checkpoint.parent)
-        if checkpoint_data.get('assetProfile', 'usdc') == 'usdt0-aave':
+        if checkpoint_data.get('assetProfile', 'usdc') != 'usdc':
             if args.all_profiles or args.venue not in {'all', 'aave'}:
-                raise RuntimeError('USDT0 profile supports dedicated Aave qualification only')
+                raise RuntimeError('Dedicated asset profile supports Aave qualification only')
             profiles = ['aave']
         for proof in checkpoint_data['constructorProofs'].values():
             b.abi(proof['contract'])
