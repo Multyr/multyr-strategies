@@ -35,6 +35,9 @@ $sources = Source-Snapshot
 $before = ConvertTo-Json -InputObject $sources -Depth 4 -Compress
 New-Item -ItemType Directory -Path (Split-Path $LogPath -Parent) -Force | Out-Null
 . "$PSScriptRoot/lending/validation/RpcTransportFailure.ps1"
+$runnerSha256 = (Get-FileHash -LiteralPath $PSCommandPath -Algorithm SHA256).Hash.ToLowerInvariant()
+$classifierPath = "$PSScriptRoot/lending/validation/RpcTransportFailure.ps1"
+$classifierSha256 = (Get-FileHash -LiteralPath $classifierPath -Algorithm SHA256).Hash.ToLowerInvariant()
 $infrastructureAttempts = @()
 for ($attempt = 1; $attempt -le 3; $attempt++) {
     & forge test --match-path "$tests/**" --threads 1 `
@@ -57,6 +60,10 @@ Get-Content -LiteralPath $LogPath -Tail 28
 if ($code -ne 0) { throw "Actual-market acceptance failed: exit $code" }
 & "$PSScriptRoot/AssertLendingTestSummary.ps1" -LogPath $LogPath -ExpectedPassed 50 -ExpectedSuites 21
 if ((ConvertTo-Json -InputObject @(Source-Snapshot) -Depth 4 -Compress) -ne $before) { throw 'Source changed during actual-market acceptance' }
+if ((Get-FileHash -LiteralPath $PSCommandPath -Algorithm SHA256).Hash.ToLowerInvariant() -ne $runnerSha256 -or
+    (Get-FileHash -LiteralPath $classifierPath -Algorithm SHA256).Hash.ToLowerInvariant() -ne $classifierSha256) {
+    throw 'Validation runner changed during actual-market acceptance'
+}
 New-Item -ItemType Directory -Path (Split-Path $EvidencePath -Parent) -Force | Out-Null
 $headerPath = Join-Path (Split-Path $EvidencePath -Parent) ((Split-Path $EvidencePath -LeafBase) + '-canonical-headers.json')
 & "$PSScriptRoot/RecordLendingActualHeaders.ps1" -ReportPath $headerPath | Out-Null
@@ -69,7 +76,9 @@ $evidence = [ordered]@{
     passed=50;failed=0;skipped=0;suites=21
     positiveLifecycleAndIntegrationTests=48;negativeCappedMarketRejectionTests=1;negativeLegacyFeedRejectionTests=1
     log=$LogPath;logSha256=(Get-FileHash -LiteralPath $LogPath -Algorithm SHA256).Hash.ToLowerInvariant()
-    runnerSha256=(Get-FileHash -LiteralPath $PSCommandPath -Algorithm SHA256).Hash.ToLowerInvariant()
+    runnerSha256=$runnerSha256
+    transportClassifierSha256=$classifierSha256
+    maximumTransportAttempts=3
     infrastructureAttempts=$infrastructureAttempts
     canonicalHeaders=$headerPath;canonicalHeadersSha256=(Get-FileHash -LiteralPath $headerPath -Algorithm SHA256).Hash.ToLowerInvariant()
     sources=$sources
