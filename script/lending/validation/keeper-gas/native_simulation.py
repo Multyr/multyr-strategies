@@ -272,7 +272,10 @@ def run(checkpoint, output, attempt, venue, block, expected_hash):
     unit = 10**words(direct(b.ASSET, b.encode('decimals()', [])))[0]
     if unit != 10**profile.get('decimals',6) or number(c['policy'].get('assetUnit',10**6)) != unit:
         raise RuntimeError('Canonical asset decimals/unit mismatch')
-    deposit = 80000 * 10**18 * unit // asset_price if asset_profile in {'weth-aave','wbtc-aave'} else DEPOSIT
+    # The genuine calibration holder has less than $80k of WBTC at this pin.
+    # Use a declared $50k benchmark, without injecting balances or changing risk policy.
+    deposit_usd = 50000 if asset_profile == 'wbtc-aave' else 80000
+    deposit = deposit_usd * 10**18 * unit // asset_price if asset_profile in {'weth-aave','wbtc-aave'} else DEPOSIT
     native_words = words(direct(NATIVE, b.encode('getPricesInWei()', [])))
     if len(native_words) != 6 or native_words[-1] == 0:
         raise RuntimeError('Invalid actual Nitro native prices')
@@ -579,7 +582,7 @@ def run(checkpoint, output, attempt, venue, block, expected_hash):
               'nativePriceWords': [str(x) for x in native_words], 'independentQuote': {'l2Gas': str(l2gas), 'posterWei': str(poster), 'executionWei': str(execution), 'costUSD6': str(cost)},
               'simulatedNativeWrapperGasUsed': measured,
               'fundingMethod': 'CANONICAL_ASSET_HOLDER_CORE_DEPOSIT' if direct_holder_deposit else 'CANONICAL_USDT0_USDC_SWAP',
-              'holderDepositRaw': str(deposit + seed), 'assetUnit': str(unit),
+              'holderDepositRaw': str(deposit + seed), 'assetUnit': str(unit), 'depositBudgetUSD': str(deposit_usd),
               'swapInputRaw': None if direct_holder_deposit else str(AMOUNT), 'swapCreditRaw': None if direct_holder_deposit else str(swap_credit),
               'investedNavRaw': str(nav), 'recalledRaw': str(got), 'indices': indices,
               'protocolPositionRaw': {key: str(value) for key, value in positions.items()},
