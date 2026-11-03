@@ -1,0 +1,60 @@
+{
+  "status": "PASS",
+  "profile": "euler-arb-usdc",
+  "sourceCommit": "3fcc4d405153a3b534daed98f92f836e6d61957c",
+  "receiptFile": {
+    "path": "deployments/lending-full-validation-20261101/production/transaction-gas/runs/20261103T202001-23916/euler-arb-usdc/result.json",
+    "sha256": "c53f6177ae7447e792007d29cbaa16de1320765aca40347c0f78f0f8a344c6d6"
+  },
+  "receipts": [
+    {
+      "stage": "deploy",
+      "txHash": "0xd29cc79c5ab071f426215ceb06c580c505bc483f45dc448173bb083ad10cbe17",
+      "gasUsed": 4853973
+    },
+    {
+      "stage": "initialize",
+      "txHash": "0x7fb78a6324ff53b96ab35fbeaa88ef174a5bd01486302c7b0b26b96e40bb9c7a",
+      "gasUsed": 266364
+    },
+    {
+      "stage": "postInitialize-0",
+      "txHash": "0x14a911bca5a067ae29489e1f8240bcf2030309bc7c817fdf9f9a5bf2de193919",
+      "gasUsed": 64467
+    },
+    {
+      "stage": "push_funding_deposit_first",
+      "txHash": "0x37a22e1db406fbe75c184042d9362e0d1394c2d556de5aba09bac6a6d4a75740",
+      "gasUsed": 62159
+    },
+    {
+      "stage": "deposit_first",
+      "txHash": "0x88a9c891db82e0068bf80deaea2d232d2266d851306d01a6eadfb30d0ac934b0",
+      "gasUsed": 318000
+    },
+    {
+      "stage": "push_funding_deposit_continuation",
+      "txHash": "0x709725888fc34ccc6fbf38d52c5aa5e999924c5146db2aee07692572de80840c",
+      "gasUsed": 62171
+    },
+    {
+      "stage": "deposit_continuation",
+      "txHash": "0x3fff14aa1d23420dc7f8913512bc1140418635ebfcfed86f0aac9e5b66a48b8d",
+      "gasUsed": 246186
+    },
+    {
+      "stage": "withdraw_partial",
+      "txHash": "0x5ab9af49d1264d7664076980352eacfa437692658041f0883fa734cdd1649b08",
+      "gasUsed": 229079
+    },
+    {
+      "stage": "emergency_pull",
+      "txHash": "0x214475191327f04fc567be432c3bc130fcda90e4d7ab7065adbf79343a48d60d",
+      "gasUsed": 182260
+    }
+  ],
+  "scope": "Real local-fork transactions and canonical market state; this one replay is not the complete 14-profile CI gate. Native Ethereum/Arbitrum mainnet transactions were not broadcast.",
+  "reason": "Replay of CI attempt 1 Euler upstream RPC connection-reset failure. Euler remains required; no test/adapter was disabled.",
+  "productionApproval": false,
+  "receiptCount": 9
+}

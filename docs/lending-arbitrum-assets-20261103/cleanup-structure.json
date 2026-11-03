@@ -10,7 +10,7 @@
     "StrategyParamsModule": 18236,
     "StrategyScoringModule": 22148,
     "StrategyAdapterOpsModule": 18280,
-    "StrategyRebalanceGateModule": 22993,
+    "StrategyRebalanceGateModule": 23004,
     "StrategyRebalancePlanModule": 23108,
     "StrategyAllocCalcModule": 21390,
     "StrategySafetyOverflowModule": 13505,
@@ -46,7 +46,7 @@
     "StrategyParamsModule": "0xf3a50cc4c0a11252d42e14d10287dd4031b50dac6b60a84c64aaedc1ed4055de",
     "StrategyScoringModule": "0x836a0a2a3b3beef6cef20f0527877db071713bdd146e59253d36b983f8e6a18d",
     "StrategyAdapterOpsModule": "0x3b4e5054a9095a6dbfdbeba6d7ca56db0ebcb4f75aef67e3c91ffa9026d21387",
-    "StrategyRebalanceGateModule": "0xd17423bfd9b5e4d0d574b45bbe2e35710aa88a8bbb843982029c17dda2ea5dce",
+    "StrategyRebalanceGateModule": "0xd5ac381579090cd7a2e487022066d8d01739af00442fe0580a9940e231b43e3e",
     "StrategyRebalancePlanModule": "0x2019192bb7145640c394bc66a5550f6b831498fa51ed3fc70eb5dd2e2915a988",
     "StrategyAllocCalcModule": "0x5e4aac76471ac63ac44b893ec4aa047139ea9340bf87a81f7049471680c0eef4",
     "StrategySafetyOverflowModule": "0xb27e4457f4eaa626ab195640398f71d86e0d98caca8268cac8a33a19ce67c2f2",
@@ -216,7 +216,7 @@
     },
     {
       "path": "src/strategies/usdc-lending/controller/StrategyRebalanceGateModule.sol",
-      "utf8LfSha256": "ddcd17ccc86267f8713475fb2d659ff7a4b8f2638463628745f8f4a597e1ee30"
+      "utf8LfSha256": "fa098f9191dfe1c16a8c1be5f7c4cd1270070ea1aa6fcfb2960d4629894717b0"
     },
     {
       "path": "src/strategies/usdc-lending/controller/StrategyRebalancePlanModule.sol",
@@ -307,7 +307,7 @@
       "utf8LfSha256": "2f075cd06c713b68e57d47c64406a424c43901a6a1822ee1583cd1a141270468"
     }
   ],
-  "sourceSnapshotSha256": "c60296e273e10c16570a69e529200af7d33bd09777d1cfc207a25edd4e20183f",
+  "sourceSnapshotSha256": "89602f7f8d8e70df7746fff7d021688486727034492e2a81fe13fa096d562638",
   "runnerSha256": "10d956cc60eaee3dc97bfda2a84371036c58854e768066ffc4032b2679296dc7",
   "dependencies": [
     " 5cb41fbc9b525338b6098da5ea7dd0b7e92f89e4 lib/chainlink-brownie-contracts (1.3.0)",

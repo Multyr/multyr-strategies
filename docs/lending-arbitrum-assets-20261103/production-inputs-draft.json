@@ -1,0 +1,117 @@
+{
+  "status": "REVIEW_DRAFT_NOT_DEPLOYABLE",
+  "chainId": 42161,
+  "frozenCoreSource": "9a9d120709de99a6216e9fe75d36e9ffdcb1a4d9",
+  "proposedRoles": {
+    "governance": "0x70ef444799d6fbbe0865ba598bee6795e064a326",
+    "guardian": "0x7407e68a5553e948eed862f19fc6b292eb48d677",
+    "basis": "Current shadow role membership independently checked on-chain; reuse remains a deployment decision"
+  },
+  "deployerPublicAddress": "0x0B3990fbB5Ce1a2097460dE6E1D7f4a3719078A1",
+  "assets": [
+    {
+      "symbol": "USDC",
+      "asset": "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+      "decimals": 6,
+      "assetUsdFeed": "0x50834f3163758fcc1df9973b6e91f0f0f0434ad3",
+      "coreVault": "0x5e0cdb76487bd96ff069ef7f78eadf5b5909c8cb",
+      "router": "0x37847d2e12892e3298dee695e7e971fba0ca3e24",
+      "coreProvisioning": "Reuse existing shadow Core/router; no underlying change",
+      "keeper": null,
+      "keeperProposal": "New dedicated StrategyUpkeep; do not reuse an unverified legacy automation address",
+      "approvedMarketCaps": null,
+      "approvedGasConfig": null,
+      "productionApproval": false
+    },
+    {
+      "symbol": "WETH",
+      "asset": "0x82af49447d8a07e3bd95bd0d56f35241523fbab1",
+      "decimals": 18,
+      "assetUsdFeed": "0x639fe6ab55c921f74e7fac1ee960c0b6293ba612",
+      "coreVault": null,
+      "router": null,
+      "coreProvisioning": "TO_CREATE_FROM_FROZEN_CORE_SOURCE_USER_CONFIRMED",
+      "keeper": null,
+      "keeperProposal": "New dedicated StrategyUpkeep; do not reuse an unverified legacy automation address",
+      "approvedMarketCaps": null,
+      "approvedGasConfig": null,
+      "productionApproval": false
+    },
+    {
+      "symbol": "USDT0",
+      "asset": "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9",
+      "decimals": 6,
+      "assetUsdFeed": "0x3f3f5df88dc9f13eac63df89ec16ef6e7e25dde7",
+      "coreVault": null,
+      "router": null,
+      "coreProvisioning": "TO_CREATE_FROM_FROZEN_CORE_SOURCE_USER_CONFIRMED",
+      "keeper": null,
+      "keeperProposal": "New dedicated StrategyUpkeep; do not reuse an unverified legacy automation address",
+      "approvedMarketCaps": null,
+      "approvedGasConfig": null,
+      "productionApproval": false
+    },
+    {
+      "symbol": "WBTC",
+      "asset": "0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f",
+      "decimals": 8,
+      "assetUsdFeed": "0x6ce185860a4963106506c203335a2910413708e9",
+      "coreVault": null,
+      "router": null,
+      "coreProvisioning": "TO_CREATE_FROM_FROZEN_CORE_SOURCE_USER_CONFIRMED",
+      "keeper": null,
+      "keeperProposal": "New dedicated StrategyUpkeep; do not reuse an unverified legacy automation address",
+      "approvedMarketCaps": null,
+      "approvedGasConfig": null,
+      "productionApproval": false
+    }
+  ],
+  "missingInputs": [
+    "Approve the first-release asset set, per-market caps, deposit/buffer limits and gas configuration",
+    "Create dedicated frozen-source WETH/USDT0/WBTC Core/router instances and record verified public addresses",
+    "Provision dedicated keeper/registry/estimator dependencies and bind their addresses/runtime hashes in reviewed typed manifests"
+  ],
+  "scope": "Unsigned preparation only. No merge, signing, deployment or Core source change. This is not a typed deployable manifest.",
+  "productionApproval": false,
+  "userConfirmedProvisioning": "Dedicated Core/router addresses for new assets are to be created; no live deployment performed.",
+  "deployerStatus": "PUBLIC_ADDRESS_SUPPLIED_BY_USER",
+  "requiredAdapters": [
+    "Aave",
+    "Comet",
+    "Morpho",
+    "Euler",
+    "Fluid",
+    "Dolomite",
+    "Venus"
+  ],
+  "eulerActivation": {
+    "requiredByUser": true,
+    "mustNotBeSkippedForCi": true,
+    "allocationRequiresNormalRiskAndLiquidityGates": true,
+    "historicalShadowAdapter": "0xE2247C76f1A6f40967f70F114ABa44c8BA0E0F66",
+    "historicalSource": "C:/Users/Pierre/Documents/multyr/multyr-repositories/burn-in-20261030-reactivation/candidate-readback.json",
+    "historicalObservedPositionRaw": "116772154",
+    "historicalSnapshotIsNotLiveApproval": true,
+    "qualification": "Current-source dedicated Native USDC profile passes. USDC/WETH invested Core paths pass; USDT0/WBTC direct lifecycles pass with expected minimum-TVL Core rejection. Do not lower risk floors to force allocation.",
+    "deploymentPrerequisites": [
+      "Verify canonical Permit2 code and underlying for every selected Euler vault",
+      "Include initializeMarkets() in AdapterSpec.configuration before DEFAULT_ADMIN_ROLE handoff; current implementation requires DEFAULT_ADMIN_ROLE, not merely PARAM_ROLE",
+      "Read back Permit2 internal allowances per Euler market, strategy registration/whitelist/enabled state and governance ownership",
+      "Refresh external TVL, liquidity and prices before enabling allocations; supported asset is not a guarantee of eligible market depth"
+    ]
+  },
+  "deploymentProcedureReferences": [
+    "C:/Users/Pierre/Documents/multyr/multyr-repositories/multyr-strategies/docs/ops/SHADOW_DEPLOYMENT.md",
+    "C:/Users/Pierre/Documents/multyr/multyr-repositories/multyr-strategies/docs/ops/SAFE_DIRECT_STRATEGY_DEPLOYMENT.md"
+  ],
+  "activationChecks": [
+    "USDC: all seven fresh adapters registered, whitelisted and explicitly enabled, including Euler. Other assets: only real supported markets; Euler is required and never silently omitted.",
+    "Production ProtocolRegistry and complete governance ownership handoff",
+    "New StrategyUpkeep configured and granted KEEPER_ROLE",
+    "Safe performs router proposal, actual allowlist delay, execution and registration",
+    "Refresh market TVL/liquidity/oracle/cap preflight; enabled status never bypasses risk gating",
+    "Temporary smoke-test settings are not production approval"
+  ],
+  "keeperProvisioning": "One new StrategyUpkeep per asset: deploy constructor with [], bind its address as Manifest.keeper, addStrategy after strategy deployment, configure that asset rate provider and poke targets, grant writer roles, then hand ownership to governance.",
+  "deploymentPlan": "DEPLOYMENT_SEQUENCE.md"
+}

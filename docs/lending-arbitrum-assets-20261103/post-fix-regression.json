@@ -1,0 +1,14 @@
+{
+  "status": "PASS",
+  "passed": 2998,
+  "failed": 0,
+  "skipped": 0,
+  "suites": 204,
+  "sourceCommit": "3fcc4d405153a3b534daed98f92f836e6d61957c",
+  "sourceBinding": "All Solidity/foundry inputs equal the independently recorded current real-market acceptance snapshot.",
+  "sourceAcceptanceSha256": "53d9d450e6c31fe772a2653839427ba5a2ee37c96c6d0aaf44ab8b7ad334054b",
+  "log": "deployments/lending-full-validation-20261101/production/final-cleanup/suffix-fix-regression.log",
+  "logSha256": "c94549868dfee77fdb38cf1b147060c456c0aaf41f5d95e3506e9c032e7e761e",
+  "legacyOptInsEnabled": true,
+  "productionApproval": false
+}

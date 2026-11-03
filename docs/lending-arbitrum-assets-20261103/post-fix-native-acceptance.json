@@ -1,0 +1,258 @@
+{
+  "status": "TWELVE_POST_FIX_NATIVE_PROFILES_PASS",
+  "sourceCommit": "3fcc4d4",
+  "canonicalBlock": 520094008,
+  "canonicalHash": "0xd0e4d2d28e0d9a60d819743930f9f2843409bf37a895a411620a632da53fa600",
+  "executed": 12,
+  "positiveKeeperProfiles": 11,
+  "requiredEconomicRejections": 1,
+  "failed": 0,
+  "skipped": 0,
+  "productionApproval": false,
+  "sourceAcceptance": {
+    "path": "docs/lending-arbitrum-assets-20261103/actual-50-acceptance.json",
+    "sha256": "53d9d450e6c31fe772a2653839427ba5a2ee37c96c6d0aaf44ab8b7ad334054b"
+  },
+  "simulator": {
+    "path": "script/lending/validation/keeper-gas/native_simulation.py",
+    "sha256": "816f4e98c383f1b450cebd4c3d556b0b59600f2865c436a36c34c1de6a39a51b"
+  },
+  "builder": {
+    "path": "script/lending/validation/keeper-gas/build_checkpoint.py",
+    "sha256": "a67611d8ab4a84bdea907dc66fbd6a8b13e5a378a6215a14f39ade1e581976e7"
+  },
+  "reuseDriver": {
+    "path": "docs/lending-arbitrum-assets-20261103/tools/reuse_native_graph.py",
+    "sha256": "9a8755dd8a7dda6a9ebc0e816435ff3ad9029ff177b76bbd5d075b39ca35886a"
+  },
+  "verifier": {
+    "path": "docs/lending-arbitrum-assets-20261103/tools/seal_post_fix_native.py",
+    "sha256": "c943e34ca2aa5bf559e6b63683fcdab0babe46ef48911142b6171fbcbc7dab90"
+  },
+  "buildProvenance": "One fresh isolated full-project compilation; four fresh constructor fixtures reuse only exact creation templates, never financial state.",
+  "limits": [
+    "Genuine eth_simulateV1 and Nitro per-call gas, not mined mainnet receipts.",
+    "Constructor-produced unused fixture accounts; real canonical protocol state and holder funds.",
+    "Scoped historical market/policy qualification; fresh activation preflight and approved manifests remain required."
+  ],
+  "profiles": [
+    {
+      "assetProfile": "usdc",
+      "venue": "all",
+      "result": {
+        "path": "deployments/lending-full-validation-20261101/production/final-cleanup/suffix-native/qualified-usdc/all/native-result.json",
+        "sha256": "2bc7baa79c2ca7081577f0f88815293dcb9217527f408ef418e6e9ac4048e0b4"
+      },
+      "checkpoint": {
+        "path": "deployments/lending-full-validation-20261101/production/final-cleanup/suffix-native/checkpoint-usdc.json",
+        "sha256": "8cb77d20dae8d569c9ab40255588a7029c0bc685d761a46e3940115ae7ac35b8"
+      },
+      "status": "COLD_NATIVE_SEVEN_ENABLED_KEEPER_RECALL_PASS",
+      "nativeKeeperGas": {
+        "keeper-0": "2424689",
+        "keeper-1": "2875953"
+      },
+      "ordinaryWithdrawalObservations": null
+    },
+    {
+      "assetProfile": "usdc",
+      "venue": "aave",
+      "result": {
+        "path": "deployments/lending-full-validation-20261101/production/final-cleanup/suffix-native/qualified-usdc/aave/native-result.json",
+        "sha256": "0372560a522598010c6466faf8915cab3230c702a774e6301d7241c4267a9536"
+      },
+      "checkpoint": {
+        "path": "deployments/lending-full-validation-20261101/production/final-cleanup/suffix-native/checkpoint-usdc.json",
+        "sha256": "8cb77d20dae8d569c9ab40255588a7029c0bc685d761a46e3940115ae7ac35b8"
+      },
+      "status": "DEDICATED_NATIVE_KEEPER_ORDINARY_EMA_RECALL_PASS",
+      "nativeKeeperGas": {
+        "keeper-0": "937820",
+        "keeper-1": "1235902"
+      },
+      "ordinaryWithdrawalObservations": "3"
+    },
+    {
+      "assetProfile": "usdc",
+      "venue": "comet",
+      "result": {
+        "path": "deployments/lending-full-validation-20261101/production/final-cleanup/suffix-native/qualified-usdc/comet/native-result.json",
+        "sha256": "c995aeba9de808e05c3d50595a8a52324b5a34d6085f3685a4a0c3a8a9e263a6"
+      },
+      "checkpoint": {
+        "path": "deployments/lending-full-validation-20261101/production/final-cleanup/suffix-native/checkpoint-usdc.json",
+        "sha256": "8cb77d20dae8d569c9ab40255588a7029c0bc685d761a46e3940115ae7ac35b8"
+      },
+      "status": "DEDICATED_NATIVE_KEEPER_ORDINARY_EMA_RECALL_PASS",
+      "nativeKeeperGas": {
+        "keeper-0": "923052",
+        "keeper-1": "1194536"
+      },
+      "ordinaryWithdrawalObservations": "3"
+    },
+    {
+      "assetProfile": "usdc",
+      "venue": "morpho",
+      "result": {
+        "path": "deployments/lending-full-validation-20261101/production/final-cleanup/suffix-native/qualified-usdc/morpho/native-result.json",
+        "sha256": "833420d6159773b68e87b0ff4a3488d479adcb4945a3cd467b3ca8254ee742e0"
+      },
+      "checkpoint": {
+        "path": "deployments/lending-full-validation-20261101/production/final-cleanup/suffix-native/checkpoint-usdc.json",
+        "sha256": "8cb77d20dae8d569c9ab40255588a7029c0bc685d761a46e3940115ae7ac35b8"
+      },
+      "status": "DEDICATED_NATIVE_KEEPER_ORDINARY_EMA_RECALL_PASS",
+      "nativeKeeperGas": {
+        "keeper-0": "1096616",
+        "keeper-1": "1729580"
+      },
+      "ordinaryWithdrawalObservations": "3"
+    },
+    {
+      "assetProfile": "usdc",
+      "venue": "euler",
+      "result": {
+        "path": "deployments/lending-full-validation-20261101/production/final-cleanup/suffix-native/qualified-usdc/euler/native-result.json",
+        "sha256": "f969e36c1867bf3b3a61d5a1fc6d4619679eeefc14feb07790eaa183fbb7b9f3"
+      },
+      "checkpoint": {
+        "path": "deployments/lending-full-validation-20261101/production/final-cleanup/suffix-native/checkpoint-usdc.json",
+        "sha256": "8cb77d20dae8d569c9ab40255588a7029c0bc685d761a46e3940115ae7ac35b8"
+      },
+      "status": "DEDICATED_NATIVE_KEEPER_ORDINARY_EMA_RECALL_PASS",
+      "nativeKeeperGas": {
+        "keeper-0": "1002400",
+        "keeper-1": "1403815"
+      },
+      "ordinaryWithdrawalObservations": "3"
+    },
+    {
+      "assetProfile": "usdc",
+      "venue": "fluid",
+      "result": {
+        "path": "deployments/lending-full-validation-20261101/production/final-cleanup/suffix-native/qualified-usdc/fluid/native-result.json",
+        "sha256": "c1bb8f4c62a53881c5dc2d85d2fb01c9d46f975bab435336ab3f4166c60534f6"
+      },
+      "checkpoint": {
+        "path": "deployments/lending-full-validation-20261101/production/final-cleanup/suffix-native/checkpoint-usdc.json",
+        "sha256": "8cb77d20dae8d569c9ab40255588a7029c0bc685d761a46e3940115ae7ac35b8"
+      },
+      "status": "DEDICATED_NATIVE_KEEPER_ORDINARY_EMA_RECALL_PASS",
+      "nativeKeeperGas": {
+        "keeper-0": "904689",
+        "keeper-1": "1136731"
+      },
+      "ordinaryWithdrawalObservations": "3"
+    },
+    {
+      "assetProfile": "usdc",
+      "venue": "dolomite",
+      "result": {
+        "path": "deployments/lending-full-validation-20261101/production/final-cleanup/suffix-native/qualified-usdc/dolomite/native-result.json",
+        "sha256": "dda4ce5e1bce1d5a5aed8b211a34e328c9244057ed326e94f9d0c8bf810761c8"
+      },
+      "checkpoint": {
+        "path": "deployments/lending-full-validation-20261101/production/final-cleanup/suffix-native/checkpoint-usdc.json",
+        "sha256": "8cb77d20dae8d569c9ab40255588a7029c0bc685d761a46e3940115ae7ac35b8"
+      },
+      "status": "DEDICATED_NATIVE_KEEPER_ORDINARY_EMA_RECALL_PASS",
+      "nativeKeeperGas": {
+        "keeper-0": "961986",
+        "keeper-1": "1770519"
+      },
+      "ordinaryWithdrawalObservations": "3"
+    },
+    {
+      "assetProfile": "usdc",
+      "venue": "venus",
+      "result": {
+        "path": "deployments/lending-full-validation-20261101/production/final-cleanup/suffix-native/qualified-usdc/venus/native-result.json",
+        "sha256": "00028c6e791f57e9423faeb291ccf606aca9be6e610119000455b518ff47b56f"
+      },
+      "checkpoint": {
+        "path": "deployments/lending-full-validation-20261101/production/final-cleanup/suffix-native/checkpoint-usdc.json",
+        "sha256": "8cb77d20dae8d569c9ab40255588a7029c0bc685d761a46e3940115ae7ac35b8"
+      },
+      "status": "DEDICATED_NATIVE_KEEPER_ORDINARY_EMA_RECALL_PASS",
+      "nativeKeeperGas": {
+        "keeper-0": "921291",
+        "keeper-1": "1281720"
+      },
+      "ordinaryWithdrawalObservations": "3"
+    },
+    {
+      "assetProfile": "usdt0-aave",
+      "venue": "aave",
+      "result": {
+        "path": "deployments/lending-full-validation-20261101/production/final-cleanup/suffix-native/qualified-usdt0/native-result.json",
+        "sha256": "551dc7dbaf63f271a3ed35abd95d1fac104e192f8a21a6308152a5e4f6511865"
+      },
+      "checkpoint": {
+        "path": "deployments/lending-full-validation-20261101/production/final-cleanup/suffix-native/checkpoint-usdt0.json",
+        "sha256": "0b591923b4f922824799f2ea1b8dd4e05abdd48c3684fc9ad438b4239d6f46aa"
+      },
+      "status": "DEDICATED_NATIVE_KEEPER_ORDINARY_EMA_RECALL_PASS",
+      "nativeKeeperGas": {
+        "keeper-0": "886121",
+        "keeper-1": "1150490"
+      },
+      "ordinaryWithdrawalObservations": "3"
+    },
+    {
+      "assetProfile": "weth-aave",
+      "venue": "aave",
+      "result": {
+        "path": "deployments/lending-full-validation-20261101/production/final-cleanup/suffix-native/qualified-weth/native-result.json",
+        "sha256": "d316c52486b81dcb46dbaa01a188f82ef82f3c43732bc56062db2ceabfd74168"
+      },
+      "checkpoint": {
+        "path": "deployments/lending-full-validation-20261101/production/final-cleanup/suffix-native/checkpoint-weth.json",
+        "sha256": "a815e834273fb8094f1d92de0c9f2d55c900bc50d748bd7e8fd277f3f50ad168"
+      },
+      "status": "DEDICATED_NATIVE_KEEPER_ORDINARY_EMA_RECALL_PASS",
+      "nativeKeeperGas": {
+        "keeper-0": "870092",
+        "keeper-1": "1150577"
+      },
+      "ordinaryWithdrawalObservations": "3"
+    },
+    {
+      "assetProfile": "wbtc-dolomite",
+      "venue": "dolomite",
+      "result": {
+        "path": "deployments/lending-full-validation-20261101/production/final-cleanup/suffix-native/qualified-wbtc-dolomite/native-result.json",
+        "sha256": "da0d723b4d9c80cae3e34f6cca415caa7eada42d0e90df03ab17231032a9b5ee"
+      },
+      "checkpoint": {
+        "path": "deployments/lending-full-validation-20261101/production/final-cleanup/suffix-native/checkpoint-wbtc-dolomite.json",
+        "sha256": "986529ea50ca4974864712212d3413b9145f7e6d4008a221f1303589575b21c2"
+      },
+      "status": "DEDICATED_NATIVE_KEEPER_ORDINARY_EMA_RECALL_PASS",
+      "nativeKeeperGas": {
+        "keeper-0": "925359",
+        "keeper-1": "1750685"
+      },
+      "ordinaryWithdrawalObservations": "3"
+    },
+    {
+      "assetProfile": "wbtc-aave",
+      "venue": "aave",
+      "result": {
+        "path": "deployments/lending-full-validation-20261101/production/final-cleanup/suffix-native/qualified-wbtc-aave-negative/native-result.json",
+        "sha256": "3ecedbce333bf90c22dda28ca9b1f2982b173b1d0ab842f8b13bb3b18a71c582"
+      },
+      "checkpoint": {
+        "path": "deployments/lending-full-validation-20261101/production/final-cleanup/suffix-native/checkpoint-wbtc-aave.json",
+        "sha256": "252aaf9b9193429bc3c910b793d4428f7a8ef60a277e4e7b6f6ce5c869ddbddb"
+      },
+      "status": "EXPECTED_NATIVE_ECONOMIC_REJECTION_AND_CORE_RECALL_PASS",
+      "ratesBps": {
+        "0x40aa1ed69d83238989a93cf0537ded57b1d7e1e3": 1
+      },
+      "grossBenefitUSD6": "45689",
+      "gasCostUSD6": "478303",
+      "coreAfterRaw": "64567683",
+      "recalledRaw": "56819562"
+    }
+  ]
+}

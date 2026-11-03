@@ -1,6 +1,16 @@
 # Full Lending validation — qualified release 2026-11-03
 
-**Baseline release only: PRODUCTION_READY for its named validated matrix and approved build/configuration.**
+**Qualification reopened: the newly confirmed residual-plan USD6/asset-unit defect requires post-fix validation.**
+
+The corrected strategy converts the suffix gas quote into the same asset units
+as its expected yield. Three regression counterexamples fail on the previous
+source and pass on the fix. Post-fix 2,998-test / 204-suite regression, 50/21
+cross-chain real-market acceptance, 58 Arbitrum cases, 34 runtime templates,
+296 selectors and nine storage-layout/prefix checks pass. Fresh Native
+qualification passes twelve profiles (eleven positive and one required economic
+rejection), including Euler. Current-source forge-test and expanded Arbitrum CI
+pass; pinned-market CI is retrying an upstream Euler RPC reset. Earlier qualification
+records below are historical and do not approve this edited tree.
 
 The requested expanded Arbitrum USDC/WETH/USDT0/WBTC matrix and final cleanup
 are under qualification on `codex/lending-final-cleanup-20261103`. The baseline
@@ -11,11 +21,11 @@ Expanded Arbitrum functional acceptance now closes all28 cells explicitly:
 25 real adapter lifecycles, 22 invested Core paths, three correct risk exclusions,
 four weighted portfolio/rebalance/exit paths and four nonempty frozen Aave-warm
 paths. All58 executed cases pass; three protocol/asset markets are unavailable
-and are not counted as passing tests. Cleanup regression is2995/203 with zero
+and are not counted as passing tests. Post-fix regression is2998/204 with zero
 failure/skip; all34 runtime templates,296selectors and9layout/prefix checks pass.
-The cleanup audit scope is10557NLOC/45 strategy files. See
-`lending-arbitrum-assets-20261103/RESULTS.md`. New-source CI, source-bound Native
-keeper/gas qualification and approved per-asset production manifests remain
+The post-fix audit scope is10558NLOC/45 strategy files. See
+`lending-arbitrum-assets-20261103/RESULTS.md`. Pinned-market CI and approved
+per-asset production manifests remain
 separate release gates; the expanded working tree is not declared production ready.
 
 Qualified functional source: `03596ac4e5c0d0c37b33c90573456656bda22343` on `codex/lending-multitoken-multichain`.

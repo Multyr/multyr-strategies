@@ -1,0 +1,49 @@
+{
+  "id": "LENDING-SUFFIX-USD6-ASSET",
+  "status": "FIXED_LOCAL_GATES_PASS_CURRENT_CI_PENDING",
+  "affectedFunction": "StrategyRebalanceGateModule.checkRemainingPlan",
+  "problem": "Remaining-plan benefit/cost comparison consumed a USD6 gas quote as raw underlying units. This underprices 18-decimal gas, overprices BTC gas and misstates the economics event under depeg.",
+  "fix": "Convert the quote through the frozen-Core-backed asset valuation before the comparison and economics event.",
+  "productionSource": "src/strategies/usdc-lending/controller/StrategyRebalanceGateModule.sol",
+  "regression": "test/strategies/usdc-lending/RemainingPlanQuoteUnits.t.sol",
+  "counterexamples": {
+    "before": {
+      "passed": 0,
+      "failed": 3
+    },
+    "after": {
+      "passed": 3,
+      "failed": 0
+    }
+  },
+  "evidence": {
+    "suffix-units-red.log": "48b1c9c5c832cdae187f4183211cba1994e94a060217acd42d1477d9c18bdc9b",
+    "suffix-units-green.log": "ada5da08795d46323d4bc675c39cd0ea2bcbaf046b69a4856fb3b03579c7abd5"
+  },
+  "coreChanged": false,
+  "storageChanged": false,
+  "abiChanged": false,
+  "productionApproval": false,
+  "validation": {
+    "regression": {
+      "passed": 2998,
+      "failed": 0,
+      "skipped": 0,
+      "suites": 204
+    },
+    "actualMarketGate": {
+      "passed": 50,
+      "failed": 0,
+      "skipped": 0,
+      "suites": 21
+    },
+    "abiContractsUnchanged": 106,
+    "runtimeTemplates": 34,
+    "runtimeMaximumBytes": 23479,
+    "uniqueSelectors": 296,
+    "selectorCollisions": 0,
+    "matchingLayouts": 9,
+    "native": "TWELVE_POST_FIX_NATIVE_PROFILES_PASS",
+    "ci": "FORGE_SUCCESS_EXPANDED_MATRIX_SUCCESS_PINNED_MARKETS_RETRY_PENDING"
+  }
+}

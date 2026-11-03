@@ -1,5 +1,18 @@
 # Arbitrum USDC / WETH / USDT0 / WBTC — functional results
 
+**Qualification reopened for the residual-plan cost-unit correction.**
+`checkRemainingPlan()` previously compared a USD6 quote directly with raw asset
+yield. The fix converts that quote to asset units and preserves the economics
+event's common unit. Three independent regression counterexamples fail before
+the fix and pass afterward (6-decimal depeg, 8-decimal BTC, 18-decimal ETH).
+Post-fix validation now passes 2,998 regression tests / 204 suites, the 50-case
+cross-chain real-market gate and all 58 Arbitrum cases. ABI, size, selector and
+storage checks also pass. Fresh Native qualification passes all twelve profiles:
+eleven positive keeper paths and one required WBTC/Aave economic rejection with
+full capital recall. Euler's dedicated Native profile and local receipt replay
+pass. Current-source forge-test and expanded Arbitrum CI pass; the pinned-market
+CI job is retrying an upstream Euler RPC reset. Production approval remains false.
+
 **58 executed real-data cases pass, zero failures and zero skips. All 28
 adapter/token cells are classified. This is functional acceptance, not an
 approval to deploy every cell or a new production-readiness declaration.**
@@ -33,7 +46,7 @@ not establish universal incompatibility of the underlying token.
   tightening/protection rebalance, full small-user exit and final recall.
 - **4 nonempty frozen Aave-warm profiles**: actual warm investment and recall
   alongside Lending. This does not qualify every Morpho warm profile.
-- **2,995 regression/fuzz/invariant tests in 203 suites**, zero failures/skips,
+- **2,998 regression/fuzz/invariant tests in 204 suites**, zero failures/skips,
   with the two legacy fork opt-ins enabled.
 - **34 production runtime templates** below 23,552 bytes; largest 23,479 bytes.
   **296 selectors**, no collision; **9 matching module layouts** and **9
@@ -47,13 +60,10 @@ Reports: `direct-acceptance.json`, `core-acceptance.json`,
 `validated-matrix.csv`, `cleanup-structure.json`, `original-event-abi-parity.json`.
 They bind source hashes, canonical headers, catalogues and per-case log hashes.
 
-All four gates were repeated successfully against commit
-`89a5b7c12e32c915249ad29ef98c946e8549a304` after correcting the RPC HTTP
-client identification. The earlier CI attempt failed with `RPC_READ_FAILED`
-before test execution because the public endpoint rejected Python's default
-HTTP client. The identified client independently verifies chain ID and all
-28 canonical headers on that public endpoint. The replacement CI run remains
-a separate pending gate; local acceptance is not represented as CI success.
+All four current Arbitrum receipts bind the post-fix production/script sources
+at `3fcc4d4`, including stable source, catalogue, canonical-header and log hashes.
+The cross-chain gate uses a verified Ethereum archive endpoint and bounded
+request batches. Current-source CI remains a separate pending gate.
 
 ## Method and Core integration
 
@@ -86,8 +96,8 @@ threshold. Copying the raw USDC defaults to WETH/WBTC is not valid configuration
 Cleanup removes 10 unreachable helper/modifier declarations, four unused
 constants and 45 unused import aliases. Six configuration-library entry points
 are retained deliberately. Public/external ABI and storage slots are preserved.
-Audit scope: **10,557 NLOC / 45 strategy Solidity files**, versus 10,630 before;
-operations add 2,481 NLOC / 13 files, total **13,038 / 58**. Tests, Core, vendors
+Audit scope: **10,558 NLOC / 45 strategy Solidity files**, versus 10,630 before;
+operations add 2,481 NLOC / 13 files, total **13,039 / 58**. Tests, Core, vendors
 and Python/PowerShell are excluded; `audit-scope-nloc.json` defines the metric.
 
 Pinned subgraph source `d5751e4dfe13495c7c87f491d74758fe47f72548` has four ABI
@@ -102,9 +112,9 @@ cleanup; no synthetic event was added to hide it.
 ## Remaining production gates
 
 - Finish new-branch CI, including the new mandatory four-asset matrix job.
-- Rebind genuine Native keeper/gas qualification to the cleanup source and
-  qualify the expanded WETH/WBTC operational profiles. The functional cases
-  above are not a substitute for that gate.
+- Native qualification is complete for the twelve explicitly named profiles in
+  `post-fix-native-acceptance.json`, including Euler and WETH/USDT0/WBTC. New
+  operational market universes require their own calibration and qualification.
 - Approve concrete per-asset deployment manifests, roles and operational caps;
   run activation-time market/oracle/cap preflight. Existing USDC Core/main/shadow
   remain untouched. Market availability at a historical pin is not a current

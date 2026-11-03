@@ -1,7 +1,9 @@
 {
+  "status": "PASS",
   "baselineCommit": "58e5139f187005d68241a74c1171a59030866b18",
-  "sourceFiles": 44,
-  "contractABIsCompared": 106,
-  "unchanged": true,
-  "scope": "All ABI entries, including functions/errors/events/constructors; not merely selector presence."
+  "contractsCompared": 106,
+  "sourceUnitsCompared": 44,
+  "changedPublicExternalAbi": [],
+  "scope": "Complete compiler ABI, including constructors, functions, errors and event names/types/indexing/anonymous flags. Economic event values now consistently use raw asset units.",
+  "currentAbiAstSha256": "3b1e2de9780cc5e111819b26a8fbb68f2d62e40dfa85ac6a95ffcdf577f9fa57"
 }

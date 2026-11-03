@@ -1,0 +1,156 @@
+{
+  "status": "HISTORICAL_PRE_SUFFIX_FIX_PASS",
+  "independentFullGraphCompilations": 2,
+  "constructorBindingsCompared": 29,
+  "bindings": [
+    {
+      "name": "globalConfig",
+      "contract": "GlobalConfig",
+      "creationTemplateSha256": "11112585d2ba7d4d01f791281bd2a57ea6576a9c9d25ad9fc8ac345deb799d86"
+    },
+    {
+      "name": "oracle",
+      "contract": "PriceOracleMiddleware",
+      "creationTemplateSha256": "1848c9b21deea0fe0ddbdb76d9f90ca37e2bb23ee7ec246e5f43562e9ad2b63e"
+    },
+    {
+      "name": "core",
+      "contract": "CoreVault",
+      "creationTemplateSha256": "4be4a57b2a67f45908ea2a9bf3c8d7828a0ead0a85b2f21a998e0d5da054ade6"
+    },
+    {
+      "name": "selectorRegistry",
+      "contract": "SelectorRegistry",
+      "creationTemplateSha256": "05d6817037a9565896235a3682453c4d8b245403095deab1cb395b8ab29f4a70"
+    },
+    {
+      "name": "admin",
+      "contract": "AdminModule",
+      "creationTemplateSha256": "d2ffe81a4bb5cee6d14724c4178977aefbcd6e27a614b79073b43c8db950987c"
+    },
+    {
+      "name": "erc",
+      "contract": "ERC4626Module",
+      "creationTemplateSha256": "8e8550de3b44ab6874a58e960e7a4f40ee46729dfafbb2aec369cd9e29cfad79"
+    },
+    {
+      "name": "queue",
+      "contract": "EpochedQueueModule",
+      "creationTemplateSha256": "25e3cbbb96985c23aa246911fc30cf8af1e1868b71e2825b863c32527cd6e8b2"
+    },
+    {
+      "name": "liq",
+      "contract": "LiquidityOpsModule",
+      "creationTemplateSha256": "33eea8e64dfcaef58cefdf1a69b1c573e2bb0dd3b6d4c6526d04fcbc753ac1fc"
+    },
+    {
+      "name": "buffer",
+      "contract": "BufferManager",
+      "creationTemplateSha256": "211cfb2e7720eacbdffb9fa48f96315a544ef40caefd373011c7a938e73d96dd"
+    },
+    {
+      "name": "router",
+      "contract": "StrategyRouter",
+      "creationTemplateSha256": "945015294d6dc64c15a082f5d9bf1be25a3e41d1d629688800e8192b112f2517"
+    },
+    {
+      "name": "params",
+      "contract": "StrategyParamsModule",
+      "creationTemplateSha256": "59e18b569a2a2411b9d9b1b1a20627ce9af789157d4ff3538d89b702188decc0"
+    },
+    {
+      "name": "ops",
+      "contract": "StrategyAdapterOpsModule",
+      "creationTemplateSha256": "6461b5722e89dcbcf4f1ee737e424d4b79f8c03bfbac4b8f8d4d292f9e1cdc50"
+    },
+    {
+      "name": "scoring",
+      "contract": "StrategyScoringModule",
+      "creationTemplateSha256": "d8c5c474981dfc13e2aa38637c98afdc2055ff40f32bf60c33ff20a92da7f1df"
+    },
+    {
+      "name": "gate",
+      "contract": "StrategyRebalanceGateModule",
+      "creationTemplateSha256": "4df6f55a66603c25ab983cefb02064fc88022412c0e7ee4d197cbdc4624198ae"
+    },
+    {
+      "name": "strategy",
+      "contract": "UsdcMultiLendingVault",
+      "creationTemplateSha256": "52d56bdec9613772217ef033f784d286e69731d28ca2234455a51386bf528eb7"
+    },
+    {
+      "name": "settings",
+      "contract": "StrategySettingsModule",
+      "creationTemplateSha256": "0dffd022cd5388a392abd131ba6656a28582943a6ba12c483cad1d9fd8c85070"
+    },
+    {
+      "name": "alloc",
+      "contract": "StrategyAllocCalcModule",
+      "creationTemplateSha256": "0bec100559d33dfdf750ce50d9da68005f2e6cf3e7c4e8c524875b7006ab9a1a"
+    },
+    {
+      "name": "plan",
+      "contract": "StrategyRebalancePlanModule",
+      "creationTemplateSha256": "2137b9ba1741b146083adacc36771e21ca2d43f9ea0c5a48be3ddd32bb4813d6"
+    },
+    {
+      "name": "safety",
+      "contract": "StrategySafetyOverflowModule",
+      "creationTemplateSha256": "106b9526b1e7ba7ba13812a2c1a93cce5219c75410b62df2290601dca125a9fb"
+    },
+    {
+      "name": "estimator",
+      "contract": "ReadOnlyGasEstimator",
+      "creationTemplateSha256": "9abb282003128cf2757c0731f50ceb8b375248053a526e3ca96f1e5048b69c6c"
+    },
+    {
+      "name": "upkeep",
+      "contract": "StrategyUpkeep",
+      "creationTemplateSha256": "e158e9d7905f54f9b71352afc220f02cf1b5d0c92ed7edab0c10c3b422d49b59"
+    },
+    {
+      "name": "protocolRegistry",
+      "contract": "ProtocolRegistry",
+      "creationTemplateSha256": "af926086782985ce2d67ca557ea1f0ea8d88f65043e597de900dd8670f7c3851"
+    },
+    {
+      "name": "aave",
+      "contract": "AaveV3USDCAdapter",
+      "creationTemplateSha256": "2cf2f386718fe6df94f5056f1a29c1d9e0628d7c176813ecb4b267044a27d83e"
+    },
+    {
+      "name": "comet",
+      "contract": "CometUsdcMultiMarketAdapter",
+      "creationTemplateSha256": "e2decb72e29b33c1f09f743686769607fd91cb7e3902d50c2d00de7ce688bb0d"
+    },
+    {
+      "name": "morpho",
+      "contract": "MorphoUsdcMultiMarketAdapter",
+      "creationTemplateSha256": "4ca37bbc9616fc707eeacbc0d3ca9697198425d118a424481a435617d4d652fa"
+    },
+    {
+      "name": "euler",
+      "contract": "EulerUsdcMultiMarketAdapter",
+      "creationTemplateSha256": "f78385d8b0f306b3973cfe783189b48982c705270f3abfd72abdc3364b9bfdcb"
+    },
+    {
+      "name": "fluid",
+      "contract": "FluidUsdcMultiMarketAdapter",
+      "creationTemplateSha256": "884bcdb68e49a984e39fcf8c37922a4db94d94d15fffb13f9ecda5c5e89983b0"
+    },
+    {
+      "name": "dolomite",
+      "contract": "DolomiteUsdcMultiMarketAdapter",
+      "creationTemplateSha256": "23d27675b6bd0b05acb2ddb884e54e7a358f14757eb88f4a15e2b0e32e89063b"
+    },
+    {
+      "name": "venus",
+      "contract": "VenusUsdcMultiMarketAdapter",
+      "creationTemplateSha256": "fcf189d427c36820b4ea1debc77f297a6a2bd791902666a972e9e4cbaa29bc73"
+    }
+  ],
+  "scope": "Independent isolated full-project builds on the same host, each with source/constructor provenance; not a claim of cross-platform compiler parity.",
+  "productionApproval": false,
+  "sourceCommit": "63d63aa",
+  "supersededBy": "Residual-plan unit correction; fresh post-fix Native provenance required"
+}

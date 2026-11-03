@@ -1,0 +1,52 @@
+{
+  "sourceCommit": "63d63aa",
+  "scope": "Diagnostic of historical pre-fix cold rejection, not acceptance",
+  "values": {
+    "inputs": [
+      [
+        1
+      ],
+      [
+        "0x40AA1ed69D83238989a93cF0537DEd57B1d7e1E3"
+      ],
+      [
+        31250759
+      ],
+      56819562,
+      31250759,
+      [
+        10000
+      ]
+    ],
+    "gateMin": [
+      0
+    ],
+    "slippage": [
+      0
+    ],
+    "spread": [
+      0
+    ],
+    "minMove": [
+      0
+    ],
+    "ratio": [
+      0
+    ],
+    "horizon": [
+      7
+    ],
+    "regime": [
+      0
+    ],
+    "confidence": [
+      0
+    ],
+    "costAsset": [
+      618
+    ],
+    "idleUsd": [
+      44000880563
+    ]
+  }
+}

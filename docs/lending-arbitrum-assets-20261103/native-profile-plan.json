@@ -1,0 +1,90 @@
+{
+  "status": "TWELVE_POST_FIX_NATIVE_PROFILES_PASS",
+  "canonicalBlock": 520094008,
+  "canonicalHash": "0xd0e4d2d28e0d9a60d819743930f9f2843409bf37a895a411620a632da53fa600",
+  "profiles": [
+    {
+      "assetProfile": "usdc",
+      "venue": "all",
+      "depositRaw": "80000000000"
+    },
+    {
+      "assetProfile": "usdc",
+      "venue": "aave",
+      "depositRaw": "80000000000"
+    },
+    {
+      "assetProfile": "usdc",
+      "venue": "comet",
+      "depositRaw": "80000000000"
+    },
+    {
+      "assetProfile": "usdc",
+      "venue": "morpho",
+      "depositRaw": "80000000000"
+    },
+    {
+      "assetProfile": "usdc",
+      "venue": "euler",
+      "depositRaw": "80000000000"
+    },
+    {
+      "assetProfile": "usdc",
+      "venue": "fluid",
+      "depositRaw": "80000000000"
+    },
+    {
+      "assetProfile": "usdc",
+      "venue": "dolomite",
+      "depositRaw": "80000000000"
+    },
+    {
+      "assetProfile": "usdc",
+      "venue": "venus",
+      "depositRaw": "80000000000"
+    },
+    {
+      "assetProfile": "usdt0-aave",
+      "venue": "aave",
+      "depositBudgetUSD": "80000"
+    },
+    {
+      "assetProfile": "weth-aave",
+      "venue": "aave",
+      "depositBudgetUSD": "80000"
+    },
+    {
+      "assetProfile": "wbtc-dolomite",
+      "venue": "dolomite",
+      "depositBudgetUSD": "50000"
+    },
+    {
+      "assetProfile": "wbtc-aave",
+      "venue": "aave",
+      "depositBudgetUSD": "50000",
+      "expectedOutcome": "ECONOMIC_REJECTION_WITH_FULL_IDLE_CAPITAL_CORE_RECALL"
+    }
+  ],
+  "expectedExecutedProfiles": 12,
+  "sourceBindings": {
+    "script/lending/validation/keeper-gas/build_checkpoint.py": "a67611d8ab4a84bdea907dc66fbd6a8b13e5a378a6215a14f39ade1e581976e7",
+    "script/lending/validation/keeper-gas/native_simulation.py": "816f4e98c383f1b450cebd4c3d556b0b59600f2865c436a36c34c1de6a39a51b",
+    "docs/lending-arbitrum-assets-20261103/actual-50-acceptance.json": "53d9d450e6c31fe772a2653839427ba5a2ee37c96c6d0aaf44ab8b7ad334054b",
+    "docs/lending-arbitrum-assets-20261103/tools/reuse_native_graph.py": "9a8755dd8a7dda6a9ebc0e816435ff3ad9029ff177b76bbd5d075b39ca35886a"
+  },
+  "requiredChecks": [
+    "Unfunded constructor-produced fixtures and complete creation/constructor provenance",
+    "Actual Nitro direct/simulated parity, prices, independent USD6 quote and action hash",
+    "Natural economic gate, keeper prepare/step completion and genuine protocol receipts",
+    "At least three fresh ordinary withdrawal EMA observations per dedicated venue",
+    "Quote covers measured native wrapper gas; full capital recall and cash/NAV ledgers",
+    "Canonical asset/token supply conserved; no existing financial account override"
+  ],
+  "scope": "Eight USDC profiles, dedicated USDT0/Aave and WETH/Aave, positive WBTC/Dolomite and correct low-yield WBTC/Aave rejection. Other adapter/token Native topologies require their own qualification.",
+  "productionApproval": false,
+  "fixtureOldBlock": 519450000,
+  "ppsSampleBlock": 519994008,
+  "expectedPositiveKeeperProfiles": 11,
+  "expectedEconomicRejections": 1,
+  "acceptance": "post-fix-native-acceptance.json"
+}

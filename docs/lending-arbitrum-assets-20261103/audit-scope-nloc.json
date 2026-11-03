@@ -2,7 +2,7 @@
   "metric": "Physical nonblank Solidity lines with comments removed lexically; includes braces, pragma/imports, interfaces and configuration. Strings preserved. Not logical-statement counting.",
   "strategy": {
     "files": 45,
-    "nloc": 10557
+    "nloc": 10558
   },
   "deploymentOperations": {
     "files": 13,
@@ -10,7 +10,7 @@
   },
   "allFirstPartySolidity": {
     "files": 58,
-    "nloc": 13038
+    "nloc": 13039
   },
   "baselineStrategyNloc": 10630,
   "excluded": [
@@ -384,11 +384,11 @@
       "path": "src/strategies/usdc-lending/controller/StrategyRebalanceGateModule.sol",
       "scope": "production",
       "category": "controller",
-      "physical_lines": 607,
-      "nloc": 384,
+      "physical_lines": 608,
+      "nloc": 385,
       "blank_lines": 55,
       "comment_only_lines": 168,
-      "rawSha256": "8c6b12f64779bc21a10f609e7cf04f17f4481e8f29029c95e6a69163e0cee04a"
+      "rawSha256": "291ce2963c0eb191210c9033130d6e8af575f3c1a241a14e607053feddfff640"
     },
     {
       "path": "src/strategies/usdc-lending/controller/StrategyRebalancePlanModule.sol",

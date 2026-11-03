@@ -1,0 +1,65 @@
+{
+  "status": "AUTHORIZED_NATIVE_ARCHIVE_PARITY_PASS",
+  "header": {
+    "number": "0x1f000138",
+    "hash": "0xd0e4d2d28e0d9a60d819743930f9f2843409bf37a895a411620a632da53fa600",
+    "parentHash": "0xa191ad017e624f1fc7651fcd33a1b5c79878bd4d2628a48f42fb69e3778e8a44",
+    "timestamp": "0x6ae65643",
+    "baseFeePerGas": "0x1323e70",
+    "gasLimit": "0x4000000000000"
+  },
+  "rpc": "<authorized-rpc>",
+  "rawSha256": "a5304b126962b199bd045d3764af7b0bdc1f26d73790b0aba65ee9a2eef6e28a",
+  "profileInputs": [
+    {
+      "profile": "usdc",
+      "asset": "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+      "aToken": "0x724dc807b04555b71ed48a6896b6F41593b8C637",
+      "unit": "1000000",
+      "price18": "999826710000000000",
+      "holderRaw": "50059",
+      "depositBudgetUSD": "80000",
+      "depositRaw": "80013865602",
+      "funding": "USDT0 swap",
+      "canonicalBlock": 520094008
+    },
+    {
+      "profile": "usdt0-aave",
+      "asset": "0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9",
+      "aToken": "0x6ab707Aca953eDAeFBc4fD23bA73294241490620",
+      "unit": "1000000",
+      "price18": "998890000000000000",
+      "holderRaw": "99414783701626",
+      "depositBudgetUSD": "80000",
+      "depositRaw": "80088898677",
+      "funding": "canonical holder",
+      "canonicalBlock": 520094008
+    },
+    {
+      "profile": "weth-aave",
+      "asset": "0x82af49447d8a07e3bd95bd0d56f35241523fbab1",
+      "aToken": "0xe50fa9b3c56ffb159cb0fca61f5c9d750e8128c8",
+      "unit": "1000000000000000000",
+      "price18": "2250374657840000000000",
+      "holderRaw": "42912299352477177800",
+      "depositBudgetUSD": "80000",
+      "depositRaw": "35549636022291156534",
+      "funding": "canonical holder",
+      "canonicalBlock": 520094008
+    },
+    {
+      "profile": "wbtc-aave",
+      "asset": "0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f",
+      "aToken": "0x078f358208685046a11c85e8ad32895ded33a249",
+      "unit": "100000000",
+      "price18": "77439668689530000000000",
+      "holderRaw": "94676533",
+      "depositBudgetUSD": "50000",
+      "depositRaw": "64566391",
+      "funding": "canonical holder",
+      "canonicalBlock": 520094008
+    }
+  ],
+  "scope": "Canonical identities, actual holder budgets and actual Nitro direct/simulated parity only; not keeper-profile acceptance.",
+  "productionApproval": false
+}

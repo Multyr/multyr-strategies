@@ -34,23 +34,38 @@
   "mainOrShadowModified": false,
   "productionApproved": false,
   "remainingProductionGates": [
-    "New-branch CI completion",
-    "Source-bound genuine Native keeper/gas requalification for cleanup, including baseline USDC/USDT0 and expanded WETH/WBTC operational profiles",
-    "Approved asset-specific deployment manifests and roles; a USDC Core cannot change underlying",
-    "Final release packaging and provenance for cleanup source"
+    "Complete current-source pinned-market CI retry; forge-test and expanded Arbitrum job already pass",
+    "Approve asset-specific deployment manifests, roles, caps and gas policy; provision new dedicated Core/router and keeper/registry dependencies",
+    "Activation-time oracle/market/role preflight and final production release packaging/provenance against approved gates"
   ],
   "reports": {
     "direct": "direct-acceptance.json",
     "core": "core-acceptance.json",
     "portfolio": "portfolio-acceptance.json",
-    "warm": "warm-acceptance.json"
+    "warm": "warm-acceptance.json",
+    "native": "post-fix-native-acceptance.json",
+    "deployment": "DEPLOYMENT_SEQUENCE.md"
   },
   "scope": "Real canonical forks and holder transfers; closed protocol counterfactuals over canonical historical headers, not replayed canonical transactions or a guarantee of future profit.",
   "regression": {
-    "passed": 2995,
+    "status": "PASS",
+    "passed": 2998,
     "failed": 0,
     "skipped": 0,
-    "suites": 203,
-    "logSha256": "c89ce79ba148c1fdece448c7815e9003508eef04dda30d8cb61af8f0fc5ba2c6"
+    "suites": 204,
+    "sourceCommit": "3fcc4d405153a3b534daed98f92f836e6d61957c",
+    "sourceBinding": "All Solidity/foundry inputs equal the independently recorded current real-market acceptance snapshot.",
+    "sourceAcceptanceSha256": "53d9d450e6c31fe772a2653839427ba5a2ee37c96c6d0aaf44ab8b7ad334054b",
+    "log": "deployments/lending-full-validation-20261101/production/final-cleanup/suffix-fix-regression.log",
+    "logSha256": "c94549868dfee77fdb38cf1b147060c456c0aaf41f5d95e3506e9c032e7e761e",
+    "legacyOptInsEnabled": true,
+    "productionApproval": false
+  },
+  "sourceCommit": "3fcc4d405153a3b534daed98f92f836e6d61957c",
+  "native": {
+    "status": "TWELVE_POST_FIX_NATIVE_PROFILES_PASS",
+    "positiveKeeperProfiles": 11,
+    "requiredEconomicRejections": 1,
+    "report": "post-fix-native-acceptance.json"
   }
 }

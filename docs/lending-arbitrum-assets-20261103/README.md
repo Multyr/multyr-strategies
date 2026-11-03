@@ -2,6 +2,13 @@
 
 Status: **FUNCTIONAL MATRIX COMPLETE WITH EXPLICIT CONSTRAINTS — not production approval**.
 
+Post-fix source: `3fcc4d405153a3b534daed98f92f836e6d61957c`.
+Regression is 2,998 tests / 204 suites; all 58 expanded Arbitrum cases pass.
+`post-fix-native-acceptance.json` seals 12 genuine Native profiles, including
+Euler, with 11 positive keeper paths and one correct WBTC/Aave rejection.
+`DEPLOYMENT_SEQUENCE.md` records the unsigned deployment dependencies and
+mandatory Euler initialization. Operational manifests remain unapproved.
+
 Final results and the 28-cell table are in [RESULTS.md](RESULTS.md).
 All 58 executed real-data cases pass: 25 direct adapter lifecycles, 22 invested
 Core paths, three correct policy rejections/idle exits, four weighted portfolios

@@ -1,0 +1,19 @@
+[
+  {
+    "rpc": "https://ethereum-rpc.publicnode.com",
+    "status": "UNRESOLVED",
+    "error": "HTTPError"
+  },
+  {
+    "rpc": "https://eth.drpc.org",
+    "status": "CANONICAL_HEADER_AND_ARCHIVE_CALL_PASS",
+    "block": 26300000,
+    "hash": "0xfeb02dce39436b4d1f400d128fa774891b94451859a56e6c9d548b8574629b56",
+    "supplyRaw": "47378946518294072"
+  },
+  {
+    "rpc": "https://eth.llamarpc.com",
+    "status": "UNRESOLVED",
+    "error": "HTTPError"
+  }
+]
