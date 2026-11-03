@@ -30,6 +30,16 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 90
     env:
+      # Foundry 1.4.2 replaces CLI retries/backoff in vm.createSelectFork.
+      # URL keys bind that policy even for tests using literal public endpoints.
+      FOUNDRY_RPC_ENDPOINTS: >-
+        { "https://arbitrum-one.public.blastapi.io" = { endpoint = "https://arbitrum-one.public.blastapi.io", retries = 8, retry_backoff = 2000, compute_units_per_second = 20 },
+        "https://eth-mainnet.public.blastapi.io" = { endpoint = "https://eth-mainnet.public.blastapi.io", retries = 8, retry_backoff = 2000, compute_units_per_second = 20 },
+        "https://bsc-mainnet.public.blastapi.io" = { endpoint = "https://bsc-mainnet.public.blastapi.io", retries = 8, retry_backoff = 2000, compute_units_per_second = 20 },
+        "https://mainnet.base.org" = { endpoint = "https://mainnet.base.org", retries = 8, retry_backoff = 2000, compute_units_per_second = 20 },
+        "https://base-mainnet.public.blastapi.io" = { endpoint = "https://base-mainnet.public.blastapi.io", retries = 8, retry_backoff = 2000, compute_units_per_second = 20 },
+        "https://polygon.drpc.org" = { endpoint = "https://polygon.drpc.org", retries = 8, retry_backoff = 2000, compute_units_per_second = 20 },
+        "https://mainnet.optimism.io" = { endpoint = "https://mainnet.optimism.io", retries = 8, retry_backoff = 2000, compute_units_per_second = 20 } }
       LENDING_RPC_BASE: https://mainnet.base.org
       LENDING_RPC_POLYGON: https://polygon.drpc.org
       LENDING_RPC_OPTIMISM: https://mainnet.optimism.io
