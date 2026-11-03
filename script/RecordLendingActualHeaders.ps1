@@ -18,8 +18,8 @@ $headers = foreach ($network in $networks) {
     # Small batches avoid providers' request-count caps. Every requested header
     # must exist; an RPC error or missing response fails this evidence gate.
     $responses = @()
-    for ($offset=0; $offset -lt $requests.Count; $offset+=5) {
-        $batch = @($requests | Select-Object -Skip $offset -First 5)
+    for ($offset=0; $offset -lt $requests.Count; $offset+=3) {
+        $batch = @($requests | Select-Object -Skip $offset -First 3)
         for ($attempt=0; ; $attempt++) {
             try {
                 $batchResult = Invoke-RestMethod -Method Post -Uri $network.rpc -ContentType 'application/json' `
