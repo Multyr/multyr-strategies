@@ -70,7 +70,7 @@ jobs:
           ./script/AssertLendingTestSummary.ps1 -LogPath lending-manifest.log -ExpectedPassed 5 -ExpectedSuites 1
       - name: Unmocked production core, real funding and two withdrawal epochs
         run: |
-          forge test --match-contract LendingUnmockedE2ETest --threads 1 --fork-url https://mainnet.base.org --fork-block-number 52500000 --compute-units-per-second 40 --fork-retries 8 --fork-retry-backoff 2000 -vvvv --summary *> lending-unmocked.log
+          forge test --match-contract LendingUnmockedE2ETest --threads 1 --fork-url https://mainnet.base.org --fork-block-number 52500000 --compute-units-per-second 20 --fork-retries 8 --fork-retry-backoff 2000 -vvvv --summary *> lending-unmocked.log
           $code=$LASTEXITCODE
           Get-Content lending-unmocked.log -Tail 40
           if ($code -ne 0) { exit $code }
