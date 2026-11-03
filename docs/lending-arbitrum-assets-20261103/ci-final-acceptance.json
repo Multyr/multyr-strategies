@@ -1,0 +1,259 @@
+{
+  "status": "ALL_CURRENT_SOURCE_CI_GATES_PASS",
+  "executionCommit": "7203247f643e364a6d03aae83fc370747188dbd2",
+  "qualifiedFinancialSources": "source-equivalence.json",
+  "workflowRuns": [
+    {
+      "id": 41715625275,
+      "headSha": "7203247f643e364a6d03aae83fc370747188dbd2",
+      "url": "https://github.com/Multyr/multyr-strategies/actions/runs/41715625275",
+      "conclusion": "success",
+      "jobs": [
+        {
+          "name": "expanded-arbitrum-four-assets",
+          "conclusion": "success"
+        },
+        {
+          "name": "pinned-market-roundtrips",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "id": 41715625309,
+      "headSha": "7203247f643e364a6d03aae83fc370747188dbd2",
+      "url": "https://github.com/Multyr/multyr-strategies/actions/runs/41715625309",
+      "conclusion": "success",
+      "jobs": [
+        {
+          "name": "build-and-test",
+          "conclusion": "success"
+        }
+      ]
+    }
+  ],
+  "suiteGates": {
+    "matrix": {
+      "passed": 19,
+      "suites": 4,
+      "failed": 0,
+      "skipped": 0,
+      "log": {
+        "path": "deployments/lending-full-validation-20261101/production/final-cleanup/ci-7203247-full/lending-matrix.log",
+        "sha256": "731a80011d05480c9d0376aa40be256fc9e7afc574550c413ebdf1451131964d"
+      }
+    },
+    "legacy": {
+      "passed": 2,
+      "suites": 2,
+      "failed": 0,
+      "skipped": 0,
+      "log": {
+        "path": "deployments/lending-full-validation-20261101/production/final-cleanup/ci-7203247-full/lending-legacy.log",
+        "sha256": "b7ecb42668a5c554926fd69ca8208d66c6aec3785b5e111b73f118b097f6a272"
+      }
+    },
+    "manifest": {
+      "passed": 5,
+      "suites": 1,
+      "failed": 0,
+      "skipped": 0,
+      "log": {
+        "path": "deployments/lending-full-validation-20261101/production/final-cleanup/ci-7203247-full/lending-manifest.log",
+        "sha256": "5aa70fac55872765a36fcef2aa3af63c21a4be92ee888c4f5474faa83db190a5"
+      }
+    },
+    "unmocked": {
+      "passed": 4,
+      "suites": 1,
+      "failed": 0,
+      "skipped": 0,
+      "log": {
+        "path": "deployments/lending-full-validation-20261101/production/final-cleanup/ci-7203247-full/lending-unmocked.log",
+        "sha256": "f9e08e3634b3c7e1db0108aaf98eff62469d541d3d22b6f060960aed29748f46"
+      }
+    },
+    "comet": {
+      "passed": 2,
+      "suites": 1,
+      "failed": 0,
+      "skipped": 0,
+      "log": {
+        "path": "deployments/lending-full-validation-20261101/production/final-cleanup/ci-7203247-full/lending-comet.log",
+        "sha256": "054ee3db86d14036ed51671206234cebc4e9225e3a5068e2204dd8bc0c91cb77"
+      }
+    },
+    "v2-wiring": {
+      "passed": 6,
+      "suites": 1,
+      "failed": 0,
+      "skipped": 0,
+      "log": {
+        "path": "deployments/lending-full-validation-20261101/production/final-cleanup/ci-7203247-full/lending-v2-wiring.log",
+        "sha256": "2406aba7ff11d90bcb0e42f930748d3d4569d245e5b61ede633d43322a090a82"
+      }
+    },
+    "regression": {
+      "passed": 2998,
+      "suites": 204,
+      "failed": 0,
+      "skipped": 0,
+      "log": {
+        "path": "deployments/lending-full-validation-20261101/production/final-cleanup/ci-7203247-full/lending-regression.log",
+        "sha256": "24e1d59e308252c1b905d4d916ce5b11ae3a1c11155f3f0698f9b45d1f265af6"
+      }
+    }
+  },
+  "actualMarkets": {
+    "passed": 50,
+    "suites": 21,
+    "failed": 0,
+    "skipped": 0,
+    "artifact": {
+      "path": "deployments/lending-full-validation-20261101/production/final-cleanup/ci-7203247-full/docs/lending-full-validation-20261101/actual-acceptance.json",
+      "sha256": "f80b1910f4e9724f0d427777de4ae2dca9ef6259e09b0cb6244929cec0ec9f52"
+    },
+    "infrastructureRetries": 0,
+    "canonicalHeaders": {
+      "path": "docs/lending-arbitrum-assets-20261103/ci-canonical-headers-exact-reconstruction.json",
+      "sha256": "d786992e9dab4162c83581c136048cf232d47dd2bd273d4c773caf0726d104c4"
+    },
+    "canonicalHeaderResolution": "Exact SHA256-matching reconstruction from independent canonical local observations; CRLF normalized to LF. Original CI upload omitted this generated file; future upload path fixed."
+  },
+  "structure": {
+    "runtimes": 34,
+    "maximumBytes": 23479,
+    "allRuntimeTemplatesMatchIndependentWindowsBuild": true,
+    "selectors": 296,
+    "collisions": 0,
+    "layouts": 9,
+    "artifact": {
+      "path": "deployments/lending-full-validation-20261101/production/final-cleanup/ci-7203247-full/docs/lending-verification-20261031/candidate-structure.json",
+      "sha256": "27ab82184add7a048176b2e5b20b08b3877570723e7d7b136524ab3bb62309c2"
+    }
+  },
+  "transactionProfiles": 14,
+  "operationReceipts": 72,
+  "receiptArtifacts": [
+    {
+      "case": "aave-eth-usdt-v3",
+      "operationReceipts": 5,
+      "artifact": {
+        "path": "deployments/lending-full-validation-20261101/production/final-cleanup/ci-7203247-full/deployments/lending-full-validation-20261101/production/transaction-gas/runs/20261103T210922-5838/aave-eth-usdt-v3/result.json",
+        "sha256": "62f9ce6a9d09ec1e6ff85378721599b0101afd73ed2cbec029f96be00915f608"
+      }
+    },
+    {
+      "case": "comet-eth-usdt",
+      "operationReceipts": 5,
+      "artifact": {
+        "path": "deployments/lending-full-validation-20261101/production/final-cleanup/ci-7203247-full/deployments/lending-full-validation-20261101/production/transaction-gas/runs/20261103T210922-5838/comet-eth-usdt/result.json",
+        "sha256": "21dede5f032b2be492f104ac103d62841145b7184cb24607306422ee9953aff0"
+      }
+    },
+    {
+      "case": "morpho-eth-usdt",
+      "operationReceipts": 5,
+      "artifact": {
+        "path": "deployments/lending-full-validation-20261101/production/final-cleanup/ci-7203247-full/deployments/lending-full-validation-20261101/production/transaction-gas/runs/20261103T210922-5838/morpho-eth-usdt/result.json",
+        "sha256": "33ad8aca4d8abd7753d9773d02602032bcf8795ca9eda948e3495b7253d9ac58"
+      }
+    },
+    {
+      "case": "euler-eth-usdt",
+      "operationReceipts": 6,
+      "artifact": {
+        "path": "deployments/lending-full-validation-20261101/production/final-cleanup/ci-7203247-full/deployments/lending-full-validation-20261101/production/transaction-gas/runs/20261103T210922-5838/euler-eth-usdt/result.json",
+        "sha256": "5a0c935cfb8699fc62718c0bc92903d70a8a6f08df532200938f1bc9c41a5221"
+      }
+    },
+    {
+      "case": "fluid-eth-weth",
+      "operationReceipts": 5,
+      "artifact": {
+        "path": "deployments/lending-full-validation-20261101/production/final-cleanup/ci-7203247-full/deployments/lending-full-validation-20261101/production/transaction-gas/runs/20261103T210922-5838/fluid-eth-weth/result.json",
+        "sha256": "154be6e92a042abf771f900813504c59763a3083179374ded5259459eba04ccf"
+      }
+    },
+    {
+      "case": "dolomite-arb-usdt",
+      "operationReceipts": 5,
+      "artifact": {
+        "path": "deployments/lending-full-validation-20261101/production/final-cleanup/ci-7203247-full/deployments/lending-full-validation-20261101/production/transaction-gas/runs/20261103T210922-5838/dolomite-arb-usdt/result.json",
+        "sha256": "2e6d5b827c9c62818502c3ddaa694f3fa363f4889f6c8061dcdb4c07cf9a1d71"
+      }
+    },
+    {
+      "case": "venus-bsc-usdt",
+      "operationReceipts": 5,
+      "artifact": {
+        "path": "deployments/lending-full-validation-20261101/production/final-cleanup/ci-7203247-full/deployments/lending-full-validation-20261101/production/transaction-gas/runs/20261103T210922-5838/venus-bsc-usdt/result.json",
+        "sha256": "2528596a3cc0e36fd289ab5a62737eb5a774709aab2706a91fb98d2c06eba920"
+      }
+    },
+    {
+      "case": "aave-arb-weth",
+      "operationReceipts": 5,
+      "artifact": {
+        "path": "deployments/lending-full-validation-20261101/production/final-cleanup/ci-7203247-full/deployments/lending-full-validation-20261101/production/transaction-gas/runs/20261103T210922-5838/aave-arb-weth/result.json",
+        "sha256": "4332b856fe410a9a36e4b9c55b1e22b55909e86a7fb097aa193800551deca1ce"
+      }
+    },
+    {
+      "case": "comet-arb-weth",
+      "operationReceipts": 5,
+      "artifact": {
+        "path": "deployments/lending-full-validation-20261101/production/final-cleanup/ci-7203247-full/deployments/lending-full-validation-20261101/production/transaction-gas/runs/20261103T210922-5838/comet-arb-weth/result.json",
+        "sha256": "751cfffca34122b3365e699a6d1f19ed53b1973258f384cd79ac9335c0b3bf46"
+      }
+    },
+    {
+      "case": "morpho-arb-usdc",
+      "operationReceipts": 5,
+      "artifact": {
+        "path": "deployments/lending-full-validation-20261101/production/final-cleanup/ci-7203247-full/deployments/lending-full-validation-20261101/production/transaction-gas/runs/20261103T210922-5838/morpho-arb-usdc/result.json",
+        "sha256": "fb475849e54264814193c6bfdc22caa016480214e2d9e94787de7deccaae236b"
+      }
+    },
+    {
+      "case": "euler-arb-usdc",
+      "operationReceipts": 6,
+      "artifact": {
+        "path": "deployments/lending-full-validation-20261101/production/final-cleanup/ci-7203247-full/deployments/lending-full-validation-20261101/production/transaction-gas/runs/20261103T210922-5838/euler-arb-usdc/result.json",
+        "sha256": "71051b35d180105cb84423c8ec305891150cb6e324c3bf96574b1f71977b9e89"
+      }
+    },
+    {
+      "case": "fluid-arb-usdc",
+      "operationReceipts": 5,
+      "artifact": {
+        "path": "deployments/lending-full-validation-20261101/production/final-cleanup/ci-7203247-full/deployments/lending-full-validation-20261101/production/transaction-gas/runs/20261103T210922-5838/fluid-arb-usdc/result.json",
+        "sha256": "ac3abf13d683312a023c23b7206418880438f5c1798cc001232f445047c6c932"
+      }
+    },
+    {
+      "case": "dolomite-eth-usdc",
+      "operationReceipts": 5,
+      "artifact": {
+        "path": "deployments/lending-full-validation-20261101/production/final-cleanup/ci-7203247-full/deployments/lending-full-validation-20261101/production/transaction-gas/runs/20261103T210922-5838/dolomite-eth-usdc/result.json",
+        "sha256": "37cfbdbd38a5cec3dc3ea7c65beaf1d318af33ae975f897b6302cc1d3dc56c43"
+      }
+    },
+    {
+      "case": "venus-arb-usdc",
+      "operationReceipts": 5,
+      "artifact": {
+        "path": "deployments/lending-full-validation-20261101/production/final-cleanup/ci-7203247-full/deployments/lending-full-validation-20261101/production/transaction-gas/runs/20261103T210922-5838/venus-arb-usdc/result.json",
+        "sha256": "dd12bed4d7d5783f64e41aef418133233233939c8e0cce7452b588a257c11e25"
+      }
+    }
+  ],
+  "expandedArbitrum": "ci-expanded-acceptance.json",
+  "verifier": {
+    "path": "docs/lending-arbitrum-assets-20261103/tools/seal_ci_closeout.py",
+    "sha256": "8d75dcad90281433ccffbe84399a7edd2e0d59907158ed87c7096017d5159b20"
+  },
+  "productionApproval": false,
+  "mergePerformed": false,
+  "liveDeploymentPerformed": false
+}

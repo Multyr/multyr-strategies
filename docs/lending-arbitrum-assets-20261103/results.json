@@ -1,5 +1,5 @@
 {
-  "status": "FUNCTIONAL_MATRIX_COMPLETE_WITH_EXPLICIT_CONSTRAINTS",
+  "status": "ALL_TECHNICAL_GATES_COMPLETE_FOR_VALIDATED_MATRIX",
   "chainId": 42161,
   "assets": {
     "USDC": {
@@ -34,9 +34,9 @@
   "mainOrShadowModified": false,
   "productionApproved": false,
   "remainingProductionGates": [
-    "Complete current-source pinned-market CI retry; forge-test and expanded Arbitrum job already pass",
-    "Approve asset-specific deployment manifests, roles, caps and gas policy; provision new dedicated Core/router and keeper/registry dependencies",
-    "Activation-time oracle/market/role preflight and final production release packaging/provenance against approved gates"
+    "Approve per-asset operating policies/caps and final dependency-bound manifests",
+    "Provision dedicated frozen-source WETH/USDT0/WBTC Core/router and external registry/keeper/estimator dependencies before strategy activation",
+    "Refresh live oracle/sequencer/market/liquidity/role/allowance readbacks and produce approved production deployment artifacts"
   ],
   "reports": {
     "direct": "direct-acceptance.json",
@@ -44,7 +44,15 @@
     "portfolio": "portfolio-acceptance.json",
     "warm": "warm-acceptance.json",
     "native": "post-fix-native-acceptance.json",
-    "deployment": "DEPLOYMENT_SEQUENCE.md"
+    "deployment": "DEPLOYMENT_SEQUENCE.md",
+    "nativeSuffixProof": "native-suffix-event-proof.json",
+    "eventUnits": "EVENT_UNITS.md",
+    "sourceEquivalence": "source-equivalence.json",
+    "crossChainCurrentRunner": "actual-50-infrastructure-acceptance.json",
+    "fourteenReceipts": "post-fix-fourteen-receipts.json",
+    "claudeReview": "claude-review-dispositions.json",
+    "linuxExpandedCi": "ci-expanded-acceptance.json",
+    "finalCi": "ci-final-acceptance.json"
   },
   "scope": "Real canonical forks and holder transfers; closed protocol counterfactuals over canonical historical headers, not replayed canonical transactions or a guarantee of future profit.",
   "regression": {
@@ -67,5 +75,7 @@
     "positiveKeeperProfiles": 11,
     "requiredEconomicRejections": 1,
     "report": "post-fix-native-acceptance.json"
-  }
+  },
+  "executionControlCommit": "7203247f643e364a6d03aae83fc370747188dbd2",
+  "technicalQualificationComplete": true
 }

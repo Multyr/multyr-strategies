@@ -21,7 +21,70 @@
       "keeperProposal": "New dedicated StrategyUpkeep; do not reuse an unverified legacy automation address",
       "approvedMarketCaps": null,
       "approvedGasConfig": null,
-      "productionApproval": false
+      "productionApproval": false,
+      "qualifiedMarketCandidates": [
+        {
+          "family": "aave",
+          "market": "0x794a61358d6845594f94dc1db02a252b5b4814ad",
+          "directQualification": "PASS_DIRECT_LIFECYCLE",
+          "coreQualification": "PASS_CORE_STRATEGY_LIFECYCLE",
+          "approvedCap": null,
+          "productionAllocationApproved": false
+        },
+        {
+          "family": "comet",
+          "market": "0x9c4ec768c28520B50860ea7a15bd7213a9fF58bf",
+          "directQualification": "PASS_DIRECT_LIFECYCLE",
+          "coreQualification": "PASS_CORE_STRATEGY_LIFECYCLE",
+          "approvedCap": null,
+          "productionAllocationApproved": false
+        },
+        {
+          "family": "morpho",
+          "market": "0x7c574174da4b2be3f705c6244b4bfa0815a8b3ed",
+          "directQualification": "PASS_DIRECT_LIFECYCLE",
+          "coreQualification": "PASS_CORE_STRATEGY_LIFECYCLE",
+          "approvedCap": null,
+          "productionAllocationApproved": false
+        },
+        {
+          "family": "euler",
+          "market": "0x6afb8d3f6d4a34e9cb2f217317f4dc8e05aa673b",
+          "directQualification": "PASS_DIRECT_LIFECYCLE",
+          "coreQualification": "PASS_CORE_STRATEGY_LIFECYCLE",
+          "approvedCap": null,
+          "productionAllocationApproved": false
+        },
+        {
+          "family": "fluid",
+          "market": "0x1a996cb54bb95462040408c06122d45d6cdb6096",
+          "directQualification": "PASS_DIRECT_LIFECYCLE",
+          "coreQualification": "PASS_CORE_STRATEGY_LIFECYCLE",
+          "approvedCap": null,
+          "productionAllocationApproved": false
+        },
+        {
+          "family": "dolomite",
+          "market": "0x444868b6e8079ac2c55eea115250f92c2b2c4d14",
+          "directQualification": "PASS_DIRECT_LIFECYCLE",
+          "coreQualification": "PASS_CORE_STRATEGY_LIFECYCLE",
+          "approvedCap": null,
+          "productionAllocationApproved": false
+        },
+        {
+          "family": "venus",
+          "market": "0x7D8609f8da70fF9027E9bc5229Af4F6727662707",
+          "directQualification": "PASS_DIRECT_LIFECYCLE",
+          "coreQualification": "PASS_CORE_STRATEGY_LIFECYCLE",
+          "approvedCap": null,
+          "productionAllocationApproved": false
+        }
+      ],
+      "additionalNativeQualifiedEulerMarket": {
+        "market": "0x6aFB8d3F6D4A34e9cB2f217317f4dc8e05Aa673b",
+        "proof": "post-fix-native-acceptance.json: usdc/euler",
+        "selectionApproved": false
+      }
     },
     {
       "symbol": "WETH",
@@ -35,7 +98,65 @@
       "keeperProposal": "New dedicated StrategyUpkeep; do not reuse an unverified legacy automation address",
       "approvedMarketCaps": null,
       "approvedGasConfig": null,
-      "productionApproval": false
+      "productionApproval": false,
+      "qualifiedMarketCandidates": [
+        {
+          "family": "aave",
+          "market": "0x794a61358d6845594f94dc1db02a252b5b4814ad",
+          "directQualification": "PASS_DIRECT_LIFECYCLE",
+          "coreQualification": "PASS_CORE_STRATEGY_LIFECYCLE",
+          "approvedCap": null,
+          "productionAllocationApproved": false
+        },
+        {
+          "family": "comet",
+          "market": "0x6f7D514bbD4aFf3BcD1140B7344b32f063dEe486",
+          "directQualification": "PASS_DIRECT_LIFECYCLE",
+          "coreQualification": "PASS_CORE_STRATEGY_LIFECYCLE",
+          "approvedCap": null,
+          "productionAllocationApproved": false
+        },
+        {
+          "family": "morpho",
+          "market": "0x0623a67d69bb2f59d266897a15dc1509d291d631",
+          "directQualification": "PASS_DIRECT_LIFECYCLE",
+          "coreQualification": "PASS_POLICY_REJECTION_AND_IDLE_CORE_EXIT",
+          "approvedCap": null,
+          "productionAllocationApproved": false
+        },
+        {
+          "family": "euler",
+          "market": "0x78e3e051d32157aacd550fbb78458762d8f7edff",
+          "directQualification": "PASS_DIRECT_LIFECYCLE",
+          "coreQualification": "PASS_CORE_STRATEGY_LIFECYCLE",
+          "approvedCap": null,
+          "productionAllocationApproved": false
+        },
+        {
+          "family": "fluid",
+          "market": "0x45df0656f8adf017590009d2f1898eeca4f0a205",
+          "directQualification": "PASS_DIRECT_LIFECYCLE",
+          "coreQualification": "PASS_CORE_STRATEGY_LIFECYCLE",
+          "approvedCap": null,
+          "productionAllocationApproved": false
+        },
+        {
+          "family": "dolomite",
+          "market": "0xf7b5127b510e568fdc39e6bb54e2081bfad489af",
+          "directQualification": "PASS_DIRECT_LIFECYCLE",
+          "coreQualification": "PASS_CORE_STRATEGY_LIFECYCLE",
+          "approvedCap": null,
+          "productionAllocationApproved": false
+        },
+        {
+          "family": "venus",
+          "market": "0x68a34332983f4Bf866768DD6D6E638b02eF5e1f0",
+          "directQualification": "PASS_DIRECT_LIFECYCLE",
+          "coreQualification": "PASS_CORE_STRATEGY_LIFECYCLE",
+          "approvedCap": null,
+          "productionAllocationApproved": false
+        }
+      ]
     },
     {
       "symbol": "USDT0",
@@ -49,7 +170,65 @@
       "keeperProposal": "New dedicated StrategyUpkeep; do not reuse an unverified legacy automation address",
       "approvedMarketCaps": null,
       "approvedGasConfig": null,
-      "productionApproval": false
+      "productionApproval": false,
+      "qualifiedMarketCandidates": [
+        {
+          "family": "aave",
+          "market": "0x794a61358d6845594f94dc1db02a252b5b4814ad",
+          "directQualification": "PASS_DIRECT_LIFECYCLE",
+          "coreQualification": "PASS_CORE_STRATEGY_LIFECYCLE",
+          "approvedCap": null,
+          "productionAllocationApproved": false
+        },
+        {
+          "family": "comet",
+          "market": "0xd98Be00b5D27fc98112BdE293e487f8D4cA57d07",
+          "directQualification": "PASS_DIRECT_LIFECYCLE",
+          "coreQualification": "PASS_CORE_STRATEGY_LIFECYCLE",
+          "approvedCap": null,
+          "productionAllocationApproved": false
+        },
+        {
+          "family": "morpho",
+          "market": "0xbeeff77ce5c059445714e6a3490e273fe7f2492f",
+          "directQualification": "PASS_DIRECT_LIFECYCLE",
+          "coreQualification": "PASS_CORE_STRATEGY_LIFECYCLE",
+          "approvedCap": null,
+          "productionAllocationApproved": false
+        },
+        {
+          "family": "euler",
+          "market": "0x37512f45b4ba8808910632323b73783ca938cd51",
+          "directQualification": "PASS_DIRECT_LIFECYCLE",
+          "coreQualification": "PASS_POLICY_REJECTION_AND_IDLE_CORE_EXIT",
+          "approvedCap": null,
+          "productionAllocationApproved": false
+        },
+        {
+          "family": "fluid",
+          "market": "0x4a03f37e7d3fc243e3f99341d36f4b829bee5e03",
+          "directQualification": "PASS_DIRECT_LIFECYCLE",
+          "coreQualification": "PASS_CORE_STRATEGY_LIFECYCLE",
+          "approvedCap": null,
+          "productionAllocationApproved": false
+        },
+        {
+          "family": "dolomite",
+          "market": "0xf2d2d55daf93b0660297eaa10969ebe90ead5ce8",
+          "directQualification": "PASS_DIRECT_LIFECYCLE",
+          "coreQualification": "PASS_CORE_STRATEGY_LIFECYCLE",
+          "approvedCap": null,
+          "productionAllocationApproved": false
+        },
+        {
+          "family": "venus",
+          "market": "0xB9F9117d4200dC296F9AcD1e8bE1937df834a2fD",
+          "directQualification": "PASS_DIRECT_LIFECYCLE",
+          "coreQualification": "PASS_CORE_STRATEGY_LIFECYCLE",
+          "approvedCap": null,
+          "productionAllocationApproved": false
+        }
+      ]
     },
     {
       "symbol": "WBTC",
@@ -63,7 +242,65 @@
       "keeperProposal": "New dedicated StrategyUpkeep; do not reuse an unverified legacy automation address",
       "approvedMarketCaps": null,
       "approvedGasConfig": null,
-      "productionApproval": false
+      "productionApproval": false,
+      "qualifiedMarketCandidates": [
+        {
+          "family": "aave",
+          "market": "0x794a61358d6845594f94dc1db02a252b5b4814ad",
+          "directQualification": "PASS_DIRECT_LIFECYCLE",
+          "coreQualification": "PASS_CORE_STRATEGY_LIFECYCLE",
+          "approvedCap": null,
+          "productionAllocationApproved": false
+        },
+        {
+          "family": "comet",
+          "market": null,
+          "directQualification": "NO_OFFICIAL_WBTC_BASE_MARKET",
+          "coreQualification": "NO_OFFICIAL_WBTC_BASE_MARKET",
+          "approvedCap": null,
+          "productionAllocationApproved": false
+        },
+        {
+          "family": "morpho",
+          "market": null,
+          "directQualification": "NO_QUALIFIED_WBTC_PRODUCTION_MARKET",
+          "coreQualification": "NO_QUALIFIED_WBTC_PRODUCTION_MARKET",
+          "approvedCap": null,
+          "productionAllocationApproved": false
+        },
+        {
+          "family": "euler",
+          "market": "0x889e1c458b2469b70accdfb5b59726dc1668896c",
+          "directQualification": "PASS_DIRECT_LIFECYCLE",
+          "coreQualification": "PASS_POLICY_REJECTION_AND_IDLE_CORE_EXIT",
+          "approvedCap": null,
+          "productionAllocationApproved": false
+        },
+        {
+          "family": "fluid",
+          "market": null,
+          "directQualification": "NO_WBTC_FTOKEN_AT_CANONICAL_PIN",
+          "coreQualification": "NO_WBTC_FTOKEN_AT_CANONICAL_PIN",
+          "approvedCap": null,
+          "productionAllocationApproved": false
+        },
+        {
+          "family": "dolomite",
+          "market": "0x29cf6e8ecefb8d3c9dd2b727c1b7d1df1a754f6f",
+          "directQualification": "PASS_DIRECT_LIFECYCLE",
+          "coreQualification": "PASS_CORE_STRATEGY_LIFECYCLE",
+          "approvedCap": null,
+          "productionAllocationApproved": false
+        },
+        {
+          "family": "venus",
+          "market": "0xaDa57840B372D4c28623E87FC175dE8490792811",
+          "directQualification": "PASS_DIRECT_LIFECYCLE",
+          "coreQualification": "PASS_CORE_STRATEGY_LIFECYCLE",
+          "approvedCap": null,
+          "productionAllocationApproved": false
+        }
+      ]
     }
   ],
   "missingInputs": [
@@ -113,5 +350,12 @@
     "Temporary smoke-test settings are not production approval"
   ],
   "keeperProvisioning": "One new StrategyUpkeep per asset: deploy constructor with [], bind its address as Manifest.keeper, addStrategy after strategy deployment, configure that asset rate provider and poke targets, grant writer roles, then hand ownership to governance.",
-  "deploymentPlan": "DEPLOYMENT_SEQUENCE.md"
+  "deploymentPlan": "DEPLOYMENT_SEQUENCE.md",
+  "dependencyProvisioning": [
+    "Asset-specific production registry, Native estimator and required rate providers must exist before adapter initialization/configuration",
+    "After typed deployment hands adapter administration to governance, the Safe must grant upkeep PARAM_ROLE writer permissions; deployer configures only its still-owned upkeep",
+    "Verify every selected Euler market ERC20 and Permit2 allowance amount/expiry before activation; no optional flag can skip this postcondition"
+  ],
+  "eventConsumerUnits": "EVENT_UNITS.md",
+  "marketCandidatePolicy": "Historical qualified candidates only; absent markets are explicit null entries, risk rejections remain nonallocatable under the same floor, and all approvals/caps require fresh activation readbacks. Not a live approved market manifest."
 }

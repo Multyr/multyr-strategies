@@ -1,0 +1,45 @@
+{
+  "status": "PASS",
+  "runId": 41715625275,
+  "job": "expanded-arbitrum-four-assets",
+  "jobConclusion": "success",
+  "headSha": "7203247f643e364a6d03aae83fc370747188dbd2",
+  "executed": 58,
+  "failed": 0,
+  "skipped": 0,
+  "allSourceHashesMatchExactGitBlobs": true,
+  "allCaseLogHashesVerified": true,
+  "lineEndingPolicy": "Linux receipt hashes checked against exact committed Git blobs; separate Windows raw-source receipts are preserved.",
+  "stages": [
+    {
+      "stage": "direct",
+      "status": "COMPLETE_WITH_MARKET_EXCLUSIONS",
+      "executed": 25,
+      "report": "deployments/lending-full-validation-20261101/production/final-cleanup/ci-7203247-expanded/runs-20261103T205036-direct-5088/acceptance.json",
+      "sha256": "e6fe48c534d07b87299503f0cd8f711425f32cf3526f0c68244ae78087e3ba1b"
+    },
+    {
+      "stage": "core",
+      "status": "COMPLETE_WITH_MARKET_EXCLUSIONS",
+      "executed": 25,
+      "report": "deployments/lending-full-validation-20261101/production/final-cleanup/ci-7203247-expanded/runs-20261103T205416-core-7103/acceptance.json",
+      "sha256": "8ad676365bfd908b43d39ccf3b667b8030badac2fdc6a74e6b000700d9cdd269"
+    },
+    {
+      "stage": "portfolio",
+      "status": "PASS",
+      "executed": 4,
+      "report": "deployments/lending-full-validation-20261101/production/final-cleanup/ci-7203247-expanded/runs-20261103T205806-portfolio-9129/acceptance.json",
+      "sha256": "3f2fddab00cbf880bef2dbc7991500be168d3d3ac6fcdd9ff53ca6853b9b9a14"
+    },
+    {
+      "stage": "warm",
+      "status": "PASS",
+      "executed": 4,
+      "report": "deployments/lending-full-validation-20261101/production/final-cleanup/ci-7203247-expanded/runs-20261103T205927-warm-9540/acceptance.json",
+      "sha256": "6607a46caef732a39d3fe8359ac626e17900095fe29fb77a570f7c7c818a33c4"
+    }
+  ],
+  "wholeWorkflowConclusion": "success",
+  "productionApproval": false
+}

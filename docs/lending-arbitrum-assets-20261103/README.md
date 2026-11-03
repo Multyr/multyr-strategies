@@ -2,6 +2,12 @@
 
 Status: **FUNCTIONAL MATRIX COMPLETE WITH EXPLICIT CONSTRAINTS — not production approval**.
 
+All technical gates, including both current-source GitHub workflows, now pass.
+See `CANDIDATE_READINESS.json` and `ci-final-acceptance.json`. Activation requires
+approved operational manifests and provisioned dependencies; no merge/deploy
+was performed. The retained raw evidence hashes refer to exact archive bytes;
+Linux CI inputs are independently checked against exact committed Git blobs.
+
 Post-fix source: `3fcc4d405153a3b534daed98f92f836e6d61957c`.
 Regression is 2,998 tests / 204 suites; all 58 expanded Arbitrum cases pass.
 `post-fix-native-acceptance.json` seals 12 genuine Native profiles, including

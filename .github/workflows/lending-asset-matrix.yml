@@ -179,4 +179,5 @@ jobs:
             deployments/lending-full-validation-20261101/**
             docs/lending-full-validation-20261101/actual-acceptance.json
             docs/lending-full-validation-20261101/canonical-headers.json
+            docs/lending-full-validation-20261101/actual-acceptance-canonical-headers.json
             docs/lending-verification-20261031/candidate-structure.json

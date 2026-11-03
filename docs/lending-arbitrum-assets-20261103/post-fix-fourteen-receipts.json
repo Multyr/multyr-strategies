@@ -1,0 +1,143 @@
+{
+  "status": "FOURTEEN_PROFILES_REAL_LOCAL_FORK_RECEIPTS_PASS",
+  "executionCommit": "7203247f643e364a6d03aae83fc370747188dbd2",
+  "compiledSources": "source-equivalence.json",
+  "profiles": 14,
+  "totalReceiptsIncludingFundingAndInitialization": 102,
+  "failed": 0,
+  "summary": {
+    "path": "deployments/lending-full-validation-20261101/production/transaction-gas/runs/20261103T204956-19076/summary.json",
+    "sha256": "116298059e32bdd9008f5a59800dd7f82c1694a68081466322127bf9d91ea195"
+  },
+  "cases": [
+    {
+      "case": "aave-arb-weth",
+      "family": "Aave",
+      "status": "PASS",
+      "receiptCount": 7,
+      "result": "deployments/lending-full-validation-20261101/production/transaction-gas/runs/20261103T204956-19076/aave-arb-weth/result.json",
+      "sha256": "856ca06c392311cd7fb4e59fe4d4c8adb4c73b0bc065048f05a692092cc7bec2",
+      "infrastructureAttempts": 0
+    },
+    {
+      "case": "aave-eth-usdt-v3",
+      "family": "Aave",
+      "status": "PASS",
+      "receiptCount": 7,
+      "result": "deployments/lending-full-validation-20261101/production/transaction-gas/runs/20261103T204956-19076/aave-eth-usdt-v3/result.json",
+      "sha256": "67bad1cfb53899c2687a2b6906d2d8c0c971c7726113201b7cc8563549ec7d1c",
+      "infrastructureAttempts": 0
+    },
+    {
+      "case": "comet-arb-weth",
+      "family": "Comet",
+      "status": "PASS",
+      "receiptCount": 7,
+      "result": "deployments/lending-full-validation-20261101/production/transaction-gas/runs/20261103T204956-19076/comet-arb-weth/result.json",
+      "sha256": "fc7874fc4acca5ae41a595525ea4dc9eb659aedfbd2ff384ccf7699d5882f46a",
+      "infrastructureAttempts": 0
+    },
+    {
+      "case": "comet-eth-usdt",
+      "family": "Comet",
+      "status": "PASS",
+      "receiptCount": 7,
+      "result": "deployments/lending-full-validation-20261101/production/transaction-gas/runs/20261103T204956-19076/comet-eth-usdt/result.json",
+      "sha256": "6857d73de1051dc7ce946a88bcaa388e450f6fadc0f39e5dfe70afbfb536e03d",
+      "infrastructureAttempts": 0
+    },
+    {
+      "case": "dolomite-arb-usdt",
+      "family": "Dolomite-wrapper",
+      "status": "PASS",
+      "receiptCount": 7,
+      "result": "deployments/lending-full-validation-20261101/production/transaction-gas/runs/20261103T204956-19076/dolomite-arb-usdt/result.json",
+      "sha256": "b4e736885966b5c355689c79828fb019f67bbb07e070c46a41881c62fa75a24e",
+      "infrastructureAttempts": 0
+    },
+    {
+      "case": "dolomite-eth-usdc",
+      "family": "Dolomite-wrapper",
+      "status": "PASS",
+      "receiptCount": 7,
+      "result": "deployments/lending-full-validation-20261101/production/transaction-gas/runs/20261103T204956-19076/dolomite-eth-usdc/result.json",
+      "sha256": "48cc5f0fe2e2c5ffa781d329d0294934aa82f43eb1be0a87b37c59f2be05aa0b",
+      "infrastructureAttempts": 0
+    },
+    {
+      "case": "euler-arb-usdc",
+      "family": "Euler",
+      "status": "PASS",
+      "receiptCount": 9,
+      "result": "deployments/lending-full-validation-20261101/production/transaction-gas/runs/20261103T204956-19076/euler-arb-usdc/result.json",
+      "sha256": "0062f7ce539fd8e821aa0d8705faab14318a2916bf97a5c892acf382169a3d75",
+      "infrastructureAttempts": 0
+    },
+    {
+      "case": "euler-eth-usdt",
+      "family": "Euler",
+      "status": "PASS",
+      "receiptCount": 9,
+      "result": "deployments/lending-full-validation-20261101/production/transaction-gas/runs/20261103T204956-19076/euler-eth-usdt/result.json",
+      "sha256": "2ddbc0b77e1816286667ce8a40d68821169ee8aef73fe441e1fb0542b6fa10ff",
+      "infrastructureAttempts": 0
+    },
+    {
+      "case": "fluid-arb-usdc",
+      "family": "Fluid",
+      "status": "PASS",
+      "receiptCount": 7,
+      "result": "deployments/lending-full-validation-20261101/production/transaction-gas/runs/20261103T204956-19076/fluid-arb-usdc/result.json",
+      "sha256": "08ba075a1dbdc9116acd54a792101ebaa40c9699d354306c1b4f6eacb0f73d83",
+      "infrastructureAttempts": 0
+    },
+    {
+      "case": "fluid-eth-weth",
+      "family": "Fluid",
+      "status": "PASS",
+      "receiptCount": 7,
+      "result": "deployments/lending-full-validation-20261101/production/transaction-gas/runs/20261103T204956-19076/fluid-eth-weth/result.json",
+      "sha256": "1a71378d4f6d31e3564c735b9bbbdffde71fcacb9e9386a452e22ab4c78c759c",
+      "infrastructureAttempts": 0
+    },
+    {
+      "case": "morpho-arb-usdc",
+      "family": "Morpho",
+      "status": "PASS",
+      "receiptCount": 7,
+      "result": "deployments/lending-full-validation-20261101/production/transaction-gas/runs/20261103T204956-19076/morpho-arb-usdc/result.json",
+      "sha256": "99ab86b28e3eeeb2b587c49b68003ccad4e0afbd4a27d277193f5b28cfa48d57",
+      "infrastructureAttempts": 0
+    },
+    {
+      "case": "morpho-eth-usdt",
+      "family": "Morpho",
+      "status": "PASS",
+      "receiptCount": 7,
+      "result": "deployments/lending-full-validation-20261101/production/transaction-gas/runs/20261103T204956-19076/morpho-eth-usdt/result.json",
+      "sha256": "d0efe9b3080eb8b455c47d63e12c443d548c904e9af0ff358b45c51929d270e9",
+      "infrastructureAttempts": 0
+    },
+    {
+      "case": "venus-arb-usdc",
+      "family": "Venus",
+      "status": "PASS",
+      "receiptCount": 7,
+      "result": "deployments/lending-full-validation-20261101/production/transaction-gas/runs/20261103T204956-19076/venus-arb-usdc/result.json",
+      "sha256": "07e7d576438a2daaf63d20a758d89edd2c438f64f096d52d87c4ffbfe83a6955",
+      "infrastructureAttempts": 0
+    },
+    {
+      "case": "venus-bsc-usdt",
+      "family": "Venus",
+      "status": "PASS",
+      "receiptCount": 7,
+      "result": "deployments/lending-full-validation-20261101/production/transaction-gas/runs/20261103T204956-19076/venus-bsc-usdt/result.json",
+      "sha256": "8ee2842d280d4d8268515de5a339cd027f86114ed15c9c31f60cf2151d689800",
+      "infrastructureAttempts": 0
+    }
+  ],
+  "scope": "Actual local-fork receipts on two named chains per adapter family, canonical protocol state and real holder transfers. These are not broadcast mainnet receipts or the separate Native Nitro qualification.",
+  "productionApproval": false,
+  "operationReceipts": 72
+}

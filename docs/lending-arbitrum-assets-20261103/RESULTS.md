@@ -10,8 +10,23 @@ cross-chain real-market gate and all 58 Arbitrum cases. ABI, size, selector and
 storage checks also pass. Fresh Native qualification passes all twelve profiles:
 eleven positive keeper paths and one required WBTC/Aave economic rejection with
 full capital recall. Euler's dedicated Native profile and local receipt replay
-pass. Current-source forge-test and expanded Arbitrum CI pass; the pinned-market
-CI job is retrying an upstream Euler RPC reset. Production approval remains false.
+pass. All fourteen real local-fork profiles pass together (72 operation receipts,
+102 including deployment/initialization/funding). The fresh Linux expanded
+Arbitrum CI job passes with every source/log hash independently checked.
+Both current execution-control workflows now pass, including all 2,998 regression
+tests / 204 suites and independently matching 34 runtime templates between Linux
+and Windows. Production activation approval remains false. Final scoped readiness
+is recorded in `CANDIDATE_READINESS.json`; exact CI provenance is in
+`ci-final-acceptance.json`.
+
+The compiled Solidity/foundry and Native builder/simulator inputs are identical
+between qualified snapshot `3fcc4d4` and execution-control commit `7203247`.
+Only RPC retry/evidence control and documentation changed. See
+`source-equivalence.json`, `post-fix-fourteen-receipts.json` and
+`ci-expanded-acceptance.json`. `native-suffix-event-proof.json` also verifies the
+actual remaining-plan conversion for WETH, USDT0 and WBTC against canonical
+oracle responses. `claude-review-dispositions.json` records the three independent
+Claude sessions, corrected false findings and accepted fixes.
 
 **58 executed real-data cases pass, zero failures and zero skips. All 28
 adapter/token cells are classified. This is functional acceptance, not an
@@ -61,9 +76,9 @@ Reports: `direct-acceptance.json`, `core-acceptance.json`,
 They bind source hashes, canonical headers, catalogues and per-case log hashes.
 
 All four current Arbitrum receipts bind the post-fix production/script sources
-at `3fcc4d4`, including stable source, catalogue, canonical-header and log hashes.
+at `7203247`, including stable source, catalogue, canonical-header and log hashes.
 The cross-chain gate uses a verified Ethereum archive endpoint and bounded
-request batches. Current-source CI remains a separate pending gate.
+request batches. Current execution-control CI is closed in `ci-final-acceptance.json`.
 
 ## Method and Core integration
 
@@ -111,7 +126,10 @@ cleanup; no synthetic event was added to hide it.
 
 ## Remaining production gates
 
-- Finish new-branch CI, including the new mandatory four-asset matrix job.
+- All technical CI gates are closed for the named validated matrix. The final
+  artifact upload selection now includes the generated canonical-header file;
+  its exact current-run bytes were independently recovered and verified against
+  the original CI-attested SHA256. No test execution was changed by that fix.
 - Native qualification is complete for the twelve explicitly named profiles in
   `post-fix-native-acceptance.json`, including Euler and WETH/USDT0/WBTC. New
   operational market universes require their own calibration and qualification.

@@ -31,6 +31,14 @@ def main():
     canonical = read(reference)
     assert 'compilationReuse' not in canonical
     plan = read(DOC / 'native-profile-plan.json')
+    expected = {('usdc', venue) for venue in
+                ['all', 'aave', 'comet', 'morpho', 'euler', 'fluid', 'dolomite', 'venus']}
+    expected.update({('usdt0-aave', 'aave'), ('weth-aave', 'aave'),
+                     ('wbtc-dolomite', 'dolomite'), ('wbtc-aave', 'aave')})
+    actual = [(item['assetProfile'], item['venue']) for item in plan['profiles']]
+    assert len(actual) == len(set(actual)) == 12 and set(actual) == expected
+    for name, digest in plan['sourceBindings'].items():
+        assert sha(ROOT / name) == digest, name
     rows = []
     for spec in plan['profiles']:
         asset, venue = spec['assetProfile'], spec['venue']

@@ -1,6 +1,6 @@
 # Full Lending validation — qualified release 2026-11-03
 
-**Qualification reopened: the newly confirmed residual-plan USD6/asset-unit defect requires post-fix validation.**
+**All technical qualification gates pass for the named candidate matrix. Production activation requires approved operational manifests and dependencies.**
 
 The corrected strategy converts the suffix gas quote into the same asset units
 as its expected yield. Three regression counterexamples fail on the previous
@@ -8,12 +8,17 @@ source and pass on the fix. Post-fix 2,998-test / 204-suite regression, 50/21
 cross-chain real-market acceptance, 58 Arbitrum cases, 34 runtime templates,
 296 selectors and nine storage-layout/prefix checks pass. Fresh Native
 qualification passes twelve profiles (eleven positive and one required economic
-rejection), including Euler. Current-source forge-test and expanded Arbitrum CI
-pass; pinned-market CI is retrying an upstream Euler RPC reset. Earlier qualification
+rejection), including Euler. All fourteen local-fork profiles pass together with
+72 operation receipts; fresh Linux expanded Arbitrum CI also passes. Execution
+control at `7203247` adds strict transport-only retries with preserved failures;
+all compiled and Native financial inputs equal qualified `3fcc4d4`. Its final
+pinned-market CI and general build both pass. All 34 runtime templates match
+the independent Windows build. See `lending-arbitrum-assets-20261103/CANDIDATE_READINESS.json`
+and `ci-final-acceptance.json` for the current authoritative state. Earlier qualification
 records below are historical and do not approve this edited tree.
 
 The requested expanded Arbitrum USDC/WETH/USDT0/WBTC matrix and final cleanup
-are under qualification on `codex/lending-final-cleanup-20261103`. The baseline
+have passed financial qualification on `codex/lending-final-cleanup-20261103`. The baseline
 status below does not qualify these new combinations or the edited working tree.
 See `lending-arbitrum-assets-20261103/README.md` for the separate acceptance scope.
 
@@ -24,8 +29,8 @@ paths. All58 executed cases pass; three protocol/asset markets are unavailable
 and are not counted as passing tests. Post-fix regression is2998/204 with zero
 failure/skip; all34 runtime templates,296selectors and9layout/prefix checks pass.
 The post-fix audit scope is10558NLOC/45 strategy files. See
-`lending-arbitrum-assets-20261103/RESULTS.md`. Pinned-market CI and approved
-per-asset production manifests remain
+`lending-arbitrum-assets-20261103/RESULTS.md`. Approved per-asset production
+manifests and deployment-time dependencies remain
 separate release gates; the expanded working tree is not declared production ready.
 
 Qualified functional source: `03596ac4e5c0d0c37b33c90573456656bda22343` on `codex/lending-multitoken-multichain`.

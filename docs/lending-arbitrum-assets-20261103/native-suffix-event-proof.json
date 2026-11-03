@@ -1,0 +1,109 @@
+{
+  "status": "THREE_NATIVE_REMAINING_PLAN_UNIT_PROOFS_PASS",
+  "sourceCommit": "3fcc4d405153a3b534daed98f92f836e6d61957c",
+  "dispatch": "StrategyRebalancePlanModule.executeRebalanceStep calls checkRemainingPlan before every step, including the first/only step; no nextAction>0 condition.",
+  "eventUnits": "RebalanceGasEvaluated.costUSDC is USD6. RebalanceEconomicsEvaluated moved/gross/cost are underlying asset units; legacy ABI field names are preserved.",
+  "profiles": [
+    {
+      "asset": "WETH",
+      "assetUnit": "1000000000000000000",
+      "canonicalAssetPrice18": "2250374657840000000000",
+      "block": 520094008,
+      "result": {
+        "path": "deployments/lending-full-validation-20261101/production/final-cleanup/suffix-native/qualified-weth/native-result.json",
+        "sha256": "d316c52486b81dcb46dbaa01a188f82ef82f3c43732bc56062db2ceabfd74168"
+      },
+      "nativeResponse": {
+        "path": "deployments/lending-full-validation-20261101/production/final-cleanup/suffix-native/qualified-weth/attempt-1-keeper-recall.json",
+        "sha256": "0e3e263d016a76837eee37239d9a291da980ab8346cdb19a99dcb18a55f0c414"
+      },
+      "rpcTrace": {
+        "path": "deployments/lending-full-validation-20261101/production/final-cleanup/suffix-native/qualified-weth/native-rpc-trace.json",
+        "sha256": "cc7985ede6ef73a88bf2fe6cefc1db763aab6b6f6c95ccbd2246295f5f75dd43"
+      },
+      "events": [
+        {
+          "call": "keeper-0",
+          "quoteUSD6": "478303",
+          "economicCostAssetUnits": "212543719479625",
+          "accepted": true
+        },
+        {
+          "call": "keeper-1",
+          "quoteUSD6": "242088",
+          "economicCostAssetUnits": "107576753567056",
+          "accepted": true
+        }
+      ]
+    },
+    {
+      "asset": "USDT0",
+      "assetUnit": "1000000",
+      "canonicalAssetPrice18": "998890000000000000",
+      "block": 520094008,
+      "result": {
+        "path": "deployments/lending-full-validation-20261101/production/final-cleanup/suffix-native/qualified-usdt0/native-result.json",
+        "sha256": "551dc7dbaf63f271a3ed35abd95d1fac104e192f8a21a6308152a5e4f6511865"
+      },
+      "nativeResponse": {
+        "path": "deployments/lending-full-validation-20261101/production/final-cleanup/suffix-native/qualified-usdt0/attempt-1-keeper-recall.json",
+        "sha256": "ad5b27567917832f5c4ee86822ec410a58fe24ac12c8fef8859f9d3c96777e98"
+      },
+      "rpcTrace": {
+        "path": "deployments/lending-full-validation-20261101/production/final-cleanup/suffix-native/qualified-usdt0/native-rpc-trace.json",
+        "sha256": "66e69fcb53d87474a446dae1b63546a5184da550e534e9c9842818c1ebeb6ec9"
+      },
+      "events": [
+        {
+          "call": "keeper-0",
+          "quoteUSD6": "478303",
+          "economicCostAssetUnits": "478835",
+          "accepted": true
+        },
+        {
+          "call": "keeper-1",
+          "quoteUSD6": "242088",
+          "economicCostAssetUnits": "242358",
+          "accepted": true
+        }
+      ]
+    },
+    {
+      "asset": "WBTC",
+      "assetUnit": "100000000",
+      "canonicalAssetPrice18": "77439668689530000000000",
+      "block": 520094008,
+      "result": {
+        "path": "deployments/lending-full-validation-20261101/production/final-cleanup/suffix-native/qualified-wbtc-dolomite/native-result.json",
+        "sha256": "da0d723b4d9c80cae3e34f6cca415caa7eada42d0e90df03ab17231032a9b5ee"
+      },
+      "nativeResponse": {
+        "path": "deployments/lending-full-validation-20261101/production/final-cleanup/suffix-native/qualified-wbtc-dolomite/attempt-1-keeper-recall.json",
+        "sha256": "55eb8dcdb71071a42cca7b9d7dbccb5885f6395ad4f66ecae17a2097e4ccc29e"
+      },
+      "rpcTrace": {
+        "path": "deployments/lending-full-validation-20261101/production/final-cleanup/suffix-native/qualified-wbtc-dolomite/native-rpc-trace.json",
+        "sha256": "86487fda31921966999965756218ba8c157057440a25efdcdd0cfd11832085bd"
+      },
+      "events": [
+        {
+          "call": "keeper-0",
+          "quoteUSD6": "478303",
+          "economicCostAssetUnits": "618",
+          "accepted": true
+        },
+        {
+          "call": "keeper-1",
+          "quoteUSD6": "242088",
+          "economicCostAssetUnits": "313",
+          "accepted": true
+        }
+      ]
+    }
+  ],
+  "verifier": {
+    "path": "docs/lending-arbitrum-assets-20261103/tools/verify_native_suffix_events.py",
+    "sha256": "d876e58d53c05e3e8a32bfed55dba135418a45773f268f850feb77e44a7cb77c"
+  },
+  "productionApproval": false
+}

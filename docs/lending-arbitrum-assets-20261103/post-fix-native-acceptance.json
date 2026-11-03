@@ -27,7 +27,7 @@
   },
   "verifier": {
     "path": "docs/lending-arbitrum-assets-20261103/tools/seal_post_fix_native.py",
-    "sha256": "c943e34ca2aa5bf559e6b63683fcdab0babe46ef48911142b6171fbcbc7dab90"
+    "sha256": "d0f917d367cf325cc02fd45f4a868b8ef65fc0aeed2fce14b147686577f3ed5a"
   },
   "buildProvenance": "One fresh isolated full-project compilation; four fresh constructor fixtures reuse only exact creation templates, never financial state.",
   "limits": [

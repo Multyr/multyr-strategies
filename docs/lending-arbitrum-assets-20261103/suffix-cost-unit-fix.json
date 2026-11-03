@@ -1,6 +1,6 @@
 {
   "id": "LENDING-SUFFIX-USD6-ASSET",
-  "status": "FIXED_LOCAL_GATES_PASS_CURRENT_CI_PENDING",
+  "status": "FIXED_ALL_FINANCIAL_AND_CURRENT_SOURCE_CI_GATES_PASS",
   "affectedFunction": "StrategyRebalanceGateModule.checkRemainingPlan",
   "problem": "Remaining-plan benefit/cost comparison consumed a USD6 gas quote as raw underlying units. This underprices 18-decimal gas, overprices BTC gas and misstates the economics event under depeg.",
   "fix": "Convert the quote through the frozen-Core-backed asset valuation before the comparison and economics event.",
@@ -44,6 +44,7 @@
     "selectorCollisions": 0,
     "matchingLayouts": 9,
     "native": "TWELVE_POST_FIX_NATIVE_PROFILES_PASS",
-    "ci": "FORGE_SUCCESS_EXPANDED_MATRIX_SUCCESS_PINNED_MARKETS_RETRY_PENDING"
+    "ci": "BOTH_WORKFLOWS_SUCCESS_AT_7203247",
+    "currentSourceCiReport": "ci-final-acceptance.json"
   }
 }

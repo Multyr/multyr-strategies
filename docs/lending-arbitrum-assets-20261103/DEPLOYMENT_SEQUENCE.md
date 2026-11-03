@@ -14,13 +14,21 @@ Public inputs and unresolved approvals are in `production-inputs-draft.json`.
    `9a9d120709de99a6216e9fe75d36e9ffdcb1a4d9`; each instance has one immutable
    underlying. Verify source/compiler, module identities, selector wiring, roles,
    oracle, buffer and router before recording their new public addresses.
+   Scale Core deposit limits, buffer amounts and router minimums in the actual
+   underlying units using the approved asset-price policy. Never copy raw USDC
+   quantities into an 18-decimal WETH or 8-decimal WBTC instance. The existing
+   USDC instance's fixed underlying cannot be changed to provision these assets.
 3. Provision a production ProtocolRegistry with the approved markets for the
    specific chain/asset, verified underlying and governance ownership. Never
    reuse the historical permissionless SimpleProtocolRegistry. The typed
    strategy script receives registry addresses through adapter initializers;
    it does not create or transfer ownership of these external dependencies.
 4. Provision the asset valuation feed and Native fee estimator with reviewed
-   runtime/configuration hashes. Prepare one new `StrategyUpkeep([])` per asset.
+   runtime/configuration hashes. Provision asset-specific Aave and, where the
+   selected Dolomite market requires it, Dolomite rate providers before binding
+   their addresses in adapter configuration. Pin their runtime/configuration and
+   governance roles. The typed script does not deploy these external providers.
+   Prepare one new `StrategyUpkeep([])` per asset.
    Its empty-list constructor removes the strategy/keeper address dependency.
    The typed `DeployLendingStrategy.run(Manifest)` requires this keeper address;
    it does not deploy or configure that keeper itself.
@@ -34,10 +42,18 @@ Public inputs and unresolved approvals are in `production-inputs-draft.json`.
    and vault identity, runs each adapter configuration, bootstraps registrations,
    refreshes TVL/liquidity, grants the manifest keeper role and hands managed
    components to governance. Verify the resulting addresses and bytecode hashes.
-7. Configure the dedicated upkeep with `addStrategy`, `setAaveConfig` using the
+7. While the deployer still owns the dedicated upkeep, configure `addStrategy`, `setAaveConfig` using the
    actual asset despite the legacy argument name, and applicable snapshot poke
-   targets. Grant required PARAM_ROLE writer permissions on its Aave rate
-   provider and snapshot adapters. Run and verify the initial refresh; transfer
+   targets. Governance must execute explicit Safe multisig transactions for
+   `grantRole(PARAM_ROLE, upkeep)` on the Aave rate provider and each applicable
+   snapshot adapter (Morpho, Dolomite, Fluid): their admin roles were already
+   handed to governance in step 6, so the deployer cannot make those grants.
+   Read back every grant before proceeding. Run the initial refresh and verify
+   `AaveRatePushed`, expected `SnapshotPoked` and `ExternalTVLPoked` events and
+   fresh actual per-target rate/snapshot/TVL cache state. Fail activation on any
+   `ExternalCallFailed`, `SnapshotPokeFailed` or `ExternalTVLPokeFailed` event.
+   The upkeep catches these failures and still updates `lastPokeTs`; transaction
+   success or timestamp advancement alone is not a successful refresh. Transfer
    upkeep ownership to governance and confirm deployer privilege removal.
 8. Governance proposes the strategy allowlist entry on the router, waits its
    actual two-day delay, executes it and registers the strategy with approved
@@ -56,6 +72,14 @@ runbook's PARAM_ROLE wording and funded-USDC-dust requirement are obsolete.
 Current initialization configures Permit2 allowances without token funding.
 Verify canonical Permit2 code and each market's internal allowance, then read
 back adapter registration, whitelist, enabled state and governance roles.
+Check every configured Euler market, not just the first: the asset ERC20
+allowance from adapter to Permit2 must cover the approved operation, and the
+Permit2 internal allowance must have amount at least `type(uint160).max / 2`
+and expiry at least activation timestamp plus one day. Immediately after fresh
+initialization it is `type(uint160).max` with the code's ten-year TTL. These
+readbacks are mandatory postconditions, with no optional manifest flag that can
+silently omit Euler initialization. The deposit path also refreshes allowances
+internally; pre-initialization remains an explicit deployment requirement.
 
 Euler's dedicated USDC Native keeper/ordinary-withdrawal/full-recall case passes
 on the corrected source. All four requested tokens have real direct Euler

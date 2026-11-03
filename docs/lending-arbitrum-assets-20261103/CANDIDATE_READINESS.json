@@ -1,0 +1,53 @@
+{
+  "status": "TECHNICAL_QUALIFICATION_COMPLETE_FOR_NAMED_MATRIX_ACTIVATION_NOT_APPROVED",
+  "branch": "codex/lending-final-cleanup-20261103",
+  "qualifiedFinancialSource": "3fcc4d405153a3b534daed98f92f836e6d61957c",
+  "testedExecutionControlSource": "7203247f643e364a6d03aae83fc370747188dbd2",
+  "implementationCompleteForValidatedScope": true,
+  "technicalQualificationComplete": true,
+  "confirmedUnclosedStrategyCorrectnessFindings": [],
+  "regression": {
+    "passed": 2998,
+    "failed": 0,
+    "skipped": 0,
+    "suites": 204
+  },
+  "crossChainActualMarkets": {
+    "passed": 50,
+    "failed": 0,
+    "skipped": 0,
+    "suites": 21
+  },
+  "arbitrumRealCases": 58,
+  "classifiedCells": 28,
+  "absentMarkets": 3,
+  "correctLowTvlCoreRejections": 3,
+  "actualAdapterProfiles": 14,
+  "chainsPerAdapterFamily": 2,
+  "actualOperationReceipts": 72,
+  "nativeProfiles": 12,
+  "nativePositiveProfiles": 11,
+  "requiredNativeEconomicRejection": 1,
+  "runtimeTemplates": 34,
+  "maximumRuntimeBytes": 23479,
+  "selectors": 296,
+  "selectorCollisions": 0,
+  "matchingLayouts": 9,
+  "strategySolidityNloc": 10558,
+  "strategySolidityFiles": 45,
+  "totalFirstPartySolidityNlocIncludingOps": 13039,
+  "productionActivationApproved": false,
+  "mergePerformed": false,
+  "liveDeploymentPerformed": false,
+  "coreMainShadowChanged": false,
+  "operationalPrerequisites": "production-inputs-draft.json",
+  "deploymentSequence": "DEPLOYMENT_SEQUENCE.md",
+  "ciAcceptance": "ci-final-acceptance.json",
+  "claudeDispositions": "claude-review-dispositions.json",
+  "qualificationScope": "Named protocol/chain/token/market/policy cases. Each Core/strategy instance has one underlying. Runtime identity independently matches fresh Windows and Linux builds.",
+  "remainingActivationWork": [
+    "Approve final operating policies/caps and dependency-bound manifests",
+    "Create dedicated frozen-source Core/router instances for new assets and provision external dependencies",
+    "Perform fresh activation-time readbacks and governance allowlist sequence"
+  ]
+}

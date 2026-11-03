@@ -1,0 +1,157 @@
+{
+  "status": "COORDINATOR_REVIEWED_THREE_PARALLEL_CLAUDE_SESSIONS",
+  "claudeVersion": "2.1.142",
+  "sessions": [
+    {
+      "name": "A-evidence",
+      "sessionId": "84fa9221-ee69-4498-b4fc-3c28d83a1f46",
+      "initialResult": {
+        "path": "deployments/lending-full-validation-20261101/production/final-cleanup/claude-closeout/A-evidence.result.json",
+        "sha256": "d2eeb915a8ef8a40831619cb4318bfda4ece958dc41faafb35500ea7cf388770"
+      },
+      "reviewedResult": {
+        "path": "deployments/lending-full-validation-20261101/production/final-cleanup/claude-closeout/A-evidence.reviewed.json",
+        "sha256": "22aae936cbb15221978fefb176b2bc887a17489351a12543f5aadba89f1eec81"
+      },
+      "finalResult": {
+        "path": "deployments/lending-full-validation-20261101/production/final-cleanup/claude-closeout/A-evidence.final.json",
+        "sha256": "63751d84ba19e50631199e241a2b0ec81d44f9948966b507ea8d1380645c79f7"
+      }
+    },
+    {
+      "name": "B-deployment",
+      "sessionId": "c29eed96-6545-44cc-9966-a538fbad63c2",
+      "initialResult": {
+        "path": "deployments/lending-full-validation-20261101/production/final-cleanup/claude-closeout/B-deployment.result.json",
+        "sha256": "56b0208beb1712f75e8b4146587df387890231bae8550a4acc01e25a4f9f9473"
+      },
+      "reviewedResult": {
+        "path": "deployments/lending-full-validation-20261101/production/final-cleanup/claude-closeout/B-deployment.reviewed.json",
+        "sha256": "5cb408c6dd3df49861512bfb96c198c643771c2a5add2b814f073497f43cb970"
+      },
+      "finalResult": {
+        "path": "deployments/lending-full-validation-20261101/production/final-cleanup/claude-closeout/B-deployment.final.json",
+        "sha256": "655df34333d06c6fc8051ae09a5e8f3ddc1761b111fb2a06cc1701117a31ff52"
+      }
+    },
+    {
+      "name": "C-solidity",
+      "sessionId": "8bc233ed-fa0f-4cb5-910d-5c13d320685b",
+      "initialResult": {
+        "path": "deployments/lending-full-validation-20261101/production/final-cleanup/claude-closeout/C-solidity.result.json",
+        "sha256": "0f7ac3798c8fddd34ee087baf148dfa605027e3bf5f71633c9fd4eed9e5d3e4b"
+      },
+      "reviewedResult": {
+        "path": "deployments/lending-full-validation-20261101/production/final-cleanup/claude-closeout/C-solidity.reviewed.json",
+        "sha256": "b0aed3a711010092e051506354a3591a20f0e883eb6b991cbee3ea7a49a93cec"
+      },
+      "finalResult": {
+        "path": "deployments/lending-full-validation-20261101/production/final-cleanup/claude-closeout/C-solidity.final.json",
+        "sha256": "64193561e94b56504408585b6f5fb1c5eadd40b8d0d4712fa448cafaa8bf7144"
+      }
+    }
+  ],
+  "acceptedFixes": [
+    {
+      "id": "CI-RPC-RESET",
+      "fix": "Strict bounded retry only for proven fork/RPC connection resets; preserve failed attempts; mixed assertions/reverts and unclassified errors fail closed. Fresh complete50/21 and14-profile local runs pass.",
+      "files": [
+        "script/RunLendingActualMarkets.ps1",
+        "script/lending/validation/RpcTransportFailure.ps1",
+        "script/lending/validation/transaction-gas/runner.py"
+      ],
+      "verification": "9 PowerShell boundary fixtures and3 Python control-plane regressions, followed by real no-mock acceptance; infrastructure unit fault injection is separate from financial qualification."
+    },
+    {
+      "id": "DEPLOY-ROLE-ORDER",
+      "fix": "Pre-provision required rate providers. After adapter admin handoff, Safe grants upkeep writer roles; deployer configures its still-owned upkeep. Verify refresh events AND actual target state because upkeep catches failures.",
+      "file": "DEPLOYMENT_SEQUENCE.md"
+    },
+    {
+      "id": "EULER-POSTFLIGHT",
+      "fix": "Mandatory initializeMarkets before admin handoff; actual ERC20 and Permit2 allowance amount/expiry for every configured Euler vault. No optional skip flag or invented adapter getter.",
+      "file": "DEPLOYMENT_SEQUENCE.md"
+    },
+    {
+      "id": "EVENT-CONSUMER-UNITS",
+      "fix": "Preserve all original event names/argument names/types; document USD6 gas quote versus raw-asset economics fields.",
+      "file": "EVENT_UNITS.md"
+    },
+    {
+      "id": "CI-HEADER-RETENTION",
+      "fix": "Include actual-acceptance-canonical-headers.json in future artifact uploads. Missing current-run file reproduced byte-for-byte from independent local canonical observations after LF normalization; SHA256 exactly matches original CI acceptance. Downloaded CI archive was not altered.",
+      "evidence": "ci-final-acceptance.json:actualMarkets.canonicalHeaders",
+      "verification": "Exact SHA256 d786992e9dab4162c83581c136048cf232d47dd2bd273d4c773caf0726d104c4; output-retention-only workflow delta, no tests or commands changed."
+    }
+  ],
+  "rejectedOrCorrectedClaims": [
+    {
+      "claim": "Native single-action WETH/WBTC does not execute checkRemainingPlan",
+      "disposition": "Retracted by session A after coordinator traced PlanModule233-244 and independently decoded actual cold/remaining events. All first/only steps reprice remaining actions.",
+      "evidence": "native-suffix-event-proof.json"
+    },
+    {
+      "claim": "Expanded58 Arbitrum cases conflict with50/21 actual-market gate",
+      "disposition": "Retracted by session A. Separate gates:58=25direct+22investedCore+3policyCoreExit+4portfolio+4warm;50/21 is cross-chain."
+    },
+    {
+      "claim": "Add optional requiresPermit2Init flag and ILendingAdapter.markets() call",
+      "disposition": "Rejected. Optional flag permits skipping required Euler postflight, and that API is absent from the common interface. Actual Euler deposit internally refreshes Permit2 without admin privilege; pre-initialization is an explicit operational postcondition."
+    },
+    {
+      "claim": "OZ grantRole revert/out-of-gas may silently continue during handoff",
+      "disposition": "Retracted by session B. Qualified adapters inherit standard AccessControl; failure reverts atomically. Hypothetical no-op custom mocks do not demonstrate a defect in the pinned runtimes."
+    },
+    {
+      "claim": "Rename economics event parameters or change event topic for asset units",
+      "disposition": "Rejected. Parameter names do not affect event topic/encoding but can break generated consumer bindings and exact ABI parity. Preserve ABI and document units."
+    },
+    {
+      "claim": "Euler exposes isRegisteredMarket/isWhitelistedMarket/isEnabledMarket getters",
+      "disposition": "Rejected invented API. Use actual Euler markets(), registry metadata and controller registration/whitelist/enabled state through verified ABI."
+    },
+    {
+      "claim": "Initial upkeep refresh reverts if one writer role is absent",
+      "disposition": "Rejected. _performPokeAPY catches failures and still advances lastPokeTs; explicit error-event and target-state postflight now required."
+    },
+    {
+      "claim": "All11 positive Native profiles are dedicated and each has3 ordinary withdrawals",
+      "disposition": "Corrected: one composite USDC profile plus10 dedicated positives; ordinary withdrawal EMA>=3 is required on each dedicated profile. Composite is not mislabeled as a dedicated EMA profile."
+    },
+    {
+      "claim": "204 and21 describe expected rejections or skips",
+      "disposition": "Rejected erroneous labels in B output. They are suite counts; regression and required real-market gate have zero skipped tests."
+    },
+    {
+      "claim": "Aave rate must be nonzero to prove a successful refresh",
+      "disposition": "Not adopted. The refreshed rate must match actual Pool data and satisfy freshness policy; a genuine zero protocol rate is possible. Investment must still pass ordinary positive-economics policy."
+    },
+    {
+      "claim": "Final A prose labels14profiles asNative and references4PowerShell fixtures",
+      "disposition": "Corrected factual labels:14local-fork receipt profiles are separate from12Native profiles; PowerShell classifier has9 boundary cases. No acceptance count relies on reviewer prose."
+    }
+  ],
+  "confirmedNewContractCorrectnessBlockers": [],
+  "sourceEquivalence": "source-equivalence.json",
+  "remainingReleaseGates": [
+    "Approved operational manifests and deployment-time dependency/Core/router addresses",
+    "Fresh activation-time oracle/market/role/allowance readbacks"
+  ],
+  "productionApproval": false,
+  "mergePerformed": false,
+  "liveDeploymentPerformed": false,
+  "closedLocalGates": {
+    "crossChainRealMarkets": "50/21",
+    "expandedArbitrum": "58 cases",
+    "localForkReceiptProfiles": 14,
+    "operationReceipts": 72,
+    "nativeProfiles": 12,
+    "independentLinuxExpandedCi": "58 cases PASS"
+  },
+  "finalReviewPasses": {
+    "A": "Strict RPC control-plane retry review PASS; no unclosed defect",
+    "B": "Hypothetical source fixes retracted; operational postflight corrections confirmed",
+    "C": "Event units/source equivalence/14profile receipts consistent; prior labels corrected"
+  },
+  "currentSourceCi": "ci-final-acceptance.json"
+}
