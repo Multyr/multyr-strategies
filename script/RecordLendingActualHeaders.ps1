@@ -5,7 +5,7 @@ $ethereum = @(26150000,26165000,26165040,26165400,26169400,26173000,26177000,261
 for ($pin=26185000; $pin -lt 26250000; $pin+=4000) { $ethereum += $pin }
 $ethereum += @(26250000,26299000,26300000,26310000)
 $networks = @(
-    @{chain=1;rpc='https://eth-mainnet.public.blastapi.io';pins=$ethereum},
+    @{chain=1;rpc='https://eth.drpc.org';pins=$ethereum},
     @{chain=42161;rpc='https://arbitrum-one.public.blastapi.io';pins=@(513000000,513800000,513802000,514200000,517000000,514000000,514700000,514701500,515094008,515100000,516094008,516098008,516102008,517500000,519094008,519994008,520000000,520094008)},
     @{chain=8453;rpc='https://mainnet.base.org';pins=@(52500000,52590000,52590180,52640000,52950000,53300000)},
     @{chain=56;rpc='https://bsc-mainnet.public.blastapi.io';pins=@(45000000,129000000,129400000,129401000,131080000)},

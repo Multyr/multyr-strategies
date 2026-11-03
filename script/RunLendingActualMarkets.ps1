@@ -4,6 +4,18 @@ param(
 )
 $ErrorActionPreference = 'Stop'
 Set-Location (Split-Path $PSScriptRoot -Parent)
+# Foundry 1.4.2 recreates clients in vm.createSelectFork/rollFork; CLI limits
+# alone do not bind those literal endpoints. Apply the same policy locally as CI.
+if ([string]::IsNullOrWhiteSpace($env:FOUNDRY_RPC_ENDPOINTS)) {
+    $rpcPolicy = 'retries = 8, retry_backoff = 5000, compute_units_per_second = 10'
+    $rpcEndpoints = @('https://arbitrum-one.public.blastapi.io','https://eth-mainnet.public.blastapi.io',
+        'https://bsc-mainnet.public.blastapi.io','https://mainnet.base.org','https://base-mainnet.public.blastapi.io',
+        'https://polygon.drpc.org','https://mainnet.optimism.io')
+    $env:FOUNDRY_RPC_ENDPOINTS = '{ ' + (($rpcEndpoints | ForEach-Object {
+        $endpoint = if ($_ -eq 'https://eth-mainnet.public.blastapi.io') { 'https://eth.drpc.org' } else { $_ }
+        '"' + $_ + '" = { endpoint = "' + $endpoint + '", ' + $rpcPolicy + ' }'
+    }) -join ', ') + ' }'
+}
 $config = & forge config --json | ConvertFrom-Json
 if ($LASTEXITCODE -ne 0 -or $config.solc -ne '0.8.28' -or $config.optimizer -ne $true -or
     $config.optimizer_runs -ne 200 -or $config.via_ir -ne $true -or $config.evm_version -ne 'cancun' -or
