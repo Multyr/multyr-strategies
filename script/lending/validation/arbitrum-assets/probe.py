@@ -26,7 +26,7 @@ def rpc(method, params):
     assert method in ('eth_call','eth_getCode','eth_getBlockByNumber','eth_chainId','eth_blockNumber')
     for attempt in range(4):
         try:
-            req = urllib.request.Request(RPC, data=json.dumps({'jsonrpc':'2.0','id':1,'method':method,'params':params}).encode(), headers={'Content-Type':'application/json'})
+            req = urllib.request.Request(RPC, data=json.dumps({'jsonrpc':'2.0','id':1,'method':method,'params':params}).encode(), headers={'Content-Type':'application/json','User-Agent':'Mozilla/5.0 LendingCompatibilityAudit/1.0'})
             data = json.load(urllib.request.urlopen(req, timeout=40))
             if 'error' in data:
                 raise RuntimeError('RPC_ERROR_'+str(data['error'].get('code')))
