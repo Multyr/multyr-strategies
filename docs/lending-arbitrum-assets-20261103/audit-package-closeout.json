@@ -1,0 +1,24 @@
+{
+  "archiveSha256": "79b14824fe6fb01186b80e4dac224d9ff798627391dbe0efc7c9ddf0cbeda40c",
+  "patchSha256": "b64eded02603108dafff5c0739fd7a7343d69217be55b4703d81decc3f2ff8f6",
+  "changedFilesVerified": 360,
+  "evidenceFiles": 620,
+  "archiveBytes": 74779654,
+  "status": "AUDIT_REVIEW_ONLY_NOT_PRODUCTION_APPROVED",
+  "baseCommit": "211f1a0a4cb9c63232ae18dac24ccb921e5a4699",
+  "candidateCommit": "6366eec57642667b8938332be5ac4fa97cdabf3a",
+  "qualifiedFinancialSource": "3fcc4d405153a3b534daed98f92f836e6d61957c",
+  "executionControlCommit": "7203247f643e364a6d03aae83fc370747188dbd2",
+  "archive": "deployments/lending-full-validation-20261101/production/final-cleanup/audit-closeout-6366eec/audit-candidate-with-evidence.zip",
+  "manifest": "deployments/lending-full-validation-20261101/production/final-cleanup/audit-closeout-6366eec/audit-manifest.json",
+  "zipCrcAndAllEvidenceHashes": "PASS",
+  "bothCiWorkflowsSuccessful": [
+    41715625275,
+    41715625309
+  ],
+  "technicalQualificationComplete": true,
+  "productionExporterUsed": false,
+  "productionActivationApproved": false,
+  "mergePerformed": false,
+  "liveDeploymentPerformed": false
+}
